@@ -1,3 +1,4 @@
+import type { ChartData, ChartOptions } from "chart.js";
 import { Line } from "react-chartjs-2";
 
 import {
@@ -9,7 +10,6 @@ import {
   Title,
   Tooltip,
   Legend,
-  ChartData,
   Filler,
 } from "chart.js";
 
@@ -24,9 +24,10 @@ ChartJS.register(
   Filler
 );
 
-interface LineGraphProps {
+export interface LineGraphProps {
   data: ChartData<"line", number[], string>;
+  options: ChartOptions<"line">;
 }
-export const LineGraph = ({ data }: LineGraphProps) => {
-  return <Line data={data} />;
+export const LineGraph = ({ data, options }: LineGraphProps) => {
+  return <Line data={data} options={options} />;
 };
