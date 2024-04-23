@@ -26,7 +26,7 @@ ChartJS.register(
 
 export interface LineGraphProps {
   data: ChartData<"line", number[], string>;
-  options: ChartOptions<"line">;
+  options?: ChartOptions<"line">;
 }
 export const LineGraph = ({ data, options }: LineGraphProps) => {
   return <Line data={data} options={options} />;
