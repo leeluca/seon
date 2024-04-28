@@ -1,16 +1,47 @@
 import GoalCard from '~/components/GoalCard';
+import { AnimatePresence, LayoutGroup } from 'framer-motion';
+import { useState } from 'react';
+import { Button } from '~/components/ui/button';
 
+const initialGridItems = [0, 1, 2, 3];
 const Dashboard = () => {
+  const [gridItems, setGridItems] = useState(initialGridItems);
+
   return (
     <div className="w-full">
       <h1>Dashboard</h1>
-      <div className="grid grid-cols-4 m-auto gap-5">
-        <GoalCard />
-        <GoalCard />
-        <GoalCard />
+      <div className="flex gap-1 my-4">
+        <Button
+          onClick={() =>
+            setGridItems([...gridItems, (gridItems.at(-1) || 0) + 1])
+          }
+        >
+          Add
+        </Button>
+        <Button onClick={() => setGridItems([...gridItems.toSpliced(-1, 1)])}>
+          Remove
+        </Button>
+        <Button>Shuffle</Button>
+      </div>
+      <div
+        className="gap-4"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, auto))',
+        }}
+      >
+        <AnimatePresence>
+          <LayoutGroup>
+            {gridItems.map((item) => (
+              <GoalCard key={item} />
+            ))}
+          </LayoutGroup>
+        </AnimatePresence>
       </div>
     </div>
   );
 };
 
 export default Dashboard;
+
+// w-[clamp(360px,60vw,600px)]

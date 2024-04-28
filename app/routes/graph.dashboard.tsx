@@ -70,7 +70,7 @@ function skipInterval(
   });
   return { intervalWithSkipped, skippedIndexes };
 }
-function getGraphData({
+export function getGraphData({
   goal,
   studyDays,
   targetDate,
@@ -128,7 +128,7 @@ function getGraphData({
   return graphData;
 }
 
-const mockData: GraphData = {
+export const mockData: GraphData = {
   goal: 1000,
   studyDays: [
     {

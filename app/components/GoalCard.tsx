@@ -1,4 +1,4 @@
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import {
   Card,
   CardContent,
@@ -7,7 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { LineGraph } from './charts/LineGraph';
+import { getGraphData, mockData } from '~/routes/graph.dashboard';
 
+const MotionCard = motion(Card);
 function ProgressBar() {
   const progressBarWidth = '30%';
   return (
@@ -19,18 +24,42 @@ function ProgressBar() {
   );
 }
 export default function GoalCard() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const { data } = getGraphData(mockData);
+
   return (
-    <Card className="text-center">
-      <CardHeader className='p-4'>
+    <MotionCard
+      className={`text-center w-full ${isExpanded ? 'col-span-3' : ''}`}
+      // whileHover={{ scale: 1.05 }}
+      initial={{ scale: 0 }}
+      animate={{
+        scale: 1,
+        transition: {
+          delay: 0.15,
+          type: 'tween',
+        },
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0,
+        transition: {
+          type: 'tween',
+        },
+      }}
+      layout
+      transition={{ duration: 0.35 }}
+    >
+      <CardHeader className="p-4">
         <CardTitle>
-          <h3 className="text-2xl">Goal</h3>
+          <span className="text-2xl">Goal</span>
         </CardTitle>
         <CardDescription className="text-xs">Category</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         {/* // TODO: align number without the percent */}
         <p className="font-semibold text-4xl text-center">80%</p>
-        <div className='flex flex-col gap-2'>
+        <div className="flex flex-col gap-2">
           <div className="flex justify-between text-xs">
             <span>800</span>
             <span>9000</span>
@@ -41,11 +70,24 @@ export default function GoalCard() {
             <span>10 days left</span>
           </div>
         </div>
+        {isExpanded && (
+          <motion.div className="w-3/5 m-auto">
+            <LineGraph data={data} />
+          </motion.div>
+        )}
       </CardContent>
-      <CardFooter className='flex justify-between align-middle px-3 pb-3'>
-        <span className='text-xs'>Category</span>
-        <div className='bg-slate-200 rounded-lg p-1'><ChevronDownIcon/></div>
+      <CardFooter className="flex justify-between align-middle px-3 pb-3">
+        <span className="text-xs">Category</span>
+        <motion.div
+          className="bg-slate-200 rounded-lg p-1"
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setIsExpanded(!isExpanded)}
+          role="button"
+          tabIndex={0}
+        >
+          {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+        </motion.div>
       </CardFooter>
-    </Card>
+    </MotionCard>
   );
 }
