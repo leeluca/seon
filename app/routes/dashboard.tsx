@@ -30,13 +30,13 @@ const Dashboard = () => {
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, auto))',
         }}
       >
-        <AnimatePresence>
-          <LayoutGroup>
+        <LayoutGroup>
+          <AnimatePresence>
             {gridItems.map((item) => (
               <GoalCard key={item} />
             ))}
-          </LayoutGroup>
-        </AnimatePresence>
+          </AnimatePresence>
+        </LayoutGroup>
       </div>
     </div>
   );
