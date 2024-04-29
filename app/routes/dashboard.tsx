@@ -2,6 +2,7 @@ import GoalCard from '~/components/GoalCard';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '~/components/ui/button';
+import { Link, Outlet } from '@remix-run/react';
 
 const initialGridItems = [0, 1, 2, 3];
 const Dashboard = () => {
@@ -10,18 +11,23 @@ const Dashboard = () => {
   return (
     <div className="w-full">
       <h1>Dashboard</h1>
-      <div className="flex gap-1 my-4">
-        <Button
-          onClick={() =>
-            setGridItems([...gridItems, (gridItems.at(-1) || 0) + 1])
-          }
-        >
-          Add
-        </Button>
-        <Button onClick={() => setGridItems([...gridItems.toSpliced(-1, 1)])}>
-          Remove
-        </Button>
-        <Button>Shuffle</Button>
+      <div className="flex my-4 justify-between">
+        <div className="flex gap-2">
+          <Button
+            onClick={() =>
+              setGridItems([...gridItems, (gridItems.at(-1) || 0) + 1])
+            }
+          >
+            Add
+          </Button>
+          <Button onClick={() => setGridItems([...gridItems.toSpliced(-1, 1)])}>
+            Remove
+          </Button>
+          <Button>Shuffle</Button>
+        </div>
+        <Link to="goal/new">
+          <Button>New Goal</Button>
+        </Link>
       </div>
       <div
         className="gap-6"
@@ -38,6 +44,7 @@ const Dashboard = () => {
           </AnimatePresence>
         </LayoutGroup>
       </div>
+      <Outlet />
     </div>
   );
 };
