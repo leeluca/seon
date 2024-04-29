@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import {
   Card,
@@ -8,7 +9,6 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import { LineGraph } from './charts/LineGraph';
 import { getGraphData, mockData } from '~/routes/graph.dashboard';
 
@@ -27,10 +27,19 @@ export default function GoalCard() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data } = getGraphData(mockData);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    cardRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+      inline: 'center',
+    });
+  }, [isExpanded]);
 
   return (
     <MotionCard
-      className={`text-center w-full ${isExpanded ? 'col-span-3' : ''}`}
+      className={`text-center w-full ${isExpanded ? 'col-span-full' : ''}`}
       // whileHover={{ scale: 1.05 }}
       initial={{ scale: 0 }}
       animate={{
@@ -49,6 +58,7 @@ export default function GoalCard() {
       }}
       layout
       transition={{ duration: 0.35 }}
+      ref={cardRef}
     >
       <CardHeader className="p-4">
         <CardTitle>

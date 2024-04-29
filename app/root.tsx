@@ -4,12 +4,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
-import stylesheet from "~/tailwind.css?url";
+} from '@remix-run/react';
+import type { LinksFunction } from '@remix-run/node';
+import stylesheet from '~/tailwind.css?url';
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
+  { rel: 'stylesheet', href: stylesheet },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -32,8 +32,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <main className="p-6">
+    <main className="xl:p-8 p-6">
+      <div className="max-w-screen-2xl m-auto">
         <Outlet />
+      </div>
     </main>
   );
 }

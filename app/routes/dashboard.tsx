@@ -24,7 +24,7 @@ const Dashboard = () => {
         <Button>Shuffle</Button>
       </div>
       <div
-        className="gap-4"
+        className="gap-6"
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(260px, auto))',
