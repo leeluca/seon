@@ -29,12 +29,16 @@ export default function GoalCard() {
   const { data } = getGraphData(mockData);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const delayedAutoScroll = () =>
     cardRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'center',
       inline: 'center',
     });
+
+  useEffect(() => {
+    const timer = setTimeout(delayedAutoScroll, 300);
+    return () => clearTimeout(timer);
   }, [isExpanded]);
 
   return (
@@ -57,7 +61,7 @@ export default function GoalCard() {
         },
       }}
       layout
-      transition={{ duration: 0.35 }}
+      transition={{ ease: 'easeInOut', duration: 0.45 }}
       ref={cardRef}
     >
       <CardHeader className="p-4">
