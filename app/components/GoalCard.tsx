@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
+import { motion } from 'framer-motion';
+
 import {
   Card,
   CardContent,
@@ -8,8 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import { motion } from 'framer-motion';
 import { LineGraph } from './charts/LineGraph';
+import { Button } from './ui/button';
+import NewEntryPopover from './NewEntryPopover';
 import { getGraphData, mockData } from '~/routes/graph.dashboard';
 
 const MotionCard = motion(Card);
@@ -17,7 +20,7 @@ function ProgressBar() {
   const progressBarWidth = '30%';
   return (
     <>
-      <div className="flex h-3 w-[calc(100% + 3rem)] rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md -mx-3">
+      <div className="flex h-3 w-[calc(100% + 48px)] rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md -mx-3">
         <div className="h-3 bg-blue-200" style={{ width: progressBarWidth }} />
       </div>
     </>
@@ -65,9 +68,12 @@ export default function GoalCard() {
       ref={cardRef}
     >
       <CardHeader className="p-4">
-        <CardTitle>
-          <span className="text-2xl">Goal</span>
-        </CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle className="">
+            <span className="text-2xl">Goal</span>
+          </CardTitle>
+          <NewEntryPopover />
+        </div>
         <CardDescription className="text-xs">Category</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
@@ -92,15 +98,14 @@ export default function GoalCard() {
       </CardContent>
       <CardFooter className="flex justify-between align-middle px-3 pb-3">
         <span className="text-xs">Category</span>
-        <motion.div
-          className="bg-slate-200 rounded-lg p-1"
-          whileTap={{ scale: 0.95 }}
+        <Button
           onClick={() => setIsExpanded(!isExpanded)}
-          role="button"
-          tabIndex={0}
+          size="sm"
+          variant="secondary"
+          className='w-6 h-6 p-0'
         >
           {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </motion.div>
+        </Button>
       </CardFooter>
     </MotionCard>
   );

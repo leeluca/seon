@@ -16,7 +16,7 @@ import { Label } from '~/components/ui/label';
 const NewGoalDialog = () => {
   const navigate = useNavigate();
   const handleClose = () => {
-    navigate('..');
+    navigate('..', { replace: true });
   };
 
   return (
@@ -49,6 +49,12 @@ const NewGoalDialog = () => {
               Target number
             </Label>
             <Input id="target-number" type="number" className="col-span-2" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="unit" className="text-right">
+              Unit
+            </Label>
+            <Input id="unit" className="col-span-2" placeholder="e.g. words" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4 ">
             <Label htmlFor="start-date" className="text-right">
@@ -84,10 +90,7 @@ const NewGoalDialog = () => {
             <Label htmlFor="current-number" className="text-right">
               Current value starts today
             </Label>
-            <Checkbox
-              id="current-number"
-              className="col-span-2"
-            />
+            <Checkbox id="current-number" className="col-span-2" />
           </div>
         </div>
         <DialogFooter>
