@@ -1,30 +1,23 @@
 import GoalCard from '~/components/GoalCard';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
-import { useState } from 'react';
 import { Button } from '~/components/ui/button';
-import { Link, Outlet } from '@remix-run/react';
+import { Link, Outlet, json, useLoaderData } from '@remix-run/react';
+import db from '~/.server/db';
 
-const initialGridItems = [0, 1, 2, 3];
+export async function loader() {
+  const goals = await db.goal.findMany();
+  return json({
+    goals,
+  });
+}
+
 const Dashboard = () => {
-  const [gridItems, setGridItems] = useState(initialGridItems);
+  const { goals } = useLoaderData<typeof loader>();
 
   return (
     <div className="w-full">
       <h1>Dashboard</h1>
       <div className="flex my-4 justify-between">
-        <div className="flex gap-2">
-          <Button
-            onClick={() =>
-              setGridItems([...gridItems, (gridItems.at(-1) || 0) + 1])
-            }
-          >
-            Add
-          </Button>
-          <Button onClick={() => setGridItems([...gridItems.toSpliced(-1, 1)])}>
-            Remove
-          </Button>
-          <Button>Shuffle</Button>
-        </div>
         <Link to="goal/new">
           <Button>New Goal</Button>
         </Link>
@@ -33,13 +26,16 @@ const Dashboard = () => {
         className="gap-6"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, auto))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, auto))',
         }}
       >
         <LayoutGroup>
           <AnimatePresence>
-            {gridItems.map((item) => (
-              <GoalCard key={item} />
+            {goals.map((goal) => (
+              <GoalCard
+                key={goal.id}
+                {...goal}
+              />
             ))}
           </AnimatePresence>
         </LayoutGroup>
