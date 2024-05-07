@@ -57,7 +57,7 @@ export default function GoalCard({
 
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
-    3
+    0
   ).toFixed(0)}%`;
 
   const daysLeft =
@@ -76,72 +76,76 @@ export default function GoalCard({
   }, [isExpanded]);
 
   return (
-    <MotionCard
-      className={`text-center w-full ${isExpanded ? 'col-span-full' : ''}`}
-      // whileHover={{ scale: 1.05 }}
-      initial={{ scale: 0 }}
-      animate={{
-        scale: 1,
-        transition: {
-          delay: 0.15,
-          type: 'tween',
-        },
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0,
-        transition: {
-          type: 'tween',
-        },
-      }}
-      layout
-      transition={{ ease: 'easeInOut', duration: 0.45 }}
-      ref={cardRef}
-    >
-      <CardHeader className="p-4">
-        <div className="flex justify-between items-center">
-          <CardTitle className="">
-            <span className="text-2xl">{title}</span>
-          </CardTitle>
-          <NewEntryPopover />
-        </div>
-        <CardDescription className="text-xs">{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        {/* // TODO: align number without the percent */}
-        <p className="font-semibold text-4xl text-center">{progressPercent}</p>
-        <div className="flex flex-col gap-2">
-          <div className="flex justify-between text-xs">
-            <span>{currentValue}</span>
-            <span>{target} words</span>
+    <>
+      <MotionCard
+        className={`text-center w-full`}
+        // whileHover={{ scale: 1.05 }}
+        initial={{ scale: 0 }}
+        animate={{
+          scale: 1,
+          transition: {
+            delay: 0.15,
+            type: 'tween',
+          },
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0,
+          transition: {
+            type: 'tween',
+          },
+        }}
+        layout
+        transition={{ ease: 'easeInOut', duration: 0.45 }}
+        ref={cardRef}
+      >
+        <CardHeader className="p-4">
+          <div className="flex justify-between items-center">
+            <CardTitle className="">
+              <span className="text-2xl">{title}</span>
+            </CardTitle>
+            <NewEntryPopover />
           </div>
-          <ProgressBar progressPercent={progressPercent} />
-          <div className="flex justify-between text-xs">
-            <span>On track</span>
-            <span>
-              {daysLeft > 0
-                ? `${daysLeft} days left`
-                : `${Math.abs(daysLeft)} days past`}
-            </span>
+          <CardDescription className="text-xs">{description}</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {/* // TODO: align number without the percent */}
+          <p className="font-semibold text-4xl text-center">
+            {progressPercent}
+          </p>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between text-xs">
+              <span>{currentValue}</span>
+              <span>{target} words</span>
+            </div>
+            <ProgressBar progressPercent={progressPercent} />
+            <div className="flex justify-between text-xs">
+              <span>On track</span>
+              <span>
+                {daysLeft > 0
+                  ? `${daysLeft} days left`
+                  : `${Math.abs(daysLeft)} days past`}
+              </span>
+            </div>
           </div>
-        </div>
-        {isExpanded && (
-          <motion.div className="w-3/5 m-auto">
-            <LineGraph data={data} />
-          </motion.div>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-between align-middle px-3 pb-3">
-        <span className="text-xs">Category</span>
-        <Button
-          onClick={() => setIsExpanded(!isExpanded)}
-          size="sm"
-          variant="secondary"
-          className="w-6 h-6 p-0"
-        >
-          {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-        </Button>
-      </CardFooter>
-    </MotionCard>
+        </CardContent>
+        <CardFooter className="flex justify-between align-middle px-3 pb-3">
+          <span className="text-xs">Category</span>
+          <Button
+            onClick={() => setIsExpanded(!isExpanded)}
+            size="sm"
+            variant="secondary"
+            className="w-6 h-6 p-0"
+          >
+            {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          </Button>
+        </CardFooter>
+      </MotionCard>
+      {isExpanded && (
+        <motion.div className="col-span-full">
+          <LineGraph data={data} />
+        </motion.div>
+      )}
+    </>
   );
 }

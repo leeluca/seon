@@ -17,25 +17,21 @@ const Dashboard = () => {
   return (
     <div className="w-full">
       <h1>Dashboard</h1>
-      <div className="flex my-4 justify-between">
+      <div className="my-4 flex justify-between">
         <Link to="goal/new">
           <Button>New Goal</Button>
         </Link>
       </div>
       <div
-        className="gap-6"
+        className="grid grid-flow-row-dense gap-6"
         style={{
-          display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, auto))',
         }}
       >
         <LayoutGroup>
           <AnimatePresence>
             {goals.map((goal) => (
-              <GoalCard
-                key={goal.id}
-                {...goal}
-              />
+              <GoalCard key={goal.id} {...goal} />
             ))}
           </AnimatePresence>
         </LayoutGroup>
