@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { motion } from 'framer-motion';
+import { useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays } from 'date-fns';
-
+import { motion } from 'framer-motion';
+import { useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -11,10 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { getGraphData, mockData } from '~/routes/graph.dashboard';
+import NewEntryPopover from './NewEntryPopover';
 import { LineGraph } from './charts/LineGraph';
 import { Button } from './ui/button';
-import NewEntryPopover from './NewEntryPopover';
-import { getGraphData, mockData } from '~/routes/graph.dashboard';
+
 
 const MotionCard = motion(Card);
 
@@ -24,7 +25,7 @@ interface ProgressBarProps {
 function ProgressBar({ progressPercent }: ProgressBarProps) {
   return (
     <>
-      <div className="flex h-3 w-[calc(100% + 48px)] rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md -mx-3">
+      <div className="w-[calc(100% + 48px)] -mx-3 flex h-3 rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md">
         <div className="h-3 bg-blue-200" style={{ width: progressPercent }} />
       </div>
     </>
@@ -46,45 +47,58 @@ export default function GoalCard({
   currentValue,
   target,
   // unit,
-  // id,
+  id,
   // startDate,
   targetDate,
 }: GoalCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  // const [isExpanded, setIsExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { data } = getGraphData(mockData);
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const isExpanded = searchParams.get('toggled') === String(id);
+
+  const toggleExpansion = () => {
+    if (isExpanded) {
+      searchParams.delete('toggled');
+    } else {
+      searchParams.set('toggled', String(id));
+    }
+    setSearchParams(searchParams);
+  };
+
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
-    0
+    0,
   ).toFixed(0)}%`;
 
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
-  const delayedAutoScroll = () =>
-    cardRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'center',
-      inline: 'center',
-    });
+  // const delayedAutoScroll = () =>
+  //   cardRef.current?.scrollIntoView({
+  //     behavior: 'smooth',
+  //     block: 'center',
+  //     inline: 'center',
+  //   });
 
-  useEffect(() => {
-    const timer = setTimeout(delayedAutoScroll, 300);
-    return () => clearTimeout(timer);
-  }, [isExpanded]);
+  // useEffect(() => {
+  //   const timer = setTimeout(delayedAutoScroll, 300);
+  //   return () => clearTimeout(timer);
+  // }, [isExpanded]);
 
   return (
     <>
       <MotionCard
-        className={`text-center w-full`}
+        className={`w-full text-center`}
         // whileHover={{ scale: 1.05 }}
         initial={{ scale: 0 }}
         animate={{
           scale: 1,
           transition: {
-            delay: 0.15,
+            delay: 0.25,
             type: 'tween',
           },
         }}
@@ -100,7 +114,7 @@ export default function GoalCard({
         ref={cardRef}
       >
         <CardHeader className="p-4">
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <CardTitle className="">
               <span className="text-2xl">{title}</span>
             </CardTitle>
@@ -110,7 +124,7 @@ export default function GoalCard({
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {/* // TODO: align number without the percent */}
-          <p className="font-semibold text-4xl text-center">
+          <p className="text-center text-4xl font-semibold">
             {progressPercent}
           </p>
           <div className="flex flex-col gap-2">
@@ -129,20 +143,39 @@ export default function GoalCard({
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between align-middle px-3 pb-3">
+        <CardFooter className="flex justify-between px-3 pb-3 align-middle">
           <span className="text-xs">Category</span>
           <Button
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => toggleExpansion()}
             size="sm"
             variant="secondary"
-            className="w-6 h-6 p-0"
+            className="h-6 w-6 p-0"
           >
+            {/* <Link to={`?toggled=${id}`} > */}
             {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            {/* </Link> */}
           </Button>
         </CardFooter>
       </MotionCard>
+      {/* TODO: fix awkward animation & content jumping */}
       {isExpanded && (
-        <motion.div className="col-span-full">
+        <motion.div
+          className="col-span-full"
+          initial={{ opacity: 0 }}
+          animate={{
+            opacity: 1,
+            transition: {
+              delay: 0.25,
+              type: 'tween',
+            },
+          }}
+          exit={{
+            opacity: 0,
+            transition: {
+              type: 'tween',
+            },
+          }}
+        >
           <LineGraph data={data} />
         </motion.div>
       )}
