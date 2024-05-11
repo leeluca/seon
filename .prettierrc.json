@@ -1,12 +1,17 @@
 {
   "singleQuote": true,
   "plugins": [
-    "@trivago/prettier-plugin-sort-imports",
+    "@ianvs/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss"
   ],
   "importOrder": [
+    "<TYPES>^(node:)",
+    "<TYPES>",
+    "<TYPES>^[.]",
     "^[react*]",
     "^[react*/**]",
+    "<BUILT_IN_MODULES>",
+    "<THIRD_PARTY_MODULES>",
     "^@/*",
     "^[a-z|A-Z]",
     "^~/*",
