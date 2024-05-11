@@ -3,5 +3,15 @@
   "plugins": [
     "@trivago/prettier-plugin-sort-imports",
     "prettier-plugin-tailwindcss"
+  ],
+  "importOrder": [
+    "^[react*]",
+    "^[react*/**]",
+    "^@/*",
+    "^[a-z|A-Z]",
+    "^~/*",
+    "^./(.*)$",
+    "^../(.*)$",
+    "./*.module.css"
   ]
 }
