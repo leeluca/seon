@@ -1,6 +1,7 @@
+import type { loader } from '~/routes/dashboard.goals';
 import { useRef } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { useSearchParams } from '@remix-run/react';
+import { useRouteLoaderData, useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays } from 'date-fns';
 import { motion } from 'framer-motion';
 import {
@@ -12,8 +13,8 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { getGraphData, mockData } from '~/routes/graph.dashboard';
-import NewEntryPopover from './NewEntryPopover';
 import { LineGraph } from './charts/LineGraph';
+import { NewEntryPopover } from './NewEntryPopover';
 import { Button } from './ui/button';
 
 const MotionCard = motion(Card);
@@ -52,6 +53,9 @@ export default function GoalCard({
 }: GoalCardProps) {
   // const [isExpanded, setIsExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const { entries } =
+    useRouteLoaderData<typeof loader>('routes/dashboard.goals') || {};
 
   const { data } = getGraphData(mockData);
 

@@ -8,7 +8,7 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover';
 
-export default function NewRecordPopover() {
+export function NewEntryPopover() {
   return (
     <Popover>
       <PopoverTrigger asChild>
