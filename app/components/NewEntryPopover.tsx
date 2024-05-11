@@ -18,7 +18,7 @@ export default function NewRecordPopover() {
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="grid gap-4">
-          <h4 className="font-medium leading-none mb-1">New entry</h4>
+          <h4 className="mb-1 font-medium leading-none">New entry</h4>
           <div className="grid gap-2">
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="date">Date</Label>
@@ -26,11 +26,7 @@ export default function NewRecordPopover() {
             </div>
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="amount">How many?</Label>
-              <Input
-                id="amount"
-                defaultValue="300px"
-                className="col-span-2 h-8"
-              />
+              <Input id="amount" className="col-span-2 h-8" type="number" />
             </div>
           </div>
         </div>

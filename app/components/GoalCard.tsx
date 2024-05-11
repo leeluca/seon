@@ -1,8 +1,8 @@
+import { useRef } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays } from 'date-fns';
 import { motion } from 'framer-motion';
-import { useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -15,7 +15,6 @@ import { getGraphData, mockData } from '~/routes/graph.dashboard';
 import NewEntryPopover from './NewEntryPopover';
 import { LineGraph } from './charts/LineGraph';
 import { Button } from './ui/button';
-
 
 const MotionCard = motion(Card);
 
@@ -160,7 +159,7 @@ export default function GoalCard({
       {/* TODO: fix awkward animation & content jumping */}
       {isExpanded && (
         <motion.div
-          className="col-span-full"
+          className="col-span-full flex max-h-96 justify-center"
           initial={{ opacity: 0 }}
           animate={{
             opacity: 1,

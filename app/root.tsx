@@ -1,3 +1,4 @@
+import type { LinksFunction, MetaFunction } from '@remix-run/node';
 import {
   Links,
   Meta,
@@ -5,7 +6,6 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
-import type { LinksFunction, MetaFunction } from '@remix-run/node';
 import stylesheet from '~/tailwind.css?url';
 
 export const links: LinksFunction = () => [
@@ -39,8 +39,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <main className="xl:p-8 p-6">
-      <div className="max-w-screen-2xl m-auto">
+    <main className="p-6 xl:p-8">
+      <div className="m-auto max-w-screen-xl">
         <Outlet />
       </div>
     </main>
