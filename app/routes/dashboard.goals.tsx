@@ -1,5 +1,5 @@
 import type { Entry } from '@prisma/client';
-import { json, LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
@@ -20,6 +20,31 @@ export async function loader({ request }: LoaderFunctionArgs) {
     goals,
     entries,
   });
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData.entries());
+
+  await Promise.all([
+    db.entry.create({
+      data: {
+        goalId: Number(data.id),
+        value: Number(data.value),
+        // createdAt
+      },
+    }),
+    db.goal.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        currentValue: { increment: Number(data.value) },
+      },
+    }),
+  ]);
+
+  return null;
 }
 
 const Goals = () => {

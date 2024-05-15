@@ -121,7 +121,7 @@ export default function GoalCard({
             <CardTitle className="">
               <span className="text-2xl">{title}</span>
             </CardTitle>
-            <NewEntryPopover />
+            <NewEntryPopover id={id}/>
           </div>
           <CardDescription className="text-xs">{description}</CardDescription>
         </CardHeader>
