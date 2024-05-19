@@ -12,8 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import { getGraphData, mockData } from '~/routes/graph.dashboard';
-import { LineGraph } from './charts/LineGraph';
+import GoalLineGraph from './GoalLineGraph';
 import { NewEntryPopover } from './NewEntryPopover';
 import { Button } from './ui/button';
 
@@ -48,16 +47,13 @@ export default function GoalCard({
   target,
   // unit,
   id,
-  // startDate,
+  startDate,
   targetDate,
 }: GoalCardProps) {
-  // const [isExpanded, setIsExpanded] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const { entries } =
     useRouteLoaderData<typeof loader>('routes/dashboard.goals') || {};
-
-  const { data } = getGraphData(mockData);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -121,7 +117,7 @@ export default function GoalCard({
             <CardTitle className="">
               <span className="text-2xl">{title}</span>
             </CardTitle>
-            <NewEntryPopover id={id}/>
+            <NewEntryPopover id={id} />
           </div>
           <CardDescription className="text-xs">{description}</CardDescription>
         </CardHeader>
@@ -179,7 +175,15 @@ export default function GoalCard({
             },
           }}
         >
-          <LineGraph data={data} />
+          {entries && (
+            <GoalLineGraph
+              entries={entries}
+              currentValue={currentValue}
+              targetDate={targetDate}
+              target={target}
+              startDate={startDate}
+            />
+          )}
         </motion.div>
       )}
     </>

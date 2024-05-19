@@ -5,6 +5,33 @@ import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
 import GoalCard from '~/components/GoalCard';
 
+
+export async function action({ request }: ActionFunctionArgs) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData.entries());
+
+  await Promise.all([
+    db.entry.create({
+      data: {
+        goalId: Number(data.id),
+        value: Number(data.value),
+        date: data.date as string,
+        // createdAt
+      },
+    }),
+    db.goal.update({
+      where: {
+        id: Number(data.id),
+      },
+      data: {
+        currentValue: { increment: Number(data.value) },
+      },
+    }),
+  ]);
+
+  return null;
+}
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const goals = await db.goal.findMany();
   const selectedId = new URL(request.url).searchParams.get('toggled') || '';
@@ -22,30 +49,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   });
 }
 
-export async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData.entries());
-
-  await Promise.all([
-    db.entry.create({
-      data: {
-        goalId: Number(data.id),
-        value: Number(data.value),
-        // createdAt
-      },
-    }),
-    db.goal.update({
-      where: {
-        id: Number(data.id),
-      },
-      data: {
-        currentValue: { increment: Number(data.value) },
-      },
-    }),
-  ]);
-
-  return null;
-}
 
 const Goals = () => {
   const { goals } = useLoaderData<typeof loader>();
