@@ -1,6 +1,7 @@
-import { useEffect, useRef, useTransition } from 'react';
+import type { HTMLFormMethod } from '@remix-run/router';
+import { useEffect, useRef } from 'react';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { Form, useNavigation } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
@@ -9,6 +10,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import { action } from '~/routes/dashboard.goals';
+import { DatePicker } from './DatePicker';
 
 interface NewEntryPopoverProps {
   isOpen?: boolean;
@@ -20,18 +23,31 @@ export function NewEntryPopover({
   // onOpenChange,
   id,
 }: NewEntryPopoverProps) {
-  const navigation = useNavigation();
-
+  const fetcher = useFetcher<typeof action>();
+  const datePickerRef = useRef<{ value: Date | undefined }>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  const isAdding =
-    navigation.state === 'submitting' &&
-    navigation.formData?.get('_action') === 'add-entry';
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const $form = event.currentTarget;
+    const formData = new FormData($form);
+
+    if (datePickerRef.current?.value) {
+      formData.set('date', datePickerRef.current.value.toISOString());
+    }
+
+    fetcher.submit(formData, {
+      method: ($form.getAttribute('method') ?? $form.method) as HTMLFormMethod,
+      action: $form.getAttribute('action') ?? $form.action,
+    });
+  }
 
   useEffect(() => {
-    if (!isAdding) {
+    if (fetcher.state === 'idle' && fetcher?.data?.success) {
       formRef?.current?.reset();
     }
-  }, [isAdding]);
+  }, [fetcher.state, fetcher.data]);
 
   return (
     <Popover>
@@ -41,18 +57,23 @@ export function NewEntryPopover({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <Form method="POST" action="/dashboard/goals" ref={formRef}>
+        <fetcher.Form
+          method="POST"
+          action={`/dashboard/goals`}
+          ref={formRef}
+          onSubmit={handleSubmit}
+        >
           <div className="grid gap-4">
             <h4 className="mb-1 font-medium leading-none">New entry</h4>
             <div className="grid gap-2">
               <Input type="hidden" name="id" value={id} />
               <div className="grid grid-cols-3 items-center gap-4">
                 <Label htmlFor="date">Date</Label>
-                <Input
+                <DatePicker
                   id="date"
-                  name="date"
-                  type="date"
-                  className="col-span-2 h-8"
+                  defaultDate={new Date()}
+                  ref={datePickerRef}
+                  className="col-span-2"
                 />
               </div>
               <div className="grid grid-cols-3 items-center gap-4">
@@ -68,13 +89,13 @@ export function NewEntryPopover({
                 type="submit"
                 name="_action"
                 value="add-entry"
-                disabled={isAdding}
+                disabled={fetcher.state === 'submitting'}
               >
                 Submit
               </Button>
             </div>
           </div>
-        </Form>
+        </fetcher.Form>
       </PopoverContent>
     </Popover>
   );

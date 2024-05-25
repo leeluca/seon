@@ -27,7 +27,7 @@ export async function action({ request }: ActionFunctionArgs) {
     }),
   ]);
 
-  return null;
+  return json({ success: true });
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -46,7 +46,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
     entries,
   });
 }
-
 
 const Goals = () => {
   const { goals } = useLoaderData<typeof loader>();
