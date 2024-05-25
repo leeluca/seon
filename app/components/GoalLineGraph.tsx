@@ -1,4 +1,5 @@
 import type { Entry, Goal } from '@prisma/client';
+import type { JsonType } from '~/types';
 import { eachDayOfInterval, isSameDay, lightFormat } from 'date-fns';
 import { LineGraph, LineGraphProps } from './charts/LineGraph';
 
@@ -20,7 +21,8 @@ function getGraphData({
     Math.min((i + 1) * itemsPerDay, target),
   );
 
-  const populatedEntries: (JsonType<Entry> | { value: number; date: Date })[] = [];
+  const populatedEntries: (JsonType<Entry> | { value: number; date: Date })[] =
+    [];
   for (const day of daysUntilTarget) {
     if (day > new Date()) {
       break;
@@ -72,17 +74,6 @@ function getGraphData({
   };
   return graphData;
 }
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
-
-type JsonType<T> = {
-  [K in keyof T]: T[K] extends JsonValue ? T[K] : string;
-};
 
 interface GoalLineGraphProps {
   entries: JsonType<Entry>[];
