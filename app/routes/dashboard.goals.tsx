@@ -9,13 +9,13 @@ import GoalCard from '~/components/GoalCard';
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData.entries());
-
+  // FIXME: wrap as transaction
   await Promise.all([
     db.entry.create({
       data: {
         goalId: Number(data.id),
         value: Number(data.value),
-        date: data.date as string,
+        date: new Date(data.date as string),
         // createdAt
       },
     }),

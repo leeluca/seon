@@ -14,34 +14,38 @@ function getGraphData({
     end: new Date(targetDate),
   });
 
-  const wordsPerDay = Math.ceil(target / daysUntilTarget.length);
+  const itemsPerDay = Math.ceil(target / daysUntilTarget.length);
 
   const goalBaselineData = [...Array(daysUntilTarget.length).keys()].map((i) =>
-    Math.min((i + 1) * wordsPerDay, target),
+    Math.min((i + 1) * itemsPerDay, target),
   );
 
-  const entryDayIndexes = entries.map((entry) =>
-    daysUntilTarget.findIndex((day) => isSameDay(day, entry.date)),
+  const populatedEntries: (JsonType<Entry> | { value: number; date: Date })[] = [];
+  for (const day of daysUntilTarget) {
+    if (day > new Date()) {
+      break;
+    }
+    const entryIndex = entries.findIndex((entry) => isSameDay(day, entry.date));
+    if (entryIndex !== -1) {
+      populatedEntries.push(entries[entryIndex]);
+    } else {
+      populatedEntries.push({
+        value: 0,
+        date: day,
+      });
+    }
+  }
+
+  const cumulativeLearnedWords = populatedEntries.reduce<number[]>(
+    (acc, curr) => {
+      const previousTotal = acc[acc.length - 1] || currentValue;
+      return [...acc, previousTotal + curr.value];
+    },
+    [],
   );
-
-  const cumulativeLearnedWords = entries.reduce<number[]>((acc, curr) => {
-    const previousTotal = acc[acc.length - 1] || currentValue || 0;
-    return [...acc, previousTotal + curr.value];
-  }, []);
-
-  const actualProgressData = [...goalBaselineData].map((value, index) => {
-    if (entryDayIndexes.includes(index)) {
-      return value + cumulativeLearnedWords[entryDayIndexes.indexOf(index)];
-    }
-    if (index > entryDayIndexes[entryDayIndexes.length - 1]) {
-      return;
-    }
-
-    return value;
-  });
 
   const labels = daysUntilTarget.map((day) =>
-    day ? lightFormat(new Date(day), 'yyyy/MM/dd') : null,
+    lightFormat(new Date(day), 'yyyy/MM/dd'),
   );
 
   const graphData: LineGraphProps = {
@@ -50,7 +54,7 @@ function getGraphData({
       datasets: [
         {
           label: 'New Words',
-          data: actualProgressData,
+          data: cumulativeLearnedWords,
           fill: true,
           backgroundColor: 'rgba(255, 99, 13, 0.1)',
           borderColor: 'rgba(255, 99, 132, 0.8)',
@@ -101,7 +105,7 @@ const GoalLineGraph = ({
     targetDate,
     startDate,
   });
-  // console.log(preparedData);
+
   if (!preparedData) return null;
   return <LineGraph data={preparedData} />;
 };
