@@ -1,15 +1,20 @@
 import type { Entry, Goal } from '@prisma/client';
+import type { loader } from '~/routes/api.entries.$goalId';
 import type { JsonType } from '~/types';
+import { useFetcher } from '@remix-run/react';
 import { eachDayOfInterval, isSameDay, lightFormat } from 'date-fns';
 import { LineGraph, LineGraphProps } from './charts/LineGraph';
 
+interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'id'> {
+  entries: JsonType<Entry>[];
+}
 function getGraphData({
   entries,
   currentValue,
   target,
   targetDate,
   startDate,
-}: GoalLineGraphProps): LineGraphProps {
+}: GetGraphDataArgs) {
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
     end: new Date(targetDate),
@@ -76,21 +81,23 @@ function getGraphData({
 }
 
 interface GoalLineGraphProps {
-  entries: JsonType<Entry>[];
+  id: number;
   currentValue: Goal['currentValue'];
   target: Goal['target'];
   targetDate: string;
   startDate: string;
 }
 const GoalLineGraph = ({
-  entries,
+  id,
   currentValue,
   target,
   targetDate,
   startDate,
 }: GoalLineGraphProps) => {
+  const entryFetcher = useFetcher<typeof loader>({ key: `entries-${id}` });
+
   const { data: preparedData } = getGraphData({
-    entries,
+    entries: entryFetcher.data?.entries || [],
     currentValue,
     target,
     targetDate,

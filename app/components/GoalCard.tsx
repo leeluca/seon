@@ -1,7 +1,6 @@
-import type { loader } from '~/routes/dashboard.goals';
 import { useRef } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { useRouteLoaderData, useSearchParams } from '@remix-run/react';
+import { useFetcher, useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays } from 'date-fns';
 import { motion } from 'framer-motion';
 import {
@@ -52,8 +51,7 @@ export default function GoalCard({
 }: GoalCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const { entries } =
-    useRouteLoaderData<typeof loader>('routes/dashboard.goals') || {};
+  const entryFetcher = useFetcher({ key: `entries-${id}` });
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -76,6 +74,11 @@ export default function GoalCard({
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
+  const prefetchEntries = () => {
+    if (!entryFetcher.data) {
+      entryFetcher.load(`/api/entries/${id}`);
+    }
+  };
   // const delayedAutoScroll = () =>
   //   cardRef.current?.scrollIntoView({
   //     behavior: 'smooth',
@@ -111,6 +114,7 @@ export default function GoalCard({
         layout
         transition={{ ease: 'easeInOut', duration: 0.45 }}
         ref={cardRef}
+        onHoverStart={() => prefetchEntries()}
       >
         <CardHeader className="p-4">
           <div className="flex items-center justify-between">
@@ -149,6 +153,7 @@ export default function GoalCard({
             size="sm"
             variant="secondary"
             className="h-6 w-6 p-0"
+            onMouseOver={() => prefetchEntries()}
           >
             {/* <Link to={`?toggled=${id}`} > */}
             {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -175,15 +180,13 @@ export default function GoalCard({
             },
           }}
         >
-          {entries && (
-            <GoalLineGraph
-              entries={entries}
-              currentValue={currentValue}
-              targetDate={targetDate}
-              target={target}
-              startDate={startDate}
-            />
-          )}
+          <GoalLineGraph
+            id={id}
+            currentValue={currentValue}
+            targetDate={targetDate}
+            target={target}
+            startDate={startDate}
+          />
         </motion.div>
       )}
     </>

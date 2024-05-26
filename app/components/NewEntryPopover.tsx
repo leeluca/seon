@@ -13,17 +13,10 @@ import {
 import { action } from '~/routes/dashboard.goals';
 import { DatePicker } from './DatePicker';
 
-interface NewEntryPopoverProps {
-  isOpen?: boolean;
-  onOpenChange?: () => void;
-  id: number;
-}
-export function NewEntryPopover({
-  // isOpen,
-  // onOpenChange,
-  id,
-}: NewEntryPopoverProps) {
+const NewEntryForm = ({ id }: { id: number }) => {
   const fetcher = useFetcher<typeof action>();
+  const entryFetcher = useFetcher({ key: `entries-${id}` });
+
   const datePickerRef = useRef<{ value: Date | undefined }>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -41,14 +34,70 @@ export function NewEntryPopover({
       method: ($form.getAttribute('method') ?? $form.method) as HTMLFormMethod,
       action: $form.getAttribute('action') ?? $form.action,
     });
+    // FIXME: check if it works on slow connections
+    entryFetcher.load(`/api/entries/${id}`);
   }
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher?.data?.success) {
+      // TODO: add success toast
       formRef?.current?.reset();
     }
   }, [fetcher.state, fetcher.data]);
 
+  return (
+    <fetcher.Form
+      method="POST"
+      action={`/dashboard/goals`}
+      ref={formRef}
+      onSubmit={handleSubmit}
+    >
+      <div className="grid gap-4">
+        <h4 className="mb-1 font-medium leading-none">New entry</h4>
+        <div className="grid gap-2">
+          <Input type="hidden" name="id" value={id} />
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="date">Date</Label>
+            <DatePicker
+              id="date"
+              defaultDate={new Date()}
+              ref={datePickerRef}
+              className="col-span-2"
+            />
+          </div>
+          <div className="grid grid-cols-3 items-center gap-4">
+            <Label htmlFor="value">How many?</Label>
+            <Input
+              id="value"
+              name="value"
+              className="col-span-2 h-8"
+              type="number"
+            />
+          </div>
+          <Button
+            type="submit"
+            name="_action"
+            value="add-entry"
+            disabled={fetcher.state === 'submitting'}
+          >
+            Submit
+          </Button>
+        </div>
+      </div>
+    </fetcher.Form>
+  );
+};
+
+interface NewEntryPopoverProps {
+  isOpen?: boolean;
+  onOpenChange?: () => void;
+  id: number;
+}
+export function NewEntryPopover({
+  // isOpen,
+  // onOpenChange,
+  id,
+}: NewEntryPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -57,45 +106,7 @@ export function NewEntryPopover({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <fetcher.Form
-          method="POST"
-          action={`/dashboard/goals`}
-          ref={formRef}
-          onSubmit={handleSubmit}
-        >
-          <div className="grid gap-4">
-            <h4 className="mb-1 font-medium leading-none">New entry</h4>
-            <div className="grid gap-2">
-              <Input type="hidden" name="id" value={id} />
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Label htmlFor="date">Date</Label>
-                <DatePicker
-                  id="date"
-                  defaultDate={new Date()}
-                  ref={datePickerRef}
-                  className="col-span-2"
-                />
-              </div>
-              <div className="grid grid-cols-3 items-center gap-4">
-                <Label htmlFor="value">How many?</Label>
-                <Input
-                  id="value"
-                  name="value"
-                  className="col-span-2 h-8"
-                  type="number"
-                />
-              </div>
-              <Button
-                type="submit"
-                name="_action"
-                value="add-entry"
-                disabled={fetcher.state === 'submitting'}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
-        </fetcher.Form>
+        <NewEntryForm id={id} />
       </PopoverContent>
     </Popover>
   );

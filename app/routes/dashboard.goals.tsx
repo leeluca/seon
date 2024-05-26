@@ -1,5 +1,4 @@
-import type { Entry } from '@prisma/client';
-import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
+import { ActionFunctionArgs, json } from '@remix-run/node';
 import { Outlet, useLoaderData } from '@remix-run/react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
@@ -30,20 +29,11 @@ export async function action({ request }: ActionFunctionArgs) {
   return json({ success: true });
 }
 
-export async function loader({ request }: LoaderFunctionArgs) {
+export async function loader() {
   const goals = await db.goal.findMany();
-  const selectedId = new URL(request.url).searchParams.get('toggled') || '';
-
-  let entries = [] as Entry[];
-  if (selectedId) {
-    entries = await db.entry.findMany({
-      where: { goalId: parseInt(selectedId, 10) },
-    });
-  }
 
   return json({
     goals,
-    entries,
   });
 }
 
