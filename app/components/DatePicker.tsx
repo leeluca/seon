@@ -1,5 +1,6 @@
 'use client';
 
+import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
 import * as React from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import { addDays, formatDate } from 'date-fns';
@@ -24,20 +25,33 @@ interface DatePickerProps {
   defaultDate?: Date;
   id?: string;
   className?: string;
+  disabledDates?: Matcher | Matcher[];
 }
 export const DatePicker = React.forwardRef(
   (
-    { defaultDate, showPresetDates, id, className }: DatePickerProps,
+    {
+      defaultDate,
+      showPresetDates,
+      id,
+      className,
+      disabledDates,
+    }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
+    const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [date, setDate] = React.useState<Date | undefined>(defaultDate);
+
+    const handleOnSelect: SelectSingleEventHandler = (date?: Date) => {
+      setDate(date);
+      setIsPopoverOpen(false);
+    };
 
     React.useImperativeHandle(ref, () => ({
       value: date,
     }));
 
     return (
-      <Popover>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverTrigger asChild>
           <Button
             variant={'outline'}
@@ -74,7 +88,12 @@ export const DatePicker = React.forwardRef(
             </Select>
           )}
           <div className="rounded-md border">
-            <Calendar mode="single" selected={date} onSelect={setDate} />
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={handleOnSelect}
+              disabled={disabledDates}
+            />
           </div>
         </PopoverContent>
       </Popover>

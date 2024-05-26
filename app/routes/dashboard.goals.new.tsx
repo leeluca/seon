@@ -1,10 +1,11 @@
 import type { ActionFunctionArgs } from '@remix-run/node';
+import type { HTMLFormMethod } from '@remix-run/router';
+import { useRef } from 'react';
 import { redirect } from '@remix-run/node';
-import { Form, useNavigate } from '@remix-run/react';
+import { Form, useNavigate, useSubmit } from '@remix-run/react';
 import db from '~/.server/db';
-// import { lightFormat } from 'date-fns';
+import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
-// import { Checkbox } from '~/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -42,6 +43,29 @@ const NewGoalDialog = () => {
   const handleClose = () => {
     navigate('..', { replace: true });
   };
+
+  const startDateRef = useRef<{ value: Date | undefined }>(null);
+  const targetDateRef = useRef<{ value: Date | undefined }>(null);
+  const submit = useSubmit();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const $form = event.currentTarget;
+    const formData = new FormData($form);
+
+    if (startDateRef.current?.value) {
+      formData.set('start-date', startDateRef.current.value.toISOString());
+    }
+    if (targetDateRef.current?.value) {
+      formData.set('target-date', targetDateRef.current.value.toISOString());
+    }
+    submit(formData, {
+      method: ($form.getAttribute('method') ?? $form.method) as HTMLFormMethod,
+      action: $form.getAttribute('action') ?? $form.action,
+    });
+  }
+
   return (
     <Dialog
       open={true}
@@ -56,7 +80,7 @@ const NewGoalDialog = () => {
             Set up your new goal. You can always edit it later.
           </DialogDescription>
         </DialogHeader>
-        <Form method="post" replace={true}>
+        <Form method="post" onSubmit={handleSubmit} replace={true}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
@@ -95,22 +119,20 @@ const NewGoalDialog = () => {
               <Label htmlFor="start-date" className="text-right">
                 Start date
               </Label>
-              <Input
+              <DatePicker
                 id="start-date"
-                name="start-date"
-                type="date"
+                defaultDate={new Date()}
+                ref={startDateRef}
                 className="col-span-2"
-                //   value={lightFormat(new Date(), 'yyyy-MM-dd')}
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4 ">
               <Label htmlFor="target-date" className="text-right">
                 Target date
               </Label>
-              <Input
+              <DatePicker
                 id="target-date"
-                name="target-date"
-                type="date"
+                ref={targetDateRef}
                 className="col-span-2"
               />
             </div>
@@ -126,14 +148,6 @@ const NewGoalDialog = () => {
                 defaultValue="0"
               />
             </div>
-            {/* TODO: only show if current value !== 0 && startDate !== today */}
-            {/* TODO: improve label text */}
-            {/* <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="current-number" className="text-right">
-                Current value starts today
-              </Label>
-              <Checkbox id="current-number" className="col-span-2" />
-            </div> */}
           </div>
           <DialogFooter>
             <Button type="submit">Save changes</Button>
