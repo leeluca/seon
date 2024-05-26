@@ -159,7 +159,6 @@ export default function GoalCard({
           </Button>
         </CardFooter>
       </MotionCard>
-      {/* TODO: fix unmounted component flashing */}
       <AnimatePresence mode="popLayout">
         {isExpanded && (
           <motion.div
@@ -174,6 +173,7 @@ export default function GoalCard({
               opacity: 0,
               transition: { duration: duration },
             }}
+            layout
           >
             <GoalLineGraph
               key={`${id}-graph`}
