@@ -1,8 +1,23 @@
 import { ActionFunctionArgs, json } from '@remix-run/node';
-import { Outlet, useLoaderData } from '@remix-run/react';
+import {
+  Outlet,
+  ShouldRevalidateFunctionArgs,
+  useLoaderData,
+} from '@remix-run/react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
 import GoalCard from '~/components/GoalCard';
+
+export function shouldRevalidate({
+  defaultShouldRevalidate,
+  formMethod,
+}: ShouldRevalidateFunctionArgs) {
+  if (!formMethod) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+}
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();

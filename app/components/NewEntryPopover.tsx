@@ -34,7 +34,7 @@ const NewEntryForm = ({ id }: { id: number }) => {
       method: ($form.getAttribute('method') ?? $form.method) as HTMLFormMethod,
       action: $form.getAttribute('action') ?? $form.action,
     });
-    // FIXME: check if it works on slow connections
+    // FIXME: check if it works on slow connections, move to useEffect
     entryFetcher.load(`/api/entries/${id}`);
   }
 
