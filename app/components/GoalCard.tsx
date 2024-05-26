@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { useFetcher, useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays } from 'date-fns';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Card,
   CardContent,
@@ -57,6 +57,13 @@ export default function GoalCard({
 
   const isExpanded = searchParams.get('toggled') === String(id);
 
+  // const delayedAutoScroll = () =>
+  //   cardRef.current?.scrollIntoView({
+  //     behavior: 'smooth',
+  //     block: 'center',
+  //     inline: 'center',
+  //   });
+
   const toggleExpansion = () => {
     if (isExpanded) {
       searchParams.delete('toggled');
@@ -64,6 +71,8 @@ export default function GoalCard({
       searchParams.set('toggled', String(id));
     }
     setSearchParams(searchParams);
+
+    // setTimeout(delayedAutoScroll, 450);
   };
 
   const progressPercent = `${Math.max(
@@ -75,22 +84,13 @@ export default function GoalCard({
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
   const prefetchEntries = () => {
+    // return null;
     if (!entryFetcher.data) {
       entryFetcher.load(`/api/entries/${id}`);
     }
   };
-  // const delayedAutoScroll = () =>
-  //   cardRef.current?.scrollIntoView({
-  //     behavior: 'smooth',
-  //     block: 'center',
-  //     inline: 'center',
-  //   });
 
-  // useEffect(() => {
-  //   const timer = setTimeout(delayedAutoScroll, 300);
-  //   return () => clearTimeout(timer);
-  // }, [isExpanded]);
-
+  const duration = 0.5;
   return (
     <>
       <MotionCard
@@ -155,40 +155,37 @@ export default function GoalCard({
             className="h-6 w-6 p-0"
             onMouseOver={() => prefetchEntries()}
           >
-            {/* <Link to={`?toggled=${id}`} > */}
             {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            {/* </Link> */}
           </Button>
         </CardFooter>
       </MotionCard>
-      {/* TODO: fix awkward animation & content jumping */}
-      {isExpanded && (
-        <motion.div
-          className="col-span-full flex max-h-96 justify-center"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: {
-              delay: 0.25,
-              type: 'tween',
-            },
-          }}
-          exit={{
-            opacity: 0,
-            transition: {
-              type: 'tween',
-            },
-          }}
-        >
-          <GoalLineGraph
-            id={id}
-            currentValue={currentValue}
-            targetDate={targetDate}
-            target={target}
-            startDate={startDate}
-          />
-        </motion.div>
-      )}
+      {/* TODO: fix unmounted component flashing */}
+      <AnimatePresence mode="popLayout">
+        {isExpanded && (
+          <motion.div
+            key={`${id}-graph`}
+            className={`col-span-full flex h-96 max-h-96 w-full justify-center ${!isExpanded ? 'hidden' : ''}`}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: duration / 2, delay: duration / 2 },
+            }}
+            exit={{
+              opacity: 0,
+              transition: { duration: duration },
+            }}
+          >
+            <GoalLineGraph
+              key={`${id}-graph`}
+              id={id}
+              currentValue={currentValue}
+              targetDate={targetDate}
+              target={target}
+              startDate={startDate}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

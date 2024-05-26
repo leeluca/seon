@@ -34,16 +34,16 @@ const NewEntryForm = ({ id }: { id: number }) => {
       method: ($form.getAttribute('method') ?? $form.method) as HTMLFormMethod,
       action: $form.getAttribute('action') ?? $form.action,
     });
-    // FIXME: check if it works on slow connections, move to useEffect
-    entryFetcher.load(`/api/entries/${id}`);
   }
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher?.data?.success) {
+      entryFetcher.load(`/api/entries/${id}`);
+
       // TODO: add success toast
       formRef?.current?.reset();
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data, entryFetcher, id]);
 
   return (
     <fetcher.Form
