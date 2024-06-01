@@ -10,20 +10,23 @@ export class Password {
     return `${buf.toString('hex')}.${salt}`;
   }
 
-  static async compare(
-    suppliedPassword: string,
-    storedPassword: string,
-  ): Promise<boolean> {
+  static async compare({
+    receivedPassword,
+    storedPassword,
+  }: {
+    receivedPassword: string;
+    storedPassword: string;
+  }): Promise<boolean> {
     const [hashedPassword, salt] = storedPassword.split('.');
 
-    const hashedPasswordBuf = Buffer.from(hashedPassword, 'hex');
+    const hashedPasswordBuffer = Buffer.from(hashedPassword, 'hex');
 
-    const suppliedPasswordBuf = (await scryptAsync(
-      suppliedPassword,
+    const receivedPasswordBuffer = (await scryptAsync(
+      receivedPassword,
       salt,
       64,
     )) as Buffer;
 
-    return timingSafeEqual(hashedPasswordBuf, suppliedPasswordBuf);
+    return timingSafeEqual(hashedPasswordBuffer, receivedPasswordBuffer);
   }
 }

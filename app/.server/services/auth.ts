@@ -5,11 +5,10 @@ import { sessionStorage } from './session';
 import { Password } from './utils/auth';
 import db from '../db';
 
-async function findUser(email: string, password: string): Promise<User | null> {
-  const user = await db.user.findUnique({
+async function findUser(name: string): Promise<User> {
+  const user = await db.user.findUniqueOrThrow({
     where: {
-      email: email,
-      password: password,
+      name,
     },
   });
 
@@ -20,20 +19,27 @@ export const authenticator = new Authenticator<User>(sessionStorage);
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {
-    const email = form.get('email') as string;
+    const name = form.get('name') as string;
     const password = form.get('password') as string;
 
+    
     // TODO: validation
-    if (!email || !password) {
-      throw new Error('Email or password not provided');
+    if (!name || !password) {
+      throw new Error('Name or password not provided');
+    }
+    const user = await findUser(name);
+
+    const passwordCorrect =
+      user &&
+      (await Password.compare({
+        receivedPassword: password,
+        storedPassword: user.password,
+      }));
+
+    if (!passwordCorrect) {
+      throw new Error('Invalid password');
     }
 
-    const hashedPassword = await Password.hash(password);
-
-    const user = await findUser(email, hashedPassword);
-    if (!user) {
-      throw new Error('Invalid credentials');
-    }
     return user;
   }),
 
