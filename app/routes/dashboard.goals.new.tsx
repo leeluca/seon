@@ -4,6 +4,7 @@ import { useRef } from 'react';
 import { redirect } from '@remix-run/node';
 import { Form, useNavigate, useSubmit } from '@remix-run/react';
 import db from '~/.server/db';
+import { checkAuth } from '~/.server/services/auth';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import {
@@ -21,6 +22,7 @@ type FormEntries = Record<string, string>;
 
 // TODO: implement validation
 export async function action({ request }: ActionFunctionArgs) {
+  const user = await checkAuth(request);
   const formData = await request.formData();
   const data = Object.fromEntries(formData.entries()) as FormEntries;
 
@@ -32,6 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
       startDate: new Date(data['start-date']),
       targetDate: new Date(data['target-date']),
       currentValue: parseInt(data['current-value'], 10),
+      userId: user.id,
     },
   });
 

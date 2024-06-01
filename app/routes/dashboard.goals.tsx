@@ -1,4 +1,4 @@
-import { ActionFunctionArgs, json } from '@remix-run/node';
+import { ActionFunctionArgs, json, LoaderFunctionArgs } from '@remix-run/node';
 import {
   Outlet,
   ShouldRevalidateFunctionArgs,
@@ -6,6 +6,7 @@ import {
 } from '@remix-run/react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
+import { checkAuth } from '~/.server/services/auth';
 import GoalCard from '~/components/GoalCard';
 
 export function shouldRevalidate({
@@ -20,6 +21,8 @@ export function shouldRevalidate({
 }
 
 export async function action({ request }: ActionFunctionArgs) {
+  await checkAuth(request);
+
   const formData = await request.formData();
   const data = Object.fromEntries(formData.entries());
 
@@ -44,8 +47,9 @@ export async function action({ request }: ActionFunctionArgs) {
   return json({ success: true });
 }
 
-export async function loader() {
-  const goals = await db.goal.findMany();
+export async function loader({ request }: LoaderFunctionArgs) {
+  const user = await checkAuth(request);
+  const goals = await db.goal.findMany({ where: { userId: user.id } });
 
   return json({
     goals,

@@ -7,7 +7,7 @@ import { Label } from '~/components/ui/label';
 
 export async function action({ request }: ActionFunctionArgs) {
   return await authenticator.authenticate('user-pass', request, {
-    successRedirect: '/dashboard',
+    successRedirect: '/dashboard/goals',
     failureRedirect: '/signup',
   });
 }
