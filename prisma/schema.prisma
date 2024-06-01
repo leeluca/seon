@@ -30,3 +30,12 @@ model Entry {
   updatedAt DateTime @updatedAt
   goal      Goal     @relation(fields: [goalId], references: [id])
 }
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
