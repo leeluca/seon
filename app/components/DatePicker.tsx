@@ -1,5 +1,3 @@
-'use client';
-
 import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
 import * as React from 'react';
 import { CalendarIcon } from '@radix-ui/react-icons';
