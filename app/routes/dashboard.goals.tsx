@@ -49,7 +49,12 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await checkAuth(request);
-  const goals = await db.goal.findMany({ where: { userId: user.id } });
+  const goals = await db.goal.findMany({
+    where: { userId: user.id },
+    orderBy: {
+      id: 'asc',
+    },
+  });
 
   return json({
     goals,
