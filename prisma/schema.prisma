@@ -12,6 +12,7 @@ model Goal {
   id           Int      @id @default(autoincrement())
   title        String
   description  String?
+  initialValue Int      @default(0)
   currentValue Int      @default(0)
   target       Int
   unit         String   @default("")
@@ -34,12 +35,19 @@ model Entry {
   goal      Goal     @relation(fields: [goalId], references: [id])
 }
 
+enum UserStatus {
+  ACTIVE
+  PENDING
+  DISABLED
+}
+
 model User {
-  id        String   @id @default(cuid())
-  name      String   @unique
+  id        String     @id @default(cuid())
+  name      String     @unique
   password  String
-  email     String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  email     String?    @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   goals     Goal[]
+  status    UserStatus @default(PENDING)
 }
