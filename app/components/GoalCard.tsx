@@ -73,9 +73,7 @@ export default function GoalCard({
     end: new Date(targetDate),
   });
 
-  const averageItemsPerDay = Math.ceil(
-    (target - initialValue) / daysUntilTarget.length,
-  );
+  const averageItemsPerDay = (target - initialValue) / daysUntilTarget.length;
 
   const daysSince =
     differenceInCalendarDays(new Date(), new Date(startDate)) + 1;

@@ -10,7 +10,7 @@ interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'id'> {
 }
 function getGraphData({
   entries,
-  currentValue,
+  initialValue,
   target,
   targetDate,
   startDate,
@@ -20,10 +20,10 @@ function getGraphData({
     end: new Date(targetDate),
   });
 
-  const itemsPerDay = Math.ceil(target / daysUntilTarget.length);
+  const itemsPerDay = target / daysUntilTarget.length;
 
   const goalBaselineData = [...Array(daysUntilTarget.length).keys()].map((i) =>
-    Math.min((i + 1) * itemsPerDay, target),
+    Math.round(Math.min((i + 1) * itemsPerDay, target)),
   );
 
   const populatedEntries: (JsonType<Entry> | { value: number; date: Date })[] =
@@ -43,13 +43,10 @@ function getGraphData({
     }
   }
 
-  const cumulativeLearnedWords = populatedEntries.reduce<number[]>(
-    (acc, curr) => {
-      const previousTotal = acc[acc.length - 1] || currentValue;
-      return [...acc, previousTotal + curr.value];
-    },
-    [],
-  );
+  const cumulativeEntryData = populatedEntries.reduce<number[]>((acc, curr) => {
+    const previousTotal = acc[acc.length - 1] || initialValue;
+    return [...acc, previousTotal + curr.value];
+  }, []);
 
   const labels = daysUntilTarget.map((day) =>
     lightFormat(new Date(day), 'yyyy/MM/dd'),
@@ -61,7 +58,7 @@ function getGraphData({
       datasets: [
         {
           label: 'New Words',
-          data: cumulativeLearnedWords,
+          data: cumulativeEntryData,
           fill: true,
           backgroundColor: 'rgba(255, 99, 13, 0.1)',
           borderColor: 'rgba(255, 99, 132, 0.8)',
@@ -86,6 +83,7 @@ interface GoalLineGraphProps {
   target: Goal['target'];
   targetDate: string;
   startDate: string;
+  initialValue: Goal['initialValue'];
 }
 const GoalLineGraph = ({
   id,
@@ -93,6 +91,7 @@ const GoalLineGraph = ({
   target,
   targetDate,
   startDate,
+  initialValue,
 }: GoalLineGraphProps) => {
   const entryFetcher = useFetcher<typeof loader>({ key: `entries-${id}` });
 
@@ -102,6 +101,7 @@ const GoalLineGraph = ({
     target,
     targetDate,
     startDate,
+    initialValue,
   });
 
   if (!preparedData) return null;
