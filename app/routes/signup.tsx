@@ -22,7 +22,7 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
   return await authenticator.authenticate('user-pass', request, {
-    successRedirect: '/dashboard/goals',
+    successRedirect: '/goals',
     throwOnError: true,
     context: { formData },
   });
@@ -31,7 +31,7 @@ export async function action({ request }: ActionFunctionArgs) {
 export async function loader({ request }: LoaderFunctionArgs) {
   // redirect authenticated users to homepage
   return await authenticator.isAuthenticated(request, {
-    successRedirect: '/dashboard/goals',
+    successRedirect: '/goals',
   });
 }
 

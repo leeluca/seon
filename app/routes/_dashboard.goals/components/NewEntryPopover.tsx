@@ -48,7 +48,7 @@ const NewEntryForm = ({ id }: { id: number }) => {
   return (
     <fetcher.Form
       method="POST"
-      action={`/dashboard/goals`}
+      action={`/goals`}
       ref={formRef}
       onSubmit={handleSubmit}
     >
