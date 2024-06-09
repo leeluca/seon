@@ -13,9 +13,9 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { JsonType } from '~/types';
-import GoalLineGraph from './GoalLineGraph';
+import GoalLineGraph from '../../../components/GoalLineGraph';
 import { NewEntryPopover } from './NewEntryPopover';
-import { Button } from './ui/button';
+import { Button } from '../../../components/ui/button';
 
 const MotionCard = motion(Card);
 

@@ -7,7 +7,7 @@ import {
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import db from '~/.server/db';
 import { checkAuth } from '~/.server/services/auth';
-import GoalCard from '~/components/GoalCard';
+import GoalCard from './components/GoalCard';
 
 export function shouldRevalidate({
   defaultShouldRevalidate,

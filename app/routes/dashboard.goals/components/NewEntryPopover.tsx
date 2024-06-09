@@ -2,6 +2,7 @@ import type { HTMLFormMethod } from '@remix-run/router';
 import { useEffect, useRef } from 'react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useFetcher } from '@remix-run/react';
+import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
@@ -10,8 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
-import { action } from '~/routes/dashboard.goals';
-import { DatePicker } from './DatePicker';
+import { action } from '../route';
 
 const NewEntryForm = ({ id }: { id: number }) => {
   const fetcher = useFetcher<typeof action>();
