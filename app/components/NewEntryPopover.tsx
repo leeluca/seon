@@ -37,11 +37,11 @@ const NewEntryForm = ({ id }: { id: number }) => {
   }
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher?.data?.success) {
+    if (fetcher.state === 'idle' && fetcher.data?.success) {
       entryFetcher.load(`/api/entries/${id}`);
 
       // TODO: add success toast
-      formRef?.current?.reset();
+      formRef.current?.reset();
     }
   }, [fetcher.state, fetcher.data, entryFetcher, id]);
 

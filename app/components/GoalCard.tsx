@@ -186,7 +186,7 @@ export default function GoalCard({
         {isExpanded && (
           <motion.div
             key={`${id}-graph`}
-            className={`col-span-full flex h-96 max-h-96 w-full justify-center ${!isExpanded ? 'hidden' : ''}`}
+            className={`col-span-full flex h-96 max-h-96 w-full justify-center`}
             initial={{ opacity: 0 }}
             animate={{
               opacity: 1,

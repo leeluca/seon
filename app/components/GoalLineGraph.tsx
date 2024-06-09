@@ -104,7 +104,7 @@ const GoalLineGraph = ({
     initialValue,
   });
 
-  if (!preparedData) return null;
+
   return <LineGraph data={preparedData} />;
 };
 
