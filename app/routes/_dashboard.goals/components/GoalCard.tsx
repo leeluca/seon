@@ -4,6 +4,8 @@ import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import { useFetcher, useSearchParams } from '@remix-run/react';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 import { AnimatePresence, motion } from 'framer-motion';
+import GoalLineGraph from '~/components/GoalLineGraph';
+import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,
@@ -13,9 +15,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { JsonType } from '~/types';
-import GoalLineGraph from '../../../components/GoalLineGraph';
 import { NewEntryPopover } from './NewEntryPopover';
-import { Button } from '../../../components/ui/button';
 
 const MotionCard = motion(Card);
 
