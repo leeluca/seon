@@ -29,12 +29,10 @@ authenticator.use(
     }
     const user = await findUser(name);
 
-    const passwordCorrect =
-      user &&
-      (await Password.compare({
-        receivedPassword: password,
-        storedPassword: user.password,
-      }));
+    const passwordCorrect = await Password.compare({
+      receivedPassword: password,
+      storedPassword: user.password,
+    });
 
     if (!passwordCorrect) {
       throw new Error('Invalid password');
@@ -50,6 +48,7 @@ authenticator.use(
 export const checkAuth = async (request: Request) => {
   const user = await authenticator.isAuthenticated(request);
   if (!user) {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw redirect('/login');
   }
   return user;

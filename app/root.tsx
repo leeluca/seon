@@ -19,6 +19,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+// TODO: export dashboard layout here, add error boundary
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
