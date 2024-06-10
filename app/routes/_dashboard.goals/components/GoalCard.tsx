@@ -105,75 +105,72 @@ export default function GoalCard({
   };
 
   return (
-    <>
-      <MotionCard
-        className="w-full text-center"
-        // whileHover={{ scale: 1.05 }}
-        initial={{ scale: 0 }}
-        animate={{
-          scale: 1,
-          transition: {
-            delay: 0.25,
-            type: 'tween',
-          },
-        }}
-        exit={{
-          opacity: 0,
-          scale: 0,
-          transition: {
-            type: 'tween',
-          },
-        }}
-        layout
-        transition={{ ease: 'easeInOut', duration: 0.45 }}
-        ref={cardRef}
-        onHoverStart={() => prefetchEntries()}
+    <MotionCard
+      className="w-full text-center"
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      initial={{ scale: 0 }}
+      animate={{
+        scale: 1,
+        transition: {
+          delay: 0.25,
+          type: 'tween',
+        },
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0,
+        transition: {
+          type: 'tween',
+        },
+      }}
+      layout
+      transition={{ ease: 'easeInOut',  }}
+      ref={cardRef}
+      onMouseOver={() => prefetchEntries()}
+    >
+      <CardHeader className="p-4" onPointerDownCapture={e => e.stopPropagation()} >
+        <div className="flex h-16 items-center">
+          <CardTitle className="mr-2 w-60 grow text-center text-2xl">
+            {title}
+          </CardTitle>
+          <NewEntryPopover id={id} />
+        </div>
+        <CardDescription className="text-xs">{description}</CardDescription>
+      </CardHeader>
+      <CardContent
+        className="flex cursor-pointer flex-col gap-3"
+        onClick={() => setSidePanelOpen(true)}
+        //FIXME: accessibility of div button
       >
-        <CardHeader className="p-4">
-          <div className="flex h-16 items-center">
-            <CardTitle className="mr-2 w-60 grow text-center text-2xl">
-              {title}
-            </CardTitle>
-            <NewEntryPopover id={id} />
+        <p className="text-center text-4xl font-semibold">{progressPercent}</p>
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between text-xs">
+            <span>{currentValue}</span>
+            <span>
+              {target} {unit || 'items'}
+            </span>
           </div>
-          <CardDescription className="text-xs">{description}</CardDescription>
-        </CardHeader>
-        <CardContent
-          className="flex cursor-pointer flex-col gap-3"
-          onClick={() => setSidePanelOpen(true)}
-          //FIXME: accessibility of div button
-        >
-          <p className="text-center text-4xl font-semibold">
-            {progressPercent}
-          </p>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-xs">
-              <span>{currentValue}</span>
-              <span>
-                {target} {unit || 'items'}
-              </span>
-            </div>
-            <ProgressBar progressPercent={progressPercent} />
-            <div className="flex justify-between text-xs">
-              <span>{item}</span>
-              <span>
-                {daysLeft > 0
-                  ? `${daysLeft} days left`
-                  : `${Math.abs(daysLeft)} days past`}
-              </span>
-            </div>
+          <ProgressBar progressPercent={progressPercent} />
+          <div className="flex justify-between text-xs">
+            <span>{item}</span>
+            <span>
+              {daysLeft > 0
+                ? `${daysLeft} days left`
+                : `${Math.abs(daysLeft)} days past`}
+            </span>
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-between px-3 pb-3 align-middle">
-          {/* <span className="text-xs">Category</span> */}
-          <GoalDetailPanel
-            title={title}
-            graphComponent={GraphComponent}
-            open={sidePanelOpen}
-            onOpenChange={setSidePanelOpen}
-          />
-        </CardFooter>
-      </MotionCard>
-    </>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between px-3 pb-3 align-middle">
+        {/* <span className="text-xs">Category</span> */}
+        <GoalDetailPanel
+          title={title}
+          graphComponent={GraphComponent}
+          open={sidePanelOpen}
+          onOpenChange={setSidePanelOpen}
+        />
+      </CardFooter>
+    </MotionCard>
   );
 }
