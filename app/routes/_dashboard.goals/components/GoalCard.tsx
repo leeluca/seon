@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { JsonType } from '~/types';
+import { GoalDetailPanel } from './GoalDetailPanel';
 import { NewEntryPopover } from './NewEntryPopover';
 
 const MotionCard = motion(Card);
@@ -60,6 +61,19 @@ export default function GoalCard({
   const [searchParams, setSearchParams] = useSearchParams();
 
   const isExpanded = searchParams.get('toggled') === String(id);
+
+  // FIXME: temporary, won't pass as prop
+  const GraphComponent = (
+    <GoalLineGraph
+      key={`${id}-graph`}
+      id={id}
+      currentValue={currentValue}
+      targetDate={targetDate}
+      target={target}
+      startDate={startDate}
+      initialValue={initialValue}
+    />
+  );
 
   // const delayedAutoScroll = () =>
   //   cardRef.current?.scrollIntoView({
@@ -171,15 +185,21 @@ export default function GoalCard({
         </CardContent>
         <CardFooter className="flex justify-between px-3 pb-3 align-middle">
           <span className="text-xs">Category</span>
-          <Button
-            onClick={() => toggleExpansion()}
-            size="sm"
-            variant="secondary"
-            className="h-6 w-6 p-0"
-            onMouseOver={() => prefetchEntries()}
-          >
-            {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          </Button>
+          <GoalDetailPanel
+            triggerComponent={
+              <Button
+                onClick={() => toggleExpansion()}
+                size="sm"
+                variant="secondary"
+                className="h-6 w-6 p-0"
+                onMouseOver={() => prefetchEntries()}
+              >
+                {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              </Button>
+            }
+            title={title}
+            graphComponent={GraphComponent}
+          />
         </CardFooter>
       </MotionCard>
       <AnimatePresence mode="popLayout">
