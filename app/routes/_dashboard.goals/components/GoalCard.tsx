@@ -1,11 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Goal } from '@prisma/client';
-import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { useFetcher, useSearchParams } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import GoalLineGraph from '~/components/GoalLineGraph';
-import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,
@@ -58,9 +56,7 @@ export default function GoalCard({
 
   const entryFetcher = useFetcher({ key: `entries-${id}` });
 
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const isExpanded = searchParams.get('toggled') === String(id);
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
 
   // FIXME: temporary, won't pass as prop
   const GraphComponent = (
@@ -74,13 +70,6 @@ export default function GoalCard({
       initialValue={initialValue}
     />
   );
-
-  // const delayedAutoScroll = () =>
-  //   cardRef.current?.scrollIntoView({
-  //     behavior: 'smooth',
-  //     block: 'center',
-  //     inline: 'center',
-  //   });
 
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
@@ -101,17 +90,6 @@ export default function GoalCard({
 
   const item = getOnTrackValue(differenceFromTarget, target);
 
-  const toggleExpansion = () => {
-    if (isExpanded) {
-      searchParams.delete('toggled');
-    } else {
-      searchParams.set('toggled', String(id));
-    }
-    setSearchParams(searchParams);
-
-    // setTimeout(delayedAutoScroll, 450);
-  };
-
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
@@ -126,11 +104,10 @@ export default function GoalCard({
     }
   };
 
-  const duration = 0.5;
   return (
     <>
       <MotionCard
-        className={`w-full text-center`}
+        className="w-full text-center"
         // whileHover={{ scale: 1.05 }}
         initial={{ scale: 0 }}
         animate={{
@@ -161,7 +138,11 @@ export default function GoalCard({
           </div>
           <CardDescription className="text-xs">{description}</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-3">
+        <CardContent
+          className="flex cursor-pointer flex-col gap-3"
+          onClick={() => setSidePanelOpen(true)}
+          //FIXME: accessibility of div button
+        >
           <p className="text-center text-4xl font-semibold">
             {progressPercent}
           </p>
@@ -184,52 +165,15 @@ export default function GoalCard({
           </div>
         </CardContent>
         <CardFooter className="flex justify-between px-3 pb-3 align-middle">
-          <span className="text-xs">Category</span>
+          {/* <span className="text-xs">Category</span> */}
           <GoalDetailPanel
-            triggerComponent={
-              <Button
-                onClick={() => toggleExpansion()}
-                size="sm"
-                variant="secondary"
-                className="h-6 w-6 p-0"
-                onMouseOver={() => prefetchEntries()}
-              >
-                {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-              </Button>
-            }
             title={title}
             graphComponent={GraphComponent}
+            open={sidePanelOpen}
+            onOpenChange={setSidePanelOpen}
           />
         </CardFooter>
       </MotionCard>
-      <AnimatePresence mode="popLayout">
-        {isExpanded && (
-          <motion.div
-            key={`${id}-graph`}
-            className={`col-span-full flex h-96 max-h-96 w-full justify-center`}
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-              transition: { duration: duration / 2, delay: duration / 2 },
-            }}
-            exit={{
-              opacity: 0,
-              transition: { duration: duration },
-            }}
-            layout
-          >
-            <GoalLineGraph
-              key={`${id}-graph`}
-              id={id}
-              currentValue={currentValue}
-              targetDate={targetDate}
-              target={target}
-              startDate={startDate}
-              initialValue={initialValue}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 }
