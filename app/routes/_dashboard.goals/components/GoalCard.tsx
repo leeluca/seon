@@ -107,8 +107,7 @@ export default function GoalCard({
   return (
     <MotionCard
       className="w-full text-center"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
       initial={{ scale: 0 }}
       animate={{
         scale: 1,
@@ -125,11 +124,14 @@ export default function GoalCard({
         },
       }}
       layout
-      transition={{ ease: 'easeInOut',  }}
+      transition={{ ease: 'easeInOut' }}
       ref={cardRef}
       onMouseOver={() => prefetchEntries()}
     >
-      <CardHeader className="p-4" onPointerDownCapture={e => e.stopPropagation()} >
+      <CardHeader
+        className="p-4"
+        onPointerDownCapture={(e) => e.stopPropagation()}
+      >
         <div className="flex h-16 items-center">
           <CardTitle className="mr-2 w-60 grow text-center text-2xl">
             {title}

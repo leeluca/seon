@@ -1,5 +1,5 @@
 import type { HTMLFormMethod } from '@remix-run/router';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useFetcher } from '@remix-run/react';
 import { DatePicker } from '~/components/DatePicker';
@@ -13,7 +13,14 @@ import {
 } from '~/components/ui/popover';
 import { action } from '../route';
 
-const NewEntryForm = ({ id }: { id: number }) => {
+interface NewEntryFormProps {
+  id: number;
+  onSubmitCallback?: () => void;
+}
+const NewEntryForm = ({
+  id,
+  onSubmitCallback = () => {},
+}: NewEntryFormProps) => {
   const fetcher = useFetcher<typeof action>();
   const entryFetcher = useFetcher({ key: `entries-${id}` });
 
@@ -42,8 +49,10 @@ const NewEntryForm = ({ id }: { id: number }) => {
 
       // TODO: add success toast
       formRef.current?.reset();
+      onSubmitCallback();
     }
-  }, [fetcher.state, fetcher.data, entryFetcher, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetcher.state, fetcher.data, id]);
 
   return (
     <fetcher.Form
@@ -93,20 +102,21 @@ interface NewEntryPopoverProps {
   onOpenChange?: () => void;
   id: number;
 }
-export function NewEntryPopover({
-  // isOpen,
-  // onOpenChange,
-  id,
-}: NewEntryPopoverProps) {
+
+export function NewEntryPopover({ id }: NewEntryPopoverProps) {
+  const [open, setOpen] = useState(false);
+
+  const togglePopover = () => setOpen((prev) => !prev);
+
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={togglePopover}>
       <PopoverTrigger asChild>
         <Button variant="secondary" size="icon">
           <PlusIcon />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
-        <NewEntryForm id={id} />
+        <NewEntryForm id={id} onSubmitCallback={togglePopover} />
       </PopoverContent>
     </Popover>
   );
