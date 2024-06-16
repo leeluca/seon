@@ -5,6 +5,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
+
 import db from '~/.server/db';
 import { checkAuth } from '~/.server/services/auth';
 import GoalCard from './components/GoalCard';
@@ -26,24 +27,47 @@ export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const data = Object.fromEntries(formData.entries());
 
-  await db.$transaction([
-    db.entry.create({
-      data: {
-        goalId: Number(data.id),
-        value: Number(data.value),
-        date: new Date(data.date as string),
-      },
-    }),
-    db.goal.update({
-      where: {
-        id: Number(data.id),
-      },
-      data: {
-        currentValue: { increment: Number(data.value) },
-      },
-    }),
-  ]);
+  const date = new Date(data.date as string);
+  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
+  const existingEntry = await db.entry.findFirst({
+    where: {
+      goalId: Number(data.id),
+      AND: [
+        { date: { gte: startOfDay } },
+        { date: { lte: endOfDay } },
+      ],
+    },
+  });
+
+  const entryOperation = existingEntry
+    ? db.entry.update({
+        where: {
+          id: existingEntry.id,
+        },
+        data: {
+          value: Number(data.value),
+        },
+      })
+    : db.entry.create({
+        data: {
+          goalId: Number(data.id),
+          value: Number(data.value),
+          date: new Date(data.date as string),
+        },
+      });
+
+  const goalUpdateOperation = db.goal.update({
+    where: {
+      id: Number(data.id),
+    },
+    data: {
+      currentValue: { increment: Number(data.value) },
+    },
+  });
+
+  await db.$transaction([entryOperation, goalUpdateOperation]);
   return json({ success: true });
 }
 
