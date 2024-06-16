@@ -2,6 +2,7 @@ import type { HTMLFormMethod } from '@remix-run/router';
 import { useEffect, useRef, useState } from 'react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useFetcher } from '@remix-run/react';
+import { toast } from 'sonner';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -50,6 +51,7 @@ const NewEntryForm = ({
       // TODO: add success toast
       formRef.current?.reset();
       onSubmitCallback();
+      toast.success('Entry added successfully');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetcher.state, fetcher.data, id]);
