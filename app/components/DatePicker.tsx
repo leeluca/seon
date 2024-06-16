@@ -24,6 +24,8 @@ interface DatePickerProps {
   id?: string;
   className?: string;
   disabledDates?: Matcher | Matcher[];
+  date?: Date;
+  setDate?: React.Dispatch<React.SetStateAction<Date | undefined>>;
 }
 export const DatePicker = React.forwardRef(
   (
@@ -33,11 +35,18 @@ export const DatePicker = React.forwardRef(
       id,
       className,
       disabledDates,
+      date: dateProp,
+      setDate: setDateProp,
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
-    const [date, setDate] = React.useState<Date | undefined>(defaultDate);
+    const [dateState, setDateState] = React.useState<Date | undefined>(
+      defaultDate,
+    );
+
+    const date = dateProp ?? dateState;
+    const setDate = setDateProp ?? setDateState;
 
     const handleOnSelect: SelectSingleEventHandler = (date?: Date) => {
       setDate(date);
