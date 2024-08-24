@@ -7,6 +7,7 @@ import {
   ScrollRestoration,
 } from '@remix-run/react';
 import stylesheet from '~/tailwind.css?url';
+import { Toaster } from './components/ui/sonner';
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
@@ -42,6 +43,7 @@ export default function App() {
   return (
     <main className="p-6 xl:p-8">
       <div className="m-auto max-w-screen-xl">
+        <Toaster position="top-right" duration={2500} closeButton />
         <Outlet />
       </div>
     </main>

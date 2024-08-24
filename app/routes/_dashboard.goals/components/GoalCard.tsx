@@ -1,11 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Goal } from '@prisma/client';
-import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { useFetcher, useSearchParams } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import GoalLineGraph from '~/components/GoalLineGraph';
-import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,
@@ -15,6 +13,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { JsonType } from '~/types';
+import { GoalDetailPanel } from './GoalDetailPanel';
 import { NewEntryPopover } from './NewEntryPopover';
 
 const MotionCard = motion(Card);
@@ -57,16 +56,20 @@ export default function GoalCard({
 
   const entryFetcher = useFetcher({ key: `entries-${id}` });
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [sidePanelOpen, setSidePanelOpen] = useState(false);
 
-  const isExpanded = searchParams.get('toggled') === String(id);
-
-  // const delayedAutoScroll = () =>
-  //   cardRef.current?.scrollIntoView({
-  //     behavior: 'smooth',
-  //     block: 'center',
-  //     inline: 'center',
-  //   });
+  // FIXME: temporary, won't pass as prop
+  const GraphComponent = (
+    <GoalLineGraph
+      key={`${id}-graph`}
+      id={id}
+      currentValue={currentValue}
+      targetDate={targetDate}
+      target={target}
+      startDate={startDate}
+      initialValue={initialValue}
+    />
+  );
 
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
@@ -87,17 +90,6 @@ export default function GoalCard({
 
   const item = getOnTrackValue(differenceFromTarget, target);
 
-  const toggleExpansion = () => {
-    if (isExpanded) {
-      searchParams.delete('toggled');
-    } else {
-      searchParams.set('toggled', String(id));
-    }
-    setSearchParams(searchParams);
-
-    // setTimeout(delayedAutoScroll, 450);
-  };
-
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
@@ -112,104 +104,75 @@ export default function GoalCard({
     }
   };
 
-  const duration = 0.5;
   return (
-    <>
-      <MotionCard
-        className={`w-full text-center`}
-        // whileHover={{ scale: 1.05 }}
-        initial={{ scale: 0 }}
-        animate={{
-          scale: 1,
-          transition: {
-            delay: 0.25,
-            type: 'tween',
-          },
-        }}
-        exit={{
-          opacity: 0,
-          scale: 0,
-          transition: {
-            type: 'tween',
-          },
-        }}
-        layout
-        transition={{ ease: 'easeInOut', duration: 0.45 }}
-        ref={cardRef}
-        onHoverStart={() => prefetchEntries()}
+    <MotionCard
+      className="w-full text-center"
+      whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
+      initial={{ scale: 0 }}
+      animate={{
+        scale: 1,
+        transition: {
+          delay: 0.25,
+          type: 'tween',
+        },
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0,
+        transition: {
+          type: 'tween',
+        },
+      }}
+      layout
+      transition={{ ease: 'easeInOut' }}
+      ref={cardRef}
+      onMouseOver={() => prefetchEntries()}
+    >
+      <CardHeader
+        className="p-4"
+        onPointerDownCapture={(e) => e.stopPropagation()}
       >
-        <CardHeader className="p-4">
-          <div className="flex h-16 items-center">
-            <CardTitle className="mr-2 w-60 grow text-center text-2xl">
-              {title}
-            </CardTitle>
-            <NewEntryPopover id={id} />
+        <div className="flex h-16 items-center">
+          <CardTitle className="mr-2 w-60 grow text-center text-2xl">
+            {title}
+          </CardTitle>
+          <NewEntryPopover id={id} />
+        </div>
+        <CardDescription className="text-xs">{description}</CardDescription>
+      </CardHeader>
+      <CardContent
+        className="flex cursor-pointer flex-col gap-3"
+        onClick={() => setSidePanelOpen(true)}
+        //FIXME: accessibility of div button
+      >
+        <p className="text-center text-4xl font-semibold">{progressPercent}</p>
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between text-xs">
+            <span>{currentValue}</span>
+            <span>
+              {target} {unit || 'items'}
+            </span>
           </div>
-          <CardDescription className="text-xs">{description}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <p className="text-center text-4xl font-semibold">
-            {progressPercent}
-          </p>
-          <div className="flex flex-col gap-2">
-            <div className="flex justify-between text-xs">
-              <span>{currentValue}</span>
-              <span>
-                {target} {unit || 'items'}
-              </span>
-            </div>
-            <ProgressBar progressPercent={progressPercent} />
-            <div className="flex justify-between text-xs">
-              <span>{item}</span>
-              <span>
-                {daysLeft > 0
-                  ? `${daysLeft} days left`
-                  : `${Math.abs(daysLeft)} days past`}
-              </span>
-            </div>
+          <ProgressBar progressPercent={progressPercent} />
+          <div className="flex justify-between text-xs">
+            <span>{item}</span>
+            <span>
+              {daysLeft > 0
+                ? `${daysLeft} days left`
+                : `${Math.abs(daysLeft)} days past`}
+            </span>
           </div>
-        </CardContent>
-        <CardFooter className="flex justify-between px-3 pb-3 align-middle">
-          <span className="text-xs">Category</span>
-          <Button
-            onClick={() => toggleExpansion()}
-            size="sm"
-            variant="secondary"
-            className="h-6 w-6 p-0"
-            onMouseOver={() => prefetchEntries()}
-          >
-            {isExpanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
-          </Button>
-        </CardFooter>
-      </MotionCard>
-      <AnimatePresence mode="popLayout">
-        {isExpanded && (
-          <motion.div
-            key={`${id}-graph`}
-            className={`col-span-full flex h-96 max-h-96 w-full justify-center`}
-            initial={{ opacity: 0 }}
-            animate={{
-              opacity: 1,
-              transition: { duration: duration / 2, delay: duration / 2 },
-            }}
-            exit={{
-              opacity: 0,
-              transition: { duration: duration },
-            }}
-            layout
-          >
-            <GoalLineGraph
-              key={`${id}-graph`}
-              id={id}
-              currentValue={currentValue}
-              targetDate={targetDate}
-              target={target}
-              startDate={startDate}
-              initialValue={initialValue}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-between px-3 pb-3 align-middle">
+        {/* <span className="text-xs">Category</span> */}
+        <GoalDetailPanel
+          title={title}
+          graphComponent={GraphComponent}
+          open={sidePanelOpen}
+          onOpenChange={setSidePanelOpen}
+        />
+      </CardFooter>
+    </MotionCard>
   );
 }
