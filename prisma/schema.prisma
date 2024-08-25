@@ -8,7 +8,7 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Goal {
+model goal {
   id           Int      @id @default(autoincrement())
   title        String
   description  String?
@@ -16,23 +16,23 @@ model Goal {
   currentValue Int      @default(0)
   target       Int
   unit         String   @default("")
-  user         User     @relation(fields: [userId], references: [id])
+  user         user     @relation(fields: [userId], references: [id])
   userId       String
   startDate    DateTime
   targetDate   DateTime
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  entries      Entry[]
+  entries      entry[]
 }
 
-model Entry {
+model entry {
   id        Int      @id @default(autoincrement())
   goalId    Int
   value     Int
   date      DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  goal      Goal     @relation(fields: [goalId], references: [id])
+  goal      goal     @relation(fields: [goalId], references: [id])
 }
 
 enum UserStatus {
@@ -41,13 +41,13 @@ enum UserStatus {
   DISABLED
 }
 
-model User {
+model user {
   id        String     @id @default(cuid())
   name      String     @unique
   password  String
   email     String?    @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  goals     Goal[]
+  goals     goal[]
   status    UserStatus @default(PENDING)
 }
