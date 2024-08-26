@@ -6,3 +6,4 @@ node_modules
 .vscode
 dev.db*
 .vercel
+*.local
