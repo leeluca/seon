@@ -12,7 +12,7 @@ export const useSupabase = () => React.useContext(SupabaseContext);
 export const db = new PowerSyncDatabase({
   schema: AppSchema,
   database: {
-    dbFilename: 'example.db',
+    dbFilename: 'goal-dashboard.db',
   },
 });
 
@@ -21,23 +21,31 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [powerSync] = React.useState(db);
 
   React.useEffect(() => {
-    // Linting thinks this is a hook due to it's name
-    Logger.useDefaults(); // eslint-disable-line
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
-    // For console testing purposes
+    // FIXME: for console testing purposes, to be removed
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
     (window as any)._powersync = powerSync;
 
-    powerSync.init();
-    const l = connector.registerListener({
+    const initializePowerSync = async () => {
+      await powerSync.init();
+    };
+    const initializeConnector = async () => {
+      await connector.init();
+    };
+
+    void initializePowerSync();
+
+    const listener = connector.registerListener({
       initialized: () => {},
       sessionStarted: () => {
-        powerSync.connect(connector);
+        void powerSync.connect(connector);
       },
     });
+    void initializeConnector();
 
-    connector.init();
-
-    return () => l?.();
+    return () => listener();
   }, [powerSync, connector]);
 
   return (
