@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
+import "./tailwind.css";
+
 import SyncProvider from './contexts/SyncProvider';
 import { routeTree } from './routeTree.gen';
 
