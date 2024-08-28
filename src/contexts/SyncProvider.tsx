@@ -1,24 +1,27 @@
 import React, { Suspense } from 'react';
+import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/web';
 import Logger from 'js-logger';
 
-import { AppSchema } from '~/lib/powersync/AppSchema';
+import { AppSchema, Database } from '~/lib/powersync/AppSchema';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
 
-export const db = new PowerSyncDatabase({
+const powerSyncDb = new PowerSyncDatabase({
   schema: AppSchema,
   database: {
     dbFilename: 'goal-dashboard.db',
   },
 });
 
+export const db = wrapPowerSyncWithKysely<Database>(powerSyncDb);
+
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [connector] = React.useState(new SupabaseConnector());
-  const [powerSync] = React.useState(db);
+  const [powerSync] = React.useState(powerSyncDb);
 
   React.useEffect(() => {
     // eslint-disable-next-line react-hooks/rules-of-hooks

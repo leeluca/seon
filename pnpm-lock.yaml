@@ -11,6 +11,9 @@ importers:
       '@journeyapps/wa-sqlite':
         specifier: ^0.3.0
         version: 0.3.0
+      '@powersync/kysely-driver':
+        specifier: ^0.3.0
+        version: 0.3.0(@powersync/common@1.16.2)
       '@powersync/react':
         specifier: ^1.4.0
         version: 1.4.0(@powersync/common@1.16.2)(react@18.3.1)
@@ -831,6 +834,11 @@ packages:
 
   '@powersync/common@1.16.2':
     resolution: {integrity: sha512-g3yGr1vPqPsQp7YDLYVpGWBXu4V8RFaryNlsDoahPDqkgG4+b26fsCSZyLSZNRsnPrE0BzlZACU+Y+11CIa82g==}
+
+  '@powersync/kysely-driver@0.3.0':
+    resolution: {integrity: sha512-/dpX6oVspnuXXsBDm56mjNJnDuB90dYHehrXmnGUaGYLt3NsDsLDp4UkgfZy5ahDPBmALm6r0w0H2fqWNZ0ByA==}
+    peerDependencies:
+      '@powersync/common': ^1.15.0
 
   '@powersync/react@1.4.0':
     resolution: {integrity: sha512-eCWgBu+3AHRB+ztCXngu1ONiK6h/+r8Z1JvbEDaL1DUs78PD6Bs6dBWR3yKz9+EqjvBTZHy9R4O43IgYkPrfTg==}
@@ -2941,6 +2949,10 @@ packages:
   kleur@4.1.5:
     resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
     engines: {node: '>=6'}
+
+  kysely@0.27.4:
+    resolution: {integrity: sha512-dyNKv2KRvYOQPLCAOCjjQuCk4YFd33BvGdf/o5bC7FiW+BB6snA81Zt+2wT9QDFzKqxKa5rrOmvlK/anehCcgA==}
+    engines: {node: '>=14.0.0'}
 
   language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
@@ -5183,6 +5195,11 @@ snapshots:
   '@powersync/common@1.16.2':
     dependencies:
       js-logger: 1.6.1
+
+  '@powersync/kysely-driver@0.3.0(@powersync/common@1.16.2)':
+    dependencies:
+      '@powersync/common': 1.16.2
+      kysely: 0.27.4
 
   '@powersync/react@1.4.0(@powersync/common@1.16.2)(react@18.3.1)':
     dependencies:
@@ -7648,6 +7665,8 @@ snapshots:
       json-buffer: 3.0.1
 
   kleur@4.1.5: {}
+
+  kysely@0.27.4: {}
 
   language-subtag-registry@0.3.23: {}
 

@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@journeyapps/wa-sqlite": "^0.3.0",
+    "@powersync/kysely-driver": "^0.3.0",
     "@powersync/react": "^1.4.0",
     "@powersync/web": "^1.6.0",
     "@prisma/client": "^5.15.0",
