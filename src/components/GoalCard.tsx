@@ -1,8 +1,9 @@
+import type { Database } from '~/lib/powersync/AppSchema';
+
 import { useRef, useState } from 'react';
-import { goal } from '@prisma/client';
-// import { useFetcher } from '@remix-run/react';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 import { motion } from 'framer-motion';
+
 import GoalLineGraph from '~/components/GoalLineGraph';
 import {
   Card,
@@ -12,7 +13,6 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import { JsonType } from '~/types';
 // import { GoalDetailPanel } from './GoalDetailPanel';
 // import { NewEntryPopover } from './NewEntryPopover';
 
@@ -51,7 +51,7 @@ export default function GoalCard({
   startDate,
   targetDate,
   initialValue,
-}: JsonType<goal>) {
+}: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   // const entryFetcher = useFetcher({ key: `entries-${id}` });
@@ -98,12 +98,6 @@ export default function GoalCard({
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
-  const prefetchEntries = () => {
-    if (!entryFetcher.data) {
-      entryFetcher.load(`/api/entries/${id}`);
-    }
-  };
-
   return (
     <MotionCard
       className="w-full text-center"
@@ -126,7 +120,6 @@ export default function GoalCard({
       layout
       transition={{ ease: 'easeInOut' }}
       ref={cardRef}
-      onMouseOver={() => prefetchEntries()}
     >
       <CardHeader
         className="p-4"
@@ -165,7 +158,7 @@ export default function GoalCard({
         </div>
       </CardContent>
       <CardFooter className="flex justify-between px-3 pb-3 align-middle">
-        {/* <span className="text-xs">Category</span> */}
+        <span className="text-xs">Category</span>
         {/* <GoalDetailPanel
           title={title}
           graphComponent={GraphComponent}
