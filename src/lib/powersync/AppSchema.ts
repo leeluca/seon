@@ -1,16 +1,18 @@
-import { BaseColumnType, Schema, TableV2 } from '@powersync/web';
+import { BaseColumnType, ColumnType, Schema, TableV2 } from '@powersync/web';
 
 // Postgres schema: prisma/schema.prisma
-// NOTE: map postgres types to sqlite types
-declare const column: {
-  integer: BaseColumnType<number>;
-  text: BaseColumnType<string>;
-  real: BaseColumnType<number>;
-  timestamp: BaseColumnType<string>;
-  optionalText: BaseColumnType<string | null>;
-  optionalInteger: BaseColumnType<number | null>;
-  optionalReal: BaseColumnType<number | null>;
-  optionalTimestamp: BaseColumnType<string | null>;
+// NOTE: map postgres types to sqlite types, including required types
+const column = {
+  integer: { type: ColumnType.INTEGER } as BaseColumnType<number>,
+  text: { type: ColumnType.TEXT } as BaseColumnType<string>,
+  real: { type: ColumnType.REAL } as BaseColumnType<number>,
+  timestamp: { type: ColumnType.TEXT } as BaseColumnType<string>,
+  optionalText: { type: ColumnType.TEXT } as BaseColumnType<string | null>,
+  optionalInteger: { type: ColumnType.INTEGER } as BaseColumnType<
+    number | null
+  >,
+  optionalReal: { type: ColumnType.REAL } as BaseColumnType<number | null>,
+  optionalTimestamp: { type: ColumnType.TEXT } as BaseColumnType<string | null>,
 };
 
 const entry = new TableV2(
