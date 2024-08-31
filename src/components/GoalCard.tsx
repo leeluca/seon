@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-// import { GoalDetailPanel } from './GoalDetailPanel';
+import { GoalDetailPanel } from './GoalDetailPanel';
 // import { NewEntryPopover } from './NewEntryPopover';
 
 const MotionCard = motion(Card);
@@ -159,12 +159,12 @@ export default function GoalCard({
       </CardContent>
       <CardFooter className="flex justify-between px-3 pb-3 align-middle">
         <span className="text-xs">Category</span>
-        {/* <GoalDetailPanel
+        <GoalDetailPanel
           title={title}
           graphComponent={GraphComponent}
           open={sidePanelOpen}
           onOpenChange={setSidePanelOpen}
-        /> */}
+        />
       </CardFooter>
     </MotionCard>
   );
