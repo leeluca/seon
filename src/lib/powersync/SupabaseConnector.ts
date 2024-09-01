@@ -114,7 +114,6 @@ export class SupabaseConnector
         : undefined,
     };
 
-    console.log('res', res);
     return res;
   }
 

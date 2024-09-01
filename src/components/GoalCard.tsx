@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { GoalDetailPanel } from './GoalDetailPanel';
-// import { NewEntryPopover } from './NewEntryPopover';
+import { NewEntryPopover } from './NewEntryPopover';
 
 const MotionCard = motion(Card);
 
@@ -129,7 +129,7 @@ export default function GoalCard({
           <CardTitle className="mr-2 w-60 grow text-center text-2xl">
             {title}
           </CardTitle>
-          {/* <NewEntryPopover id={id} /> */}
+          <NewEntryPopover id={id} />
         </div>
         <CardDescription className="text-xs">{description}</CardDescription>
       </CardHeader>
