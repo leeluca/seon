@@ -1,6 +1,6 @@
 import type { AbstractPowerSyncDatabase } from '@powersync/web';
 
-import {  useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { usePowerSync, useQuery } from '@powersync/react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
@@ -44,37 +44,44 @@ async function handleSubmit(
   AND date <= '${endOfDay.toISOString()}'
   LIMIT 1;
 `;
+  try {
+    const sameDayEntry = (await dbInstance
+      .get(querySameDateEntry)
+      .catch(() => null)) as Database['entry'] | null;
 
-  const sameDayEntry = (await dbInstance
-    .get(querySameDateEntry)
-    .catch(() => null)) as Database['entry'] | null;
+    // FIXME: temporary, change to uuid
+    const getRandomId = () => Math.floor(Math.random() * 1000000);
 
-  // FIXME: temporary, need to find a better way to generate unique IDs
-  const getRandomId = () => Math.floor(Math.random() * 1000000);
-  const entryOperation = sameDayEntry
-    ? `
+    const entryOperation = sameDayEntry
+      ? `
     UPDATE entry
     SET value = ${Number(data.value)}
     WHERE id = ${sameDayEntry.id};
   `
-    : `
-    INSERT INTO entry (id, goalId, value, date)
-    VALUES (${getRandomId()}, ${String(data.id)}, ${Number(data.value)}, '${new Date(date).toISOString()}');
+      : `
+    INSERT INTO entry (id, goalId, value, date, createdAt, updatedAt)
+    VALUES (${getRandomId()}, ${String(data.id)}, ${Number(data.value)}, '${new Date(date).toISOString()}','${new Date(date).toISOString()}', '${new Date(date).toISOString()}');
   `;
 
-  const updatedGoalValue = sameDayEntry
-    ? -Number(sameDayEntry.value) + Number(data.value)
-    : Number(data.value);
-  const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = ${String(data.id)};`;
+    const updatedGoalValue = sameDayEntry
+      ? -Number(sameDayEntry.value) + Number(data.value)
+      : Number(data.value);
+    const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = ${String(data.id)};`;
 
-  await dbInstance.writeTransaction(async (tx) => {
-    await tx.execute(entryOperation);
-    await tx.execute(goalUpdateOperation);
-  });
+    await dbInstance.writeTransaction(async (tx) => {
+      await tx.execute(entryOperation);
+      await tx.execute(goalUpdateOperation);
+    });
 
-  toast.success('Entry added successfully');
-  onSubmitCallback();
-  return true;
+    toast.success('Successfully added entry ');
+    onSubmitCallback();
+    return true;
+  } catch (error) {
+    console.error('err', error);
+    toast.error('Failed to add entry');
+    onSubmitCallback();
+    return false;
+  }
 }
 
 interface NewEntryFormProps {
