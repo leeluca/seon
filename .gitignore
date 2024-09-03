@@ -7,3 +7,4 @@ node_modules
 dev.db*
 .vercel
 *.local
+dist
