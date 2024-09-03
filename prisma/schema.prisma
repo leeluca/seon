@@ -10,6 +10,8 @@ datasource db {
 
 model goal {
   id           Int      @id @default(autoincrement())
+  uuid         String?  @unique @default(uuid(7)) @db.Uuid
+  shortId      String?  @unique
   title        String
   description  String?
   initialValue Int      @default(0)
@@ -27,6 +29,8 @@ model goal {
 
 model entry {
   id        Int      @id @default(autoincrement())
+  uuid      String?  @unique @default(uuid(7)) @db.Uuid
+  shortId   String?  @unique
   goalId    Int
   value     Int
   date      DateTime @default(now())
@@ -43,6 +47,8 @@ enum UserStatus {
 
 model user {
   id        String     @id @default(cuid())
+  uuid      String?    @unique @default(uuid(7)) @db.Uuid
+  shortId   String?    @unique
   name      String     @unique
   password  String
   email     String?    @unique
