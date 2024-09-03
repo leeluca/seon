@@ -9,8 +9,7 @@ datasource db {
 }
 
 model goal {
-  id           Int      @id @default(autoincrement())
-  uuid         String?  @unique @default(uuid(7)) @db.Uuid
+  id           String   @id @default(uuid(7)) @db.Uuid
   shortId      String?  @unique
   title        String
   description  String?
@@ -19,7 +18,7 @@ model goal {
   target       Int
   unit         String   @default("")
   user         user     @relation(fields: [userId], references: [id])
-  userId       String
+  userId       String   @db.Uuid
   startDate    DateTime
   targetDate   DateTime
   createdAt    DateTime @default(now())
@@ -28,15 +27,14 @@ model goal {
 }
 
 model entry {
-  id        Int      @id @default(autoincrement())
-  uuid      String?  @unique @default(uuid(7)) @db.Uuid
+  id        String   @id @default(uuid(7)) @db.Uuid
   shortId   String?  @unique
-  goalId    Int
+  goalId    String   @db.Uuid
   value     Int
   date      DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  goal      goal     @relation(fields: [goalId], references: [id])
+  goal      goal    @relation(fields: [goalId], references: [id])
 }
 
 enum UserStatus {
@@ -46,8 +44,7 @@ enum UserStatus {
 }
 
 model user {
-  id        String     @id @default(cuid())
-  uuid      String?    @unique @default(uuid(7)) @db.Uuid
+  id        String     @id @default(uuid(7)) @db.Uuid
   shortId   String?    @unique
   name      String     @unique
   password  String
