@@ -17,6 +17,7 @@ import {
 } from '~/components/ui/popover';
 import { db } from '~/contexts/SyncProvider';
 import { Database } from '~/lib/powersync/AppSchema';
+import { generateUUIDs } from '~/utils';
 
 function findSameDayEntry(date: Date, entryDate: Date) {
   return isSameDay(date, entryDate);
@@ -39,7 +40,7 @@ async function handleSubmit(
 
   const querySameDateEntry = `
   SELECT * FROM entry
-  WHERE goalId = ${Number(data.id)}
+  WHERE goalId = '${data.goalId as string}'
   AND date >= '${startOfDay.toISOString()}'
   AND date <= '${endOfDay.toISOString()}'
   LIMIT 1;
@@ -49,24 +50,24 @@ async function handleSubmit(
       .get(querySameDateEntry)
       .catch(() => null)) as Database['entry'] | null;
 
-    // FIXME: temporary, change to uuid
-    const getRandomId = () => Math.floor(Math.random() * 1000000);
-
     const entryOperation = sameDayEntry
       ? `
-    UPDATE entry
-    SET value = ${Number(data.value)}
-    WHERE id = ${sameDayEntry.id};
-  `
-      : `
-    INSERT INTO entry (id, goalId, value, date, createdAt, updatedAt)
-    VALUES (${getRandomId()}, ${String(data.id)}, ${Number(data.value)}, '${new Date(date).toISOString()}','${new Date(date).toISOString()}', '${new Date(date).toISOString()}');
-  `;
+        UPDATE entry
+        SET value = ${Number(data.value)}
+        WHERE id = '${sameDayEntry.id}';
+      `
+      : (() => {
+          const { uuid, shortUuid } = generateUUIDs();
+          return `
+        INSERT INTO entry (id, shortId, goalId, value, date, createdAt, updatedAt)
+        VALUES ('${uuid}', '${shortUuid}', '${data.goalId as string}', ${Number(data.value)}, '${new Date(date).toISOString()}', '${new Date(date).toISOString()}', '${new Date(date).toISOString()}');
+      `;
+        })();
 
     const updatedGoalValue = sameDayEntry
       ? -Number(sameDayEntry.value) + Number(data.value)
       : Number(data.value);
-    const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = ${String(data.id)};`;
+    const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = '${data.goalId as string}';`;
 
     await dbInstance.writeTransaction(async (tx) => {
       await tx.execute(entryOperation);
@@ -85,7 +86,7 @@ async function handleSubmit(
 }
 
 interface NewEntryFormProps {
-  id: number | string;
+  id: string;
   onSubmitCallback?: () => void;
 }
 const NewEntryForm = ({
@@ -95,7 +96,7 @@ const NewEntryForm = ({
   const powersync = usePowerSync();
 
   const { data: entries } = useQuery(
-    db.selectFrom('entry').selectAll().where('goalId', '=', Number(id)),
+    db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
 
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -131,7 +132,7 @@ const NewEntryForm = ({
       <div className="grid gap-4">
         <h4 className="mb-1 font-medium leading-none">New entry</h4>
         <div className="grid gap-2">
-          <Input type="hidden" name="id" value={id} />
+          <Input type="hidden" name="goalId" value={id} />
           <div className="grid grid-cols-3 items-center gap-4">
             <Label htmlFor="date">Date</Label>
             <DatePicker
@@ -171,7 +172,7 @@ const NewEntryForm = ({
 interface NewEntryPopoverProps {
   isOpen?: boolean;
   onOpenChange?: () => void;
-  id: number | string;
+  id: string;
 }
 
 export function NewEntryPopover({ id }: NewEntryPopoverProps) {

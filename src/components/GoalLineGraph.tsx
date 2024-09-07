@@ -81,7 +81,7 @@ function getGraphData({
 }
 
 interface GoalLineGraphProps {
-  id: number | string;
+  id: string;
   currentValue: Database['goal']['currentValue'];
   target: Database['goal']['target'];
   targetDate: string;
@@ -97,7 +97,7 @@ const GoalLineGraph = ({
   initialValue,
 }: GoalLineGraphProps) => {
   const { data: entries } = useQuery(
-    db.selectFrom('entry').selectAll().where('goalId', '=', Number(id)),
+    db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
 
   const { data: preparedData } = getGraphData({

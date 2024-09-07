@@ -44,6 +44,7 @@
     "react-use-measure": "^2.1.1",
     "remix-auth": "^3.7.0",
     "remix-auth-form": "^1.5.0",
+    "short-uuid": "^5.2.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

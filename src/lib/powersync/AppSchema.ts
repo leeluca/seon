@@ -18,7 +18,8 @@ const column = {
 const entry = new TableV2(
   {
     // id column (text) is automatically included
-    goalId: column.integer,
+    shortId: column.text,
+    goalId: column.text,
     value: column.integer,
     date: column.text,
     createdAt: column.timestamp,
@@ -30,6 +31,7 @@ const entry = new TableV2(
 const goal = new TableV2(
   {
     // id column (text) is automatically included
+    shortId: column.text,
     title: column.text,
     description: column.optionalText,
     currentValue: column.integer,
