@@ -20,6 +20,7 @@ const AboutLazyImport = createFileRoute('/about')()
 const MainLazyImport = createFileRoute('/_main')()
 const IndexLazyImport = createFileRoute('/')()
 const MainGoalsLazyImport = createFileRoute('/_main/goals')()
+const MainGoalsNewLazyImport = createFileRoute('/_main/goals/new')()
 
 // Create/Update Routes
 
@@ -42,6 +43,13 @@ const MainGoalsLazyRoute = MainGoalsLazyImport.update({
   path: '/goals',
   getParentRoute: () => MainLazyRoute,
 } as any).lazy(() => import('./routes/_main.goals.lazy').then((d) => d.Route))
+
+const MainGoalsNewLazyRoute = MainGoalsNewLazyImport.update({
+  path: '/new',
+  getParentRoute: () => MainGoalsLazyRoute,
+} as any).lazy(() =>
+  import('./routes/_main.goals.new.lazy').then((d) => d.Route),
+)
 
 // Populate the FileRoutesByPath interface
 
@@ -75,6 +83,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MainGoalsLazyImport
       parentRoute: typeof MainLazyImport
     }
+    '/_main/goals/new': {
+      id: '/_main/goals/new'
+      path: '/new'
+      fullPath: '/goals/new'
+      preLoaderRoute: typeof MainGoalsNewLazyImport
+      parentRoute: typeof MainGoalsLazyImport
+    }
   }
 }
 
@@ -82,7 +97,11 @@ declare module '@tanstack/react-router' {
 
 export const routeTree = rootRoute.addChildren({
   IndexLazyRoute,
-  MainLazyRoute: MainLazyRoute.addChildren({ MainGoalsLazyRoute }),
+  MainLazyRoute: MainLazyRoute.addChildren({
+    MainGoalsLazyRoute: MainGoalsLazyRoute.addChildren({
+      MainGoalsNewLazyRoute,
+    }),
+  }),
   AboutLazyRoute,
 })
 
@@ -113,7 +132,14 @@ export const routeTree = rootRoute.addChildren({
     },
     "/_main/goals": {
       "filePath": "_main.goals.lazy.tsx",
-      "parent": "/_main"
+      "parent": "/_main",
+      "children": [
+        "/_main/goals/new"
+      ]
+    },
+    "/_main/goals/new": {
+      "filePath": "_main.goals.new.lazy.tsx",
+      "parent": "/_main/goals"
     }
   }
 }

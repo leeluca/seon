@@ -13,7 +13,7 @@ function Dashboard() {
         <div className="w-full">
           <h1>Dashboard</h1>
           <div className="my-4 flex justify-between">
-            <Link to="goals/new">
+            <Link from="/goals" to="/goals/new">
               <Button>New Goal</Button>
             </Link>
           </div>
