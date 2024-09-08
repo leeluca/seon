@@ -1,12 +1,13 @@
-import type { Entry, Goal } from '@prisma/client';
-import type { loader } from '~/routes/api.entries.$goalId';
-import type { JsonType } from '~/types';
-import { useFetcher } from '@remix-run/react';
+import type { Database } from '~/lib/powersync/AppSchema';
+
+import { useQuery } from '@powersync/react';
 import { eachDayOfInterval, isSameDay, lightFormat } from 'date-fns';
+
+import { db } from '~/contexts/SyncProvider';
 import { LineGraph, LineGraphProps } from './charts/LineGraph';
 
 interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'id'> {
-  entries: JsonType<Entry>[];
+  entries: Database['entry'][];
 }
 function getGraphData({
   entries,
@@ -26,8 +27,10 @@ function getGraphData({
     Math.round(Math.min((i + 1) * itemsPerDay, target)),
   );
 
-  const populatedEntries: (JsonType<Entry> | { value: number; date: Date })[] =
-    [];
+  const populatedEntries: (
+    | Database['entry']
+    | { value: number; date: Date }
+  )[] = [];
   for (const day of daysUntilTarget) {
     if (day > new Date()) {
       break;
@@ -78,12 +81,12 @@ function getGraphData({
 }
 
 interface GoalLineGraphProps {
-  id: number;
-  currentValue: Goal['currentValue'];
-  target: Goal['target'];
+  id: string;
+  currentValue: Database['goal']['currentValue'];
+  target: Database['goal']['target'];
   targetDate: string;
   startDate: string;
-  initialValue: Goal['initialValue'];
+  initialValue: Database['goal']['initialValue'];
 }
 const GoalLineGraph = ({
   id,
@@ -93,17 +96,18 @@ const GoalLineGraph = ({
   startDate,
   initialValue,
 }: GoalLineGraphProps) => {
-  const entryFetcher = useFetcher<typeof loader>({ key: `entries-${id}` });
+  const { data: entries } = useQuery(
+    db.selectFrom('entry').selectAll().where('goalId', '=', id),
+  );
 
   const { data: preparedData } = getGraphData({
-    entries: entryFetcher.data?.entries || [],
+    entries,
     currentValue,
     target,
     targetDate,
     startDate,
     initialValue,
   });
-
 
   return <LineGraph data={preparedData} />;
 };
