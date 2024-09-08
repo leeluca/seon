@@ -11,7 +11,6 @@ function Dashboard() {
     <div className="p-6 xl:p-8">
       <div className="m-auto max-w-screen-xl">
         <div className="w-full">
-          <h1>Dashboard</h1>
           <div className="my-4 flex justify-between">
             <Link from="/goals" to="/goals/new">
               <Button>New Goal</Button>

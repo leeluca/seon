@@ -1,13 +1,10 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
+import { createLazyFileRoute, Navigate } from '@tanstack/react-router';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
 });
 
+// TODO: rethink if redirecting to /goals is the best approach (slight delay)
 function Index() {
-  return (
-    <div className="p-2">
-      <h3>Welcome Home!</h3>
-    </div>
-  );
+  return <Navigate to="/goals" />;
 }
