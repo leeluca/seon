@@ -50,6 +50,7 @@ async function handleSubmit(
       .get(querySameDateEntry)
       .catch(() => null)) as Database['entry'] | null;
 
+    //TODO: rewerite  queries using type query builder, implement validation
     const entryOperation = sameDayEntry
       ? `
         UPDATE entry
@@ -119,12 +120,11 @@ const NewEntryForm = ({
       // method="POST"
       // action={formAction}
       ref={formRef}
-      // FIXME: temporary, submission handling needs improvement
-      onSubmit={async (e) => {
-        await handleSubmit(
+      onSubmit={(e) => {
+        void handleSubmit(
           e,
           powersync,
-          { date: selectedDate },
+          { date: selectedDate || new Date() },
           onSubmitCallback,
         );
       }}

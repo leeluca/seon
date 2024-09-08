@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
@@ -13,6 +14,8 @@ import {
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import { db } from '~/contexts/SyncProvider';
+import { generateUUIDs } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
@@ -27,7 +30,7 @@ function NewGoalDialog() {
   const startDateRef = useRef<{ value: Date | undefined }>(null);
   const targetDateRef = useRef<{ value: Date | undefined }>(null);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const $form = event.currentTarget;
@@ -40,14 +43,43 @@ function NewGoalDialog() {
       formData.set('target-date', targetDateRef.current.value.toISOString());
     }
 
-    // TODO: implement saving new goal to DB
+    // TODO: implement validation
+    const data = Object.fromEntries(formData.entries());
+
+    const { uuid, shortUuid } = generateUUIDs();
+
+    try {
+      await db
+        .insertInto('goal')
+        .values({
+          id: uuid,
+          shortId: shortUuid as string,
+          title: String(data.title),
+          currentValue: Number(data['current-value']),
+          initialValue: Number(data['current-value']),
+          target: Number(data.target),
+          unit: String(data.unit),
+          userId: '1',
+          startDate: new Date(data['start-date'] as string).toISOString(),
+          targetDate: new Date(data['target-date'] as string).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        })
+        .executeTakeFirstOrThrow();
+
+      toast.success('Sucessfully added goal');
+      handleClose();
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to add goal');
+    }
   }
 
   return (
     <Dialog
       open={true}
-      onOpenChange={(open: boolean) => {
-        open ? () => {} : handleClose();
+      onOpenChange={() => {
+        handleClose();
       }}
     >
       <DialogContent className="sm:max-w-screen-sm">
@@ -57,7 +89,7 @@ function NewGoalDialog() {
             Set up your new goal. You can always edit it later.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={void handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
