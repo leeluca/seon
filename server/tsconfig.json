@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "files": ["./src/index.ts"],
+  "outDir": "dist",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  }
+}
