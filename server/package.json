@@ -14,11 +14,13 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.12.2",
+    "drizzle-orm": "^0.33.0",
     "hono": "^4.5.11",
     "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
+    "drizzle-kit": "^0.24.2",
     "tsx": "^4.19.0"
   },
   "engines": {
