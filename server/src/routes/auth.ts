@@ -1,5 +1,9 @@
+import type { CookieOptions } from 'hono/utils/cookie';
+
 import { Hono } from 'hono';
+import { setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
+import { sign } from 'hono/jwt';
 
 import { db } from '../db/db';
 import { user } from '../db/schema';
@@ -7,6 +11,14 @@ import { comparePW } from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
 
 const auth = new Hono();
+
+process.loadEnvFile();
+const JWT_SECRET = process.env.JWT_SECRET;
+const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
+
+if (!JWT_SECRET || !REFRESH_JWT_SECRET) {
+  throw new Error('JWT_SECRET or REFRESH_JWT_SECRET is not set');
+}
 
 // TODO: error handling
 auth.post('/login', async (c) => {
@@ -42,7 +54,50 @@ auth.post('/login', async (c) => {
     email: user.email,
   };
 
-  // TODO: generate and send JWT token
+  const accessTokenPromise = sign(
+    {
+      sub: user.id,
+      exp: Math.floor(Date.now() / 1000) + 60 * 15, // 15 minutes
+    },
+    JWT_SECRET,
+    'RS256',
+  );
+  const refreshTokenPromise = sign(
+    {
+      sub: user.id,
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
+    },
+    JWT_SECRET,
+    'RS256',
+  );
+
+  const [accessToken, refreshToken] = await Promise.all([
+    accessTokenPromise,
+    refreshTokenPromise,
+  ]);
+
+  const cookieSettings = {
+    path: '/',
+    secure: true,
+    httpOnly: true,
+    sameSite: 'strict',
+    // domain
+  } as CookieOptions;
+
+  setCookie(c, 'accessToken', accessToken, {
+    ...cookieSettings,
+    maxAge: 60 * 15, // 15 minutes
+    expires: new Date(Date.now() + 60 * 15 * 1000),
+    // domain
+  });
+
+  // TODO: save refresh token to db
+  setCookie(c, 'refreshToken', refreshToken, {
+    ...cookieSettings,
+    maxAge: 60 * 15, // 15 minutes
+    expires: new Date(Date.now() + 60 * 15 * 1000),
+  });
+
   return c.json({
     result: true,
     user: userInfo,
