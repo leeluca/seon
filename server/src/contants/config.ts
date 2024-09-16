@@ -5,5 +5,5 @@ export const COOKIE_SECURITY_SETTINGS = {
   secure: true,
   httpOnly: true,
   sameSite: 'strict' as const satisfies CookieOptions['sameSite'],
-  // domain
+  // TODO: add domain field
 };

@@ -141,3 +141,27 @@ export const entry = pgTable(
     };
   },
 );
+
+export const refreshToken = pgTable(
+  'refresh_token',
+  {
+    id: serial('id').primaryKey(),
+    token: text('token').unique().notNull(),
+    userId: uuid('userId').notNull(),
+    expires: timestamp('expires', { precision: 3, mode: 'string' }).notNull(),
+    createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => {
+    return {
+      refreshTokenUserIdFkey: foreignKey({
+        columns: [table.userId],
+        foreignColumns: [user.id],
+        name: 'refresh_token_userId_fkey',
+      })
+        .onUpdate('cascade')
+        .onDelete('cascade'),
+    };
+  },
+);

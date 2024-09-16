@@ -11,6 +11,6 @@ if (!connectionString) {
   throw new Error('DB_URL is not set');
 }
 
-const client = postgres(connectionString, { prepare: false });
+export const client = postgres(connectionString, { prepare: false });
 
 export const db = drizzle(client, { schema: { ...schema, ...relations } });
