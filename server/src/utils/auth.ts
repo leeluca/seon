@@ -48,8 +48,8 @@ export class JWT {
   private static JWT_PRIVATE_KEY: string;
   private static JWT_PUBLIC_KEY: string;
   private static JWT_REFRESH_SECRET: string;
-  private static JWT_ACCESS_EXPIRATION: number;
-  private static JWT_REFRESH_EXPIRATION: number;
+  public static JWT_ACCESS_EXPIRATION: number;
+  public static JWT_REFRESH_EXPIRATION: number;
 
   static {
     process.loadEnvFile();

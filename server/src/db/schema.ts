@@ -148,7 +148,7 @@ export const refreshToken = pgTable(
     id: serial('id').primaryKey(),
     token: text('token').unique().notNull(),
     userId: uuid('userId').notNull(),
-    expires: timestamp('expires', { precision: 3, mode: 'string' }).notNull(),
+    expiration: timestamp('expires', { precision: 3, mode: 'date' }).notNull(),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),

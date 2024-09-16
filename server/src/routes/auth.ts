@@ -1,9 +1,13 @@
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 
 import { db } from '../db/db';
-import { user } from '../db/schema';
+import {
+  refreshToken as refreshTokensTable,
+  user as usersTable,
+} from '../db/schema';
 import { comparePW, JWT } from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
 
@@ -53,6 +57,12 @@ auth.post('/login', async (c) => {
   const { name: refreshCookieName, options: refreshCookieOptions } =
     JWT.getCookieOptions('refresh');
 
+  await db.insert(refreshTokensTable).values({
+    userId: user.id,
+    token: refreshToken,
+    expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
+  });
+
   setCookie(c, accessCookieName, accessToken, {
     ...accessCookieOptions,
   });
@@ -90,7 +100,7 @@ auth.post('/signup', async (c) => {
   }
 
   const { uuid, shortUuid } = generateUUIDs();
-  type NewUser = typeof user.$inferInsert;
+  type NewUser = typeof usersTable.$inferInsert;
 
   const newUser: NewUser = {
     id: uuid,
@@ -100,7 +110,7 @@ auth.post('/signup', async (c) => {
     password,
   };
   const [{ name: savedName, email: savedEmail, id, shortId }] = await db
-    .insert(user)
+    .insert(usersTable)
     .values(newUser)
     .returning();
 
@@ -112,7 +122,13 @@ auth.post('/signup', async (c) => {
   const { name: accessCookieName, options: accessCookieOptions } =
     JWT.getCookieOptions('access');
   const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('access');
+    JWT.getCookieOptions('refresh');
+
+  await db.insert(refreshTokensTable).values({
+    userId: id,
+    token: refreshToken,
+    expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
+  });
 
   setCookie(c, accessCookieName, accessToken, {
     ...accessCookieOptions,
@@ -130,14 +146,14 @@ auth.post('/signup', async (c) => {
 auth.get('/userInfo', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
 
-  const cookie = getCookie(c, accessCookieName);
+  const accessToken = getCookie(c, accessCookieName);
 
-  if (!cookie) {
+  if (!accessToken) {
     throw new HTTPException(401, {
       message: 'Not authenticated',
     });
   }
-  const payload = await JWT.verify(cookie, 'access');
+  const payload = await JWT.verify(accessToken, 'access');
 
   if (!payload) {
     throw new HTTPException(401, {
@@ -160,7 +176,65 @@ auth.get('/userInfo', async (c) => {
   });
 });
 
-auth.get('/refresh', (c) => c.text('Refresh'));
+auth.get('/refresh', async (c) => {
+  const { name: cookieName } = JWT.getCookieOptions('refresh');
+
+  const oldRefreshToken = getCookie(c, cookieName);
+
+  if (!oldRefreshToken) {
+    throw new HTTPException(401, {
+      message: 'Not authenticated',
+    });
+  }
+
+  const payload = await JWT.verify(oldRefreshToken, 'refresh');
+
+  if (!payload) {
+    throw new HTTPException(401, {
+      message: 'Invalid token',
+    });
+  }
+
+  // TODO: use JOIN?
+  const tokenPromise = db.query.refreshToken.findFirst({
+    where: (token, { eq }) => eq(token.token, oldRefreshToken),
+  });
+  const userPromise = db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.id, payload.sub),
+  });
+
+  const [savedToken, user] = await Promise.all([tokenPromise, userPromise]);
+
+  // TODO: check if user status is banned/inactive (not implemented)
+  if (!savedToken || !user) {
+    throw new HTTPException(401, {
+      message: 'Invalid token',
+    });
+  }
+
+  const newRefreshToken = await JWT.sign(user.id, 'access');
+
+  const { name: refreshCookieName, options: refreshCookieOptions } =
+    JWT.getCookieOptions('refresh');
+
+  setCookie(c, refreshCookieName, newRefreshToken, {
+    ...refreshCookieOptions,
+  });
+
+  // TODO: use db transaction
+  await Promise.all([
+    db
+      .delete(refreshTokensTable)
+      .where(eq(refreshTokensTable.token, oldRefreshToken)),
+    db.insert(refreshTokensTable).values({
+      userId: user.id,
+      token: newRefreshToken,
+      expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
+    }),
+  ]);
+
+  c.text('Refresh');
+});
 
 auth.delete('/logout', (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
