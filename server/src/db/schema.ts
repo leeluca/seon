@@ -4,6 +4,7 @@ import {
   integer,
   pgEnum,
   pgTable,
+  serial,
   text,
   timestamp,
   uniqueIndex,
@@ -111,6 +112,8 @@ export const entry = pgTable(
     date: timestamp('date', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),
+    // TODO: make this a notNull field
+    userId: uuid('userId'),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),
