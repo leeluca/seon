@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { setCookie } from 'hono/cookie';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 
 import { db } from '../db/db';
@@ -9,19 +9,11 @@ import { generateUUIDs } from '../utils/id';
 
 const auth = new Hono();
 
-process.loadEnvFile();
-const JWT_SECRET = process.env.JWT_SECRET;
-const REFRESH_JWT_SECRET = process.env.REFRESH_JWT_SECRET;
-
-if (!JWT_SECRET || !REFRESH_JWT_SECRET) {
-  throw new Error('JWT_SECRET or REFRESH_JWT_SECRET is not set');
-}
-
-// TODO: error handling
+// TODO: error handling, rate limiting
 auth.post('/login', async (c) => {
   // TODO: validation
 
-  const { email, password } = await c.req.json();
+  const { name, email, password } = await c.req.json();
 
   if (typeof email !== 'string' || typeof password !== 'string') {
     throw new Error('Invalid input');
@@ -52,14 +44,14 @@ auth.post('/login', async (c) => {
   };
 
   const [accessToken, refreshToken] = await Promise.all([
-    JWT.sign({ userId: user.id, JWTType: 'access' }),
-    JWT.sign({ userId: user.id, JWTType: 'refresh' }),
+    JWT.sign(user.id, 'access'),
+    JWT.sign(user.id, 'refresh'),
   ]);
 
   const { name: accessCookieName, options: accessCookieOptions } =
     JWT.getCookieOptions('access');
   const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('access');
+    JWT.getCookieOptions('refresh');
 
   setCookie(c, accessCookieName, accessToken, {
     ...accessCookieOptions,
@@ -113,8 +105,8 @@ auth.post('/signup', async (c) => {
     .returning();
 
   const [accessToken, refreshToken] = await Promise.all([
-    JWT.sign({ userId: id, JWTType: 'access' }),
-    JWT.sign({ userId: id, JWTType: 'refresh' }),
+    JWT.sign(id, 'access'),
+    JWT.sign(id, 'refresh'),
   ]);
 
   const { name: accessCookieName, options: accessCookieOptions } =
@@ -130,15 +122,58 @@ auth.post('/signup', async (c) => {
   });
 
   return c.json({
-    success: true,
+    result: true,
     user: { name: savedName, email: savedEmail, id, shortId },
   });
 });
 
-auth.get('/currentUser', (c) => c.text('CurrentUser'));
+auth.get('/userInfo', async (c) => {
+  const { name: accessCookieName } = JWT.getCookieOptions('access');
+
+  const cookie = getCookie(c, accessCookieName);
+
+  if (!cookie) {
+    throw new HTTPException(401, {
+      message: 'Not authenticated',
+    });
+  }
+  const payload = await JWT.verify(cookie, 'access');
+
+  if (!payload) {
+    throw new HTTPException(401, {
+      message: 'Invalid token',
+    });
+  }
+
+  const user = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.id, payload.sub),
+  });
+
+  return c.json({
+    result: !!user,
+    user: {
+      id: user?.id,
+      shortId: user?.shortId,
+      name: user?.name,
+      email: user?.email,
+    },
+  });
+});
 
 auth.get('/refresh', (c) => c.text('Refresh'));
 
-auth.delete('/logout', (c) => c.text('Logout'));
+auth.delete('/logout', (c) => {
+  const { name: accessCookieName } = JWT.getCookieOptions('access');
+
+  const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
+
+  deleteCookie(c, accessCookieName);
+  deleteCookie(c, refreshCookieName);
+  // TODO: delete refresh token from db
+
+  return c.json({
+    result: true,
+  });
+});
 
 export default auth;

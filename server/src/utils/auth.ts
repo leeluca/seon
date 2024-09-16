@@ -3,6 +3,7 @@ import { promisify } from 'util';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 
 import { sign, verify } from 'hono/jwt';
+import { JWTPayload } from 'hono/utils/jwt/types';
 
 import { COOKIE_SECURITY_SETTINGS } from '../contants/config';
 
@@ -32,6 +33,14 @@ export async function comparePW({
   )) as Buffer;
 
   return timingSafeEqual(hashedPasswordBuffer, receivedPasswordBuffer);
+}
+
+interface JWTTokenPayload extends JWTPayload {
+  sub: string;
+  exp: number;
+  iat: number;
+  aud: string;
+  kid: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
@@ -86,7 +95,7 @@ export class JWT {
       signingKey: this.JWT_REFRESH_SECRET,
       verificationKey: this.JWT_REFRESH_SECRET,
       cookie: {
-        name: 'access_token',
+        name: 'refresh_token',
         options: {
           ...COOKIE_SECURITY_SETTINGS,
           maxAge: this.JWT_REFRESH_EXPIRATION,
@@ -96,13 +105,7 @@ export class JWT {
     },
   };
 
-  static sign({
-    userId,
-    JWTType,
-  }: {
-    userId: string;
-    JWTType: keyof typeof JWT.JWT_TYPE_MAP;
-  }) {
+  static sign(userId: string, JWTType: keyof typeof JWT.JWT_TYPE_MAP) {
     const token = sign(
       {
         sub: userId,
@@ -118,15 +121,18 @@ export class JWT {
     return token;
   }
 
-  static verify(token: string, JWTType: keyof typeof JWT.JWT_TYPE_MAP) {
+  static async verify(
+    token: string,
+    JWTType: keyof typeof JWT.JWT_TYPE_MAP,
+  ): Promise<JWTTokenPayload | null> {
     try {
-      const result = verify(
+      const result = await verify(
         token,
         this.JWT_TYPE_MAP[JWTType].verificationKey,
         this.JWT_TYPE_MAP[JWTType].algorithm,
       );
 
-      return result;
+      return result as JWTTokenPayload;
     } catch {
       return null;
     }
