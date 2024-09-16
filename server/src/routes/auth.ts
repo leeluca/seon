@@ -1,13 +1,10 @@
-import type { CookieOptions } from 'hono/utils/cookie';
-
 import { Hono } from 'hono';
 import { setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
-import { sign } from 'hono/jwt';
 
 import { db } from '../db/db';
 import { user } from '../db/schema';
-import { comparePW } from '../utils/auth';
+import { comparePW, JWT } from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
 
 const auth = new Hono();
@@ -54,49 +51,24 @@ auth.post('/login', async (c) => {
     email: user.email,
   };
 
-  const accessTokenPromise = sign(
-    {
-      sub: user.id,
-      exp: Math.floor(Date.now() / 1000) + 60 * 15, // 15 minutes
-    },
-    JWT_SECRET,
-    'RS256',
-  );
-  const refreshTokenPromise = sign(
-    {
-      sub: user.id,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 30, // 30 days
-    },
-    JWT_SECRET,
-    'RS256',
-  );
-
   const [accessToken, refreshToken] = await Promise.all([
-    accessTokenPromise,
-    refreshTokenPromise,
+    JWT.sign({ userId: user.id, JWTType: 'access' }),
+    JWT.sign({ userId: user.id, JWTType: 'refresh' }),
   ]);
 
-  const cookieSettings = {
-    path: '/',
-    secure: true,
-    httpOnly: true,
-    sameSite: 'strict',
-    // domain
-  } as CookieOptions;
+  const { name: accessCookieName, options: accessCookieOptions } =
+    JWT.getCookieOptions('access');
+  const { name: refreshCookieName, options: refreshCookieOptions } =
+    JWT.getCookieOptions('access');
 
-  setCookie(c, 'accessToken', accessToken, {
-    ...cookieSettings,
-    maxAge: 60 * 15, // 15 minutes
-    expires: new Date(Date.now() + 60 * 15 * 1000),
-    // domain
+  setCookie(c, accessCookieName, accessToken, {
+    ...accessCookieOptions,
+  });
+  setCookie(c, refreshCookieName, refreshToken, {
+    ...refreshCookieOptions,
   });
 
   // TODO: save refresh token to db
-  setCookie(c, 'refreshToken', refreshToken, {
-    ...cookieSettings,
-    maxAge: 60 * 15, // 15 minutes
-    expires: new Date(Date.now() + 60 * 15 * 1000),
-  });
 
   return c.json({
     result: true,
@@ -140,7 +112,23 @@ auth.post('/signup', async (c) => {
     .values(newUser)
     .returning();
 
-  // TODO: generate and send JWT token
+  const [accessToken, refreshToken] = await Promise.all([
+    JWT.sign({ userId: id, JWTType: 'access' }),
+    JWT.sign({ userId: id, JWTType: 'refresh' }),
+  ]);
+
+  const { name: accessCookieName, options: accessCookieOptions } =
+    JWT.getCookieOptions('access');
+  const { name: refreshCookieName, options: refreshCookieOptions } =
+    JWT.getCookieOptions('access');
+
+  setCookie(c, accessCookieName, accessToken, {
+    ...accessCookieOptions,
+  });
+  setCookie(c, refreshCookieName, refreshToken, {
+    ...refreshCookieOptions,
+  });
+
   return c.json({
     success: true,
     user: { name: savedName, email: savedEmail, id, shortId },
