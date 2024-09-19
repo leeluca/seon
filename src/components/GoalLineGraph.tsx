@@ -3,7 +3,7 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import { useQuery } from '@powersync/react';
 import { eachDayOfInterval, isSameDay, lightFormat } from 'date-fns';
 
-import { db } from '~/contexts/SyncProvider';
+import { db } from '~/contexts/syncContext';
 import { LineGraph, LineGraphProps } from './charts/LineGraph';
 
 interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'id'> {

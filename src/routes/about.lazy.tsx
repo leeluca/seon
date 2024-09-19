@@ -1,7 +1,7 @@
 import { useQuery, useStatus } from '@powersync/react';
 import { createLazyFileRoute } from '@tanstack/react-router';
 
-import { db } from '~/contexts/SyncProvider';
+import { db } from '~/contexts/syncContext';
 
 export const Route = createLazyFileRoute('/about')({
   component: About,

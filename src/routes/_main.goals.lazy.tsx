@@ -4,7 +4,7 @@ import { AnimatePresence, LayoutGroup } from 'framer-motion';
 
 // import { checkAuth } from '~/.server/services/auth';
 import GoalCard from '~/components/GoalCard';
-import { db } from '~/contexts/SyncProvider';
+import { db } from '~/contexts/syncContext';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
