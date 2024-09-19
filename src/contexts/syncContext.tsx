@@ -28,8 +28,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
     // FIXME: for console testing purposes, to be removed
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
-    (window as any)._powersync = powerSync;
+    window._powersync = powerSync;
 
     const initializePowerSync = async () => {
       await powerSync.init();
