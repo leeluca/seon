@@ -50,6 +50,8 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     return () => listener();
   }, [powerSync, connector]);
 
+  // TODO: generate user if does not exist
+
   return (
     <Suspense fallback={<div>Loading</div>}>
       <PowerSyncContext.Provider value={powerSync}>

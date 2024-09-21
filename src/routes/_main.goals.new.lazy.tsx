@@ -14,7 +14,7 @@ import {
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { db } from '~/contexts/syncContext';
+import { db } from '~/states/syncContext';
 import { generateUUIDs } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals/new')({
