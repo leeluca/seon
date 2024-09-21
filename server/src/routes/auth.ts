@@ -143,7 +143,7 @@ auth.post('/signup', async (c) => {
   });
 });
 
-auth.get('/userInfo', async (c) => {
+auth.get('/status', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
 
   const accessToken = getCookie(c, accessCookieName);
@@ -155,6 +155,7 @@ auth.get('/userInfo', async (c) => {
   }
   const payload = await JWT.verify(accessToken, 'access');
 
+  // TODO: refresh token if expired
   if (!payload) {
     throw new HTTPException(401, {
       message: 'Invalid token',
@@ -173,6 +174,7 @@ auth.get('/userInfo', async (c) => {
       name: user?.name,
       email: user?.email,
     },
+    expiresAt: payload.exp,
   });
 });
 
@@ -233,7 +235,9 @@ auth.get('/refresh', async (c) => {
     }),
   ]);
 
-  c.text('Refresh');
+  return c.json({
+    result: true,
+  });
 });
 
 auth.delete('/logout', (c) => {

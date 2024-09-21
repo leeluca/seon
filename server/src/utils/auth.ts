@@ -2,10 +2,10 @@ import { randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 
-import { sign, verify } from 'hono/jwt';
+import { decode, sign, verify } from 'hono/jwt';
 import { JWTPayload } from 'hono/utils/jwt/types';
 
-import { COOKIE_SECURITY_SETTINGS } from '../contants/config';
+import { COOKIE_SECURITY_SETTINGS } from '../constants/config';
 
 const scryptAsync = promisify(scrypt);
 
@@ -136,6 +136,10 @@ export class JWT {
     } catch {
       return null;
     }
+  }
+
+  static decode(token: string) {
+    return decode(token);
   }
 
   static getCookieOptions(JWTType: keyof typeof this.JWT_TYPE_MAP) {
