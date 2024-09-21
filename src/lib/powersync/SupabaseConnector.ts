@@ -12,6 +12,9 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 
+import { userEventTarget } from '~/states/events/userEventTarget';
+import { db } from '~/states/syncContext';
+
 export type SupabaseConfig = {
   supabaseUrl: string;
   supabaseAnonKey: string;
@@ -35,6 +38,8 @@ export type SupabaseConnectorListener = {
   sessionStarted: (session: Session) => void;
 };
 
+let isLocalOnly: boolean | null = null;
+
 export class SupabaseConnector
   extends BaseObserver<SupabaseConnectorListener>
   implements PowerSyncBackendConnector
@@ -48,6 +53,10 @@ export class SupabaseConnector
 
   constructor() {
     super();
+    userEventTarget.addEventListener('updateLocalOnly', (event: Event) => {
+      const customEvent = event as CustomEvent<boolean>;
+      isLocalOnly = customEvent.detail;
+    });
     this.config = {
       supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
       powersyncUrl: import.meta.env.VITE_POWERSYNC_URL,
@@ -100,6 +109,16 @@ export class SupabaseConnector
       data: { session },
       // error,
     } = await this.client.auth.getSession();
+
+    if (isLocalOnly === null) {
+      const user = await db.selectFrom('user').selectAll().limit(1).execute();
+      isLocalOnly = Boolean(user[0]?.localOnly);
+    }
+    // if localOnly, no need to fetch credentials
+    if (isLocalOnly) {
+      return null;
+    }
+
     // if (!session || error) {
     //   throw new Error(`Could not fetch Supabase credentials: ${error}`);
     // }
