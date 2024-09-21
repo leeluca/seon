@@ -1,19 +1,34 @@
 import { BaseColumnType, ColumnType, Schema, TableV2 } from '@powersync/web';
 
 // Postgres schema: prisma/schema.prisma
-// NOTE: map postgres types to sqlite types, including required types
+// NOTE: mapping postgres types to sqlite types, including required types
 const column = {
   integer: { type: ColumnType.INTEGER } as BaseColumnType<number>,
   text: { type: ColumnType.TEXT } as BaseColumnType<string>,
   real: { type: ColumnType.REAL } as BaseColumnType<number>,
   timestamp: { type: ColumnType.TEXT } as BaseColumnType<string>,
+  boolean: { type: ColumnType.INTEGER } as BaseColumnType<number>,
   optionalText: { type: ColumnType.TEXT } as BaseColumnType<string | null>,
   optionalInteger: { type: ColumnType.INTEGER } as BaseColumnType<
     number | null
   >,
   optionalReal: { type: ColumnType.REAL } as BaseColumnType<number | null>,
   optionalTimestamp: { type: ColumnType.TEXT } as BaseColumnType<string | null>,
+  optionalBoolean: { type: ColumnType.INTEGER } as BaseColumnType<number | null>,
 };
+
+const user = new TableV2(
+  {
+    // id column (text) is automatically included
+    shortId: column.text,
+    name: column.text,
+    email: column.optionalText,
+    createdAt: column.timestamp,
+    updatedAt: column.timestamp,
+    localOnly: column.boolean,
+  },
+  { indexes: {} },
+);
 
 const entry = new TableV2(
   {
@@ -48,6 +63,7 @@ const goal = new TableV2(
 );
 
 export const AppSchema = new Schema({
+  user,
   entry,
   goal,
 });
