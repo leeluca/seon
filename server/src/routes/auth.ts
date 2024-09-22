@@ -143,11 +143,12 @@ auth.post('/signup', async (c) => {
   });
 });
 
-auth.get('/status', async (c) => {
+auth.get('/credentials/sync', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
 
   const accessToken = getCookie(c, accessCookieName);
 
+  // TODO: implement refresh middleware
   if (!accessToken) {
     throw new HTTPException(401, {
       message: 'Not authenticated',
@@ -155,26 +156,47 @@ auth.get('/status', async (c) => {
   }
   const payload = await JWT.verify(accessToken, 'access');
 
-  // TODO: refresh token if expired
   if (!payload) {
     throw new HTTPException(401, {
       message: 'Invalid token',
     });
   }
 
-  const user = await db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.id, payload.sub),
+  return c.json({
+    result: true,
+    token: payload,
+    expiresAt: payload.exp,
+    syncUrl: JWT.JWT_ACCESS_AUDIENCE,
   });
+});
+
+auth.get('/credentials/db', async (c) => {
+  const { name: accessCookieName } = JWT.getCookieOptions('access');
+
+  const accessToken = getCookie(c, accessCookieName);
+
+  if (!accessToken) {
+    // try refresh
+    // TODO: implement refresh middleware
+    throw new HTTPException(401, {
+      message: 'Not authenticated',
+    });
+  }
+
+  const payload = await JWT.verify(accessToken, 'access');
+
+  if (!payload) {
+    throw new HTTPException(401, {
+      message: 'Invalid token',
+    });
+  }
+  const { sub: userId, exp } = payload;
+  const dbAccessToken = await JWT.sign(userId, 'db_access');
 
   return c.json({
-    result: !!user,
-    user: {
-      id: user?.id,
-      shortId: user?.shortId,
-      name: user?.name,
-      email: user?.email,
-    },
-    expiresAt: payload.exp,
+    result: true,
+    token: dbAccessToken,
+    expiresAt: exp,
   });
 });
 
