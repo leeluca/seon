@@ -25,7 +25,7 @@ const user = new TableV2(
     email: column.optionalText,
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
-    localOnly: column.boolean,
+    useSync: column.boolean,
   },
   { indexes: {} },
 );

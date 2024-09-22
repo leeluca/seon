@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
 import { PowerSyncContext } from '@powersync/react';
 import { PowerSyncDatabase } from '@powersync/web';
@@ -6,6 +6,7 @@ import Logger from 'js-logger';
 
 import { AppSchema, Database } from '~/lib/powersync/AppSchema';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
+import { generateOfflineUser } from '~/utils';
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
@@ -20,10 +21,35 @@ const powerSyncDb = new PowerSyncDatabase({
 export const db = wrapPowerSyncWithKysely<Database>(powerSyncDb);
 
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
-  const [connector] = React.useState(new SupabaseConnector());
-  const [powerSync] = React.useState(powerSyncDb);
+  const [connector] = useState(new SupabaseConnector());
+  const [powerSync] = useState(powerSyncDb);
+  const [useSync, setUseSync] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    async function initUser() {
+      let existingUser = await db
+        .selectFrom('user')
+        .selectAll()
+        .executeTakeFirst();
+
+      if (!existingUser) {
+        const newUser = generateOfflineUser();
+        existingUser = await db
+          .insertInto('user')
+          .values(newUser)
+          .returningAll()
+          .executeTakeFirstOrThrow();
+      }
+
+      setUseSync(Boolean(existingUser.useSync));
+    }
+
+    // TODO: error handling
+    void initUser();
+  }, []);
+  useEffect(() => {
+    if (!useSync) return;
+
     // eslint-disable-next-line react-hooks/rules-of-hooks
     Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
@@ -48,9 +74,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     void initializeConnector();
 
     return () => listener();
-  }, [powerSync, connector]);
-
-  // TODO: generate user if does not exist
+  }, [powerSync, connector, useSync]);
 
   return (
     <Suspense fallback={<div>Loading</div>}>
