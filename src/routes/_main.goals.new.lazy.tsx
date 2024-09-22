@@ -31,8 +31,6 @@ function NewGoalDialog() {
   const targetDateRef = useRef<{ value: Date | undefined }>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
     const $form = event.currentTarget;
     const formData = new FormData($form);
 
@@ -89,7 +87,12 @@ function NewGoalDialog() {
             Set up your new goal. You can always edit it later.
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={void handleSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleSubmit(e);
+          }}
+        >
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="title" className="text-right">
