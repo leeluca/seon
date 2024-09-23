@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { PowerSyncContext } from '@powersync/react';
 import Logger from 'js-logger';
 
-import db, { powerSyncDb } from '~/lib/database';
+import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { generateOfflineUser } from '~/utils';
+import { useUser } from './userContext';
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
@@ -12,33 +12,11 @@ export const useSupabase = () => React.useContext(SupabaseContext);
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [connector] = useState(new SupabaseConnector());
   const [powerSync] = useState(powerSyncDb);
-  const [useSync, setUseSync] = useState(false);
+
+  const user = useUser();
 
   useEffect(() => {
-    async function initUser() {
-      let existingUser = await db
-        .selectFrom('user')
-        .selectAll()
-        .executeTakeFirst();
-
-      if (!existingUser) {
-        const newUser = generateOfflineUser();
-        existingUser = await db
-          .insertInto('user')
-          .values(newUser)
-          .returningAll()
-          .executeTakeFirstOrThrow();
-      }
-
-      setUseSync(Boolean(existingUser.useSync));
-    }
-
-    // TODO: error handling
-    void initUser();
-  }, []);
-  useEffect(() => {
-    // || !isLoggedIn?
-    if (!useSync) return;
+    if (!user?.useSync) return;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     Logger.useDefaults();
@@ -64,7 +42,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     initializeConnector();
 
     return () => listener();
-  }, [powerSync, connector, useSync]);
+  }, [powerSync, connector, user]);
 
   return (
     <PowerSyncContext.Provider value={powerSync}>
