@@ -3,7 +3,7 @@ import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 
 import GoalCard from '~/components/GoalCard';
-import { db } from '~/states/syncContext';
+import db from '~/lib/database';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,

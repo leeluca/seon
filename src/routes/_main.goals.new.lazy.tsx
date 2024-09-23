@@ -14,7 +14,7 @@ import {
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
-import { db } from '~/states/syncContext';
+import db from '~/lib/database';
 import { generateUUIDs } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals/new')({
@@ -57,7 +57,8 @@ function NewGoalDialog() {
           initialValue: Number(data['current-value']),
           target: Number(data.target),
           unit: String(data.unit),
-          userId: '1',
+          // FIXME: get user id
+          userId: '0191ca75-0f5f-7940-a794-c5666d0a4d40',
           startDate: new Date(data['start-date'] as string).toISOString(),
           targetDate: new Date(data['target-date'] as string).toISOString(),
           createdAt: new Date().toISOString(),

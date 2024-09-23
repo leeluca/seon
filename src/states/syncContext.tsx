@@ -1,24 +1,13 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
+import React, { useEffect, useState } from 'react';
 import { PowerSyncContext } from '@powersync/react';
-import { PowerSyncDatabase } from '@powersync/web';
 import Logger from 'js-logger';
 
-import { AppSchema, Database } from '~/lib/powersync/AppSchema';
+import db, { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
 import { generateOfflineUser } from '~/utils';
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
-
-const powerSyncDb = new PowerSyncDatabase({
-  schema: AppSchema,
-  database: {
-    dbFilename: 'goal-dashboard.db',
-  },
-});
-
-export const db = wrapPowerSyncWithKysely<Database>(powerSyncDb);
 
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [connector] = useState(new SupabaseConnector());
@@ -48,6 +37,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     void initUser();
   }, []);
   useEffect(() => {
+    // || !isLoggedIn?
     if (!useSync) return;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -77,13 +67,11 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   }, [powerSync, connector, useSync]);
 
   return (
-    <Suspense fallback={<div>Loading</div>}>
-      <PowerSyncContext.Provider value={powerSync}>
-        <SupabaseContext.Provider value={connector}>
-          {children}
-        </SupabaseContext.Provider>
-      </PowerSyncContext.Provider>
-    </Suspense>
+    <PowerSyncContext.Provider value={powerSync}>
+      <SupabaseContext.Provider value={connector}>
+        {children}
+      </SupabaseContext.Provider>
+    </PowerSyncContext.Provider>
   );
 };
 

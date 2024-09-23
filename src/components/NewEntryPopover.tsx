@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
-import { db } from '~/states/syncContext';
+import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
 import { generateUUIDs } from '~/utils';
 
