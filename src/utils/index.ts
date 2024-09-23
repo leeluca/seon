@@ -1,7 +1,14 @@
 import type { Database } from '~/lib/powersync/AppSchema';
+import type { ClassValue } from 'clsx';
 
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 import short from 'short-uuid';
 import { v7 as uuidv7 } from 'uuid';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export const generateUUIDs = () => {
   const translator = short();

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
-import { cn } from "~/lib/utils";
+import { cn } from "~/utils/";
 import { Button } from "~/components/ui/button";
 import {
   Command,
