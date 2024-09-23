@@ -12,8 +12,7 @@ import {
   SupabaseClient,
 } from '@supabase/supabase-js';
 
-import { userEventTarget } from '~/states/events/userEventTarget';
-import { db } from '~/states/syncContext';
+import { fetchSyncCredentials, getDbAccessToken } from '~/apis/credential';
 
 export type SupabaseConfig = {
   supabaseUrl: string;
@@ -51,7 +50,7 @@ export class SupabaseConnector
 
   constructor() {
     super();
-  
+
     this.config = {
       supabaseUrl: import.meta.env.VITE_SUPABASE_URL,
       powersyncUrl: import.meta.env.VITE_POWERSYNC_URL,
@@ -62,62 +61,33 @@ export class SupabaseConnector
       this.config.supabaseUrl,
       this.config.supabaseAnonKey,
       {
-        // accessToken: 'import.meta.env.VITE_SUPABASE_ANON_KEY',
-        auth: {
-          persistSession: true,
-        },
+        accessToken: async () => await getDbAccessToken(),
       },
     );
     this.currentSession = null;
     this.ready = false;
   }
 
-  async init() {
+  init() {
     if (this.ready) {
       return;
     }
-
-    const sessionResponse = await this.client.auth.getSession();
-    this.updateSession(sessionResponse.data.session);
-
     this.ready = true;
     this.iterateListeners((cb) => cb.initialized?.());
   }
 
-  async login(username: string, password: string) {
-    const {
-      data: { session },
-      error,
-    } = await this.client.auth.signInWithPassword({
-      email: username,
-      password: password,
-    });
+  async fetchCredentials() {
+    const { result, token, expiresAt, syncUrl } = await fetchSyncCredentials();
 
-    if (error) {
-      throw error;
+    // user not signed in
+    if (!result) {
+      return null;
     }
 
-    this.updateSession(session);
-  }
-
-  async fetchCredentials() {
-    const {
-      data: { session },
-      // error,
-    } = await this.client.auth.getSession();
-
-    // if (!session || error) {
-    //   throw new Error(`Could not fetch Supabase credentials: ${error}`);
-    // }
-
-    console.debug('session expires at', session?.expires_at);
-
     const res = {
-      endpoint: this.config.powersyncUrl,
-      token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN ?? session.access_token,
-      expiresAt: session?.expires_at
-        ? new Date(session.expires_at * 1000)
-        : undefined,
+      endpoint: this.config.powersyncUrl || syncUrl,
+      token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN ?? token,
+      expiresAt: expiresAt ? new Date(expiresAt * 1000) : undefined,
     };
 
     return res;
@@ -136,6 +106,7 @@ export class SupabaseConnector
         lastOp = op;
         const table = this.client.from(op.table);
         let result: PostgrestSingleResponse<null>;
+
         switch (op.op) {
           case UpdateType.PUT: {
             const record = { ...op.opData, id: op.id };
@@ -155,7 +126,7 @@ export class SupabaseConnector
         if (result.error) {
           console.error(result.error);
           const error = new Error(
-            `Could not update Supabase. Received error: ${result.error.message}`,
+            `Could not sync database. Received error: ${result.error.message}`,
           );
           throw error;
         }
@@ -187,13 +158,5 @@ export class SupabaseConnector
         throw err;
       }
     }
-  }
-
-  updateSession(session: Session | null) {
-    this.currentSession = session;
-    // if (!session) {
-    //   return;
-    // }
-    this.iterateListeners((cb) => cb.sessionStarted?.(session));
   }
 }

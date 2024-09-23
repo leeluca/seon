@@ -59,19 +59,19 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     const initializePowerSync = async () => {
       await powerSync.init();
     };
-    const initializeConnector = async () => {
-      await connector.init();
+    const initializeConnector = () => {
+      connector.init();
     };
 
     void initializePowerSync();
 
     const listener = connector.registerListener({
-      initialized: () => {},
-      sessionStarted: () => {
+      initialized: () => {
         void powerSync.connect(connector);
       },
+      sessionStarted: () => {},
     });
-    void initializeConnector();
+    initializeConnector();
 
     return () => listener();
   }, [powerSync, connector, useSync]);
