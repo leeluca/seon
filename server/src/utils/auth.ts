@@ -49,6 +49,7 @@ export class JWT {
   private static JWT_PUBLIC_KEY: string;
   private static JWT_REFRESH_SECRET: string;
   private static JWT_DB_PRIVATE_KEY: string;
+  // TODO: change key name from _EXPIRATION to _DURATION(?)
   public static JWT_ACCESS_AUDIENCE: string;
   public static JWT_ACCESS_EXPIRATION: number;
   public static JWT_REFRESH_EXPIRATION: number;
@@ -79,6 +80,7 @@ export class JWT {
       !this.JWT_REFRESH_SECRET ||
       !this.JWT_ACCESS_EXPIRATION ||
       !this.JWT_REFRESH_EXPIRATION ||
+      !this.JWT_DB_ACCESS_EXPIRATION ||
       !this.JWT_ACCESS_AUDIENCE ||
       !this.JWT_DB_PRIVATE_KEY
     ) {
@@ -144,7 +146,6 @@ export class JWT {
         iat: Math.floor(Date.now() / 1000),
         aud: this.JWT_TYPE_MAP[JWTType].aud,
         role: this.JWT_TYPE_MAP[JWTType].role,
-        kid: '',
       },
       this.JWT_TYPE_MAP[JWTType].signingKey,
       this.JWT_TYPE_MAP[JWTType].algorithm,

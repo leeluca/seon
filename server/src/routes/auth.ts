@@ -190,13 +190,13 @@ auth.get('/credentials/db', async (c) => {
       message: 'Invalid token',
     });
   }
-  const { sub: userId, exp } = payload;
+  const { sub: userId } = payload;
   const dbAccessToken = await JWT.sign(userId, 'db_access');
 
   return c.json({
     result: true,
     token: dbAccessToken,
-    expiresAt: exp,
+    expiresAt: Math.floor(Date.now() / 1000) + JWT.JWT_DB_ACCESS_EXPIRATION,
   });
 });
 
