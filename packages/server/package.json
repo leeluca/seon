@@ -19,8 +19,11 @@
     "postgres": "^3.4.4"
   },
   "devDependencies": {
+    "@prisma/client": "^5.19.0",
     "@types/node": "^20.11.17",
     "drizzle-kit": "^0.24.2",
+    "short-uuid": "^5.2.0",
+    "uuid": "11.0.0-0",
     "tsx": "^4.19.0"
   },
   "engines": {

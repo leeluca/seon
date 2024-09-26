@@ -205,7 +205,7 @@ importers:
         specifier: ^5.0.1
         version: 5.0.1(typescript@5.6.2)(vite@5.4.6(@types/node@20.14.2))
 
-  server:
+  packages/server:
     dependencies:
       '@hono/node-server':
         specifier: ^1.12.2
@@ -220,15 +220,141 @@ importers:
         specifier: ^3.4.4
         version: 3.4.4
     devDependencies:
+      '@prisma/client':
+        specifier: ^5.19.0
+        version: 5.19.0(prisma@5.19.0)
       '@types/node':
         specifier: ^20.11.17
         version: 20.14.2
       drizzle-kit:
         specifier: ^0.24.2
         version: 0.24.2
+      short-uuid:
+        specifier: ^5.2.0
+        version: 5.2.0
       tsx:
         specifier: ^4.19.0
-        version: 4.19.0
+        version: 4.19.1
+      uuid:
+        specifier: 11.0.0-0
+        version: 11.0.0-0
+
+  packages/web:
+    dependencies:
+      '@journeyapps/wa-sqlite':
+        specifier: ^0.3.0
+        version: 0.3.0
+      '@powersync/common':
+        specifier: ^1.18.0
+        version: 1.18.0
+      '@powersync/kysely-driver':
+        specifier: ^0.4.1
+        version: 0.4.1(@powersync/common@1.18.0)
+      '@powersync/react':
+        specifier: ^1.4.2
+        version: 1.4.2(@powersync/common@1.18.0)(react@18.3.1)
+      '@powersync/web':
+        specifier: ^1.8.0
+        version: 1.8.0(@journeyapps/wa-sqlite@0.3.0)(@powersync/common@1.18.0)
+      '@radix-ui/react-checkbox':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-dialog':
+        specifier: ^1.0.5
+        version: 1.0.5(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-icons':
+        specifier: ^1.3.0
+        version: 1.3.0(react@18.3.1)
+      '@radix-ui/react-label':
+        specifier: ^2.0.2
+        version: 2.0.2(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-popover':
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-select':
+        specifier: ^2.0.0
+        version: 2.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-slot':
+        specifier: ^1.0.2
+        version: 1.0.2(@types/react@18.3.3)(react@18.3.1)
+      '@remix-run/node':
+        specifier: ^2.9.2
+        version: 2.9.2(typescript@5.6.2)
+      '@remix-run/react':
+        specifier: ^2.9.2
+        version: 2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2)
+      '@remix-run/serve':
+        specifier: ^2.9.2
+        version: 2.9.2(typescript@5.6.2)
+      '@supabase/supabase-js':
+        specifier: ^2.45.2
+        version: 2.45.2
+      '@tanstack/react-router':
+        specifier: ^1.58.3
+        version: 1.58.3(@tanstack/router-generator@1.58.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      chart.js:
+        specifier: ^4.4.3
+        version: 4.4.3
+      class-variance-authority:
+        specifier: ^0.7.0
+        version: 0.7.0
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      cmdk:
+        specifier: ^1.0.0
+        version: 1.0.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      date-fns:
+        specifier: ^3.6.0
+        version: 3.6.0
+      framer-motion:
+        specifier: ^11.2.10
+        version: 11.2.10(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      isbot:
+        specifier: ^5.1.9
+        version: 5.1.9
+      js-logger:
+        specifier: ^1.6.1
+        version: 1.6.1
+      next-themes:
+        specifier: ^0.3.0
+        version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-chartjs-2:
+        specifier: ^5.2.0
+        version: 5.2.0(chart.js@4.4.3)(react@18.3.1)
+      react-day-picker:
+        specifier: ^8.10.1
+        version: 8.10.1(date-fns@3.6.0)(react@18.3.1)
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-use-measure:
+        specifier: ^2.1.1
+        version: 2.1.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      remix-auth:
+        specifier: ^3.7.0
+        version: 3.7.0(@remix-run/react@2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2))(@remix-run/server-runtime@2.9.2(typescript@5.6.2))
+      remix-auth-form:
+        specifier: ^1.5.0
+        version: 1.5.0(@remix-run/server-runtime@2.9.2(typescript@5.6.2))(remix-auth@3.7.0(@remix-run/react@2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.6.2))(@remix-run/server-runtime@2.9.2(typescript@5.6.2)))
+      short-uuid:
+        specifier: ^5.2.0
+        version: 5.2.0
+      sonner:
+        specifier: ^1.5.0
+        version: 1.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge:
+        specifier: ^2.3.0
+        version: 2.3.0
+      tailwindcss-animate:
+        specifier: ^1.0.7
+        version: 1.0.7(tailwindcss@3.4.12)
+      uuid:
+        specifier: 11.0.0-0
+        version: 11.0.0-0
 
 packages:
 
@@ -4838,11 +4964,6 @@ packages:
 
   tslib@2.6.3:
     resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
-
-  tsx@4.19.0:
-    resolution: {integrity: sha512-bV30kM7bsLZKZIOCHeMNVMJ32/LuJzLVajkQI/qf92J2Qr08ueLQvW00PUZGiuLPP760UINwupgUj8qrSCPUKg==}
-    engines: {node: '>=18.0.0'}
-    hasBin: true
 
   tsx@4.19.1:
     resolution: {integrity: sha512-0flMz1lh74BR4wOvBjuh9olbnwqCPc35OOlfyzHba0Dc+QNUeWX/Gq2YTbnwcWPO3BMd8fkzRVrHcsR+a7z7rA==}
@@ -10174,13 +10295,6 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.6.3: {}
-
-  tsx@4.19.0:
-    dependencies:
-      esbuild: 0.23.1
-      get-tsconfig: 4.7.5
-    optionalDependencies:
-      fsevents: 2.3.3
 
   tsx@4.19.1:
     dependencies:

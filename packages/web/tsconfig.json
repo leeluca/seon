@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.json",
+  "outDir": "dist",
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["vite/client"],
+    "strict": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"],
+      "~/components": ["./src/components"],
+      "~/lib": ["./src/lib/*"]
+    }
+  },
+  "include": ["src/**/*", "postcss.config.js", "vite.config.ts", "tailwind.config.ts"],
+  "noEmit": true
+}

@@ -95,15 +95,85 @@ declare module '@tanstack/react-router' {
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({
-  IndexLazyRoute,
-  MainLazyRoute: MainLazyRoute.addChildren({
-    MainGoalsLazyRoute: MainGoalsLazyRoute.addChildren({
-      MainGoalsNewLazyRoute,
-    }),
-  }),
-  AboutLazyRoute,
-})
+interface MainGoalsLazyRouteChildren {
+  MainGoalsNewLazyRoute: typeof MainGoalsNewLazyRoute
+}
+
+const MainGoalsLazyRouteChildren: MainGoalsLazyRouteChildren = {
+  MainGoalsNewLazyRoute: MainGoalsNewLazyRoute,
+}
+
+const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
+  MainGoalsLazyRouteChildren,
+)
+
+interface MainLazyRouteChildren {
+  MainGoalsLazyRoute: typeof MainGoalsLazyRouteWithChildren
+}
+
+const MainLazyRouteChildren: MainLazyRouteChildren = {
+  MainGoalsLazyRoute: MainGoalsLazyRouteWithChildren,
+}
+
+const MainLazyRouteWithChildren = MainLazyRoute._addFileChildren(
+  MainLazyRouteChildren,
+)
+
+export interface FileRoutesByFullPath {
+  '/': typeof IndexLazyRoute
+  '': typeof MainLazyRouteWithChildren
+  '/about': typeof AboutLazyRoute
+  '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/goals/new': typeof MainGoalsNewLazyRoute
+}
+
+export interface FileRoutesByTo {
+  '/': typeof IndexLazyRoute
+  '': typeof MainLazyRouteWithChildren
+  '/about': typeof AboutLazyRoute
+  '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/goals/new': typeof MainGoalsNewLazyRoute
+}
+
+export interface FileRoutesById {
+  __root__: typeof rootRoute
+  '/': typeof IndexLazyRoute
+  '/_main': typeof MainLazyRouteWithChildren
+  '/about': typeof AboutLazyRoute
+  '/_main/goals': typeof MainGoalsLazyRouteWithChildren
+  '/_main/goals/new': typeof MainGoalsNewLazyRoute
+}
+
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/' | '' | '/about' | '/goals' | '/goals/new'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '' | '/about' | '/goals' | '/goals/new'
+  id:
+    | '__root__'
+    | '/'
+    | '/_main'
+    | '/about'
+    | '/_main/goals'
+    | '/_main/goals/new'
+  fileRoutesById: FileRoutesById
+}
+
+export interface RootRouteChildren {
+  IndexLazyRoute: typeof IndexLazyRoute
+  MainLazyRoute: typeof MainLazyRouteWithChildren
+  AboutLazyRoute: typeof AboutLazyRoute
+}
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexLazyRoute: IndexLazyRoute,
+  MainLazyRoute: MainLazyRouteWithChildren,
+  AboutLazyRoute: AboutLazyRoute,
+}
+
+export const routeTree = rootRoute
+  ._addFileChildren(rootRouteChildren)
+  ._addFileTypes<FileRouteTypes>()
 
 /* prettier-ignore-end */
 
