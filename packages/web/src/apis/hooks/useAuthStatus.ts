@@ -9,7 +9,7 @@ interface AuthStatus {
   expiresAt: number;
 }
 
-export function useAuthStatus() {
+ function useAuthStatus() {
   const user = useUser();
   const { data, error, isLoading } = useSWR<AuthStatus, null>(
     user?.useSync ? `${API_URL}/api/auth/status` : null,
@@ -26,3 +26,5 @@ export function useAuthStatus() {
     isError: error,
   };
 }
+
+export default useAuthStatus;

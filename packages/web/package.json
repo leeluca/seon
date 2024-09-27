@@ -36,6 +36,7 @@
     "framer-motion": "^11.2.10",
     "isbot": "^5.1.9",
     "js-logger": "^1.6.1",
+    "lucide-react": "^0.446.0",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
@@ -46,11 +47,10 @@
     "remix-auth-form": "^1.5.0",
     "short-uuid": "^5.2.0",
     "sonner": "^1.5.0",
+    "swr": "^2.2.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "11.0.0-0"
-  },
-  "devDependencies": {
   },
   "engines": {
     "node": ">=20.12.0",
