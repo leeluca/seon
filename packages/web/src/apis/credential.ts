@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+import { API_URL } from '~/constants';
 
 export const fetchSyncCredentials = async () => {
   const res = await fetch(`${API_URL}/api/auth/credentials/sync`);
