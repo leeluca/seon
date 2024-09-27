@@ -143,6 +143,34 @@ auth.post('/signup', async (c) => {
   });
 });
 
+auth.get('/status', async (c) => {
+  const { name: accessCookieName } = JWT.getCookieOptions('access');
+
+  const accessToken = getCookie(c, accessCookieName);
+
+  // TODO: implement refresh middleware
+
+  const notLoggedInResponse = {
+    result: false,
+    expiresAt: 0,
+  };
+
+  if (!accessToken) {
+    return c.json(notLoggedInResponse);
+  }
+
+  const payload = await JWT.verify(accessToken, 'access');
+
+  if (!payload) {
+    return c.json(notLoggedInResponse);
+  }
+
+  return c.json({
+    result: true,
+    expiresAt: payload.exp,
+  });
+});
+
 auth.get('/credentials/sync', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
 
