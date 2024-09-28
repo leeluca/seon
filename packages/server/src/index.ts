@@ -6,8 +6,22 @@ import auth from './routes/auth';
 
 const app = new Hono();
 
-// TODO: configure CORS
-app.use('/api/*', cors());
+const IS_DEV = process.env.NODE_ENV === 'development';
+
+app.use(
+  '/api/*',
+  cors({
+    origin: (origin) => {
+      if (IS_DEV && origin.includes('localhost')) {
+        return origin;
+      }
+      return 'PRODUCTION_DOMAIN';
+    },
+    credentials: true,
+    allowHeaders: ['Content-Type'],
+  }),
+);
+
 app.route('/api/auth', auth);
 
 const port = 3000;
