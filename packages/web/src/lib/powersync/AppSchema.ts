@@ -1,4 +1,4 @@
-import { BaseColumnType, ColumnType, Schema, TableV2 } from '@powersync/web';
+import { BaseColumnType, ColumnType, Schema, Table } from '@powersync/web';
 
 // Postgres schema: prisma/schema.prisma
 // NOTE: mapping postgres types to sqlite types, including required types
@@ -17,7 +17,7 @@ const column = {
   optionalBoolean: { type: ColumnType.INTEGER } as BaseColumnType<number | null>,
 };
 
-const user = new TableV2(
+const user = new Table(
   {
     // id column (text) is automatically included
     shortId: column.text,
@@ -30,7 +30,7 @@ const user = new TableV2(
   { indexes: {} },
 );
 
-const entry = new TableV2(
+const entry = new Table(
   {
     // id column (text) is automatically included
     shortId: column.text,
@@ -43,7 +43,7 @@ const entry = new TableV2(
   { indexes: {} },
 );
 
-const goal = new TableV2(
+const goal = new Table(
   {
     // id column (text) is automatically included
     shortId: column.text,
