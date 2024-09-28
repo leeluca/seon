@@ -245,17 +245,17 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@powersync/common':
-        specifier: ^1.18.0
-        version: 1.18.0
+        specifier: ^1.18.1
+        version: 1.18.1
       '@powersync/kysely-driver':
-        specifier: ^0.4.1
-        version: 0.4.1(@powersync/common@1.18.0)
+        specifier: ^0.4.2
+        version: 0.4.2(@powersync/common@1.18.1)
       '@powersync/react':
-        specifier: ^1.4.2
-        version: 1.4.2(@powersync/common@1.18.0)(react@18.3.1)
+        specifier: ^1.4.3
+        version: 1.4.3(@powersync/common@1.18.1)(react@18.3.1)
       '@powersync/web':
-        specifier: ^1.8.0
-        version: 1.8.0(@journeyapps/wa-sqlite@0.3.0)(@powersync/common@1.18.0)
+        specifier: ^1.8.1
+        version: 1.8.1(@journeyapps/wa-sqlite@0.3.0)(@powersync/common@1.18.1)
       '@radix-ui/react-checkbox':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -353,8 +353,8 @@ importers:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.1)
       tailwind-merge:
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: ^2.5.2
+        version: 2.5.2
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.12)
@@ -1463,10 +1463,18 @@ packages:
   '@powersync/common@1.18.0':
     resolution: {integrity: sha512-/145loSK7L/mUX+0zrmXzGufN7EaAE+SqUxROBF+k1LQ3qpTzOJJaS0wBm8gUS9yK+rFH5iiiFJQB9NWLhMy5w==}
 
+  '@powersync/common@1.18.1':
+    resolution: {integrity: sha512-DgeoQmLirysU7D3csB/bukzzye/jrN6pjp+mw/YLL2xoeUGYTg3ozA2v3M8dwoEwedVOFQxow2OSk36rGSlkTw==}
+
   '@powersync/kysely-driver@0.4.1':
     resolution: {integrity: sha512-iHQ/JF6SnypRjEOo/neguDZj98a26sVW2SHnKVVZAspAzq8aInbaf7D2AncnUMi1TwwaIr/g0YZFm1gm8eLT0g==}
     peerDependencies:
       '@powersync/common': ^1.18.0
+
+  '@powersync/kysely-driver@0.4.2':
+    resolution: {integrity: sha512-EPs1WQhIh6zYpFJulW69kq4LYU4c+UjuTbx9eAfrk5p3YTeR4xbZZZDMe0k8gQ+oFVqezNq4g7TOzBpsj7WwFw==}
+    peerDependencies:
+      '@powersync/common': ^1.18.1
 
   '@powersync/react@1.4.2':
     resolution: {integrity: sha512-DJcPZuSG8tKGSZgWSLPMf7HF2qgec7b71wH8EL3JhXS5ZWnnuonm76wS6idQ3Yz12rePWel+UZAR30AEV1ZM0g==}
@@ -1474,11 +1482,23 @@ packages:
       '@powersync/common': ^1.18.0
       react: '*'
 
+  '@powersync/react@1.4.3':
+    resolution: {integrity: sha512-NyGLqthpIRmBXKd47jp9OwyxUKXIlsKeIpLk5iAKw9odokuobZS4RmjCR8V81/HXnpO43OjHFVzpPp/gcOo6Kw==}
+    peerDependencies:
+      '@powersync/common': ^1.18.1
+      react: '*'
+
   '@powersync/web@1.8.0':
     resolution: {integrity: sha512-aJO+N/0M5/8bJ7xdlxCbvpc+fH/dPXRDUx+nYRi8hNmlmY7Z11cMFiRQs9v6y7A9pN3ZTelU5s3LDVXvGUgvWA==}
     peerDependencies:
       '@journeyapps/wa-sqlite': ^0.3.0
       '@powersync/common': ^1.18.0
+
+  '@powersync/web@1.8.1':
+    resolution: {integrity: sha512-AJVX3HolPQQpBRrtd3vIDeCQQMCufyK6En7hgmn1Lmh0fTSbt3rcG0H5Ghqo/gcBKpnyBrezrVyLfEDeYpvJKQ==}
+    peerDependencies:
+      '@journeyapps/wa-sqlite': ^0.3.0
+      '@powersync/common': ^1.18.1
 
   '@prisma/client@5.19.0':
     resolution: {integrity: sha512-CzOpau+q1kEWQyoQMvlnXIHqPvwmWbh48xZ4n8KWbAql0p8PC0BIgSTYW5ncxXa4JSEff0tcoxSZB874wDstdg==}
@@ -4887,6 +4907,9 @@ packages:
   tailwind-merge@2.3.0:
     resolution: {integrity: sha512-vkYrLpIP+lgR0tQCG6AP7zZXCTLc1Lnv/CCRT3BqJ9CZ3ui2++GPaGb1x/ILsINIMSYqqvrpqjUFsMNLlW99EA==}
 
+  tailwind-merge@2.5.2:
+    resolution: {integrity: sha512-kjEBm+pvD+6eAwzJL2Bi+02/9LFLal1Gs61+QB7HvTfQQ0aXwC5LGT8PEt1gS0CWKktKe6ysPTAy3cBC5MeiIg==}
+
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
@@ -6273,9 +6296,18 @@ snapshots:
     dependencies:
       js-logger: 1.6.1
 
+  '@powersync/common@1.18.1':
+    dependencies:
+      js-logger: 1.6.1
+
   '@powersync/kysely-driver@0.4.1(@powersync/common@1.18.0)':
     dependencies:
       '@powersync/common': 1.18.0
+      kysely: 0.27.4
+
+  '@powersync/kysely-driver@0.4.2(@powersync/common@1.18.1)':
+    dependencies:
+      '@powersync/common': 1.18.1
       kysely: 0.27.4
 
   '@powersync/react@1.4.2(@powersync/common@1.18.0)(react@18.3.1)':
@@ -6283,10 +6315,24 @@ snapshots:
       '@powersync/common': 1.18.0
       react: 18.3.1
 
+  '@powersync/react@1.4.3(@powersync/common@1.18.1)(react@18.3.1)':
+    dependencies:
+      '@powersync/common': 1.18.1
+      react: 18.3.1
+
   '@powersync/web@1.8.0(@journeyapps/wa-sqlite@0.3.0)(@powersync/common@1.18.0)':
     dependencies:
       '@journeyapps/wa-sqlite': 0.3.0
       '@powersync/common': 1.18.0
+      async-mutex: 0.4.1
+      bson: 6.8.0
+      comlink: 4.4.1
+      js-logger: 1.6.1
+
+  '@powersync/web@1.8.1(@journeyapps/wa-sqlite@0.3.0)(@powersync/common@1.18.1)':
+    dependencies:
+      '@journeyapps/wa-sqlite': 0.3.0
+      '@powersync/common': 1.18.1
       async-mutex: 0.4.1
       bson: 6.8.0
       comlink: 4.4.1
@@ -10209,6 +10255,8 @@ snapshots:
   tailwind-merge@2.3.0:
     dependencies:
       '@babel/runtime': 7.24.7
+
+  tailwind-merge@2.5.2: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@3.4.12):
     dependencies:
