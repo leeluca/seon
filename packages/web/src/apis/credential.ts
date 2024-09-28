@@ -1,7 +1,10 @@
 import { API_URL } from '~/constants';
 
+// TODO: abstract fetch boilerplate
 export const fetchSyncCredentials = async () => {
-  const res = await fetch(`${API_URL}/api/auth/credentials/sync`);
+  const res = await fetch(`${API_URL}/api/auth/credentials/sync`, {
+    credentials: 'include',
+  });
   if (!res.ok) throw new Error('Failed to fetch sync credentials');
   return res.json() as Promise<{
     result: boolean;
@@ -27,7 +30,9 @@ const getTokenFromStorage = () => {
 
 export const fetchDbCredentials = async () => {
   {
-    const res = await fetch(`${API_URL}}/api/auth/credentials/db`);
+    const res = await fetch(`${API_URL}}/api/auth/credentials/db`, {
+      credentials: 'include',
+    });
     if (!res.ok) throw new Error('Failed to fetch DB access token');
     return res.json() as Promise<{ token: string; expiresAt: number }>;
   }

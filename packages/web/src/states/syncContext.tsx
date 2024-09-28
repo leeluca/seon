@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { PowerSyncContext } from '@powersync/react';
 import Logger from 'js-logger';
 
+import useAuthStatus from '~/apis/hooks/useAuthStatus';
 import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
 import { useUser } from './userContext';
@@ -14,9 +15,12 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [powerSync] = useState(powerSyncDb);
 
   const user = useUser();
+  const {
+    data: { isSignedIn },
+  } = useAuthStatus();
 
   useEffect(() => {
-    if (!user?.useSync) return;
+    if (!user?.useSync || !isSignedIn) return;
 
     // eslint-disable-next-line react-hooks/rules-of-hooks
     Logger.useDefaults();
@@ -42,7 +46,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     initializeConnector();
 
     return () => listener();
-  }, [powerSync, connector, user]);
+  }, [powerSync, connector, user, isSignedIn]);
 
   return (
     <PowerSyncContext.Provider value={powerSync}>

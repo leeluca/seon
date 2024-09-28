@@ -100,7 +100,7 @@ export default function GoalCard({
 
   return (
     <MotionCard
-      className="w-full rounded-lg text-center"
+      className="w-full text-center shadow-sm"
       whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
       initial={{ scale: 0 }}
       animate={{

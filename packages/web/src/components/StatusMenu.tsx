@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useStatus } from '@powersync/react';
 import {
   CircleUserIcon,
@@ -7,6 +8,7 @@ import {
 } from 'lucide-react';
 
 import useAuthStatus from '~/apis/hooks/useAuthStatus';
+import SignInForm from './SignInForm';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
@@ -16,18 +18,22 @@ function StatusMenu() {
     dataFlowStatus: { downloading, uploading },
   } = useStatus();
   const {
-    data: { isLoggedIn },
+    data: { isSignedIn },
     isLoading,
   } = useAuthStatus();
 
   const isSyncing = downloading || uploading;
+
+  const [open, setOpen] = useState(false);
+
+  const togglePopover = () => setOpen((prev) => !prev);
 
   if (isLoading) {
     return <div className="animate-pulse">Loading...</div>;
   }
   return (
     <>
-      <div className="ml-auto flex items-center gap-2 rounded-lg bg-gray-300/50 px-4 py-1">
+      <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
           <Button size="icon-small" variant="ghost">
             <RefreshCcwIcon
@@ -41,16 +47,18 @@ function StatusMenu() {
             <CloudIcon size={18} />
           </Button>
         ) : (
-          <Popover>
+          <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
               <Button size="icon-small" variant="ghost">
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent></PopoverContent>
+            <PopoverContent>
+              <SignInForm onSignInCallback={() => setOpen(false)} />
+            </PopoverContent>
           </Popover>
         )}
-        {isLoggedIn && (
+        {isSignedIn && (
           <Button size="icon-small" variant="ghost">
             <CircleUserIcon size={18} />
           </Button>

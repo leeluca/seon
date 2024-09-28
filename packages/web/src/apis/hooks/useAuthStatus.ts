@@ -9,15 +9,18 @@ interface AuthStatus {
   expiresAt: number;
 }
 
- function useAuthStatus() {
+export const AUTH_STATUS_KEY = `${API_URL}/api/auth/status`;
+
+function useAuthStatus() {
   const user = useUser();
   const { data, error, isLoading } = useSWR<AuthStatus, null>(
-    user?.useSync ? `${API_URL}/api/auth/status` : null,
-    fetcher,
+    user?.useSync ? AUTH_STATUS_KEY : null,
+    (url: string) => fetcher(url, { credentials: 'include' }),
+    { errorRetryCount: 3, shouldRetryOnError: false, revalidateOnFocus: true },
   );
 
   const authStatus = {
-    isLoggedIn: !!data?.result,
+    isSignedIn: !!data?.result,
     expiresAt: data?.expiresAt || 0,
   };
   return {
