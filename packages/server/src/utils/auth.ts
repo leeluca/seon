@@ -2,10 +2,18 @@ import { randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 
+import { and, eq, or } from 'drizzle-orm';
+import { Context } from 'hono';
+import { getCookie } from 'hono/cookie';
 import { decode, sign, verify } from 'hono/jwt';
 import { JWTPayload } from 'hono/utils/jwt/types';
 
 import { COOKIE_SECURITY_SETTINGS } from '../constants/config';
+import { db } from '../db/db';
+import {
+  refreshToken as refreshTokensTable,
+  user as usersTable,
+} from '../db/schema';
 
 const scryptAsync = promisify(scrypt);
 
@@ -202,3 +210,70 @@ export class JWT {
     return { name, options };
   }
 }
+
+export const validateAccessToken = async (c: Context) => {
+  const { name: accessCookieName } = JWT.getCookieOptions('access');
+  const accessToken = getCookie(c, accessCookieName);
+
+  const accessPayload = accessToken
+    ? await JWT.verify(accessToken, 'access')
+    : null;
+
+  return { accessToken, accessPayload };
+};
+
+export const validateRefreshToken = async (c: Context) => {
+  const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
+
+  const refreshToken = getCookie(c, refreshCookieName);
+
+  const refreshPayload = refreshToken
+    ? await JWT.verify(refreshToken, 'refresh')
+    : null;
+
+  if (!refreshToken || !refreshPayload) {
+    return { refreshToken: null, refreshPayload: null };
+  }
+
+  const savedRefreshToken = await db
+    .select()
+    .from(refreshTokensTable)
+    .limit(1)
+    .where(
+      and(
+        eq(refreshTokensTable.token, refreshToken),
+        eq(refreshTokensTable.userId, refreshPayload.sub),
+      ),
+    )
+    .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id));
+
+  if (
+    !savedRefreshToken.length
+    //  || savedRefreshToken[0].user.status !== 'ACTIVE'
+  ) {
+    return { refreshToken: null, refreshPayload: null };
+  }
+
+  return { refreshToken, refreshPayload };
+};
+
+export const issueRefreshToken = async (
+  userId: string,
+  oldRefreshToken?: string,
+) => {
+  const newRefreshToken = await JWT.sign(userId, 'refresh');
+
+  await db.transaction(async (tx) => {
+    if (oldRefreshToken) {
+      await tx
+        .delete(refreshTokensTable)
+        .where(or(eq(refreshTokensTable.token, oldRefreshToken)));
+    }
+    await tx.insert(refreshTokensTable).values({
+      userId: userId,
+      token: newRefreshToken,
+      expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
+    });
+  });
+  return newRefreshToken;
+};

@@ -1,7 +1,6 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import { db } from '../db/db';
@@ -9,101 +8,11 @@ import {
   refreshToken as refreshTokensTable,
   user as usersTable,
 } from '../db/schema';
-import { comparePW, JWT, JWTTokenPayload } from '../utils/auth';
+import { validateAccess } from '../middlewares/auth';
+import { comparePW, JWT } from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
 
 const auth = new Hono();
-
-const checkAccessToken = createMiddleware<{
-  Variables: { jwtAccessToken: string; jwtAccessPayload: JWTTokenPayload };
-}>(async (c, next) => {
-  // check access token
-  const { name: accessCookieName, options: accessCookieOptions } =
-    JWT.getCookieOptions('access');
-  const accessToken = getCookie(c, accessCookieName);
-
-  const accessPayload = accessToken
-    ? await JWT.verify(accessToken, 'access')
-    : null;
-
-  if (accessPayload && accessToken) {
-    c.set('jwtAccessToken', accessToken);
-    c.set('jwtAccessPayload', accessPayload);
-
-    await next();
-    return;
-  }
-
-  // check refresh token
-  const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('refresh');
-
-  const refreshToken = getCookie(c, refreshCookieName);
-
-  const refreshPayload = refreshToken
-    ? await JWT.verify(refreshToken, 'refresh')
-    : null;
-
-  if (!refreshToken || !refreshPayload) {
-    throw new HTTPException(401, {
-      message: 'Unauthorized',
-    });
-  }
-
-  const savedRefreshToken = await db
-    .select()
-    .from(refreshTokensTable)
-    .limit(1)
-    .where(
-      and(
-        eq(refreshTokensTable.token, refreshToken),
-        eq(refreshTokensTable.userId, refreshPayload.sub),
-      ),
-    )
-    .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id));
-
-  if (
-    !savedRefreshToken.length
-    //  || savedRefreshToken[0].user.status !== 'ACTIVE'
-  ) {
-    throw new HTTPException(401, {
-      message: 'Unauthorized',
-    });
-  }
-  const [{ user }] = savedRefreshToken;
-
-  // issue new access token
-  // issue new refresh token
-  const [
-    { token: newAccessToken, payload: newAccessTokenPayload },
-    newRefreshToken,
-  ] = await Promise.all([
-    JWT.signWithPayload(user.id, 'access'),
-    JWT.sign(user.id, 'refresh'),
-  ]);
-
-  await db.transaction(async (tx) => {
-    await tx
-      .delete(refreshTokensTable)
-      .where(eq(refreshTokensTable.token, refreshToken));
-    await tx.insert(refreshTokensTable).values({
-      userId: user.id,
-      token: newRefreshToken,
-      expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
-    });
-  });
-
-  setCookie(c, accessCookieName, newAccessToken, {
-    ...accessCookieOptions,
-  });
-  setCookie(c, refreshCookieName, newRefreshToken, {
-    ...refreshCookieOptions,
-  });
-  c.set('jwtAccessToken', newAccessToken);
-  c.set('jwtAccessPayload', newAccessTokenPayload);
-
-  await next();
-});
 
 // TODO: error handling, rate limiting
 auth.post('/signin', async (c) => {
@@ -237,7 +146,7 @@ auth.post('/signup', async (c) => {
   });
 });
 
-auth.get('/status', checkAccessToken, (c) => {
+auth.get('/status', validateAccess, (c) => {
   const payload = c.get('jwtAccessPayload');
 
   return c.json({
