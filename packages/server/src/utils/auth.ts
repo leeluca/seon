@@ -35,12 +35,12 @@ export async function comparePW({
   return timingSafeEqual(hashedPasswordBuffer, receivedPasswordBuffer);
 }
 
-interface JWTTokenPayload extends JWTPayload {
+export interface JWTTokenPayload extends JWTPayload {
   sub: string;
   exp: number;
   iat: number;
   aud: string;
-  kid: string;
+  kid?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
@@ -138,20 +138,42 @@ export class JWT {
     },
   };
 
-  static sign(userId: string, JWTType: keyof typeof JWT.JWT_TYPE_MAP) {
-    const token = sign(
-      {
-        sub: userId,
-        exp: this.JWT_TYPE_MAP[JWTType].expiration,
-        iat: Math.floor(Date.now() / 1000),
-        aud: this.JWT_TYPE_MAP[JWTType].aud,
-        role: this.JWT_TYPE_MAP[JWTType].role,
-      },
+  private static generateTokenPayload(
+    userId: string,
+    JWTType: keyof typeof JWT.JWT_TYPE_MAP,
+  ): JWTTokenPayload {
+    return {
+      sub: userId,
+      exp: this.JWT_TYPE_MAP[JWTType].expiration,
+      iat: Math.floor(Date.now() / 1000),
+      aud: this.JWT_TYPE_MAP[JWTType].aud,
+      role: this.JWT_TYPE_MAP[JWTType].role,
+    };
+  }
+
+  private static generateToken(
+    tokenPayload: JWTTokenPayload,
+    JWTType: keyof typeof JWT.JWT_TYPE_MAP,
+  ) {
+    return sign(
+      tokenPayload,
       this.JWT_TYPE_MAP[JWTType].signingKey,
       this.JWT_TYPE_MAP[JWTType].algorithm,
     );
+  }
 
-    return token;
+  static sign(userId: string, JWTType: keyof typeof JWT.JWT_TYPE_MAP) {
+    const tokenPayload = this.generateTokenPayload(userId, JWTType);
+    return this.generateToken(tokenPayload, JWTType);
+  }
+
+  static async signWithPayload(
+    userId: string,
+    JWTType: keyof typeof JWT.JWT_TYPE_MAP,
+  ) {
+    const tokenPayload = this.generateTokenPayload(userId, JWTType);
+    const token = await this.generateToken(tokenPayload, JWTType);
+    return { token, payload: tokenPayload };
   }
 
   static async verify(

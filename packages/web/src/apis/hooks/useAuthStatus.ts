@@ -16,7 +16,12 @@ function useAuthStatus() {
   const { data, error, isLoading } = useSWR<AuthStatus, null>(
     user?.useSync ? AUTH_STATUS_KEY : null,
     (url: string) => fetcher(url, { credentials: 'include' }),
-    { errorRetryCount: 3, shouldRetryOnError: false, revalidateOnFocus: true },
+    {
+      errorRetryCount: 3,
+      // shouldRetryOnError: false,
+      // TODO: onErrorRetry -> if 401 or 403...
+      focusThrottleInterval: 30000, // 30 sec
+    },
   );
 
   const authStatus = {
