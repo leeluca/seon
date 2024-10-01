@@ -249,6 +249,7 @@ export const validateRefreshToken = async (c: Context) => {
 
   if (
     !savedRefreshToken.length
+    // TODO: check if user status is banned/inactive (not implemented)
     //  || savedRefreshToken[0].user.status !== 'ACTIVE'
   ) {
     return { refreshToken: null, refreshPayload: null };

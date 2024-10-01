@@ -9,7 +9,12 @@ import {
   user as usersTable,
 } from '../db/schema';
 import { validateAccess } from '../middlewares/auth';
-import { comparePW, JWT } from '../utils/auth';
+import {
+  comparePW,
+  issueRefreshToken,
+  JWT,
+  validateRefreshToken,
+} from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
 
 const auth = new Hono();
@@ -155,24 +160,9 @@ auth.get('/status', validateAccess, (c) => {
   });
 });
 
-auth.get('/credentials/sync', async (c) => {
-  const { name: accessCookieName } = JWT.getCookieOptions('access');
-
-  const accessToken = getCookie(c, accessCookieName);
-
-  // TODO: implement refresh middleware
-  if (!accessToken) {
-    throw new HTTPException(401, {
-      message: 'Not authenticated',
-    });
-  }
-  const payload = await JWT.verify(accessToken, 'access');
-
-  if (!payload) {
-    throw new HTTPException(401, {
-      message: 'Invalid token',
-    });
-  }
+auth.get('/credentials/sync', validateAccess, (c) => {
+  const payload = c.get('jwtAccessPayload');
+  const accessToken = c.get('jwtAccessToken');
 
   return c.json({
     result: true,
@@ -182,26 +172,9 @@ auth.get('/credentials/sync', async (c) => {
   });
 });
 
-auth.get('/credentials/db', async (c) => {
-  const { name: accessCookieName } = JWT.getCookieOptions('access');
+auth.get('/credentials/db', validateAccess, async (c) => {
+  const payload = c.get('jwtAccessPayload');
 
-  const accessToken = getCookie(c, accessCookieName);
-
-  if (!accessToken) {
-    // try refresh
-    // TODO: implement refresh middleware
-    throw new HTTPException(401, {
-      message: 'Not authenticated',
-    });
-  }
-
-  const payload = await JWT.verify(accessToken, 'access');
-
-  if (!payload) {
-    throw new HTTPException(401, {
-      message: 'Invalid token',
-    });
-  }
   const { sub: userId } = payload;
   const dbAccessToken = await JWT.sign(userId, 'db_access');
 
@@ -213,42 +186,18 @@ auth.get('/credentials/db', async (c) => {
 });
 
 auth.get('/refresh', async (c) => {
-  const { name: cookieName } = JWT.getCookieOptions('refresh');
+  const { refreshToken, refreshPayload } = await validateRefreshToken(c);
 
-  const oldRefreshToken = getCookie(c, cookieName);
-
-  if (!oldRefreshToken) {
+  if (!refreshToken) {
     throw new HTTPException(401, {
       message: 'Not authenticated',
     });
   }
 
-  const payload = await JWT.verify(oldRefreshToken, 'refresh');
-
-  if (!payload) {
-    throw new HTTPException(401, {
-      message: 'Invalid token',
-    });
-  }
-
-  // TODO: use JOIN?
-  const tokenPromise = db.query.refreshToken.findFirst({
-    where: (token, { eq }) => eq(token.token, oldRefreshToken),
-  });
-  const userPromise = db.query.user.findFirst({
-    where: (user, { eq }) => eq(user.id, payload.sub),
-  });
-
-  const [savedToken, user] = await Promise.all([tokenPromise, userPromise]);
-
-  // TODO: check if user status is banned/inactive (not implemented)
-  if (!savedToken || !user) {
-    throw new HTTPException(401, {
-      message: 'Invalid token',
-    });
-  }
-
-  const newRefreshToken = await JWT.sign(user.id, 'access');
+  const newRefreshToken = await issueRefreshToken(
+    refreshPayload.sub,
+    refreshToken,
+  );
 
   const { name: refreshCookieName, options: refreshCookieOptions } =
     JWT.getCookieOptions('refresh');
@@ -257,31 +206,24 @@ auth.get('/refresh', async (c) => {
     ...refreshCookieOptions,
   });
 
-  // TODO: use db transaction
-  await Promise.all([
-    db
-      .delete(refreshTokensTable)
-      .where(eq(refreshTokensTable.token, oldRefreshToken)),
-    db.insert(refreshTokensTable).values({
-      userId: user.id,
-      token: newRefreshToken,
-      expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
-    }),
-  ]);
-
   return c.json({
     result: true,
   });
 });
 
-auth.delete('/logout', (c) => {
+auth.delete('/logout', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
-
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 
+  const refreshToken = getCookie(c, refreshCookieName);
+
+  if (refreshToken) {
+    await db
+      .delete(refreshTokensTable)
+      .where(eq(refreshTokensTable.token, refreshToken));
+  }
   deleteCookie(c, accessCookieName);
   deleteCookie(c, refreshCookieName);
-  // TODO: delete refresh token from db
 
   return c.json({
     result: true,
