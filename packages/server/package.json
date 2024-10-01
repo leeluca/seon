@@ -16,15 +16,14 @@
     "@hono/node-server": "^1.12.2",
     "drizzle-orm": "^0.33.0",
     "hono": "^4.5.11",
+    "jose": "^5.9.3",
     "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@prisma/client": "^5.19.0",
     "@types/node": "^20.11.17",
     "drizzle-kit": "^0.24.2",
-    "short-uuid": "^5.2.0",
-    "uuid": "11.0.0-0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.1"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -1,14 +1,14 @@
 import { createSecretKey, randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
+import type { CookieOptions } from 'hono/utils/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
+import type { JWTPayload } from 'hono/utils/jwt/types';
 import type { KeyLike } from 'jose';
 
 import { and, eq, or } from 'drizzle-orm';
 import { Context } from 'hono';
 import { getCookie } from 'hono/cookie';
 import { decode } from 'hono/jwt';
-import { CookieOptions } from 'hono/utils/cookie';
-import { JWTPayload } from 'hono/utils/jwt/types';
 import * as jose from 'jose';
 
 import { COOKIE_SECURITY_SETTINGS } from '../constants/config';
@@ -72,11 +72,31 @@ interface JWTTypeMap {
   db_access: JWTType;
 }
 
+// TODO: validate and load env variables elsewhere
 process.loadEnvFile();
 const JWT_PRIVATE_PEM = process.env.JWT_PRIVATE_KEY;
 const JWT_PUBLIC_PEM = process.env.JWT_PUBLIC_KEY;
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
 const JWT_DB_PRIVATE_KEY = process.env.JWT_DB_PRIVATE_KEY;
+const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION;
+const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION;
+const JWT_DB_ACCESS_EXPIRATION = process.env.JWT_DB_ACCESS_EXPIRATION;
+if (
+  !JWT_PRIVATE_PEM ||
+  !JWT_PUBLIC_PEM ||
+  !JWT_REFRESH_SECRET ||
+  !JWT_DB_PRIVATE_KEY ||
+  !JWT_ACCESS_EXPIRATION ||
+  !JWT_REFRESH_EXPIRATION ||
+  !JWT_DB_ACCESS_EXPIRATION
+) {
+  throw new Error('Missing JWT parameters in environment variables');
+}
+
+const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
+  jose.importPKCS8(JWT_PRIVATE_PEM, 'RS256', { extractable: true }),
+  jose.importSPKI(JWT_PUBLIC_PEM, 'RS256', { extractable: true }),
+]);
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class JWT {
@@ -90,104 +110,69 @@ export class JWT {
   public static JWT_REFRESH_EXPIRATION: number;
   public static JWT_DB_ACCESS_EXPIRATION: number;
 
-  private static JWT_TYPE_MAP: JWTTypeMap | undefined;
-
   static {
-    this.JWT_ACCESS_EXPIRATION = parseInt(
-      process.env.JWT_ACCESS_EXPIRATION as string,
-      10,
-    );
-    this.JWT_REFRESH_EXPIRATION = parseInt(
-      process.env.JWT_REFRESH_EXPIRATION as string,
-      10,
-    );
-    this.JWT_DB_ACCESS_EXPIRATION = parseInt(
-      process.env.JWT_DB_ACCESS_EXPIRATION as string,
-      10,
-    );
-
-    void this.initialize();
-  }
-
-  private static async initialize() {
-    if (
-      !JWT_PRIVATE_PEM ||
-      !JWT_PUBLIC_PEM ||
-      !JWT_REFRESH_SECRET ||
-      !JWT_DB_PRIVATE_KEY ||
-      !this.JWT_ACCESS_EXPIRATION ||
-      !this.JWT_REFRESH_EXPIRATION ||
-      !this.JWT_DB_ACCESS_EXPIRATION
-    ) {
-      throw new Error('Missing JWT parameters in environment variables');
-    }
-    const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
-      jose.importPKCS8(JWT_PRIVATE_PEM, 'RS256', { extractable: true }),
-      jose.importSPKI(JWT_PUBLIC_PEM, 'RS256', { extractable: true }),
-    ]);
-
     this.JWT_PRIVATE_KEY = jwtPrivateKey;
     this.JWT_PUBLIC_KEY = jwtPublicKey;
     this.JWT_REFRESH_SECRET = createSecretKey(Buffer.from(JWT_REFRESH_SECRET));
     this.JWT_DB_PRIVATE_KEY = createSecretKey(Buffer.from(JWT_DB_PRIVATE_KEY));
 
-    this.JWT_TYPE_MAP = {
-      access: {
-        expiration: Math.floor(Date.now() / 1000) + this.JWT_ACCESS_EXPIRATION,
-        algorithm: 'RS256' as const satisfies SignatureAlgorithm,
-        signingKey: this.JWT_PRIVATE_KEY,
-        verificationKey: this.JWT_PUBLIC_KEY,
-        aud: 'authenticated',
-        role: 'authenticated',
-        cookie: {
-          name: 'access_token',
-          options: {
-            ...COOKIE_SECURITY_SETTINGS,
-            maxAge: this.JWT_ACCESS_EXPIRATION,
-            expires: new Date(Date.now() + this.JWT_ACCESS_EXPIRATION * 1000),
-          },
-        },
-      },
-      refresh: {
-        expiration: Math.floor(Date.now() / 1000) + this.JWT_REFRESH_EXPIRATION,
-        algorithm: 'HS256' as const satisfies SignatureAlgorithm,
-        signingKey: this.JWT_REFRESH_SECRET,
-        verificationKey: this.JWT_REFRESH_SECRET,
-        aud: '',
-        role: '',
-        cookie: {
-          name: 'refresh_token',
-          options: {
-            ...COOKIE_SECURITY_SETTINGS,
-            maxAge: this.JWT_REFRESH_EXPIRATION,
-            expires: new Date(Date.now() + this.JWT_REFRESH_EXPIRATION * 1000),
-          },
-        },
-      },
-      db_access: {
-        expiration:
-          Math.floor(Date.now() / 1000) + this.JWT_DB_ACCESS_EXPIRATION,
-        algorithm: 'HS256' as const satisfies SignatureAlgorithm,
-        signingKey: this.JWT_DB_PRIVATE_KEY,
-        verificationKey: this.JWT_DB_PRIVATE_KEY,
-        aud: 'authenticated',
-        role: 'authenticated',
-        cookie: {
-          name: 'db_access_token',
-          options: {
-            ...COOKIE_SECURITY_SETTINGS,
-            maxAge: this.JWT_ACCESS_EXPIRATION,
-            expires: new Date(Date.now() + this.JWT_ACCESS_EXPIRATION * 1000),
-          },
-        },
-      },
-    };
+    this.JWT_ACCESS_EXPIRATION = parseInt(JWT_ACCESS_EXPIRATION, 10);
+    this.JWT_REFRESH_EXPIRATION = parseInt(JWT_REFRESH_EXPIRATION, 10);
+    this.JWT_DB_ACCESS_EXPIRATION = parseInt(JWT_DB_ACCESS_EXPIRATION, 10);
   }
 
+  private static JWT_TYPE_MAP = {
+    access: {
+      expiration: Math.floor(Date.now() / 1000) + this.JWT_ACCESS_EXPIRATION,
+      algorithm: 'RS256' as const satisfies SignatureAlgorithm,
+      signingKey: this.JWT_PRIVATE_KEY,
+      verificationKey: this.JWT_PUBLIC_KEY,
+      aud: 'authenticated',
+      role: 'authenticated',
+      cookie: {
+        name: 'access_token',
+        options: {
+          ...COOKIE_SECURITY_SETTINGS,
+          maxAge: this.JWT_ACCESS_EXPIRATION,
+          expires: new Date(Date.now() + this.JWT_ACCESS_EXPIRATION * 1000),
+        },
+      },
+    },
+    refresh: {
+      expiration: Math.floor(Date.now() / 1000) + this.JWT_REFRESH_EXPIRATION,
+      algorithm: 'HS256' as const satisfies SignatureAlgorithm,
+      signingKey: this.JWT_REFRESH_SECRET,
+      verificationKey: this.JWT_REFRESH_SECRET,
+      aud: '',
+      role: '',
+      cookie: {
+        name: 'refresh_token',
+        options: {
+          ...COOKIE_SECURITY_SETTINGS,
+          maxAge: this.JWT_REFRESH_EXPIRATION,
+          expires: new Date(Date.now() + this.JWT_REFRESH_EXPIRATION * 1000),
+        },
+      },
+    },
+    db_access: {
+      expiration: Math.floor(Date.now() / 1000) + this.JWT_DB_ACCESS_EXPIRATION,
+      algorithm: 'HS256' as const satisfies SignatureAlgorithm,
+      signingKey: this.JWT_DB_PRIVATE_KEY,
+      verificationKey: this.JWT_DB_PRIVATE_KEY,
+      aud: 'authenticated',
+      role: 'authenticated',
+      cookie: {
+        name: 'db_access_token',
+        options: {
+          ...COOKIE_SECURITY_SETTINGS,
+          maxAge: this.JWT_ACCESS_EXPIRATION,
+          expires: new Date(Date.now() + this.JWT_ACCESS_EXPIRATION * 1000),
+        },
+      },
+    },
+  };
+
   static get JWTConfigs(): JWTTypeMap {
-    if (!this.JWT_TYPE_MAP) {
-      throw new Error('JWT_TYPE_MAP is not initialized');
-    }
     return this.JWT_TYPE_MAP;
   }
 
@@ -197,10 +182,10 @@ export class JWT {
   ): JWTTokenPayload {
     return {
       sub: userId,
-      exp: this.JWTConfigs[JWTType].expiration,
+      exp: this.JWT_TYPE_MAP[JWTType].expiration,
       iat: Math.floor(Date.now() / 1000),
-      aud: this.JWTConfigs[JWTType].aud,
-      role: this.JWTConfigs[JWTType].role,
+      aud: this.JWT_TYPE_MAP[JWTType].aud,
+      role: this.JWT_TYPE_MAP[JWTType].role,
     };
   }
 
@@ -210,11 +195,11 @@ export class JWT {
   ) {
     return new jose.SignJWT(tokenPayload)
       .setProtectedHeader({
-        alg: this.JWTConfigs[JWTType].algorithm,
+        alg: this.JWT_TYPE_MAP[JWTType].algorithm,
         typ: 'JWT',
         kid: '1',
       })
-      .sign(this.JWTConfigs[JWTType].signingKey);
+      .sign(this.JWT_TYPE_MAP[JWTType].signingKey);
   }
 
   static sign(userId: string, JWTType: keyof JWTTypeMap) {
@@ -229,11 +214,10 @@ export class JWT {
   }
 
   static async verify(token: string, JWTType: keyof JWTTypeMap) {
-    // : Promise<JWTTokenPayload | null>
     try {
       const { payload } = await jose.jwtVerify(
         token,
-        this.JWTConfigs[JWTType].verificationKey,
+        this.JWT_TYPE_MAP[JWTType].verificationKey,
       );
       return payload;
     } catch {
@@ -246,7 +230,7 @@ export class JWT {
   }
 
   static getCookieOptions(JWTType: keyof JWTTypeMap) {
-    const { name, options } = this.JWTConfigs[JWTType].cookie;
+    const { name, options } = this.JWT_TYPE_MAP[JWTType].cookie;
     return { name, options };
   }
 }
