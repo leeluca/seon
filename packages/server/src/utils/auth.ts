@@ -1,6 +1,5 @@
 import { createSecretKey, randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
-import type { CookieOptions } from 'hono/utils/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 import type { JWTPayload } from 'hono/utils/jwt/types';
 import type { KeyLike } from 'jose';
@@ -53,25 +52,6 @@ export interface JWTTokenPayload extends JWTPayload {
   aud: string;
 }
 
-interface JWTType {
-  expiration: number;
-  algorithm: SignatureAlgorithm;
-  signingKey: KeyLike;
-  verificationKey: KeyLike;
-  aud: string;
-  role: string;
-  cookie: {
-    name: string;
-    options: CookieOptions;
-  };
-}
-
-interface JWTTypeMap {
-  access: JWTType;
-  refresh: JWTType;
-  db_access: JWTType;
-}
-
 // TODO: validate and load env variables elsewhere
 process.loadEnvFile();
 const JWT_PRIVATE_PEM = process.env.JWT_PRIVATE_KEY;
@@ -97,7 +77,8 @@ const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
   jose.importPKCS8(JWT_PRIVATE_PEM, 'RS256', { extractable: true }),
   jose.importSPKI(JWT_PUBLIC_PEM, 'RS256', { extractable: true }),
 ]);
-
+export const publicKeyJWK = await jose.exportJWK(jwtPublicKey);
+export const publicKeyKid = await jose.calculateJwkThumbprintUri(publicKeyJWK);
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class JWT {
   private static JWT_REFRESH_SECRET: KeyLike;
@@ -129,6 +110,7 @@ export class JWT {
       verificationKey: this.JWT_PUBLIC_KEY,
       aud: 'authenticated',
       role: 'authenticated',
+      kid: publicKeyKid,
       cookie: {
         name: 'access_token',
         options: {
@@ -145,6 +127,7 @@ export class JWT {
       verificationKey: this.JWT_REFRESH_SECRET,
       aud: '',
       role: '',
+      kid: '',
       cookie: {
         name: 'refresh_token',
         options: {
@@ -161,6 +144,7 @@ export class JWT {
       verificationKey: this.JWT_DB_PRIVATE_KEY,
       aud: 'authenticated',
       role: 'authenticated',
+      kid: '1',
       cookie: {
         name: 'db_access_token',
         options: {
@@ -172,13 +156,13 @@ export class JWT {
     },
   };
 
-  static get JWTConfigs(): JWTTypeMap {
+  static get JWTConfigs() {
     return this.JWT_TYPE_MAP;
   }
 
   private static generateTokenPayload(
     userId: string,
-    JWTType: keyof JWTTypeMap,
+    JWTType: keyof typeof this.JWT_TYPE_MAP,
   ): JWTTokenPayload {
     return {
       sub: userId,
@@ -191,29 +175,32 @@ export class JWT {
 
   private static generateToken(
     tokenPayload: JWTTokenPayload,
-    JWTType: keyof JWTTypeMap,
+    JWTType: keyof typeof this.JWT_TYPE_MAP,
   ) {
     return new jose.SignJWT(tokenPayload)
       .setProtectedHeader({
         alg: this.JWT_TYPE_MAP[JWTType].algorithm,
         typ: 'JWT',
-        kid: '1',
+        kid: this.JWT_TYPE_MAP[JWTType].kid,
       })
       .sign(this.JWT_TYPE_MAP[JWTType].signingKey);
   }
 
-  static sign(userId: string, JWTType: keyof JWTTypeMap) {
+  static sign(userId: string, JWTType: keyof typeof this.JWT_TYPE_MAP) {
     const tokenPayload = this.generateTokenPayload(userId, JWTType);
     return this.generateToken(tokenPayload, JWTType);
   }
 
-  static async signWithPayload(userId: string, JWTType: keyof JWTTypeMap) {
+  static async signWithPayload(
+    userId: string,
+    JWTType: keyof typeof this.JWT_TYPE_MAP,
+  ) {
     const tokenPayload = this.generateTokenPayload(userId, JWTType);
     const token = await this.generateToken(tokenPayload, JWTType);
     return { token, payload: tokenPayload };
   }
 
-  static async verify(token: string, JWTType: keyof JWTTypeMap) {
+  static async verify(token: string, JWTType: keyof typeof this.JWT_TYPE_MAP) {
     try {
       const { payload } = await jose.jwtVerify(
         token,
@@ -229,7 +216,7 @@ export class JWT {
     return decode(token);
   }
 
-  static getCookieOptions(JWTType: keyof JWTTypeMap) {
+  static getCookieOptions(JWTType: keyof typeof this.JWT_TYPE_MAP) {
     const { name, options } = this.JWT_TYPE_MAP[JWTType].cookie;
     return { name, options };
   }

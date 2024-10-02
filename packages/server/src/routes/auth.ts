@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 
+import { SYNC_URL } from '../constants/config';
 import { db } from '../db/db';
 import {
   refreshToken as refreshTokensTable,
@@ -13,6 +14,7 @@ import {
   comparePW,
   issueRefreshToken,
   JWT,
+  publicKeyJWK,
   validateRefreshToken,
 } from '../utils/auth';
 import { generateUUIDs } from '../utils/id';
@@ -168,7 +170,7 @@ auth.get('/credentials/sync', validateAccess, (c) => {
     result: true,
     token: accessToken,
     expiresAt: payload.exp,
-    syncUrl: JWT.JWT_ACCESS_AUDIENCE,
+    syncUrl: SYNC_URL,
   });
 });
 
@@ -228,6 +230,20 @@ auth.delete('/logout', async (c) => {
   return c.json({
     result: true,
   });
+});
+
+auth.get('/jwks', (c) => {
+  const jwks = {
+    keys: [
+      {
+        ...publicKeyJWK,
+        alg: JWT.JWTConfigs.access.algorithm,
+        kid: JWT.JWTConfigs.access.kid,
+      },
+    ],
+  };
+
+  return c.json(jwks);
 });
 
 export default auth;
