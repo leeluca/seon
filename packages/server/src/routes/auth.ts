@@ -213,7 +213,7 @@ auth.get('/refresh', async (c) => {
   });
 });
 
-auth.delete('/logout', async (c) => {
+auth.delete('/signout', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 

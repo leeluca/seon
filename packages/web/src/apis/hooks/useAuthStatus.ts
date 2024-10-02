@@ -13,7 +13,7 @@ export const AUTH_STATUS_KEY = `${API_URL}/api/auth/status`;
 
 function useAuthStatus() {
   const user = useUser();
-  const { data, error, isLoading } = useSWR<AuthStatus, null>(
+  const { data, error, isLoading } = useSWR<AuthStatus, Error>(
     user?.useSync ? AUTH_STATUS_KEY : null,
     (url: string) => fetcher(url, { credentials: 'include' }),
     {
@@ -21,13 +21,16 @@ function useAuthStatus() {
       // shouldRetryOnError: false,
       // TODO: onErrorRetry -> if 401 or 403...
       focusThrottleInterval: 30000, // 30 sec
+      // fallbackData -> get from local storage
     },
   );
 
+  // FIXME: improve error handling
   const authStatus = {
-    isSignedIn: !!data?.result,
+    isSignedIn: !error && !!data?.result,
     expiresAt: data?.expiresAt || 0,
   };
+
   return {
     data: authStatus,
     isLoading,

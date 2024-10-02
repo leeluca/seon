@@ -26,12 +26,6 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
 
   return (
     <div className="grid gap-4">
-      <div className="space-y-2">
-        <h4 className="font-medium leading-none">Sync is off</h4>
-        <p className="text-muted-foreground text-sm">
-          Sign in to sync your data.
-        </p>
-      </div>
       <div className="grid gap-4 py-4">
         <div className="grid grid-cols-3 items-center gap-4">
           <Label htmlFor="name" className="text-start">
