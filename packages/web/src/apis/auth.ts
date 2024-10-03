@@ -36,6 +36,7 @@ export const postSignUp = async ({
   return res.json() as Promise<{
     result: boolean;
     expiresAt: number;
+    user: { name: string; email: string; id: string; shortId: string };
   }>;
 };
 

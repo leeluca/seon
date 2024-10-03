@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
+import short from 'short-uuid';
 
 import { SYNC_URL } from '../constants/config';
 import { db } from '../db/db';
@@ -12,12 +13,14 @@ import {
 import { validateAccess } from '../middlewares/auth';
 import {
   comparePW,
+  hashPW,
   issueRefreshToken,
   JWT,
   publicKeyJWK,
+  setJWTCookie,
   validateRefreshToken,
 } from '../utils/auth';
-import { generateUUIDs } from '../utils/id';
+import { validateUuidV7 } from '../utils/id';
 
 const auth = new Hono();
 
@@ -48,38 +51,13 @@ auth.post('/signin', async (c) => {
     });
   }
 
-  const userInfo = {
-    id: user.id,
-    shortId: user.shortId,
-    name: user.name,
-    email: user.email,
-  };
-
   const [accessToken, refreshToken] = await Promise.all([
     JWT.sign(user.id, 'access'),
-    JWT.sign(user.id, 'refresh'),
+    issueRefreshToken(user.id),
   ]);
 
-  const { name: accessCookieName, options: accessCookieOptions } =
-    JWT.getCookieOptions('access');
-  const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('refresh');
-
-  // TODO: if user already has a refresh token, delete it
-  await db.insert(refreshTokensTable).values({
-    userId: user.id,
-    token: refreshToken,
-    expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
-  });
-
-  setCookie(c, accessCookieName, accessToken, {
-    ...accessCookieOptions,
-  });
-  setCookie(c, refreshCookieName, refreshToken, {
-    ...refreshCookieOptions,
-  });
-
-  // TODO: save refresh token to db
+  setJWTCookie(c, 'access', accessToken);
+  setJWTCookie(c, 'refresh', refreshToken);
 
   return c.json({
     result: true,
@@ -91,65 +69,58 @@ auth.post('/signin', async (c) => {
 // TODO: error handling
 auth.post('/signup', async (c) => {
   // TODO: validation
-  const { email, name, password } = await c.req.json();
+  const { email, name, password, uuid } = await c.req.json();
   if (
     typeof email !== 'string' ||
     typeof name !== 'string' ||
-    typeof password !== 'string'
+    typeof password !== 'string' ||
+    typeof uuid !== 'string' ||
+    !validateUuidV7(uuid)
   ) {
-    throw new Error('Invalid input');
-  }
-  const existingUser = await db.query.user.findFirst({
-    where: (user, { eq, or }) => or(eq(user.email, email), eq(user.name, name)),
-  });
-
-  if (existingUser) {
     throw new HTTPException(400, {
-      message: 'Already existing name or email.',
+      message: 'Invalid parameters.',
     });
   }
 
-  const { uuid, shortUuid } = generateUUIDs();
+  const existingUser = await db.query.user.findFirst({
+    where: (user, { eq, or }) => or(eq(user.email, email), eq(user.id, uuid)),
+  });
+
+  if (existingUser) {
+    throw new HTTPException(409, {
+      message: 'Invalid parameters.',
+    });
+  }
+  const hashedPassword = await hashPW(password);
+  const shortUuid = short().fromUUID(uuid);
+
   type NewUser = typeof usersTable.$inferInsert;
 
-  const newUser: NewUser = {
+  const newUser = {
     id: uuid,
     shortId: shortUuid,
     email,
     name,
-    password,
-  };
+    password: hashedPassword,
+  } satisfies NewUser;
   const [{ name: savedName, email: savedEmail, id, shortId }] = await db
     .insert(usersTable)
     .values(newUser)
     .returning();
 
-  const [accessToken, refreshToken] = await Promise.all([
-    JWT.sign(id, 'access'),
-    JWT.sign(id, 'refresh'),
-  ]);
+  const [{ token: accessToken, payload: accessTokenPayload }, refreshToken] =
+    await Promise.all([
+      JWT.signWithPayload(id, 'access'),
+      issueRefreshToken(id),
+    ]);
 
-  const { name: accessCookieName, options: accessCookieOptions } =
-    JWT.getCookieOptions('access');
-  const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('refresh');
-
-  await db.insert(refreshTokensTable).values({
-    userId: id,
-    token: refreshToken,
-    expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
-  });
-
-  setCookie(c, accessCookieName, accessToken, {
-    ...accessCookieOptions,
-  });
-  setCookie(c, refreshCookieName, refreshToken, {
-    ...refreshCookieOptions,
-  });
+  setJWTCookie(c, 'access', accessToken);
+  setJWTCookie(c, 'refresh', refreshToken);
 
   return c.json({
     result: true,
     user: { name: savedName, email: savedEmail, id, shortId },
+    expiresAt: accessTokenPayload.exp,
   });
 });
 
@@ -213,7 +184,7 @@ auth.get('/refresh', async (c) => {
   });
 });
 
-auth.delete('/signout', async (c) => {
+auth.post('/signout', async (c) => {
   const { name: accessCookieName } = JWT.getCookieOptions('access');
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 

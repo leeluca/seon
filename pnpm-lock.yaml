@@ -216,6 +216,9 @@ importers:
       hono:
         specifier: ^4.5.11
         version: 4.5.11
+      jose:
+        specifier: ^5.9.3
+        version: 5.9.3
       postgres:
         specifier: ^3.4.4
         version: 3.4.4
@@ -229,15 +232,9 @@ importers:
       drizzle-kit:
         specifier: ^0.24.2
         version: 0.24.2
-      short-uuid:
-        specifier: ^5.2.0
-        version: 5.2.0
       tsx:
-        specifier: ^4.19.0
+        specifier: ^4.19.1
         version: 4.19.1
-      uuid:
-        specifier: 11.0.0-0
-        version: 11.0.0-0
 
   packages/web:
     dependencies:
@@ -3698,6 +3695,9 @@ packages:
   jiti@1.21.3:
     resolution: {integrity: sha512-uy2bNX5zQ+tESe+TiC7ilGRz8AtRGmnJH55NC5S0nSUjvvvM2hJHmefHErugGXN4pNv4Qx7vLsnNw9qJ9mtIsw==}
     hasBin: true
+
+  jose@5.9.3:
+    resolution: {integrity: sha512-egLIoYSpcd+QUF+UHgobt5YzI2Pkw/H39ou9suW687MY6PmCwPmkNV/4TNjn1p2tX5xO3j0d0sq5hiYE24bSlg==}
 
   js-logger@1.6.1:
     resolution: {integrity: sha512-yTgMCPXVjhmg28CuUH8CKjU+cIKL/G+zTu4Fn4lQxs8mRFH/03QTNvEFngcxfg/gRDiQAOoyCKmMTOm9ayOzXA==}
@@ -8872,6 +8872,8 @@ snapshots:
   javascript-stringify@2.1.0: {}
 
   jiti@1.21.3: {}
+
+  jose@5.9.3: {}
 
   js-logger@1.6.1: {}
 

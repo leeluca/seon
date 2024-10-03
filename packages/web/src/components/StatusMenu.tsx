@@ -131,6 +131,7 @@ function StatusMenu() {
 
               <Button
                 variant="outline"
+                // TODO: delete local content and redirect to home page (not implemented)
                 onClick={() => {
                   void postSignOut().then(() => mutate(AUTH_STATUS_KEY));
                 }}

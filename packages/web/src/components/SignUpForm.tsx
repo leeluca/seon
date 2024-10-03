@@ -1,33 +1,63 @@
 import { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { toast } from 'sonner';
 import { mutate } from 'swr';
 
-import { postSignIn } from '~/apis/auth';
+import { postSignUp } from '~/apis/auth';
 import { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import db from '~/lib/database';
+import { useUser, useUserAction } from '~/states/userContext';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 
 interface SignInFormProps {
-  onSignInCallback: () => void;
+  onSignUpCallback?: () => void;
 }
-function SignInForm({ onSignInCallback }: SignInFormProps) {
+function SignUpForm({ onSignUpCallback }: SignInFormProps) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const user = useUser();
 
+  const setUser = useUserAction();
   async function handleSubmit() {
+    if (!user) return;
     // TODO: handle error
-    const result = await postSignIn({ email, password });
+    const result = await postSignUp({ uuid: user.id, name, email, password });
 
     if (result.result) {
-      onSignInCallback();
+      await db
+        .updateTable('user')
+        .set({ useSync: 1, name: result.user.name, email: result.user.email })
+        .where('id', '=', result.user.id)
+        .execute();
+      const updatedUser = await db
+        .selectFrom('user')
+        .selectAll()
+        .where('id', '=', result.user.id)
+        .executeTakeFirstOrThrow();
+
       await mutate(AUTH_STATUS_KEY);
+      setUser(updatedUser);
+      onSignUpCallback && onSignUpCallback();
+      toast.success(`Welcome, ${updatedUser.name}!`);
     }
   }
 
   return (
     <div className="grid gap-4">
       <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-3 items-center gap-4">
+          <Label htmlFor="name" className="text-start">
+            Name
+          </Label>
+          <Input
+            id="name"
+            name="name"
+            className="col-span-2"
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
         <div className="grid grid-cols-3 items-center gap-4">
           <Label htmlFor="name" className="text-start">
             Email
@@ -53,16 +83,13 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           />
         </div>
       </div>
-      <div className="mt-2 flex w-full flex-col items-center gap-4">
+      <div className="mt-2 flex w-full flex-col items-center gap-2">
         <Button className="w-7/12" onClick={() => void handleSubmit()}>
-          Sign In
+          Sign Up
         </Button>
-        <Link to="/signup" className="text-muted-foreground text-sm">
-          Create account
-        </Link>
       </div>
     </div>
   );
 }
 
-export default SignInForm;
+export default SignUpForm;

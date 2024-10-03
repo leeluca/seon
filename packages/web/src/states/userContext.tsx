@@ -7,6 +7,18 @@ import { generateOfflineUser } from '~/utils';
 const UserContext = React.createContext<Database['user'] | null>(null);
 export const useUser = () => React.useContext(UserContext);
 
+const UserActionContext = React.createContext<React.Dispatch<
+  React.SetStateAction<Database['user'] | null>
+> | null>(null);
+
+export const useUserAction = () => {
+  const context = React.useContext(UserActionContext);
+  if (!context) {
+    throw new Error('useUserAction must be used within a UserProvider');
+  }
+  return context;
+};
+
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<Database['user'] | null>(null);
 
@@ -33,7 +45,13 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
     void initUser();
   }, []);
 
-  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+  return (
+    <UserContext.Provider value={user}>
+      <UserActionContext.Provider value={setUser}>
+        {children}
+      </UserActionContext.Provider>
+    </UserContext.Provider>
+  );
 };
 
 export default UserProvider;

@@ -4,9 +4,9 @@ import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 import type { JWTPayload } from 'hono/utils/jwt/types';
 import type { KeyLike } from 'jose';
 
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { Context } from 'hono';
-import { getCookie } from 'hono/cookie';
+import { getCookie, setCookie } from 'hono/cookie';
 import { decode } from 'hono/jwt';
 import * as jose from 'jose';
 
@@ -282,7 +282,7 @@ export const issueRefreshToken = async (
     if (oldRefreshToken) {
       await tx
         .delete(refreshTokensTable)
-        .where(or(eq(refreshTokensTable.token, oldRefreshToken)));
+        .where(eq(refreshTokensTable.token, oldRefreshToken));
     }
     await tx.insert(refreshTokensTable).values({
       userId: userId,
@@ -291,4 +291,16 @@ export const issueRefreshToken = async (
     });
   });
   return newRefreshToken;
+};
+
+export const setJWTCookie = (
+  c: Context,
+  tokenType: keyof typeof JWT.JWTConfigs,
+  token: string,
+) => {
+  const { name: cookieName, options: cookieOptions } =
+    JWT.getCookieOptions(tokenType);
+  setCookie(c, cookieName, token, {
+    ...cookieOptions,
+  });
 };
