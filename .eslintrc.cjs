@@ -50,8 +50,7 @@ module.exports = {
       plugins: ['@typescript-eslint', 'import'],
       parser: '@typescript-eslint/parser',
       parserOptions: {
-        project: true,
-        tsconfigRootDir: __dirname,
+        EXPERIMENTAL_useProjectService: true,
       },
       settings: {
         'import/internal-regex': '^~/',
@@ -61,6 +60,10 @@ module.exports = {
           },
           typescript: {
             alwaysTryTypes: true,
+            project: [
+              'packages/web/tsconfig.json',
+              'packages/server/tsconfig.json',
+            ],
           },
         },
       },

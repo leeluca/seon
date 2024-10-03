@@ -8,3 +8,4 @@ dev.db*
 .vercel
 *.local
 dist
+.DS_Store

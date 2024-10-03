@@ -1,18 +1,7 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-    // "**/.server/**/*.ts",
-    // "**/.server/**/*.tsx",
-    // "**/.client/**/*.ts",
-    // "**/.client/**/*.tsx"
-  ],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2023"],
-    "types": ["vite/client"],
     "isolatedModules": true,
     "esModuleInterop": true,
-    "jsx": "react-jsx",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
@@ -21,14 +10,5 @@
     "allowJs": false,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["./src/*"],
-      "~/components": ["./src/components"],
-      "~/lib": ["./src/lib/*"]
-    },
-
-    // Vite takes care of building everything, not tsc.
-    "noEmit": true
   }
 }
