@@ -10,12 +10,12 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { decode } from 'hono/jwt';
 import * as jose from 'jose';
 
-import { COOKIE_SECURITY_SETTINGS } from '../constants/config';
-import { db } from '../db/db';
+import { COOKIE_SECURITY_SETTINGS } from '../src/constants/config';
+import { db } from '../src/db/db';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
-} from '../db/schema';
+} from '../src/db/schema';
 
 const scryptAsync = promisify(scrypt);
 

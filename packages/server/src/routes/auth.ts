@@ -19,7 +19,7 @@ import {
   publicKeyJWK,
   setJWTCookie,
   validateRefreshToken,
-} from '../utils/auth';
+} from '../../services/auth';
 import { validateUuidV7 } from '../utils/id';
 
 const auth = new Hono();
