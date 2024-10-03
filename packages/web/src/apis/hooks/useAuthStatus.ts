@@ -21,6 +21,7 @@ function useAuthStatus() {
       // shouldRetryOnError: false,
       // TODO: onErrorRetry -> if 401 or 403...
       focusThrottleInterval: 30000, // 30 sec
+      dedupingInterval: 30000, // 30 sec
       // fallbackData -> get from local storage
     },
   );
