@@ -202,7 +202,7 @@ export class JWT {
 
   static async verify(token: string, JWTType: keyof typeof this.JWT_TYPE_MAP) {
     try {
-      const { payload } = await jose.jwtVerify(
+      const { payload } = await jose.jwtVerify<JWTTokenPayload>(
         token,
         this.JWT_TYPE_MAP[JWTType].verificationKey,
       );
@@ -227,7 +227,7 @@ export const validateAccessToken = async (c: Context) => {
   const accessToken = getCookie(c, accessCookieName);
 
   const accessPayload = accessToken
-    ? ((await JWT.verify(accessToken, 'access')) as JWTTokenPayload)
+    ? await JWT.verify(accessToken, 'access')
     : null;
 
   return { accessToken, accessPayload };
@@ -266,10 +266,7 @@ export const validateRefreshToken = async (c: Context) => {
     return { refreshToken: null, refreshPayload: null };
   }
 
-  return { refreshToken, refreshPayload } as {
-    refreshToken: string;
-    refreshPayload: JWTTokenPayload;
-  };
+  return { refreshToken, refreshPayload };
 };
 
 export const issueRefreshToken = async (
