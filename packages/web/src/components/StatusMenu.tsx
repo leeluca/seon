@@ -6,6 +6,7 @@ import {
   CloudOffIcon,
   RefreshCcwIcon,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { mutate } from 'swr';
 
 import { postSignOut } from '~/apis/auth';
@@ -81,7 +82,11 @@ function StatusMenu() {
   const togglePopover = () => setOpen((prev) => !prev);
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading...</div>;
+    return (
+      <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
+        <div className="h-7" />
+      </div>
+    );
   }
 
   return (
@@ -133,7 +138,10 @@ function StatusMenu() {
                 variant="outline"
                 // TODO: delete local content and redirect to home page (not implemented)
                 onClick={() => {
-                  void postSignOut().then(() => mutate(AUTH_STATUS_KEY));
+                  void postSignOut().then(() => {
+                    toast.success(`Welcome back, ${user?.name}!`);
+                    void mutate(AUTH_STATUS_KEY);
+                  });
                 }}
               >
                 Sign out
