@@ -210,6 +210,12 @@ importers:
       '@hono/node-server':
         specifier: ^1.12.2
         version: 1.12.2(hono@4.5.11)
+      '@hono/typebox-validator':
+        specifier: ^0.2.5
+        version: 0.2.5(@sinclair/typebox@0.33.13)(hono@4.5.11)
+      '@sinclair/typebox':
+        specifier: ^0.33.13
+        version: 0.33.13
       drizzle-orm:
         specifier: ^0.33.0
         version: 0.33.0(@prisma/client@5.19.0(prisma@5.19.0))(@types/react@18.3.3)(kysely@0.27.4)(postgres@3.4.4)(prisma@5.19.0)(react@18.3.1)
@@ -1365,6 +1371,12 @@ packages:
     peerDependencies:
       hono: ^4
 
+  '@hono/typebox-validator@0.2.5':
+    resolution: {integrity: sha512-x9KCKv9TDaVzCi2WtQdahUads4gvhOwhaSYjYETUVnWZNIXAArtK9GPxi/WUjXWjyhHDwAzFGJ+ZVIBS3PRgGQ==}
+    peerDependencies:
+      '@sinclair/typebox': '>=0.31.15 <1'
+      hono: '>=3.9.0'
+
   '@humanwhocodes/config-array@0.11.14':
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
@@ -2009,6 +2021,9 @@ packages:
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
+
+  '@sinclair/typebox@0.33.13':
+    resolution: {integrity: sha512-J568EQw9JohJ/pjRV9No6OLQa2px93CnqYoLNLJs60bCHaN2dNXiHVqBIX4YeMYSHmgswFZMMYcfxUg89bu/Bw==}
 
   '@supabase/auth-js@2.64.4':
     resolution: {integrity: sha512-9ITagy4WP4FLl+mke1rchapOH0RQpf++DI+WSG2sO1OFOZ0rW3cwAM0nCrMOxu+Zw4vJ4zObc08uvQrXx590Tg==}
@@ -6164,6 +6179,11 @@ snapshots:
     dependencies:
       hono: 4.5.11
 
+  '@hono/typebox-validator@0.2.5(@sinclair/typebox@0.33.13)(hono@4.5.11)':
+    dependencies:
+      '@sinclair/typebox': 0.33.13
+      hono: 4.5.11
+
   '@humanwhocodes/config-array@0.11.14':
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
@@ -6905,6 +6925,8 @@ snapshots:
     optional: true
 
   '@rtsao/scc@1.1.0': {}
+
+  '@sinclair/typebox@0.33.13': {}
 
   '@supabase/auth-js@2.64.4':
     dependencies:

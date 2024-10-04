@@ -1,16 +1,10 @@
+import { tbValidator } from '@hono/typebox-validator';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import short from 'short-uuid';
 
-import { SYNC_URL } from '../constants/config';
-import { db } from '../db/db';
-import {
-  refreshToken as refreshTokensTable,
-  user as usersTable,
-} from '../db/schema';
-import { validateAccess } from '../middlewares/auth';
 import {
   comparePW,
   hashPW,
@@ -20,19 +14,21 @@ import {
   setJWTCookie,
   validateRefreshToken,
 } from '../../services/auth';
+import { SYNC_URL } from '../constants/config';
+import { db } from '../db/db';
+import {
+  refreshToken as refreshTokensTable,
+  user as usersTable,
+} from '../db/schema';
+import { validateAccess } from '../middlewares/auth';
+import { signInSchema, signUpSchema } from '../types/validation';
 import { validateUuidV7 } from '../utils/id';
 
 const auth = new Hono();
 
 // TODO: error handling, rate limiting
-auth.post('/signin', async (c) => {
-  // TODO: validation
-  // TODO: check if already signed in
-  const { name, email, password } = await c.req.json();
-
-  if (typeof email !== 'string' || typeof password !== 'string') {
-    throw new Error('Invalid input');
-  }
+auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
+  const { email, password } = c.req.valid('json');
 
   const user = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.email, email),
@@ -47,7 +43,7 @@ auth.post('/signin', async (c) => {
 
   if (!isPasswordCorrect) {
     throw new HTTPException(401, {
-      message: 'Invalid email or password',
+      message: 'Invalid credentials',
     });
   }
 
@@ -61,22 +57,15 @@ auth.post('/signin', async (c) => {
 
   return c.json({
     result: true,
-    // user: userInfo,
     expiresAt: Math.floor(Date.now() / 1000) + JWT.JWT_ACCESS_EXPIRATION,
   });
 });
 
 // TODO: error handling
-auth.post('/signup', async (c) => {
-  // TODO: validation
-  const { email, name, password, uuid } = await c.req.json();
-  if (
-    typeof email !== 'string' ||
-    typeof name !== 'string' ||
-    typeof password !== 'string' ||
-    typeof uuid !== 'string' ||
-    !validateUuidV7(uuid)
-  ) {
+auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
+  const { email, name, password, uuid } = c.req.valid('json');
+
+  if (!validateUuidV7(uuid)) {
     throw new HTTPException(400, {
       message: 'Invalid parameters.',
     });
