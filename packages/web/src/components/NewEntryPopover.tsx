@@ -1,7 +1,5 @@
-import type { AbstractPowerSyncDatabase } from '@powersync/web';
-
 import { useMemo, useRef, useState } from 'react';
-import { usePowerSync, useQuery } from '@powersync/react';
+import { useQuery } from '@powersync/react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
 import { toast } from 'sonner';
@@ -16,7 +14,6 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover';
 import db from '~/lib/database';
-import { Database } from '~/lib/powersync/AppSchema';
 import { generateUUIDs } from '~/utils';
 
 function findSameDayEntry(date: Date, entryDate: Date) {
@@ -25,12 +22,12 @@ function findSameDayEntry(date: Date, entryDate: Date) {
 
 async function handleSubmit(
   event: React.FormEvent<HTMLFormElement>,
-  dbInstance: AbstractPowerSyncDatabase,
+
   { date }: { date: Date },
   onSubmitCallback: () => void = () => {},
 ) {
   event.preventDefault();
-
+  //TODO: implement validation
   const $form = event.currentTarget;
   const formData = new FormData($form);
   const data = Object.fromEntries(formData.entries());
@@ -38,41 +35,50 @@ async function handleSubmit(
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
-  const querySameDateEntry = `
-  SELECT * FROM entry
-  WHERE goalId = '${data.goalId as string}'
-  AND date >= '${startOfDay.toISOString()}'
-  AND date <= '${endOfDay.toISOString()}'
-  LIMIT 1;
-`;
   try {
-    const sameDayEntry = (await dbInstance
-      .get(querySameDateEntry)
-      .catch(() => null)) as Database['entry'] | null;
+    const sameDayEntry = await db
+      .selectFrom('entry')
+      .selectAll()
+      .where((eb) =>
+        eb.and([
+          eb('goalId', '=', data.goalId as string),
+          eb('date', '>=', startOfDay.toISOString()),
+          eb('date', '<=', endOfDay.toISOString()),
+        ]),
+      )
+      .executeTakeFirst();
 
-    //TODO: rewerite  queries using type query builder, implement validation
     const entryOperation = sameDayEntry
-      ? `
-        UPDATE entry
-        SET value = ${Number(data.value)}
-        WHERE id = '${sameDayEntry.id}';
-      `
+      ? db
+          .updateTable('entry')
+          .set({ value: Number(data.entry) })
+          .where('id', '=', sameDayEntry.id)
       : (() => {
           const { uuid, shortUuid } = generateUUIDs();
-          return `
-        INSERT INTO entry (id, shortId, goalId, value, date, createdAt, updatedAt)
-        VALUES ('${uuid}', '${shortUuid}', '${data.goalId as string}', ${Number(data.value)}, '${new Date(date).toISOString()}', '${new Date(date).toISOString()}', '${new Date(date).toISOString()}');
-      `;
+          return db.insertInto('entry').values({
+            id: uuid,
+            shortId: shortUuid,
+            goalId: data.goalId as string,
+            value: Number(data.value),
+            date: new Date(date).toISOString(),
+            createdAt: new Date(date).toISOString(),
+            updatedAt: new Date(date).toISOString(),
+          });
         })();
 
     const updatedGoalValue = sameDayEntry
       ? -Number(sameDayEntry.value) + Number(data.value)
       : Number(data.value);
-    const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = '${data.goalId as string}';`;
+    const goalUpdateOperation = db
+      .updateTable('goal')
+      .set((eb) => ({
+        currentValue: eb('currentValue', '+', updatedGoalValue),
+      }))
+      .where('id', '=', data.goalId as string);
 
-    await dbInstance.writeTransaction(async (tx) => {
-      await tx.execute(entryOperation);
-      await tx.execute(goalUpdateOperation);
+    await db.transaction().execute(async (tx) => {
+      await tx.executeQuery(entryOperation);
+      await tx.executeQuery(goalUpdateOperation);
     });
 
     toast.success('Successfully added entry ');
@@ -94,8 +100,6 @@ const NewEntryForm = ({
   id,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
-  const powersync = usePowerSync();
-
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
@@ -123,7 +127,6 @@ const NewEntryForm = ({
       onSubmit={(e) => {
         void handleSubmit(
           e,
-          powersync,
           { date: selectedDate || new Date() },
           onSubmitCallback,
         );
@@ -154,13 +157,7 @@ const NewEntryForm = ({
               key={selectedDate?.toISOString()}
             />
           </div>
-          <Button
-            type="submit"
-            // name="_action"
-            value="add-entry"
-            // disabled={fetcher.state === 'submitting'}
-            className="mt-2"
-          >
+          <Button type="submit" value="add-entry" className="mt-2">
             Submit
           </Button>
         </div>
