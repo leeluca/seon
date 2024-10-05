@@ -19,12 +19,12 @@ import {
   JWT_PUBLIC_PEM,
   JWT_REFRESH_EXPIRATION,
   JWT_REFRESH_SECRET,
-} from '../src/constants/config';
-import { db } from '../src/db/db';
+} from '../constants/config';
+import { db } from '../db/db';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
-} from '../src/db/schema';
+} from '../db/schema';
 
 const scryptAsync = promisify(scrypt);
 
