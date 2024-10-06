@@ -31,7 +31,7 @@ export function GoalDetailPanel({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
-      <SheetContent className="!max-w-3xl">
+      <SheetContent className="!w-full !max-w-full sm:!max-w-3xl">
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>

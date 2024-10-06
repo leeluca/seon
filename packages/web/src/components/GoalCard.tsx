@@ -2,7 +2,8 @@ import type { Database } from '~/lib/powersync/AppSchema';
 
 import { useRef, useState } from 'react';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
+import { Maximize2Icon, Trash2Icon } from 'lucide-react';
 
 import GoalLineGraph from '~/components/GoalLineGraph';
 import {
@@ -15,8 +16,9 @@ import {
 } from '~/components/ui/card';
 import { GoalDetailPanel } from './GoalDetailPanel';
 import { NewEntryPopover } from './NewEntryPopover';
+import { Button } from './ui/button';
 
-const MotionCard = motion(Card);
+// const MotionCard = motion(Card);
 
 interface ProgressBarProps {
   progressPercent: string;
@@ -53,8 +55,6 @@ export default function GoalCard({
   initialValue,
 }: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
-
-  // const entryFetcher = useFetcher({ key: `entries-${id}` });
 
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
 
@@ -99,26 +99,26 @@ export default function GoalCard({
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
   return (
-    <MotionCard
+    <Card
       className="w-full text-center shadow-sm"
-      whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
-      initial={{ scale: 0 }}
-      animate={{
-        scale: 1,
-        transition: {
-          delay: 0.25,
-          type: 'tween',
-        },
-      }}
-      exit={{
-        opacity: 0,
-        scale: 0,
-        transition: {
-          type: 'tween',
-        },
-      }}
-      layout
-      transition={{ ease: 'easeInOut' }}
+      // whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
+      // initial={{ scale: 0 }}
+      // animate={{
+      //   scale: 1,
+      //   transition: {
+      //     delay: 0.25,
+      //     type: 'tween',
+      //   },
+      // }}
+      // exit={{
+      //   opacity: 0,
+      //   scale: 0,
+      //   transition: {
+      //     type: 'tween',
+      //   },
+      // }}
+      // layout
+      // transition={{ ease: 'easeInOut' }}
       ref={cardRef}
     >
       <CardHeader
@@ -133,11 +133,7 @@ export default function GoalCard({
         </div>
         <CardDescription className="text-xs">{description}</CardDescription>
       </CardHeader>
-      <CardContent
-        className="flex cursor-pointer flex-col gap-3"
-        onClick={() => setSidePanelOpen(true)}
-        //FIXME: accessibility of div button
-      >
+      <CardContent className="flex flex-col gap-3">
         <p className="text-center text-4xl font-semibold">{progressPercent}</p>
         <div className="flex flex-col gap-2">
           <div className="flex justify-between text-xs">
@@ -157,15 +153,27 @@ export default function GoalCard({
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between px-3 pb-3 align-middle">
-        <span className="text-xs">Category</span>
-        <GoalDetailPanel
-          title={title}
-          graphComponent={GraphComponent}
-          open={sidePanelOpen}
-          onOpenChange={setSidePanelOpen}
-        />
+      <CardFooter className="px-3 pb-3">
+        {/* <span className="text-xs">Category</span> */}
+        <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
+          <Button size="icon-small" variant="outline">
+            <Trash2Icon size={18} />
+          </Button>
+          <Button
+            size="icon-small"
+            variant="outline"
+            onClick={() => setSidePanelOpen(true)}
+          >
+            <Maximize2Icon size={18} />
+          </Button>
+        </div>
       </CardFooter>
-    </MotionCard>
+      <GoalDetailPanel
+        title={title}
+        graphComponent={GraphComponent}
+        open={sidePanelOpen}
+        onOpenChange={setSidePanelOpen}
+      />
+    </Card>
   );
 }

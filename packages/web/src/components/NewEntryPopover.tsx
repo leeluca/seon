@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@powersync/react';
-import { PlusIcon } from '@radix-ui/react-icons';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
+import { InfoIcon, LoaderCircleIcon, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
@@ -293,8 +292,8 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
   return (
     <Popover open={open} onOpenChange={togglePopover}>
       <PopoverTrigger asChild>
-        <Button variant="secondary" size="icon">
-          <PlusIcon />
+        <Button variant="outline" size="icon">
+          <PlusIcon size={18} />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-fit max-w-[325px]">
