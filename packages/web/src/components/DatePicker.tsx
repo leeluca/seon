@@ -27,7 +27,7 @@ interface DatePickerProps {
   className?: string;
   disabledDates?: Matcher | Matcher[];
   date?: Date;
-  setDate?: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setDate?: (date?: Date) => void;
 }
 export const DatePicker = React.forwardRef(
   (
