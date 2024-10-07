@@ -16,12 +16,20 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
-import { MAX_INPUT_NUMBER } from '~/constants';
+import {
+  MAX_GOAL_NAME_LENGTH,
+  MAX_INPUT_NUMBER,
+  MAX_UNIT_LENGTH,
+} from '~/constants';
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
 import { generateUUIDs } from '~/utils';
-import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
+import {
+  blockNonNumberInput,
+  maxLengthValidator,
+  parseInputtedNumber,
+} from '~/utils/validation';
 
 export const Route = createLazyFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
@@ -119,6 +127,8 @@ function NewGoalDialog() {
       const stringTargetDate = targetDate.toISOString();
       await handleSubmit({
         ...value,
+        title: value.title.trim(),
+        unit: value.unit.trim(),
         target: targetValue,
         userId: user.id,
         startDate: stringStartDate,
@@ -154,8 +164,18 @@ function NewGoalDialog() {
             <form.Field
               name="title"
               validators={{
-                onChange: ({ value }) =>
-                  !value && 'Choose a name for your goal.',
+                onChange: ({ value }) => {
+                  if (!value) return 'Choose a name for your goal.';
+                  const errorMessage = maxLengthValidator(
+                    value,
+                    MAX_GOAL_NAME_LENGTH,
+                    'Goal name',
+                  );
+
+                  if (errorMessage) {
+                    return errorMessage;
+                  }
+                },
               }}
             >
               {(field) => {
@@ -170,6 +190,7 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <Input
+                        id="title"
                         value={value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="eg. 'Learn a 1000 Japanese words'"
@@ -181,7 +202,7 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <FormItem label="Target value" labelFor="targetValue" required>
+          <FormItem label="Target value" labelFor="target-value" required>
             <form.Field
               name="targetValue"
               validators={{
@@ -201,8 +222,10 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <Input
+                        id="target-value"
                         type="number"
-                        value={value}
+                        // Removes leading zeros
+                        value={value?.toString()}
                         onKeyDown={(e) => blockNonNumberInput(e)}
                         onChange={(e) => {
                           parseInputtedNumber(
@@ -220,7 +243,7 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <FormItem label="Target date" labelFor="targetDate" required>
+          <FormItem label="Target date" labelFor="targe-date" required>
             <form.Field
               name="targetDate"
               validators={{
@@ -247,6 +270,7 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <DatePicker
+                        id="target-date"
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
                       />
@@ -256,7 +280,7 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <FormItem label="Start date" labelFor="startDate" required>
+          <FormItem label="Start date" labelFor="start-date" required>
             <form.Field name="startDate">
               {(field) => {
                 const {
@@ -270,6 +294,7 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <DatePicker
+                        id="start-date"
                         defaultDate={new Date()}
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
@@ -280,8 +305,23 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <FormItem label="Initial value" labelFor="initialValue">
-            <form.Field name="unit">
+          <FormItem label="Unit" labelFor="unit">
+            <form.Field
+              name="unit"
+              validators={{
+                onChange: ({ value }) => {
+                  const errorMessage = maxLengthValidator(
+                    value,
+                    MAX_UNIT_LENGTH,
+                    'Unit',
+                  );
+
+                  if (errorMessage) {
+                    return errorMessage;
+                  }
+                },
+              }}
+            >
               {(field) => {
                 const {
                   value,
@@ -294,6 +334,7 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <Input
+                        id="unit"
                         value={value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="e.g. words"
@@ -305,7 +346,7 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <FormItem label="Initial value" labelFor="initialValue" required>
+          <FormItem label="Initial value" labelFor="initial-value">
             <form.Field name="initialValue">
               {(field) => {
                 const {
@@ -319,16 +360,18 @@ function NewGoalDialog() {
                   >
                     <div className="col-span-2">
                       <Input
+                        id="initial-value"
                         type="number"
-                        value={value}
+                        // Removes leading zeros
+                        value={value.toString()}
                         onKeyDown={(e) => blockNonNumberInput(e)}
                         onChange={(e) => {
                           parseInputtedNumber(
                             e.target.value,
                             (parsedNumber?: number) => {
-                              if (parsedNumber && !Number.isNaN(parsedNumber)) {
-                                field.handleChange(parsedNumber);
-                              }
+                              parsedNumber
+                                ? field.handleChange(parsedNumber)
+                                : field.handleChange(0);
                             },
                           );
                         }}

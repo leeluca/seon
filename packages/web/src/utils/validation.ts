@@ -1,4 +1,5 @@
 import type { Updater } from '@tanstack/react-form';
+
 import { MAX_INPUT_NUMBER } from '~/constants';
 
 export const parseInputtedNumber = (
@@ -9,14 +10,12 @@ export const parseInputtedNumber = (
   { max = MAX_INPUT_NUMBER } = {},
 ) => {
   // Input being deleted
-  if (value === '') {
+  if (!value) {
     callback(undefined);
     return;
   }
-
   const parsedNumber = parseInt(value.replace(/[^0-9]/g, ''), 10);
-
-  if (parsedNumber <= 0 || parsedNumber >= max) {
+  if (parsedNumber < 0 || parsedNumber >= max) {
     return;
   }
 
@@ -31,5 +30,15 @@ export const blockNonNumberInput = (
 ) => {
   if (NON_NUMBER_VALUES.has(e.key)) {
     e.preventDefault();
+  }
+};
+
+export const maxLengthValidator = (
+  value: string,
+  max: number,
+  fieldName: string,
+) => {
+  if (value.length > max) {
+    return `${fieldName} should be no longer than ${max} characters.`;
   }
 };
