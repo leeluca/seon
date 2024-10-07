@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import FormError from '~/components/FormError';
+import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -15,7 +16,6 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
@@ -49,15 +49,7 @@ async function handleSubmit({
   callback,
 }: GoalSubmitData & { callback?: () => void }) {
   const { uuid, shortUuid } = generateUUIDs();
-  console.log({
-    title,
-    target,
-    unit,
-    startDate,
-    targetDate,
-    initialValue,
-    userId,
-  });
+
   try {
     await db
       .insertInto('goal')
@@ -68,7 +60,7 @@ async function handleSubmit({
         currentValue: initialValue,
         initialValue,
         target: target,
-        unit: unit,
+        unit,
         userId,
         startDate: startDate,
         targetDate: targetDate,
@@ -158,10 +150,7 @@ function NewGoalDialog() {
           }}
           className="grid gap-4 py-4"
         >
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="title" className="text-right">
-              Goal name <span className="text-red-400"> * </span>
-            </Label>
+          <FormItem label="Goal name" labelFor="title" required>
             <form.Field
               name="title"
               validators={{
@@ -175,27 +164,24 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <Input
                         value={value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="eg. 'Learn a 1000 Japanese words'"
+                        maxLength={100}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="targetValue" className="text-right">
-              Target value <span className="text-red-400"> * </span>
-            </Label>
+          </FormItem>
+          <FormItem label="Target value" labelFor="targetValue" required>
             <form.Field
               name="targetValue"
               validators={{
@@ -209,7 +195,10 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <Input
                         type="number"
@@ -226,19 +215,12 @@ function NewGoalDialog() {
                         max={MAX_INPUT_NUMBER}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="startDate" className="text-right">
-              Target date <span className="text-red-400"> * </span>
-            </Label>
+          </FormItem>
+          <FormItem label="Target date" labelFor="targetDate" required>
             <form.Field
               name="targetDate"
               validators={{
@@ -250,7 +232,6 @@ function NewGoalDialog() {
                   ) {
                     return 'Target date must be after start date';
                   }
-                  return undefined;
                 },
               }}
             >
@@ -260,27 +241,22 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <DatePicker
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="startDate" className="text-right">
-              Start date
-            </Label>
+          </FormItem>
+          <FormItem label="Start date" labelFor="startDate" required>
             <form.Field name="startDate">
               {(field) => {
                 const {
@@ -288,7 +264,10 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <DatePicker
                         defaultDate={new Date()}
@@ -296,19 +275,12 @@ function NewGoalDialog() {
                         setDate={(date) => date && field.handleChange(date)}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="unit" className="text-right">
-              Unit
-            </Label>
+          </FormItem>
+          <FormItem label="Initial value" labelFor="initialValue">
             <form.Field name="unit">
               {(field) => {
                 const {
@@ -316,28 +288,24 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <Input
                         value={value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         placeholder="e.g. words"
+                        maxLength={100}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
-
-          <div className="grid grid-cols-4 items-center gap-x-4 gap-y-1">
-            <Label htmlFor="initialValue" className="text-right">
-              Initial value
-            </Label>
+          </FormItem>
+          <FormItem label="Initial value" labelFor="initialValue" required>
             <form.Field name="initialValue">
               {(field) => {
                 const {
@@ -345,7 +313,10 @@ function NewGoalDialog() {
                   meta: { errors },
                 } = field.state;
                 return (
-                  <>
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
                     <div className="col-span-2">
                       <Input
                         type="number"
@@ -366,15 +337,11 @@ function NewGoalDialog() {
                         max={MAX_INPUT_NUMBER}
                       />
                     </div>
-                    <FormError
-                      className="col-span-3 col-start-2"
-                      errors={errors}
-                    />
-                  </>
+                  </FormError.Wrapper>
                 );
               }}
             </form.Field>
-          </div>
+          </FormItem>
           <DialogFooter className="mt-4 grid grid-cols-4 items-center gap-4">
             <form.Subscribe
               selector={(state) => [

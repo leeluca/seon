@@ -2,12 +2,15 @@ import type { ValidationError } from '@tanstack/react-form';
 
 import { cn } from '~/utils';
 
-interface FormMessageProps {
+interface FormErrorProps {
   errors: ValidationError[];
-  className?: string;
   textClassName?: string;
 }
-function FormError({ errors, className, textClassName }: FormMessageProps) {
+function FormError({
+  errors,
+  className,
+  textClassName,
+}: FormErrorProps & { className?: string }) {
   const hasErrors = errors.length;
 
   if (!hasErrors) {
@@ -30,5 +33,25 @@ function FormError({ errors, className, textClassName }: FormMessageProps) {
     </div>
   );
 }
+
+function ErrorWrapper({
+  errors,
+  errorClassName,
+  textClassName,
+  children,
+}: FormErrorProps & { errorClassName?: string; children: React.ReactNode }) {
+  return (
+    <>
+      {children}
+      <FormError
+        className={errorClassName}
+        textClassName={textClassName}
+        errors={errors}
+      />
+    </>
+  );
+}
+
+FormError.Wrapper = ErrorWrapper;
 
 export default FormError;
