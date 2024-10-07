@@ -46,16 +46,18 @@ type GoalSubmitData = Pick<
   | 'userId'
 >;
 
-async function handleSubmit({
-  title,
-  target,
-  unit,
-  startDate,
-  targetDate,
-  initialValue,
-  userId,
-  callback,
-}: GoalSubmitData & { callback?: () => void }) {
+async function handleSubmit(
+  {
+    title,
+    target,
+    unit,
+    startDate,
+    targetDate,
+    initialValue,
+    userId,
+  }: GoalSubmitData,
+  callback?: () => void,
+) {
   const { uuid, shortUuid } = generateUUIDs();
 
   try {
@@ -125,16 +127,18 @@ function NewGoalDialog() {
       }
       const stringStartDate = startDate.toISOString();
       const stringTargetDate = targetDate.toISOString();
-      await handleSubmit({
-        ...value,
-        title: value.title.trim(),
-        unit: value.unit.trim(),
-        target: targetValue,
-        userId: user.id,
-        startDate: stringStartDate,
-        targetDate: stringTargetDate,
-        callback: handleClose,
-      });
+      await handleSubmit(
+        {
+          ...value,
+          title: value.title.trim(),
+          unit: value.unit.trim(),
+          target: targetValue,
+          userId: user.id,
+          startDate: stringStartDate,
+          targetDate: stringTargetDate,
+        },
+        handleClose,
+      );
     },
   });
 
@@ -385,7 +389,7 @@ function NewGoalDialog() {
               }}
             </form.Field>
           </FormItem>
-          <DialogFooter className="mt-4 grid grid-cols-4 items-center gap-4">
+          <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
             <form.Subscribe
               selector={(state) => [
                 state.isSubmitting,
@@ -406,7 +410,7 @@ function NewGoalDialog() {
                         className="mr-2 animate-spin"
                       />
                     )}
-                    Save changes
+                    Create goal
                   </Button>
                 </div>
               )}
