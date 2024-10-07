@@ -24,7 +24,7 @@ import {
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
-import { generateUUIDs } from '~/utils';
+import { cn, generateUUIDs } from '~/utils';
 import {
   blockNonNumberInput,
   maxLengthValidator,
@@ -207,7 +207,7 @@ function NewGoalDialog() {
               name="targetValue"
               validators={{
                 onChange: ({ value }) =>
-                  !value && 'Choose a target value for your goal.',
+                  !value && 'Set a target value for your goal.',
               }}
             >
               {(field) => {
@@ -388,22 +388,27 @@ function NewGoalDialog() {
           <DialogFooter className="mt-4 grid grid-cols-4 items-center gap-4">
             <form.Subscribe
               selector={(state) => [
-                state.canSubmit,
                 state.isSubmitting,
-                state.isTouched,
+                !state.isTouched || !state.canSubmit || state.isSubmitting,
               ]}
             >
-              {([canSubmit, isSubmitting, isTouched]) => (
-                <Button
-                  type="submit"
-                  disabled={!isTouched || !canSubmit || isSubmitting}
-                  className="col-start-3"
+              {([isSubmitting, isSubmitDisabled]) => (
+                <div
+                  onMouseEnter={() => void form.validateAllFields('change')}
+                  className={cn('col-start-3', {
+                    'cursor-not-allowed': isSubmitDisabled,
+                  })}
                 >
-                  {isSubmitting && (
-                    <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
-                  )}
-                  Save changes
-                </Button>
+                  <Button type="submit" disabled={isSubmitDisabled}>
+                    {isSubmitting && (
+                      <LoaderCircleIcon
+                        size={18}
+                        className="mr-2 animate-spin"
+                      />
+                    )}
+                    Save changes
+                  </Button>
+                </div>
               )}
             </form.Subscribe>
           </DialogFooter>
