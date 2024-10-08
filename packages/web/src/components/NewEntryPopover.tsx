@@ -2,8 +2,8 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@powersync/react';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { useForm } from '@tanstack/react-form';
-import { isSameDay } from 'date-fns';
-import { LoaderCircleIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
@@ -20,10 +20,6 @@ import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
-
-function findSameDayEntry(date: Date, entryDate: Date) {
-  return isSameDay(date, entryDate);
-}
 
 async function handleSubmit(
   { value, date, goalId }: { value: number; date: Date; goalId: string },
@@ -98,22 +94,29 @@ const NewEntryForm = ({
     db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
 
-  const form = useForm<{ value?: number; date?: Date }>({
+  const entriesMap = useMemo(
+    () =>
+      new Map(
+        entries.map((entry) => [new Date(entry.date).toDateString(), entry]),
+      ),
+    [entries],
+  );
+  const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date: new Date(),
       value: 0,
     },
     validators: {
       onChange({ value }) {
-        const { value: inputtedValue, date } = value;
-        if (!inputtedValue || !date) {
+        const { value: inputtedValue } = value;
+        if (!inputtedValue) {
           return 'Missing required fields';
         }
       },
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (!inputtedValue || !date) {
+      if (!inputtedValue) {
         return;
       }
       await handleSubmit(
@@ -126,18 +129,6 @@ const NewEntryForm = ({
       );
     },
   });
-  const selectedDate = form.useStore((state) => state.values.date);
-
-  // const todayEntry = useMemo(
-  //   () =>
-  //     selectedDate &&
-  //     entries.find((entry) =>
-  //       findSameDayEntry(selectedDate, new Date(entry.date)),
-  //     ),
-  //   [selectedDate, entries],
-  // );
-
-  // const a = form.getFieldValue('date');
 
   return (
     <form
@@ -168,15 +159,12 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
+                      {/* FIXME: only values between goal start and end dates should be selectable  */}
                       <DatePicker
                         id="entry-date"
-                        // defaultDate={
-                        //   todayEntry?.date ? new Date(todayEntry.date) : value
-                        // }
                         defaultDate={value}
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
-                        // key={todayEntry?.date}
                       />
                     </div>
                   </FormError.Wrapper>
@@ -195,8 +183,9 @@ const NewEntryForm = ({
             <form.Field
               name="value"
               validators={{
-                onChange: ({ value }) =>
-                  !value && 'Set a target value for your goal.',
+                onChange: ({ value }) => {
+                  return !value && 'Set a target value for your goal.';
+                },
               }}
             >
               {(field) => {
@@ -227,6 +216,32 @@ const NewEntryForm = ({
                         max={MAX_INPUT_NUMBER}
                       />
                     </div>
+                    <form.Subscribe selector={(state) => [state.values.date]}>
+                      {([date]) => {
+                        const sameDayEntry = entriesMap.get(
+                          date.toDateString(),
+                        );
+
+                        if (!sameDayEntry) {
+                          return null;
+                        }
+                        return (
+                          <div className="col-span-2 col-start-2">
+                            <div className="flex items-center text-[0.8rem] font-medium text-gray-500">
+                              <InfoIcon size={18} className="mr-1 shrink-0" />
+                              <p>
+                                Your entry of{' '}
+                                <span className="italic">
+                                  {sameDayEntry.value}
+                                </span>{' '}
+                                for {format(sameDayEntry.date, 'PP')} will be
+                                overwritten.
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </form.Subscribe>
                   </FormError.Wrapper>
                 );
               }}
@@ -251,7 +266,7 @@ const NewEntryForm = ({
                   className="col-span-full mt-2"
                 >
                   {isSubmitting && (
-                    <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
+                    <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
                   )}
                   Save
                 </Button>
@@ -282,7 +297,7 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
           <PlusIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit">
+      <PopoverContent className="w-fit max-w-[325px]">
         <NewEntryForm id={id} onSubmitCallback={togglePopover} />
       </PopoverContent>
     </Popover>
