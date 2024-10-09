@@ -23,11 +23,10 @@ export const parseInputtedNumber = (
   return parsedNumber;
 };
 
-const NON_NUMBER_VALUES = new Set(['e', 'E', '-', '+', '.', ',']);
-
 export const blockNonNumberInput = (
   e: React.KeyboardEvent<HTMLInputElement>,
 ) => {
+  const NON_NUMBER_VALUES = new Set(['e', 'E', '-', '+', '.', ',']);
   if (NON_NUMBER_VALUES.has(e.key)) {
     e.preventDefault();
   }
@@ -40,5 +39,12 @@ export const maxLengthValidator = (
 ) => {
   if (value.length > max) {
     return `${fieldName} should be no longer than ${max} characters.`;
+  }
+};
+
+export const emailValidator = (value: string) => {
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_REGEX.test(value)) {
+    return 'Invalid email address';
   }
 };

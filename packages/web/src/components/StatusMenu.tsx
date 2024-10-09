@@ -111,7 +111,10 @@ function StatusMenu() {
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent sideOffset={5}>
+            <PopoverContent
+              className={!isSignedIn ? 'mr-8' : undefined}
+              sideOffset={5}
+            >
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
                 connected={connected}
@@ -131,7 +134,7 @@ function StatusMenu() {
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[121px]" sideOffset={5}>
+            <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
               <div className="space-y-2 pb-4">
                 <h3 className="text-balance font-medium leading-none">
                   Hello, {user?.name}!

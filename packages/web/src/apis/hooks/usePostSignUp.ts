@@ -8,13 +8,13 @@ import fetcher from '../fetcher';
 
 export const POST_SIGNIN_KEY = `/api/auth/signup`;
 
-interface SignUpParams {
+export interface SignUpParams {
   email: string;
   password: string;
   name: string;
   uuid: string;
 }
-interface PostSignUpResponse {
+export interface PostSignUpResponse {
   result: boolean;
   expiresAt: number;
   user: { name: string; email: string; id: string; shortId: string };

@@ -8,7 +8,7 @@ import fetcher from '../fetcher';
 
 export const POST_SIGNIN_KEY = `/api/auth/signin`;
 
-interface SignInParams {
+export interface SignInParams {
   email: string;
   password: string;
 }

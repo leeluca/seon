@@ -169,16 +169,14 @@ function NewGoalDialog() {
               name="title"
               validators={{
                 onChange: ({ value }) => {
-                  if (!value) return 'Choose a name for your goal.';
-                  const errorMessage = maxLengthValidator(
-                    value,
-                    MAX_GOAL_NAME_LENGTH,
-                    'Goal name',
+                  if (!value.trim()) return 'Choose a name for your goal.';
+                  return (
+                    maxLengthValidator(
+                      value,
+                      MAX_GOAL_NAME_LENGTH,
+                      'Goal name',
+                    ) || undefined
                   );
-
-                  if (errorMessage) {
-                    return errorMessage;
-                  }
                 },
               }}
             >
@@ -314,15 +312,10 @@ function NewGoalDialog() {
               name="unit"
               validators={{
                 onChange: ({ value }) => {
-                  const errorMessage = maxLengthValidator(
-                    value,
-                    MAX_UNIT_LENGTH,
-                    'Unit',
+                  return (
+                    maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') ||
+                    undefined
                   );
-
-                  if (errorMessage) {
-                    return errorMessage;
-                  }
                 },
               }}
             >
