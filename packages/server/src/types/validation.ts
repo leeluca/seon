@@ -5,7 +5,7 @@ import {
 } from '@sinclair/typebox';
 
 export const signInSchema = TObject({
-  email: TString({ format: 'email' }),
+  email: TString(),
   password: TString(),
 });
 
