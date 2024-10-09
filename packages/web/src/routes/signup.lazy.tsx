@@ -18,7 +18,7 @@ function SignUp() {
           <ArrowBigLeftIcon />
         </Button>
       </Link>
-      <div className="m-auto max-w-md">
+      <div className="m-auto mt-4 max-w-md">
         <h1 className="mb-8 font-medium leading-none">Sign Up</h1>
         <SignUpForm onSignUpCallback={() => void navigate({ to: '/' })} />
       </div>

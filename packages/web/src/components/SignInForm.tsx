@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { mutate } from 'swr';
 
-import { postSignIn } from '~/apis/auth';
-import { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import usePostSignIn from '~/apis/hooks/usePostSignIn';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -14,15 +12,15 @@ interface SignInFormProps {
 function SignInForm({ onSignInCallback }: SignInFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const { trigger, isMutating } = usePostSignIn({
+    onSuccess: (data) => {
+      if (data.result) {
+        onSignInCallback();
+      }
+    },
+  });
   async function handleSubmit() {
-    // TODO: handle error
-    const result = await postSignIn({ email, password });
-
-    if (result.result) {
-      onSignInCallback();
-      await mutate(AUTH_STATUS_KEY);
-    }
+    await trigger({ email, password });
   }
 
   return (
@@ -54,7 +52,11 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         </div>
       </div>
       <div className="mt-2 flex w-full flex-col items-center gap-4">
-        <Button className="w-7/12" onClick={() => void handleSubmit()}>
+        <Button
+          className="w-7/12"
+          onClick={() => void handleSubmit()}
+          disabled={isMutating}
+        >
           Sign In
         </Button>
         <Link to="/signup" className="text-muted-foreground text-sm">

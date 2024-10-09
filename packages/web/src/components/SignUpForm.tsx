@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 
-import { postSignUp } from '~/apis/auth';
 import { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import usePostSignUp from '~/apis/hooks/usePostSignUp';
 import db from '~/lib/database';
 import { useUser, useUserAction } from '~/states/userContext';
 import { Button } from './ui/button';
@@ -19,11 +19,13 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
   const [password, setPassword] = useState('');
   const user = useUser();
 
+  const { trigger, isMutating } = usePostSignUp();
+
   const setUser = useUserAction();
   async function handleSubmit() {
     if (!user) return;
-    // TODO: handle error
-    const result = await postSignUp({ uuid: user.id, name, email, password });
+
+    const result = await trigger({ uuid: user.id, name, email, password });
 
     if (result.result) {
       await db
@@ -84,7 +86,11 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         </div>
       </div>
       <div className="mt-2 flex w-full flex-col items-center gap-2">
-        <Button className="w-7/12" onClick={() => void handleSubmit()}>
+        <Button
+          className="w-7/12"
+          onClick={() => void handleSubmit()}
+          disabled={isMutating}
+        >
           Sign Up
         </Button>
       </div>

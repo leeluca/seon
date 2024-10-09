@@ -7,10 +7,9 @@ import {
   RefreshCcwIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 
-import { postSignOut } from '~/apis/auth';
-import useAuthStatus, { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import useAuthStatus from '~/apis/hooks/useAuthStatus';
+import usePostSignOut from '~/apis/hooks/usePostSignOut';
 import { useUser } from '~/states/userContext';
 import SignInForm from './SignInForm';
 import { Button } from './ui/button';
@@ -80,6 +79,7 @@ function StatusMenu() {
   const [open, setOpen] = useState(false);
 
   const togglePopover = () => setOpen((prev) => !prev);
+  const { trigger: signOut, isMutating } = usePostSignOut();
 
   if (isLoading) {
     return (
@@ -115,7 +115,11 @@ function StatusMenu() {
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
                 connected={connected}
-                onSignInCallback={() => setOpen(false)}
+                onSignInCallback={() => {
+                  setOpen(false);
+
+                  toast.success(`Welcome back, ${user?.name}!`);
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -136,12 +140,10 @@ function StatusMenu() {
 
               <Button
                 variant="outline"
+                disabled={isMutating}
                 // TODO: delete local content and redirect to home page (not implemented)
                 onClick={() => {
-                  void postSignOut().then(() => {
-                    toast.success(`Welcome back, ${user?.name}!`);
-                    void mutate(AUTH_STATUS_KEY);
-                  });
+                  void signOut();
                 }}
               >
                 Sign out
