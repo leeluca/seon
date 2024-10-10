@@ -1,94 +1,244 @@
-import { useState } from 'react';
+import { useForm } from '@tanstack/react-form';
+import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 
-import { postSignUp } from '~/apis/auth';
-import { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import usePostSignUp, { SignUpParams } from '~/apis/hooks/usePostSignUp';
+import { MAX_USER_NAME_LENGTH } from '~/constants';
 import db from '~/lib/database';
 import { useUser, useUserAction } from '~/states/userContext';
+import { cn } from '~/utils';
+import { emailValidator, maxLengthValidator } from '~/utils/validation';
+import FormError from './FormError';
+import FormItem from './FormItem';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Label } from './ui/label';
 
 interface SignInFormProps {
   onSignUpCallback?: () => void;
 }
 function SignUpForm({ onSignUpCallback }: SignInFormProps) {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const user = useUser();
 
+  const { trigger: postSignUp } = usePostSignUp({
+    onSuccess: (result) => {
+      void (async () => {
+        if (result.result) {
+          await db
+            .updateTable('user')
+            .set({
+              useSync: 1,
+              name: result.user.name,
+              email: result.user.email,
+            })
+            .where('id', '=', result.user.id)
+            .execute();
+          const updatedUser = await db
+            .selectFrom('user')
+            .selectAll()
+            .where('id', '=', result.user.id)
+            .executeTakeFirstOrThrow();
+
+          setUser(updatedUser);
+          toast.success(`Welcome, ${updatedUser.name}!`);
+          onSignUpCallback?.();
+        }
+      })();
+    },
+  });
+
   const setUser = useUserAction();
-  async function handleSubmit() {
-    if (!user) return;
-    // TODO: handle error
-    const result = await postSignUp({ uuid: user.id, name, email, password });
 
-    if (result.result) {
-      await db
-        .updateTable('user')
-        .set({ useSync: 1, name: result.user.name, email: result.user.email })
-        .where('id', '=', result.user.id)
-        .execute();
-      const updatedUser = await db
-        .selectFrom('user')
-        .selectAll()
-        .where('id', '=', result.user.id)
-        .executeTakeFirstOrThrow();
-
-      await mutate(AUTH_STATUS_KEY);
-      setUser(updatedUser);
-      onSignUpCallback && onSignUpCallback();
-      toast.success(`Welcome, ${updatedUser.name}!`);
-    }
-  }
-
+  const form = useForm<Omit<SignUpParams, 'uuid'>>({
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+    },
+    validators: {
+      onChange({ value }) {
+        const { name, email, password } = value;
+        if (!name.trim() || !email.trim() || !password.trim()) {
+          return 'Missing required fields';
+        }
+      },
+    },
+    onSubmit: async ({ value }) => {
+      const { name, email, password } = value;
+      if (!user) {
+        return;
+      }
+      await postSignUp({ uuid: user.id, name, email, password });
+    },
+  });
   return (
-    <div className="grid gap-4">
-      <div className="grid gap-4 py-4">
-        <div className="grid grid-cols-3 items-center gap-4">
-          <Label htmlFor="name" className="text-start">
-            Name
-          </Label>
-          <Input
-            id="name"
-            name="name"
-            className="col-span-2"
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="grid grid-cols-3 items-center gap-4">
-          <Label htmlFor="name" className="text-start">
-            Email
-          </Label>
-          <Input
-            id="email"
-            name="email"
-            className="col-span-2"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="grid grid-cols-3 items-center gap-4">
-          <Label htmlFor="password" className="text-start">
-            Password
-          </Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            className="col-span-2"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-          />
-        </div>
-      </div>
-      <div className="mt-2 flex w-full flex-col items-center gap-2">
-        <Button className="w-7/12" onClick={() => void handleSubmit()}>
-          Sign Up
-        </Button>
-      </div>
-    </div>
+    <form
+      className="grid gap-4 py-4"
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        void form.handleSubmit();
+      }}
+    >
+      <FormItem
+        label="Name"
+        labelFor="name"
+        className="grid-cols-3"
+        textClassName="text-start"
+        required
+      >
+        <form.Field
+          name="name"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value.trim()) return 'Name is required';
+              const errorMessage = maxLengthValidator(
+                value,
+                MAX_USER_NAME_LENGTH,
+                'Name',
+              );
+              if (errorMessage) return errorMessage;
+            },
+          }}
+        >
+          {(field) => {
+            const {
+              value,
+              meta: { errors },
+            } = field.state;
+            return (
+              <FormError.Wrapper
+                errors={errors}
+                errorClassName="col-span-2 col-start-2"
+              >
+                <div className="col-span-2">
+                  <Input
+                    id="name"
+                    value={value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    maxLength={100}
+                  />
+                </div>
+              </FormError.Wrapper>
+            );
+          }}
+        </form.Field>
+      </FormItem>
+      <FormItem
+        label="Email"
+        labelFor="email"
+        className="grid-cols-3"
+        textClassName="text-start"
+        required
+      >
+        <form.Field
+          name="email"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value.trim()) return 'Email is required';
+            },
+            onBlur: ({ value }) => {
+              if (!value.trim()) return undefined;
+              return emailValidator(value) || undefined;
+            },
+          }}
+        >
+          {(field) => {
+            const {
+              value,
+              meta: { errors },
+            } = field.state;
+            return (
+              <FormError.Wrapper
+                errors={errors}
+                errorClassName="col-span-2 col-start-2"
+              >
+                <div className="col-span-2">
+                  <Input
+                    id="email"
+                    value={value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    onBlur={field.handleBlur}
+                    maxLength={100}
+                  />
+                </div>
+              </FormError.Wrapper>
+            );
+          }}
+        </form.Field>
+      </FormItem>
+
+      <FormItem
+        label="Password"
+        labelFor="password"
+        className="grid-cols-3"
+        textClassName="text-start"
+        required
+      >
+        <form.Field
+          name="password"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value.trim()) return 'Password is required';
+            },
+            // TODO: validate password with minimum length etc
+            // onBlur: ({ value }) => {
+            //   if (!value) return undefined;
+            //   return passwordValidator(value) || undefined;
+            // },
+          }}
+        >
+          {(field) => {
+            const {
+              value,
+              meta: { errors },
+            } = field.state;
+            return (
+              <FormError.Wrapper
+                errors={errors}
+                errorClassName="col-span-2 col-start-2"
+              >
+                <div className="col-span-2">
+                  <Input
+                    id="password"
+                    type="password"
+                    value={value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    maxLength={100}
+                  />
+                </div>
+              </FormError.Wrapper>
+            );
+          }}
+        </form.Field>
+      </FormItem>
+      <form.Subscribe
+        selector={(state) => [
+          state.isSubmitting,
+          !state.isTouched || !state.canSubmit || state.isSubmitting,
+        ]}
+      >
+        {([isSubmitting, isSubmitDisabled]) => (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <div
+            // TODO: only validate if hovering for > x seconds
+              onMouseEnter={() => void form.validateAllFields('change')}
+              className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
+            >
+              <Button
+                type="submit"
+                className="w-64"
+                disabled={isSubmitDisabled}
+              >
+                {isSubmitting && (
+                  <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
+                )}
+                Sign Up
+              </Button>
+            </div>
+          </div>
+        )}
+      </form.Subscribe>
+    </form>
   );
 }
 

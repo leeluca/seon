@@ -14,6 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "@hono/node-server": "^1.12.2",
+    "@hono/typebox-validator": "^0.2.5",
+    "@sinclair/typebox": "^0.33.13",
     "drizzle-orm": "^0.33.0",
     "hono": "^4.5.11",
     "jose": "^5.9.3",

@@ -7,10 +7,9 @@ import {
   RefreshCcwIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 
-import { postSignOut } from '~/apis/auth';
-import useAuthStatus, { AUTH_STATUS_KEY } from '~/apis/hooks/useAuthStatus';
+import useAuthStatus from '~/apis/hooks/useAuthStatus';
+import usePostSignOut from '~/apis/hooks/usePostSignOut';
 import { useUser } from '~/states/userContext';
 import SignInForm from './SignInForm';
 import { Button } from './ui/button';
@@ -80,6 +79,7 @@ function StatusMenu() {
   const [open, setOpen] = useState(false);
 
   const togglePopover = () => setOpen((prev) => !prev);
+  const { trigger: signOut, isMutating } = usePostSignOut();
 
   if (isLoading) {
     return (
@@ -111,11 +111,18 @@ function StatusMenu() {
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent sideOffset={5}>
+            <PopoverContent
+              className={!isSignedIn ? 'mr-8' : undefined}
+              sideOffset={5}
+            >
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
                 connected={connected}
-                onSignInCallback={() => setOpen(false)}
+                onSignInCallback={() => {
+                  setOpen(false);
+
+                  toast.success(`Welcome back, ${user?.name}!`);
+                }}
               />
             </PopoverContent>
           </Popover>
@@ -127,7 +134,7 @@ function StatusMenu() {
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[121px]" sideOffset={5}>
+            <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
               <div className="space-y-2 pb-4">
                 <h3 className="text-balance font-medium leading-none">
                   Hello, {user?.name}!
@@ -136,12 +143,10 @@ function StatusMenu() {
 
               <Button
                 variant="outline"
+                disabled={isMutating}
                 // TODO: delete local content and redirect to home page (not implemented)
                 onClick={() => {
-                  void postSignOut().then(() => {
-                    toast.success(`Welcome back, ${user?.name}!`);
-                    void mutate(AUTH_STATUS_KEY);
-                  });
+                  void signOut();
                 }}
               >
                 Sign out

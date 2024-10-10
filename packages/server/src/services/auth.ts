@@ -10,12 +10,21 @@ import { getCookie, setCookie } from 'hono/cookie';
 import { decode } from 'hono/jwt';
 import * as jose from 'jose';
 
-import { COOKIE_SECURITY_SETTINGS } from '../src/constants/config';
-import { db } from '../src/db/db';
+import {
+  COOKIE_SECURITY_SETTINGS,
+  JWT_ACCESS_EXPIRATION,
+  JWT_DB_ACCESS_EXPIRATION,
+  JWT_DB_PRIVATE_KEY,
+  JWT_PRIVATE_PEM,
+  JWT_PUBLIC_PEM,
+  JWT_REFRESH_EXPIRATION,
+  JWT_REFRESH_SECRET,
+} from '../constants/config';
+import { db } from '../db/db';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
-} from '../src/db/schema';
+} from '../db/schema';
 
 const scryptAsync = promisify(scrypt);
 
@@ -50,27 +59,6 @@ export interface JWTTokenPayload extends JWTPayload {
   exp: number;
   iat: number;
   aud: string;
-}
-
-// TODO: validate and load env variables elsewhere
-process.loadEnvFile();
-const JWT_PRIVATE_PEM = process.env.JWT_PRIVATE_KEY;
-const JWT_PUBLIC_PEM = process.env.JWT_PUBLIC_KEY;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
-const JWT_DB_PRIVATE_KEY = process.env.JWT_DB_PRIVATE_KEY;
-const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION;
-const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION;
-const JWT_DB_ACCESS_EXPIRATION = process.env.JWT_DB_ACCESS_EXPIRATION;
-if (
-  !JWT_PRIVATE_PEM ||
-  !JWT_PUBLIC_PEM ||
-  !JWT_REFRESH_SECRET ||
-  !JWT_DB_PRIVATE_KEY ||
-  !JWT_ACCESS_EXPIRATION ||
-  !JWT_REFRESH_EXPIRATION ||
-  !JWT_DB_ACCESS_EXPIRATION
-) {
-  throw new Error('Missing JWT parameters in environment variables');
 }
 
 const [jwtPrivateKey, jwtPublicKey] = await Promise.all([

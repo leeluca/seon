@@ -1,78 +1,74 @@
-import type { AbstractPowerSyncDatabase } from '@powersync/web';
-
-import { useMemo, useRef, useState } from 'react';
-import { usePowerSync, useQuery } from '@powersync/react';
+import { useMemo, useState } from 'react';
+import { useQuery } from '@powersync/react';
 import { PlusIcon } from '@radix-ui/react-icons';
-import { isSameDay } from 'date-fns';
+import { useForm } from '@tanstack/react-form';
+import { format } from 'date-fns';
+import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
-import { Database } from '~/lib/powersync/AppSchema';
-import { generateUUIDs } from '~/utils';
-
-function findSameDayEntry(date: Date, entryDate: Date) {
-  return isSameDay(date, entryDate);
-}
+import { cn, generateUUIDs } from '~/utils';
+import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
+import FormError from './FormError';
+import FormItem from './FormItem';
 
 async function handleSubmit(
-  event: React.FormEvent<HTMLFormElement>,
-  dbInstance: AbstractPowerSyncDatabase,
-  { date }: { date: Date },
-  onSubmitCallback: () => void = () => {},
+  { value, date, goalId }: { value: number; date: Date; goalId: string },
+  onSubmitCallback: () => void,
 ) {
-  event.preventDefault();
-
-  const $form = event.currentTarget;
-  const formData = new FormData($form);
-  const data = Object.fromEntries(formData.entries());
-
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
-  const querySameDateEntry = `
-  SELECT * FROM entry
-  WHERE goalId = '${data.goalId as string}'
-  AND date >= '${startOfDay.toISOString()}'
-  AND date <= '${endOfDay.toISOString()}'
-  LIMIT 1;
-`;
   try {
-    const sameDayEntry = (await dbInstance
-      .get(querySameDateEntry)
-      .catch(() => null)) as Database['entry'] | null;
+    const sameDayEntry = await db
+      .selectFrom('entry')
+      .selectAll()
+      .where((eb) =>
+        eb.and([
+          eb('goalId', '=', goalId),
+          eb('date', '>=', startOfDay.toISOString()),
+          eb('date', '<=', endOfDay.toISOString()),
+        ]),
+      )
+      .executeTakeFirst();
 
-    //TODO: rewerite  queries using type query builder, implement validation
     const entryOperation = sameDayEntry
-      ? `
-        UPDATE entry
-        SET value = ${Number(data.value)}
-        WHERE id = '${sameDayEntry.id}';
-      `
+      ? db.updateTable('entry').set({ value }).where('id', '=', sameDayEntry.id)
       : (() => {
           const { uuid, shortUuid } = generateUUIDs();
-          return `
-        INSERT INTO entry (id, shortId, goalId, value, date, createdAt, updatedAt)
-        VALUES ('${uuid}', '${shortUuid}', '${data.goalId as string}', ${Number(data.value)}, '${new Date(date).toISOString()}', '${new Date(date).toISOString()}', '${new Date(date).toISOString()}');
-      `;
+          return db.insertInto('entry').values({
+            id: uuid,
+            shortId: shortUuid,
+            goalId: goalId,
+            value,
+            date: date.toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
         })();
 
     const updatedGoalValue = sameDayEntry
-      ? -Number(sameDayEntry.value) + Number(data.value)
-      : Number(data.value);
-    const goalUpdateOperation = `UPDATE goal SET currentValue = currentValue + ${updatedGoalValue} WHERE id = '${data.goalId as string}';`;
+      ? -Number(sameDayEntry.value) + value
+      : value;
+    const goalUpdateOperation = db
+      .updateTable('goal')
+      .set((eb) => ({
+        currentValue: eb('currentValue', '+', updatedGoalValue),
+      }))
+      .where('id', '=', goalId);
 
-    await dbInstance.writeTransaction(async (tx) => {
-      await tx.execute(entryOperation);
-      await tx.execute(goalUpdateOperation);
+    await db.transaction().execute(async (tx) => {
+      await tx.executeQuery(entryOperation);
+      await tx.executeQuery(goalUpdateOperation);
     });
 
     toast.success('Successfully added entry ');
@@ -94,75 +90,189 @@ const NewEntryForm = ({
   id,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
-  const powersync = usePowerSync();
-
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date(),
-  );
-
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const todayEntry = useMemo(
+  const entriesMap = useMemo(
     () =>
-      selectedDate &&
-      entries.find((entry) =>
-        findSameDayEntry(selectedDate, new Date(entry.date)),
+      new Map(
+        entries.map((entry) => [new Date(entry.date).toDateString(), entry]),
       ),
-    [selectedDate, entries],
+    [entries],
   );
+  const form = useForm<{ value?: number; date: Date }>({
+    defaultValues: {
+      date: new Date(),
+      value: 0,
+    },
+    validators: {
+      onChange({ value }) {
+        const { value: inputtedValue } = value;
+        if (!inputtedValue) {
+          return 'Missing required fields';
+        }
+      },
+    },
+    onSubmit: async ({ value }) => {
+      const { value: inputtedValue, date } = value;
+      if (!inputtedValue) {
+        return;
+      }
+      await handleSubmit(
+        {
+          value: inputtedValue,
+          date,
+          goalId: id,
+        },
+        onSubmitCallback,
+      );
+    },
+  });
 
   return (
     <form
-      // method="POST"
-      // action={formAction}
-      ref={formRef}
       onSubmit={(e) => {
-        void handleSubmit(
-          e,
-          powersync,
-          { date: selectedDate || new Date() },
-          onSubmitCallback,
-        );
+        e.preventDefault();
+        e.stopPropagation();
+        void form.handleSubmit();
       }}
     >
       <div className="grid gap-4">
         <h4 className="mb-1 font-medium leading-none">New entry</h4>
         <div className="grid gap-2">
-          <Input type="hidden" name="goalId" value={id} />
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="date">Date</Label>
-            <DatePicker
-              id="date"
-              defaultDate={new Date()}
-              date={selectedDate}
-              setDate={setSelectedDate}
-              className="col-span-2"
-            />
-          </div>
-          <div className="grid grid-cols-3 items-center gap-4">
-            <Label htmlFor="value">How many?</Label>
-            <Input
-              id="value"
-              name="value"
-              className="col-span-2 h-8"
-              type="number"
-              defaultValue={todayEntry?.value}
-              key={selectedDate?.toISOString()}
-            />
-          </div>
-          <Button
-            type="submit"
-            // name="_action"
-            value="add-entry"
-            // disabled={fetcher.state === 'submitting'}
-            className="mt-2"
+          <FormItem
+            label="Date"
+            labelFor="entry-date"
+            className="grid grid-cols-3 items-center gap-4"
+            textClassName="text-start"
           >
-            Submit
-          </Button>
+            <form.Field name="date">
+              {(field) => {
+                const {
+                  value,
+                  meta: { errors },
+                } = field.state;
+                return (
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-2 col-start-2"
+                  >
+                    <div className="col-span-2">
+                      {/* FIXME: only values between goal start and end dates should be selectable  */}
+                      <DatePicker
+                        id="entry-date"
+                        defaultDate={value}
+                        date={value}
+                        setDate={(date) => date && field.handleChange(date)}
+                      />
+                    </div>
+                  </FormError.Wrapper>
+                );
+              }}
+            </form.Field>
+          </FormItem>
+
+          <FormItem
+            label="How many?"
+            labelFor="entry-value"
+            className="grid grid-cols-3 items-center"
+            textClassName="text-start"
+            required
+          >
+            <form.Field
+              name="value"
+              validators={{
+                onChange: ({ value }) => {
+                  return !value && 'Set a target value for your goal.';
+                },
+              }}
+            >
+              {(field) => {
+                const {
+                  value,
+                  meta: { errors },
+                } = field.state;
+                return (
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-2 col-start-2"
+                  >
+                    <div className="col-span-2">
+                      <Input
+                        id="entry-value"
+                        type="number"
+                        // Removes leading zeros
+                        value={value?.toString()}
+                        onKeyDown={(e) => blockNonNumberInput(e)}
+                        onChange={(e) => {
+                          parseInputtedNumber(
+                            e.target.value,
+                            field.handleChange,
+                          );
+                        }}
+                        placeholder="Numbers only"
+                        min={0}
+                        max={MAX_INPUT_NUMBER}
+                      />
+                    </div>
+                    <form.Subscribe selector={(state) => [state.values.date]}>
+                      {([date]) => {
+                        const sameDayEntry = entriesMap.get(
+                          date.toDateString(),
+                        );
+
+                        if (!sameDayEntry) {
+                          return null;
+                        }
+                        return (
+                          <div className="col-span-2 col-start-2">
+                            <div className="flex items-center text-[0.8rem] font-medium text-gray-500">
+                              <InfoIcon size={18} className="mr-1 shrink-0" />
+                              <p>
+                                Your entry of{' '}
+                                <span className="italic">
+                                  {sameDayEntry.value}
+                                </span>{' '}
+                                for {format(sameDayEntry.date, 'PP')} will be
+                                overwritten.
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      }}
+                    </form.Subscribe>
+                  </FormError.Wrapper>
+                );
+              }}
+            </form.Field>
+          </FormItem>
+          <form.Subscribe
+            selector={(state) => [
+              state.isSubmitting,
+              !state.isTouched || !state.canSubmit || state.isSubmitting,
+            ]}
+          >
+            {([isSubmitting, isSubmitDisabled]) => (
+              <div
+                onMouseEnter={() => void form.validateAllFields('change')}
+                className={cn('grid grid-cols-3', {
+                  'cursor-not-allowed': isSubmitDisabled,
+                })}
+              >
+                <Button
+                  type="submit"
+                  disabled={isSubmitDisabled}
+                  className="col-span-full mt-2"
+                >
+                  {isSubmitting && (
+                    <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
+                  )}
+                  Save
+                </Button>
+              </div>
+            )}
+          </form.Subscribe>
         </div>
       </div>
     </form>
@@ -187,7 +297,7 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
           <PlusIcon />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80">
+      <PopoverContent className="w-fit max-w-[325px]">
         <NewEntryForm id={id} onSubmitCallback={togglePopover} />
       </PopoverContent>
     </Popover>

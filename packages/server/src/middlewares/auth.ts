@@ -8,7 +8,7 @@ import {
   JWTTokenPayload,
   validateAccessToken,
   validateRefreshToken,
-} from '../../services/auth';
+} from '../services/auth';
 
 export const validateAccess = createMiddleware<{
   Variables: { jwtAccessToken: string; jwtAccessPayload: JWTTokenPayload };
