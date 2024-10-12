@@ -5,12 +5,17 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 import './tailwind.css';
 
 import { routeTree } from './routeTree.gen';
-import UserProvider, { useUser } from './states/userContext';
+import UserProvider, {
+  authContextInitialState,
+  useAuthContext,
+  useUser,
+} from './states/userContext';
 
 const router = createRouter({
   routeTree,
   context: {
     user: undefined,
+    authStatus: authContextInitialState,
   },
 });
 
@@ -22,7 +27,8 @@ declare module '@tanstack/react-router' {
 
 function InnerApp() {
   const user = useUser();
-  return <RouterProvider router={router} context={{ user }} />;
+  const authStatus = useAuthContext();
+  return <RouterProvider router={router} context={{ user, authStatus }} />;
 }
 
 function App() {

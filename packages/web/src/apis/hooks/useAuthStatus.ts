@@ -1,9 +1,19 @@
+import type { useUser } from '~/states/userContext';
 import type { APIError } from '~/utils/errors';
 
 import useSWR from 'swr';
 
-import { useUser } from '~/states/userContext';
 import fetcher from '../fetcher';
+
+const getInitialData = () => {
+  const sessionExp = localStorage.getItem('sessionExp');
+  const currentTime = Math.floor(Date.now() / 1000);
+
+  if (!sessionExp || Number(sessionExp) < currentTime) {
+    return undefined;
+  }
+  return { result: true, expiresAt: Number(sessionExp) };
+};
 
 interface AuthStatus {
   result: boolean;
@@ -12,8 +22,7 @@ interface AuthStatus {
 
 export const AUTH_STATUS_KEY = `/api/auth/status`;
 
-function useAuthStatus() {
-  const user = useUser();
+function useAuthStatus(user: ReturnType<typeof useUser>) {
   const { data, error, isLoading } = useSWR<AuthStatus, APIError>(
     user?.useSync ? AUTH_STATUS_KEY : null,
     (url: string) => fetcher(url),
@@ -21,7 +30,7 @@ function useAuthStatus() {
       errorRetryCount: 3,
       focusThrottleInterval: 30000, // 30 sec
       dedupingInterval: 5000, // 5 sec
-      // fallbackData -> get from local storage
+      fallbackData: user && getInitialData(),
       onErrorRetry(err, _key, _config, _revalidate, { retryCount }) {
         // Never retry for specific status codes.
         const notRetryStatuses = new Set([404, 401, 403]);
@@ -34,6 +43,9 @@ function useAuthStatus() {
         if (retryCount >= 5) return;
 
         return true;
+      },
+      onSuccess: (data) => {
+        localStorage.setItem('sessionExp', JSON.stringify(data.expiresAt));
       },
     },
   );

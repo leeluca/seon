@@ -1,3 +1,5 @@
+import type { AuthContextType } from '~/states/userContext';
+
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
@@ -7,6 +9,7 @@ import SyncProvider from '~/states/syncContext';
 
 interface RouterContext {
   user?: Database['user'];
+  authStatus: AuthContextType;
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,

@@ -8,9 +8,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useAuthStatus from '~/apis/hooks/useAuthStatus';
 import usePostSignOut from '~/apis/hooks/usePostSignOut';
-import { useUser } from '~/states/userContext';
+import { useAuthContext, useUser } from '~/states/userContext';
 import SignInForm from './SignInForm';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -68,11 +67,8 @@ function StatusMenu() {
     connected,
     dataFlowStatus: { downloading, uploading },
   } = useStatus();
-  const {
-    data: { isSignedIn },
-    isLoading,
-  } = useAuthStatus();
   const user = useUser();
+  const { isSignedIn, isLoading } = useAuthContext();
 
   const isSyncing = downloading || uploading;
 
