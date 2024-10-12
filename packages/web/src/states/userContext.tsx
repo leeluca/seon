@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
-import { generateOfflineUser } from '~/utils';
 
-const UserContext = React.createContext<Database['user'] | null>(null);
+const UserContext = React.createContext<Database['user'] | undefined>(
+  undefined,
+);
 export const useUser = () => React.useContext(UserContext);
 
-const UserActionContext = React.createContext<React.Dispatch<
-  React.SetStateAction<Database['user'] | null>
-> | null>(null);
+const UserActionContext = React.createContext<
+  React.Dispatch<React.SetStateAction<Database['user'] | undefined>> | undefined
+>(undefined);
 
 export const useUserAction = () => {
   const context = React.useContext(UserActionContext);
@@ -19,31 +20,35 @@ export const useUserAction = () => {
   return context;
 };
 
+const existingUser = await db.selectFrom('user').selectAll().executeTakeFirst();
+
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<Database['user'] | null>(null);
+  const [user, setUser] = useState<Database['user'] | undefined>(existingUser);
 
-  useEffect(() => {
-    async function initUser() {
-      let existingUser = await db
-        .selectFrom('user')
-        .selectAll()
-        .executeTakeFirst();
+  // useEffect(() => {
+  //   async function initUser() {
+  //     // query on home route and setUser
+  //     let existingUser = await db
+  //       .selectFrom('user')
+  //       .selectAll()
+  //       .executeTakeFirst();
 
-      if (!existingUser) {
-        const newUser = generateOfflineUser();
-        existingUser = await db
-          .insertInto('user')
-          .values(newUser)
-          .returningAll()
-          .executeTakeFirstOrThrow();
-      }
+  //     if (!existingUser) {
+  //       // generate on click
+  //       const newUser = generateOfflineUser();
+  //       existingUser = await db
+  //         .insertInto('user')
+  //         .values(newUser)
+  //         .returningAll()
+  //         .executeTakeFirstOrThrow();
+  //     }
 
-      setUser(existingUser);
-    }
+  //     setUser(existingUser);
+  //   }
 
-    // TODO: error handling
-    void initUser();
-  }, []);
+  //   // TODO: error handling
+  //   void initUser();
+  // }, []);
 
   return (
     <UserContext.Provider value={user}>

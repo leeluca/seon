@@ -13,29 +13,29 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SignupImport } from './routes/signup'
+import { Route as MainImport } from './routes/_main'
 
 // Create Virtual Routes
 
-const SignupLazyImport = createFileRoute('/signup')()
 const AboutLazyImport = createFileRoute('/about')()
-const MainLazyImport = createFileRoute('/_main')()
 const IndexLazyImport = createFileRoute('/')()
 const MainGoalsLazyImport = createFileRoute('/_main/goals')()
 const MainGoalsNewLazyImport = createFileRoute('/_main/goals/new')()
 
 // Create/Update Routes
 
-const SignupLazyRoute = SignupLazyImport.update({
-  path: '/signup',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
-
 const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
-const MainLazyRoute = MainLazyImport.update({
+const SignupRoute = SignupImport.update({
+  path: '/signup',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
+
+const MainRoute = MainImport.update({
   id: '/_main',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/_main.lazy').then((d) => d.Route))
@@ -47,7 +47,7 @@ const IndexLazyRoute = IndexLazyImport.update({
 
 const MainGoalsLazyRoute = MainGoalsLazyImport.update({
   path: '/goals',
-  getParentRoute: () => MainLazyRoute,
+  getParentRoute: () => MainRoute,
 } as any).lazy(() => import('./routes/_main.goals.lazy').then((d) => d.Route))
 
 const MainGoalsNewLazyRoute = MainGoalsNewLazyImport.update({
@@ -72,7 +72,14 @@ declare module '@tanstack/react-router' {
       id: '/_main'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof MainLazyImport
+      preLoaderRoute: typeof MainImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupImport
       parentRoute: typeof rootRoute
     }
     '/about': {
@@ -82,19 +89,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/_main/goals': {
       id: '/_main/goals'
       path: '/goals'
       fullPath: '/goals'
       preLoaderRoute: typeof MainGoalsLazyImport
-      parentRoute: typeof MainLazyImport
+      parentRoute: typeof MainImport
     }
     '/_main/goals/new': {
       id: '/_main/goals/new'
@@ -120,32 +120,30 @@ const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
   MainGoalsLazyRouteChildren,
 )
 
-interface MainLazyRouteChildren {
+interface MainRouteChildren {
   MainGoalsLazyRoute: typeof MainGoalsLazyRouteWithChildren
 }
 
-const MainLazyRouteChildren: MainLazyRouteChildren = {
+const MainRouteChildren: MainRouteChildren = {
   MainGoalsLazyRoute: MainGoalsLazyRouteWithChildren,
 }
 
-const MainLazyRouteWithChildren = MainLazyRoute._addFileChildren(
-  MainLazyRouteChildren,
-)
+const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '': typeof MainLazyRouteWithChildren
+  '': typeof MainRouteWithChildren
+  '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
-  '/signup': typeof SignupLazyRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
   '/goals/new': typeof MainGoalsNewLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '': typeof MainLazyRouteWithChildren
+  '': typeof MainRouteWithChildren
+  '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
-  '/signup': typeof SignupLazyRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
   '/goals/new': typeof MainGoalsNewLazyRoute
 }
@@ -153,24 +151,24 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/_main': typeof MainLazyRouteWithChildren
+  '/_main': typeof MainRouteWithChildren
+  '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
-  '/signup': typeof SignupLazyRoute
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
   '/_main/goals/new': typeof MainGoalsNewLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/about' | '/signup' | '/goals' | '/goals/new'
+  fullPaths: '/' | '' | '/signup' | '/about' | '/goals' | '/goals/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/about' | '/signup' | '/goals' | '/goals/new'
+  to: '/' | '' | '/signup' | '/about' | '/goals' | '/goals/new'
   id:
     | '__root__'
     | '/'
     | '/_main'
-    | '/about'
     | '/signup'
+    | '/about'
     | '/_main/goals'
     | '/_main/goals/new'
   fileRoutesById: FileRoutesById
@@ -178,16 +176,16 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  MainLazyRoute: typeof MainLazyRouteWithChildren
+  MainRoute: typeof MainRouteWithChildren
+  SignupRoute: typeof SignupRoute
   AboutLazyRoute: typeof AboutLazyRoute
-  SignupLazyRoute: typeof SignupLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  MainLazyRoute: MainLazyRouteWithChildren,
+  MainRoute: MainRouteWithChildren,
+  SignupRoute: SignupRoute,
   AboutLazyRoute: AboutLazyRoute,
-  SignupLazyRoute: SignupLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -204,24 +202,24 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_main",
-        "/about",
-        "/signup"
+        "/signup",
+        "/about"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
     "/_main": {
-      "filePath": "_main.lazy.tsx",
+      "filePath": "_main.tsx",
       "children": [
         "/_main/goals"
       ]
     },
+    "/signup": {
+      "filePath": "signup.tsx"
+    },
     "/about": {
       "filePath": "about.lazy.tsx"
-    },
-    "/signup": {
-      "filePath": "signup.lazy.tsx"
     },
     "/_main/goals": {
       "filePath": "_main.goals.lazy.tsx",
