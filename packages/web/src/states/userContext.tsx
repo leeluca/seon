@@ -42,30 +42,7 @@ const existingUser = await db.selectFrom('user').selectAll().executeTakeFirst();
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<Database['user'] | undefined>(existingUser);
   const { data: authStatus, isLoading } = useAuthStatus(user);
-  // useEffect(() => {
-  //   async function initUser() {
-  //     // query on home route and setUser
-  //     let existingUser = await db
-  //       .selectFrom('user')
-  //       .selectAll()
-  //       .executeTakeFirst();
 
-  //     if (!existingUser) {
-  //       // generate on click
-  //       const newUser = generateOfflineUser();
-  //       existingUser = await db
-  //         .insertInto('user')
-  //         .values(newUser)
-  //         .returningAll()
-  //         .executeTakeFirstOrThrow();
-  //     }
-
-  //     setUser(existingUser);
-  //   }
-
-  //   // TODO: error handling
-  //   void initUser();
-  // }, []);
   const authData = useMemo(
     () => ({
       isSignedIn: authStatus.isSignedIn,
