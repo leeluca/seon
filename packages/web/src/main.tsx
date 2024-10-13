@@ -11,7 +11,7 @@ import UserProvider, {
   useUser,
 } from './states/userContext';
 
-const router = createRouter({
+export const router = createRouter({
   routeTree,
   context: {
     user: undefined,

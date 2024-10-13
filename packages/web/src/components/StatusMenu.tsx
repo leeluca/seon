@@ -140,7 +140,7 @@ function StatusMenu() {
               <Button
                 variant="outline"
                 disabled={isMutating}
-                // TODO: delete local content and redirect to home page (not implemented)
+                // TODO: alert if there is unsynced data
                 onClick={() => {
                   void signOut();
                 }}
