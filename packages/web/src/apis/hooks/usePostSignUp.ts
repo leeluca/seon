@@ -17,7 +17,13 @@ export interface SignUpParams {
 export interface PostSignUpResponse {
   result: boolean;
   expiresAt: number;
-  user: { name: string; email: string; id: string; shortId: string };
+  user: {
+    name: string;
+    email: string;
+    id: string;
+    shortId: string;
+    useSync: true;
+  };
 }
 interface usePostSignUpProps {
   onSuccess?: (data: PostSignUpResponse) => void;

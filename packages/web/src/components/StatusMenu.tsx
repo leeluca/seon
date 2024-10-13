@@ -89,7 +89,7 @@ function StatusMenu() {
     <>
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
-          <Button size="icon-small" variant="ghost">
+          <Button size="icon-sm" variant="ghost">
             <RefreshCcwIcon
               size={18}
               className="rotate-180 transform animate-spin"
@@ -97,13 +97,13 @@ function StatusMenu() {
           </Button>
         )}
         {connected ? (
-          <Button>
+          <Button size="icon-sm" variant="ghost">
             <CloudIcon size={18} />
           </Button>
         ) : (
           <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
-              <Button size="icon-small" variant="ghost">
+              <Button size="icon-sm" variant="ghost">
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
@@ -126,7 +126,7 @@ function StatusMenu() {
         {isSignedIn && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-small" variant="ghost">
+              <Button size="icon-sm" variant="ghost">
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>

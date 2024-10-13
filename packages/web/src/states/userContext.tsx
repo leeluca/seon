@@ -4,13 +4,19 @@ import useAuthStatus from '~/apis/hooks/useAuthStatus';
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
 
-const UserContext = React.createContext<Database['user'] | undefined>(
+interface IUserContext
+  extends Omit<Database['user'], 'updatedAt' | 'createdAt'> {
+  updatedAt?: string;
+  createdAt?: string;
+}
+
+const UserContext = React.createContext<IUserContext | undefined>(
   undefined,
 );
 export const useUser = () => React.useContext(UserContext);
 
 const UserActionContext = React.createContext<
-  React.Dispatch<React.SetStateAction<Database['user'] | undefined>> | undefined
+  React.Dispatch<React.SetStateAction<IUserContext | undefined>> | undefined
 >(undefined);
 
 export const useUserAction = () => {
@@ -21,7 +27,7 @@ export const useUserAction = () => {
   return context;
 };
 
-export interface AuthContextType {
+export interface IAuthContext {
   isSignedIn: boolean;
   expiresAt: number;
   isLoading: boolean;
@@ -31,7 +37,7 @@ export const authContextInitialState = {
   expiresAt: 0,
   isLoading: false,
 };
-const AuthContext = React.createContext<AuthContextType>(
+const AuthContext = React.createContext<IAuthContext>(
   authContextInitialState,
 );
 
@@ -40,7 +46,7 @@ export const useAuthContext = () => React.useContext(AuthContext);
 const existingUser = await db.selectFrom('user').selectAll().executeTakeFirst();
 
 const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<Database['user'] | undefined>(existingUser);
+  const [user, setUser] = useState<IUserContext | undefined>(existingUser);
   const { data: authStatus, isLoading } = useAuthStatus(user);
 
   const authData = useMemo(

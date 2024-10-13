@@ -44,7 +44,9 @@ function Index() {
             <div>
               <h5 className="mb-1 text-sm font-medium">Already a user?</h5>
               <Button size="lg">
-                <Link to="/signin" preload="intent">Sign In</Link>
+                <Link to="/signin" preload="intent">
+                  Sign In
+                </Link>
               </Button>
             </div>
             <div>

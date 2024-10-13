@@ -1,15 +1,14 @@
-import type { AuthContextType } from '~/states/userContext';
+import type { IAuthContext, useUser } from '~/states/userContext';
 
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import { Toaster } from '~/components/ui/sonner';
-import { Database } from '~/lib/powersync/AppSchema';
 import SyncProvider from '~/states/syncContext';
 
 interface RouterContext {
-  user?: Database['user'];
-  authStatus: AuthContextType;
+  user: ReturnType<typeof useUser>;
+  authStatus: IAuthContext;
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,

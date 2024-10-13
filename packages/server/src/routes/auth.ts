@@ -58,6 +58,13 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   return c.json({
     result: true,
     expiresAt: Math.floor(Date.now() / 1000) + JWT.JWT_ACCESS_EXPIRATION,
+    user: {
+      name: user.name,
+      email: user.email,
+      id: user.id,
+      shortId: user.shortId,
+      useSync: true,
+    },
   });
 });
 
@@ -108,7 +115,7 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
 
   return c.json({
     result: true,
-    user: { name: savedName, email: savedEmail, id, shortId },
+    user: { name: savedName, email: savedEmail, id, shortId, useSync: true },
     expiresAt: accessTokenPayload.exp,
   });
 });
