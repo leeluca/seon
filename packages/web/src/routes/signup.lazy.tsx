@@ -6,7 +6,6 @@ import { Button } from '~/components/ui/button';
 
 export const Route = createLazyFileRoute('/signup')({
   component: SignUp,
-  //   beforeLoad // TODO: if authenticaded redirect to /_main
 });
 
 function SignUp() {

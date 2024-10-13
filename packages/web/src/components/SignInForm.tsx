@@ -2,7 +2,10 @@ import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import { LoaderCircleIcon } from 'lucide-react';
 
-import usePostSignIn, { SignInParams } from '~/apis/hooks/usePostSignIn';
+import usePostSignIn, {
+  PostSignInResponse,
+  SignInParams,
+} from '~/apis/hooks/usePostSignIn';
 import { emailValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
@@ -10,13 +13,13 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 
 interface SignInFormProps {
-  onSignInCallback: () => void;
+  onSignInCallback: (user: PostSignInResponse['user']) => void;
 }
 function SignInForm({ onSignInCallback }: SignInFormProps) {
   const { trigger: postSignIn } = usePostSignIn({
     onSuccess: (data) => {
       if (data.result) {
-        onSignInCallback();
+        onSignInCallback(data.user);
       }
     },
   });
@@ -155,7 +158,11 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 Sign In
               </Button>
             </div>
-            <Link to="/signup" className="text-muted-foreground text-sm">
+            <Link
+              to="/signup"
+              className="text-muted-foreground text-sm"
+              preload="intent"
+            >
               Create account
             </Link>
           </div>

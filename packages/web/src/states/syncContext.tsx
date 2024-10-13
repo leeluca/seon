@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { PowerSyncContext } from '@powersync/react';
 import Logger from 'js-logger';
 
-import useAuthStatus from '~/apis/hooks/useAuthStatus';
 import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { useUser } from './userContext';
+import { useAuthContext, useUser } from './userContext';
 
 const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
 export const useSupabase = () => React.useContext(SupabaseContext);
@@ -15,9 +14,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [powerSync] = useState(powerSyncDb);
 
   const user = useUser();
-  const {
-    data: { isSignedIn },
-  } = useAuthStatus();
+  const { isSignedIn } = useAuthContext();
 
   useEffect(() => {
     if (!user?.useSync || !isSignedIn) return;

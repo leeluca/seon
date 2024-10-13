@@ -6,7 +6,6 @@ import usePostSignUp, { SignUpParams } from '~/apis/hooks/usePostSignUp';
 import { MAX_USER_NAME_LENGTH } from '~/constants';
 import db from '~/lib/database';
 import { useUser, useUserAction } from '~/states/userContext';
-import { cn } from '~/utils';
 import { emailValidator, maxLengthValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
@@ -20,22 +19,22 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
   const user = useUser();
 
   const { trigger: postSignUp } = usePostSignUp({
-    onSuccess: (result) => {
+    onSuccess: ({ result, user }) => {
       void (async () => {
-        if (result.result) {
+        if (result) {
           await db
             .updateTable('user')
             .set({
-              useSync: 1,
-              name: result.user.name,
-              email: result.user.email,
+              useSync: Number(user.useSync),
+              name: user.name,
+              email: user.email,
             })
-            .where('id', '=', result.user.id)
+            .where('id', '=', user.id)
             .execute();
           const updatedUser = await db
             .selectFrom('user')
             .selectAll()
-            .where('id', '=', result.user.id)
+            .where('id', '=', user.id)
             .executeTakeFirstOrThrow();
 
           setUser(updatedUser);
@@ -220,7 +219,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         {([isSubmitting, isSubmitDisabled]) => (
           <div className="mt-4 flex flex-col items-center gap-2">
             <div
-            // TODO: only validate if hovering for > x seconds
+              // TODO: only validate if hovering for > x seconds
               onMouseEnter={() => void form.validateAllFields('change')}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >

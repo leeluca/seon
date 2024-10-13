@@ -3,6 +3,7 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import {
+  getRefreshToken,
   issueRefreshToken,
   JWT,
   JWTTokenPayload,
@@ -11,14 +12,19 @@ import {
 } from '../services/auth';
 
 export const validateAccess = createMiddleware<{
-  Variables: { jwtAccessToken: string; jwtAccessPayload: JWTTokenPayload };
+  Variables: {
+    jwtAccessToken: string;
+    jwtAccessPayload: JWTTokenPayload;
+    jwtRefreshPayload: JWTTokenPayload;
+  };
 }>(async (c, next) => {
   // validate access token
   const { accessPayload, accessToken } = await validateAccessToken(c);
   if (accessPayload && accessToken) {
+    const { refreshPayload } = await getRefreshToken(c);
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
-
+    refreshPayload && c.set('jwtRefreshPayload', refreshPayload);
     await next();
     return;
   }
@@ -34,7 +40,7 @@ export const validateAccess = createMiddleware<{
   // if refresh token is valid, issue new access and refresh tokens
   const [
     { token: newAccessToken, payload: newAccessTokenPayload },
-    newRefreshToken,
+    { token: newRefreshToken, payload: newRefreshTokenPayload },
   ] = await Promise.all([
     JWT.signWithPayload(refreshPayload.sub, 'access'),
     issueRefreshToken(refreshPayload.sub, refreshToken),
@@ -54,6 +60,7 @@ export const validateAccess = createMiddleware<{
   });
   c.set('jwtAccessToken', newAccessToken);
   c.set('jwtAccessPayload', newAccessTokenPayload);
+  c.set('jwtRefreshPayload', newRefreshTokenPayload);
 
   await next();
 });

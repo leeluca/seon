@@ -12,9 +12,16 @@ export interface SignInParams {
   email: string;
   password: string;
 }
-interface PostSignInResponse {
+export interface PostSignInResponse {
   result: boolean;
   expiresAt: number;
+  user: {
+    name: string;
+    email: string;
+    id: string;
+    shortId: string;
+    useSync: true;
+  };
 }
 interface usePostSignInProps {
   onSuccess?: (data: PostSignInResponse) => void;

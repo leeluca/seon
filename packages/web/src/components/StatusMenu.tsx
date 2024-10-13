@@ -8,9 +8,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useAuthStatus from '~/apis/hooks/useAuthStatus';
 import usePostSignOut from '~/apis/hooks/usePostSignOut';
-import { useUser } from '~/states/userContext';
+import { useAuthContext, useUser } from '~/states/userContext';
 import SignInForm from './SignInForm';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -68,11 +67,8 @@ function StatusMenu() {
     connected,
     dataFlowStatus: { downloading, uploading },
   } = useStatus();
-  const {
-    data: { isSignedIn },
-    isLoading,
-  } = useAuthStatus();
   const user = useUser();
+  const { isSignedIn, isLoading } = useAuthContext();
 
   const isSyncing = downloading || uploading;
 
@@ -93,7 +89,7 @@ function StatusMenu() {
     <>
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
-          <Button size="icon-small" variant="ghost">
+          <Button size="icon-sm" variant="ghost">
             <RefreshCcwIcon
               size={18}
               className="rotate-180 transform animate-spin"
@@ -101,13 +97,13 @@ function StatusMenu() {
           </Button>
         )}
         {connected ? (
-          <Button>
+          <Button size="icon-sm" variant="ghost">
             <CloudIcon size={18} />
           </Button>
         ) : (
           <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
-              <Button size="icon-small" variant="ghost">
+              <Button size="icon-sm" variant="ghost">
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
@@ -130,7 +126,7 @@ function StatusMenu() {
         {isSignedIn && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-small" variant="ghost">
+              <Button size="icon-sm" variant="ghost">
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
@@ -144,7 +140,7 @@ function StatusMenu() {
               <Button
                 variant="outline"
                 disabled={isMutating}
-                // TODO: delete local content and redirect to home page (not implemented)
+                // TODO: alert if there is unsynced data
                 onClick={() => {
                   void signOut();
                 }}

@@ -221,7 +221,7 @@ export const validateAccessToken = async (c: Context) => {
   return { accessToken, accessPayload };
 };
 
-export const validateRefreshToken = async (c: Context) => {
+export const getRefreshToken = async (c: Context) => {
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 
   const refreshToken = getCookie(c, refreshCookieName);
@@ -229,6 +229,12 @@ export const validateRefreshToken = async (c: Context) => {
   const refreshPayload = refreshToken
     ? await JWT.verify(refreshToken, 'refresh')
     : null;
+
+  return { refreshToken, refreshPayload };
+};
+
+export const validateRefreshToken = async (c: Context) => {
+  const { refreshToken, refreshPayload } = await getRefreshToken(c);
 
   if (!refreshToken || !refreshPayload?.sub) {
     return { refreshToken: null, refreshPayload: null };
@@ -257,12 +263,11 @@ export const validateRefreshToken = async (c: Context) => {
   return { refreshToken, refreshPayload };
 };
 
-export const issueRefreshToken = async (
+const saveNewRefreshToken = async (
   userId: string,
+  newRefreshToken: string,
   oldRefreshToken?: string,
 ) => {
-  const newRefreshToken = await JWT.sign(userId, 'refresh');
-
   await db.transaction(async (tx) => {
     if (oldRefreshToken) {
       await tx
@@ -275,7 +280,30 @@ export const issueRefreshToken = async (
       expiration: new Date(Date.now() + JWT.JWT_REFRESH_EXPIRATION * 1000),
     });
   });
-  return newRefreshToken;
+};
+
+type IssueRefreshTokenReturn<T extends boolean> = T extends true
+  ? {
+      token: string;
+      payload: JWTTokenPayload;
+    }
+  : string;
+export const issueRefreshToken = async <T extends boolean = true>(
+  userId: string,
+  oldRefreshToken?: string,
+  shouldReturnPayload: T = true as T,
+): Promise<IssueRefreshTokenReturn<T>> => {
+  const { token: newRefreshToken, payload } = await JWT.signWithPayload(
+    userId,
+    'refresh',
+  );
+
+  await saveNewRefreshToken(userId, newRefreshToken, oldRefreshToken);
+
+  if (shouldReturnPayload) {
+    return { token: newRefreshToken, payload } as IssueRefreshTokenReturn<T>;
+  }
+  return newRefreshToken as IssueRefreshTokenReturn<T>;
 };
 
 export const setJWTCookie = (

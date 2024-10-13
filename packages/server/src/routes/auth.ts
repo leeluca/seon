@@ -47,17 +47,25 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
     });
   }
 
-  const [accessToken, refreshToken] = await Promise.all([
-    JWT.sign(user.id, 'access'),
-    issueRefreshToken(user.id),
-  ]);
+  const [accessToken, { token: refreshToken, payload: refreshPayload }] =
+    await Promise.all([
+      JWT.sign(user.id, 'access'),
+      issueRefreshToken(user.id),
+    ]);
 
   setJWTCookie(c, 'access', accessToken);
   setJWTCookie(c, 'refresh', refreshToken);
 
   return c.json({
     result: true,
-    expiresAt: Math.floor(Date.now() / 1000) + JWT.JWT_ACCESS_EXPIRATION,
+    expiresAt: refreshPayload.exp,
+    user: {
+      name: user.name,
+      email: user.email,
+      id: user.id,
+      shortId: user.shortId,
+      useSync: true,
+    },
   });
 });
 
@@ -97,28 +105,25 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     .values(newUser)
     .returning();
 
-  const [{ token: accessToken, payload: accessTokenPayload }, refreshToken] =
-    await Promise.all([
-      JWT.signWithPayload(id, 'access'),
-      issueRefreshToken(id),
-    ]);
+  const [accessToken, { token: refreshToken, payload: refreshPayload }] =
+    await Promise.all([JWT.sign(id, 'access'), issueRefreshToken(id)]);
 
   setJWTCookie(c, 'access', accessToken);
   setJWTCookie(c, 'refresh', refreshToken);
 
   return c.json({
     result: true,
-    user: { name: savedName, email: savedEmail, id, shortId },
-    expiresAt: accessTokenPayload.exp,
+    user: { name: savedName, email: savedEmail, id, shortId, useSync: true },
+    expiresAt: refreshPayload.exp,
   });
 });
 
 auth.get('/status', validateAccess, (c) => {
-  const payload = c.get('jwtAccessPayload');
+  const payload = c.get('jwtRefreshPayload');
 
   return c.json({
     result: true,
-    expiresAt: payload.exp,
+    expiresAt: payload?.exp || 0,
   });
 });
 
@@ -156,7 +161,7 @@ auth.get('/refresh', async (c) => {
     });
   }
 
-  const newRefreshToken = await issueRefreshToken(
+  const { token: newRefreshToken, payload } = await issueRefreshToken(
     refreshPayload.sub,
     refreshToken,
   );
@@ -170,6 +175,7 @@ auth.get('/refresh', async (c) => {
 
   return c.json({
     result: true,
+    expiresAt: payload.exp,
   });
 });
 
