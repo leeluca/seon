@@ -17,6 +17,7 @@ const router = createRouter({
     user: undefined,
     authStatus: authContextInitialState,
   },
+  defaultPreload: 'viewport',
 });
 
 declare module '@tanstack/react-router' {

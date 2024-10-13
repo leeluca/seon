@@ -155,7 +155,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 Sign In
               </Button>
             </div>
-            <Link to="/signup" className="text-muted-foreground text-sm">
+            <Link to="/signup" className="text-muted-foreground text-sm" preload="intent">
               Create account
             </Link>
           </div>
