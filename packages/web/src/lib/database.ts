@@ -8,7 +8,7 @@ import { AppSchema, Database } from '~/lib/powersync/AppSchema';
 export const powerSyncDb = new PowerSyncDatabase({
   schema: AppSchema,
   database: {
-    dbFilename: 'goal-dashboard.db',
+    dbFilename: 'seon-goals.db',
   },
 });
 

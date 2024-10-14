@@ -1,5 +1,5 @@
 {
-  "name": "goal-dashboard-web",
+  "name": "seon-web",
   "sideEffects": false,
   "main": "src/main.js",
   "type": "module",
