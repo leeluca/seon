@@ -1,3 +1,4 @@
+import { DB_TOKEN_EXP_KEY, DB_TOKEN_KEY } from '~/constants/storage';
 import fetcher from './fetcher';
 
 // TODO: abstract fetch boilerplate
@@ -12,15 +13,14 @@ export const fetchSyncCredentials = async () => {
 
 const REFRESH_THRESHOLD = 300; // 5 minutes
 
-// TODO: move to utils
 const saveToken = (token: string, exp: number) => {
-  sessionStorage.setItem('dbAccessToken', token);
-  sessionStorage.setItem('dbAccessTokenExp', exp.toString());
+  sessionStorage.setItem(DB_TOKEN_KEY, token);
+  sessionStorage.setItem(DB_TOKEN_EXP_KEY, exp.toString());
 };
-// TODO: delete on logout
+
 const getTokenFromStorage = () => {
-  const token = sessionStorage.getItem('dbAccessToken');
-  const expiresAt = sessionStorage.getItem('dbAccessTokenExp');
+  const token = sessionStorage.getItem(DB_TOKEN_KEY);
+  const expiresAt = sessionStorage.getItem(DB_TOKEN_EXP_KEY);
   return { token, expiresAt: expiresAt ? parseInt(expiresAt, 10) : null };
 };
 
