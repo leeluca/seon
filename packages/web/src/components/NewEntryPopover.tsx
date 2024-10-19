@@ -15,13 +15,19 @@ import {
 } from '~/components/ui/popover';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
+import { useUser } from '~/states/userContext';
 import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
 
 async function handleSubmit(
-  { value, date, goalId }: { value: number; date: Date; goalId: string },
+  {
+    value,
+    date,
+    goalId,
+    userId,
+  }: { value: number; date: Date; goalId: string; userId: string },
   onSubmitCallback: () => void,
 ) {
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
@@ -52,6 +58,7 @@ async function handleSubmit(
             date: date.toISOString(),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            userId,
           });
         })();
 
@@ -89,6 +96,7 @@ const NewEntryForm = ({
   id,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
+  const user = useUser();
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
@@ -115,7 +123,7 @@ const NewEntryForm = ({
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (!inputtedValue) {
+      if (!inputtedValue || !user) {
         return;
       }
       await handleSubmit(
@@ -123,6 +131,7 @@ const NewEntryForm = ({
           value: inputtedValue,
           date,
           goalId: id,
+          userId: user.id,
         },
         onSubmitCallback,
       );

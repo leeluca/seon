@@ -14,7 +14,9 @@ const column = {
   >,
   optionalReal: { type: ColumnType.REAL } as BaseColumnType<number | null>,
   optionalTimestamp: { type: ColumnType.TEXT } as BaseColumnType<string | null>,
-  optionalBoolean: { type: ColumnType.INTEGER } as BaseColumnType<number | null>,
+  optionalBoolean: { type: ColumnType.INTEGER } as BaseColumnType<
+    number | null
+  >,
 };
 
 const user = new Table(
@@ -39,6 +41,7 @@ const entry = new Table(
     date: column.text,
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
+    userId: column.text,
   },
   { indexes: {} },
 );
