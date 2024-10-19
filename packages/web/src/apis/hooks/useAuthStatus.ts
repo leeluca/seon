@@ -3,6 +3,7 @@ import type { APIError } from '~/utils/errors';
 
 import useSWR from 'swr';
 
+import { SESSION_EXP_KEY } from '~/constants/storage';
 import fetcher from '../fetcher';
 
 const getInitialData = () => {
@@ -45,7 +46,7 @@ function useAuthStatus(user: ReturnType<typeof useUser>) {
         return true;
       },
       onSuccess: (data) => {
-        localStorage.setItem('sessionExp', JSON.stringify(data.expiresAt));
+        localStorage.setItem(SESSION_EXP_KEY, JSON.stringify(data.expiresAt));
       },
     },
   );

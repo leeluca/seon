@@ -17,7 +17,7 @@ import { fetchSyncCredentials, getDbAccessToken } from '~/apis/credential';
 export type SupabaseConfig = {
   supabaseUrl: string;
   supabaseAnonKey: string;
-  powersyncUrl: string;
+  powersyncUrl?: string;
 };
 
 /// Postgres Response codes that cannot be recovered from by retrying.
@@ -86,7 +86,7 @@ export class SupabaseConnector
 
     const res = {
       endpoint: this.config.powersyncUrl || syncUrl,
-      token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN ?? token,
+      token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN || token,
       expiresAt: expiresAt ? new Date(expiresAt * 1000) : undefined,
     };
 
