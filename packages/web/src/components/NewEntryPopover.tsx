@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { InfoIcon, LoaderCircleIcon, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -138,6 +139,11 @@ const NewEntryForm = ({
     },
   });
 
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
+
   return (
     <form
       onSubmit={(e) => {
@@ -263,7 +269,8 @@ const NewEntryForm = ({
           >
             {([isSubmitting, isSubmitDisabled]) => (
               <div
-                onMouseEnter={() => void form.validateAllFields('change')}
+                onMouseEnter={delayedValidation}
+                onMouseLeave={clearTimeout}
                 className={cn('grid grid-cols-3', {
                   'cursor-not-allowed': isSubmitDisabled,
                 })}

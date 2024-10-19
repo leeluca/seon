@@ -3,6 +3,7 @@ import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
 import FormError from '~/components/FormError';
 import FormItem from '~/components/FormItem';
@@ -141,6 +142,11 @@ function NewGoalDialog() {
       );
     },
   });
+
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
 
   return (
     <Dialog
@@ -391,7 +397,8 @@ function NewGoalDialog() {
             >
               {([isSubmitting, isSubmitDisabled]) => (
                 <div
-                  onMouseEnter={() => void form.validateAllFields('change')}
+                  onMouseEnter={delayedValidation}
+                  onMouseLeave={clearTimeout}
                   className={cn('col-start-3', {
                     'cursor-not-allowed': isSubmitDisabled,
                   })}

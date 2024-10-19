@@ -2,6 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import { LoaderCircleIcon } from 'lucide-react';
 
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import usePostSignIn, {
   PostSignInResponse,
   SignInParams,
@@ -42,6 +43,11 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
       await postSignIn({ email, password });
     },
   });
+
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
 
   return (
     <form
@@ -143,8 +149,8 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         {([isSubmitting, isSubmitDisabled]) => (
           <div className="mt-4 flex w-full flex-col items-center gap-2">
             <div
-              // TODO: only validate if hovering for > x seconds
-              onMouseEnter={() => void form.validateAllFields('change')}
+              onMouseEnter={delayedValidation}
+              onMouseLeave={clearTimeout}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >
               <Button
