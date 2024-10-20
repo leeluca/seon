@@ -10,6 +10,9 @@ interface FormMessageProps {
   textClassName?: string;
   children: React.ReactNode;
 }
+
+// FIXME: remove default styles for reusability
+// or provide different style options
 function FormItem({
   label,
   labelFor,

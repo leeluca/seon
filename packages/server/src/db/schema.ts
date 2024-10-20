@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
 import {
+  boolean,
   foreignKey,
   integer,
   pgEnum,
@@ -7,6 +8,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
@@ -33,6 +35,7 @@ export const user = pgTable(
       .$onUpdate(() => sql`now()`)
       .notNull(),
     status: userStatus('status').default('PENDING').notNull(),
+    useSync: boolean('useSync'),
   },
   (table) => {
     return {
@@ -78,7 +81,7 @@ export const goal = pgTable(
       .$onUpdate(() => sql`now()`)
       .notNull(),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
-      .default(sql`CURRENT_TIMESTAMP`)
+      .defaultNow()
       .notNull(),
     updatedAt: timestamp('updatedAt', {
       precision: 3,
@@ -97,7 +100,7 @@ export const goal = pgTable(
         name: 'goal_userId_fkey',
       })
         .onUpdate('cascade')
-        .onDelete('restrict'),
+        .onDelete('cascade'),
     };
   },
 );
@@ -112,8 +115,6 @@ export const entry = pgTable(
     date: timestamp('date', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),
-    // TODO: make this a notNull field
-    userId: uuid('userId'),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -124,6 +125,7 @@ export const entry = pgTable(
       .defaultNow()
       .$onUpdate(() => sql`now()`)
       .notNull(),
+    userId: uuid('userId').notNull(),
   },
   (table) => {
     return {
@@ -137,7 +139,14 @@ export const entry = pgTable(
         name: 'entry_goalId_fkey',
       })
         .onUpdate('cascade')
-        .onDelete('restrict'),
+        .onDelete('cascade'),
+      entryUserIdFkey: foreignKey({
+        columns: [table.userId],
+        foreignColumns: [user.id],
+        name: 'entry_userId_fkey',
+      })
+        .onUpdate('cascade')
+        .onDelete('cascade'),
     };
   },
 );
@@ -145,10 +154,10 @@ export const entry = pgTable(
 export const refreshToken = pgTable(
   'refresh_token',
   {
-    id: serial('id').primaryKey(),
+    id: serial('id').primaryKey().notNull(),
     token: text('token').unique().notNull(),
     userId: uuid('userId').notNull(),
-    expiration: timestamp('expires', { precision: 3, mode: 'date' }).notNull(),
+    expiration: timestamp('expiration', { precision: 3, mode: 'date' }).notNull(),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),
@@ -162,6 +171,9 @@ export const refreshToken = pgTable(
       })
         .onUpdate('cascade')
         .onDelete('cascade'),
+      refreshTokenTokenUnique: unique('refresh_token_token_unique').on(
+        table.token,
+      ),
     };
   },
 );

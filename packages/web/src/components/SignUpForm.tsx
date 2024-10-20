@@ -2,6 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import usePostSignUp, { SignUpParams } from '~/apis/hooks/usePostSignUp';
 import { MAX_USER_NAME_LENGTH } from '~/constants';
 import db from '~/lib/database';
@@ -69,6 +70,12 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
       await postSignUp({ uuid: user.id, name, email, password });
     },
   });
+
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
+
   return (
     <form
       className="grid gap-4 py-4"
@@ -219,8 +226,8 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         {([isSubmitting, isSubmitDisabled]) => (
           <div className="mt-4 flex flex-col items-center gap-2">
             <div
-              // TODO: only validate if hovering for > x seconds
-              onMouseEnter={() => void form.validateAllFields('change')}
+              onMouseEnter={delayedValidation}
+              onMouseLeave={clearTimeout}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >
               <Button

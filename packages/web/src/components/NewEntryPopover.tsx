@@ -1,11 +1,11 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@powersync/react';
-import { PlusIcon } from '@radix-ui/react-icons';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
+import { InfoIcon, LoaderCircleIcon, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -16,13 +16,19 @@ import {
 } from '~/components/ui/popover';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
+import { useUser } from '~/states/userContext';
 import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
 
 async function handleSubmit(
-  { value, date, goalId }: { value: number; date: Date; goalId: string },
+  {
+    value,
+    date,
+    goalId,
+    userId,
+  }: { value: number; date: Date; goalId: string; userId: string },
   onSubmitCallback: () => void,
 ) {
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
@@ -53,6 +59,7 @@ async function handleSubmit(
             date: date.toISOString(),
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
+            userId,
           });
         })();
 
@@ -90,6 +97,7 @@ const NewEntryForm = ({
   id,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
+  const user = useUser();
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', id),
   );
@@ -116,7 +124,7 @@ const NewEntryForm = ({
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (!inputtedValue) {
+      if (!inputtedValue || !user) {
         return;
       }
       await handleSubmit(
@@ -124,11 +132,17 @@ const NewEntryForm = ({
           value: inputtedValue,
           date,
           goalId: id,
+          userId: user.id,
         },
         onSubmitCallback,
       );
     },
   });
+
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
 
   return (
     <form
@@ -255,7 +269,8 @@ const NewEntryForm = ({
           >
             {([isSubmitting, isSubmitDisabled]) => (
               <div
-                onMouseEnter={() => void form.validateAllFields('change')}
+                onMouseEnter={delayedValidation}
+                onMouseLeave={clearTimeout}
                 className={cn('grid grid-cols-3', {
                   'cursor-not-allowed': isSubmitDisabled,
                 })}
@@ -293,8 +308,8 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
   return (
     <Popover open={open} onOpenChange={togglePopover}>
       <PopoverTrigger asChild>
-        <Button variant="secondary" size="icon">
-          <PlusIcon />
+        <Button variant="outline" size="icon">
+          <PlusIcon size={18} />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-fit max-w-[325px]">

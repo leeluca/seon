@@ -99,6 +99,7 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     email,
     name,
     password: hashedPassword,
+    useSync: true,
   } satisfies NewUser;
   const [{ name: savedName, email: savedEmail, id, shortId }] = await db
     .insert(usersTable)

@@ -15,7 +15,7 @@ export const validateAccess = createMiddleware<{
   Variables: {
     jwtAccessToken: string;
     jwtAccessPayload: JWTTokenPayload;
-    jwtRefreshPayload: JWTTokenPayload;
+    jwtRefreshPayload?: JWTTokenPayload;
   };
 }>(async (c, next) => {
   // validate access token

@@ -42,14 +42,6 @@ function Index() {
           <h1 className="mb-16 text-3xl">🚧 Seon Goals 🚧</h1>
           <div className="flex items-end gap-8">
             <div>
-              <h5 className="mb-1 text-sm font-medium">Already a user?</h5>
-              <Button size="lg">
-                <Link to="/signin" preload="intent">
-                  Sign In
-                </Link>
-              </Button>
-            </div>
-            <div>
               <h5 className="mb-1 text-sm font-medium">First time?</h5>
               <Button
                 size="lg"
@@ -57,6 +49,14 @@ function Index() {
                 disabled={isLoading}
               >
                 Start New
+              </Button>
+            </div>
+            <div>
+              <h5 className="mb-1 text-sm font-medium">Already a user?</h5>
+              <Button size="lg">
+                <Link to="/signin" preload="intent">
+                  Sign In
+                </Link>
               </Button>
             </div>
           </div>
