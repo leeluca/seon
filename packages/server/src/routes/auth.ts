@@ -5,13 +5,13 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import short from 'short-uuid';
 
-import { SYNC_URL } from '../constants/config';
-import { db } from '../db/db';
+import { SYNC_URL } from '../constants/config.js';
+import { db } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
-} from '../db/schema';
-import { validateAccess } from '../middlewares/auth';
+} from '../db/schema.js';
+import { validateAccess } from '../middlewares/auth.js';
 import {
   comparePW,
   hashPW,
@@ -20,9 +20,9 @@ import {
   publicKeyJWK,
   setJWTCookie,
   validateRefreshToken,
-} from '../services/auth';
-import { signInSchema, signUpSchema } from '../types/validation';
-import { validateUuidV7 } from '../utils/id';
+} from '../services/auth.js';
+import { signInSchema, signUpSchema } from '../types/validation.js';
+import { validateUuidV7 } from '../utils/id.js';
 
 const auth = new Hono();
 

@@ -1,6 +1,6 @@
 import { relations } from 'drizzle-orm/relations';
 
-import { entry, goal, refreshToken, user } from './schema';
+import { entry, goal, refreshToken, user } from './schema.js';
 
 export const goalRelations = relations(goal, ({ one, many }) => ({
   user: one(user, {

@@ -9,7 +9,7 @@ import {
   JWTTokenPayload,
   validateAccessToken,
   validateRefreshToken,
-} from '../services/auth';
+} from '../services/auth.js';
 
 export const validateAccess = createMiddleware<{
   Variables: {

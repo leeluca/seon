@@ -2,8 +2,8 @@ import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 
-import { IS_DEV, ORIGIN_URL } from './constants/config';
-import auth from './routes/auth';
+import { IS_DEV, ORIGIN_URL } from './constants/config.js';
+import auth from './routes/auth.js';
 
 const app = new Hono();
 

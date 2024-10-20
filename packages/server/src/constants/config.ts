@@ -2,7 +2,7 @@ import type { CookieOptions } from 'hono/utils/cookie';
 
 import { Type } from '@sinclair/typebox';
 
-import { parseType } from '../utils/validation';
+import { parseType } from '../utils/validation.js';
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
