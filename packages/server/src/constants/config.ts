@@ -45,6 +45,5 @@ export const COOKIE_SECURITY_SETTINGS = {
   path: '/',
   secure: true,
   httpOnly: true,
-  sameSite: 'strict' as const satisfies CookieOptions['sameSite'],
-  domain: IS_DEV ? undefined : new URL(ORIGIN_URL).hostname,
+  sameSite: 'none' as const satisfies CookieOptions['sameSite'],
 };
