@@ -100,7 +100,7 @@ export const goal = pgTable(
         name: 'goal_userId_fkey',
       })
         .onUpdate('cascade')
-        .onDelete('restrict'),
+        .onDelete('cascade'),
     };
   },
 );
@@ -139,7 +139,7 @@ export const entry = pgTable(
         name: 'entry_goalId_fkey',
       })
         .onUpdate('cascade')
-        .onDelete('restrict'),
+        .onDelete('cascade'),
       entryUserIdFkey: foreignKey({
         columns: [table.userId],
         foreignColumns: [user.id],
