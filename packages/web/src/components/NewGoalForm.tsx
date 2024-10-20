@@ -20,7 +20,7 @@ import {
   parseInputtedNumber,
 } from '~/utils/validation';
 
-interface NewGoal {
+export interface NewGoal {
   title: string;
   targetValue?: number;
   unit: string;

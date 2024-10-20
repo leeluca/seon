@@ -28,6 +28,8 @@ interface DatePickerProps {
   disabledDates?: Matcher | Matcher[];
   date?: Date;
   setDate?: (date?: Date) => void;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 export const DatePicker = React.forwardRef(
   (
@@ -39,6 +41,8 @@ export const DatePicker = React.forwardRef(
       disabledDates,
       date: dateProp,
       setDate: setDateProp,
+      disabled,
+      readOnly,
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
@@ -54,6 +58,7 @@ export const DatePicker = React.forwardRef(
       setDate(date);
       setIsPopoverOpen(false);
     };
+    const onSelect = readOnly ? undefined : handleOnSelect;
 
     React.useImperativeHandle(ref, () => ({
       value: date,
@@ -61,7 +66,7 @@ export const DatePicker = React.forwardRef(
 
     return (
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild disabled={disabled}>
           <Button
             variant={'outline'}
             className={cn(
@@ -100,8 +105,9 @@ export const DatePicker = React.forwardRef(
             <Calendar
               mode="single"
               selected={date}
-              onSelect={handleOnSelect}
+              onSelect={onSelect}
               disabled={disabledDates}
+              disableNavigation={readOnly}
             />
           </div>
         </PopoverContent>

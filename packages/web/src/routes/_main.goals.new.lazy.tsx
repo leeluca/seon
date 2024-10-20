@@ -2,7 +2,7 @@ import { useForm } from '@tanstack/react-form';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 
-import NewGoalForm from '~/components/NewGoalForm';
+import NewGoalForm, { NewGoal } from '~/components/NewGoalForm';
 import {
   Dialog,
   DialogContent,
@@ -30,7 +30,7 @@ type GoalSubmitData = Pick<
   | 'userId'
 >;
 
-async function handleSubmit(
+async function handleSave(
   {
     title,
     target,
@@ -77,16 +77,6 @@ function NewGoalDialog() {
   const handleClose = () => {
     void navigate({ from: '/goals/new', to: '/goals', replace: true });
   };
-
-  interface NewGoal {
-    title: string;
-    targetValue?: number;
-    unit: string;
-    startDate: Date;
-    targetDate?: Date;
-    initialValue: number;
-  }
-
   const form = useForm<NewGoal>({
     defaultValues: {
       title: '',
@@ -111,7 +101,7 @@ function NewGoalDialog() {
       }
       const stringStartDate = startDate.toISOString();
       const stringTargetDate = targetDate.toISOString();
-      await handleSubmit(
+      await handleSave(
         {
           ...value,
           title: value.title.trim(),
