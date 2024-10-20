@@ -60,11 +60,23 @@ export default function GoalCard({
   startDate,
   targetDate,
   initialValue,
+  ...goalRest
 }: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   const [sidePanelOpen, setSidePanelOpen] = useState(false);
-
+  const goal = {
+    title,
+    description,
+    currentValue,
+    target,
+    unit,
+    id,
+    startDate,
+    targetDate,
+    initialValue,
+    ...goalRest,
+  };
   // FIXME: temporary, won't pass as prop
   const GraphComponent = (
     <GoalLineGraph
@@ -165,10 +177,8 @@ export default function GoalCard({
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-small" variant="ghost">
-                <Button size="icon-small" variant="outline">
-                  <Trash2Icon size={18} />
-                </Button>
+              <Button size="icon-sm" variant="outline">
+                <Trash2Icon size={18} />
               </Button>
             </PopoverTrigger>
             <PopoverContent sideOffset={5}>
@@ -195,7 +205,7 @@ export default function GoalCard({
           </Popover>
 
           <Button
-            size="icon-small"
+            size="icon-sm"
             variant="outline"
             onClick={() => setSidePanelOpen(true)}
           >
@@ -204,10 +214,10 @@ export default function GoalCard({
         </div>
       </CardFooter>
       <GoalDetailPanel
-        title={title}
         graphComponent={GraphComponent}
         open={sidePanelOpen}
         onOpenChange={setSidePanelOpen}
+        goal={goal}
       />
     </Card>
   );

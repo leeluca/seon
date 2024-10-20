@@ -15,7 +15,7 @@ function Dashboard() {
         </div>
       </div>
 
-      <div className="px-6 py-4 mb-10 xl:p-8">
+      <div className="mb-10 px-6 py-4 xl:p-8">
         <div className="m-auto max-w-screen-xl">
           <Outlet />
         </div>
