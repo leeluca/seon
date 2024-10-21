@@ -1,10 +1,15 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import * as relations from './relations';
-import * as schema from './schema';
+import * as relations from './relations.js';
+import * as schema from './schema.js';
 
-process.loadEnvFile();
+try {
+  process.loadEnvFile();
+} catch (error) {
+  console.log('No .env file found');
+}
+
 const connectionString = process.env.DB_URL;
 
 if (!connectionString) {

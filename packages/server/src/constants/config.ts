@@ -2,15 +2,20 @@ import type { CookieOptions } from 'hono/utils/cookie';
 
 import { Type } from '@sinclair/typebox';
 
-import { parseType } from '../utils/validation';
+import { parseType } from '../utils/validation.js';
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
-process.loadEnvFile();
+try {
+  process.loadEnvFile();
+} catch (error) {
+  console.log('No .env file found');
+}
 
 export const SYNC_URL = parseType(Type.String(), process.env.SYNC_URL);
 
-export const ORIGIN_URL = parseType(Type.String(), process.env.ORIGIN_URL);
+const originUrlArray = process.env.ORIGIN_URL?.split(',');
+export const ORIGIN_URLS = parseType(Type.Array(Type.String()), originUrlArray);
 
 export const JWT_PRIVATE_PEM = parseType(
   Type.String(),
@@ -45,6 +50,5 @@ export const COOKIE_SECURITY_SETTINGS = {
   path: '/',
   secure: true,
   httpOnly: true,
-  sameSite: 'strict' as const satisfies CookieOptions['sameSite'],
-  domain: IS_DEV ? undefined : new URL(ORIGIN_URL).hostname,
+  sameSite: 'none' as const satisfies CookieOptions['sameSite'],
 };

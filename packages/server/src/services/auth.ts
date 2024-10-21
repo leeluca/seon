@@ -19,12 +19,12 @@ import {
   JWT_PUBLIC_PEM,
   JWT_REFRESH_EXPIRATION,
   JWT_REFRESH_SECRET,
-} from '../constants/config';
-import { db } from '../db/db';
+} from '../constants/config.js';
+import { db } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
-} from '../db/schema';
+} from '../db/schema.js';
 
 const scryptAsync = promisify(scrypt);
 
@@ -221,7 +221,7 @@ export const validateAccessToken = async (c: Context) => {
   return { accessToken, accessPayload };
 };
 
-export const getRefreshToken = async (c: Context) => {
+export const verifyRefreshToken = async (c: Context) => {
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 
   const refreshToken = getCookie(c, refreshCookieName);
@@ -234,7 +234,7 @@ export const getRefreshToken = async (c: Context) => {
 };
 
 export const validateRefreshToken = async (c: Context) => {
-  const { refreshToken, refreshPayload } = await getRefreshToken(c);
+  const { refreshToken, refreshPayload } = await verifyRefreshToken(c);
 
   if (!refreshToken || !refreshPayload?.sub) {
     return { refreshToken: null, refreshPayload: null };
