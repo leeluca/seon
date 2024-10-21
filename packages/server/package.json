@@ -13,17 +13,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@hono/node-server": "^1.12.2",
+    "@hono/node-server": "^1.13.2",
     "@hono/typebox-validator": "^0.2.5",
-    "@sinclair/typebox": "^0.33.13",
-    "drizzle-orm": "^0.33.0",
-    "hono": "^4.5.11",
+    "@sinclair/typebox": "^0.33.17",
+    "drizzle-orm": "^0.35.2",
+    "hono": "^4.6.5",
     "jose": "^5.9.3",
     "postgres": "^3.4.4"
   },
   "devDependencies": {
     "@types/node": "^20.16.10",
-    "drizzle-kit": "^0.24.2",
+    "drizzle-kit": "^0.26.2",
     "tsx": "^4.19.1"
   },
   "engines": {
