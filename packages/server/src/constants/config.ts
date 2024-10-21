@@ -16,7 +16,7 @@ export const SYNC_URL = parseType(Type.String(), process.env.SYNC_URL);
 
 const originUrlArray = process.env.ORIGIN_URL?.split(',');
 export const ORIGIN_URLS = parseType(Type.Array(Type.String()), originUrlArray);
-
+console.log('ORIGIN_URLS', ORIGIN_URLS);
 export const JWT_PRIVATE_PEM = parseType(
   Type.String(),
   process.env.JWT_PRIVATE_KEY,

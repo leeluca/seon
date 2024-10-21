@@ -10,7 +10,13 @@ const app = new Hono();
 app.use(
   '/api/*',
   cors({
-    origin: ORIGIN_URLS,
+    origin: (origin) => {
+      console.log('origin', origin);
+      if (ORIGIN_URLS.includes(origin)) {
+        console.log('matches')
+        return origin;
+      }
+    },
     allowHeaders: ['Origin', 'X-Requested-With', 'User-Agent'],
     allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
     maxAge: 7200,
