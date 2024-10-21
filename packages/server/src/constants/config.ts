@@ -6,7 +6,11 @@ import { parseType } from '../utils/validation.js';
 
 export const IS_DEV = process.env.NODE_ENV === 'development';
 
-process.loadEnvFile();
+try {
+  process.loadEnvFile();
+} catch (error) {
+  console.log('No .env file found');
+}
 
 export const SYNC_URL = parseType(Type.String(), process.env.SYNC_URL);
 
