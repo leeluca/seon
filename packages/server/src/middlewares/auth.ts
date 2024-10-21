@@ -3,12 +3,12 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import {
-  getRefreshToken,
   issueRefreshToken,
   JWT,
   JWTTokenPayload,
   validateAccessToken,
   validateRefreshToken,
+  verifyRefreshToken,
 } from '../services/auth.js';
 
 export const validateAccess = createMiddleware<{
@@ -21,7 +21,7 @@ export const validateAccess = createMiddleware<{
   // validate access token
   const { accessPayload, accessToken } = await validateAccessToken(c);
   if (accessPayload && accessToken) {
-    const { refreshPayload } = await getRefreshToken(c);
+    const { refreshPayload } = await verifyRefreshToken(c);
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
     refreshPayload && c.set('jwtRefreshPayload', refreshPayload);

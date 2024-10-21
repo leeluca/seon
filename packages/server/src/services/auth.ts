@@ -221,7 +221,7 @@ export const validateAccessToken = async (c: Context) => {
   return { accessToken, accessPayload };
 };
 
-export const getRefreshToken = async (c: Context) => {
+export const verifyRefreshToken = async (c: Context) => {
   const { name: refreshCookieName } = JWT.getCookieOptions('refresh');
 
   const refreshToken = getCookie(c, refreshCookieName);
@@ -234,7 +234,7 @@ export const getRefreshToken = async (c: Context) => {
 };
 
 export const validateRefreshToken = async (c: Context) => {
-  const { refreshToken, refreshPayload } = await getRefreshToken(c);
+  const { refreshToken, refreshPayload } = await verifyRefreshToken(c);
 
   if (!refreshToken || !refreshPayload?.sub) {
     return { refreshToken: null, refreshPayload: null };

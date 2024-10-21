@@ -11,8 +11,10 @@ app.use(
   '/api/*',
   cors({
     origin: ORIGIN_URLS,
+    allowHeaders: ['Origin', 'X-Requested-With', 'User-Agent'],
+    allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
+    maxAge: 7200,
     credentials: true,
-    allowHeaders: ['Content-Type'],
   }),
 );
 
@@ -25,3 +27,5 @@ serve({
   fetch: app.fetch,
   port,
 });
+
+export default app;
