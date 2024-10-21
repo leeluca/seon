@@ -10,7 +10,8 @@ process.loadEnvFile();
 
 export const SYNC_URL = parseType(Type.String(), process.env.SYNC_URL);
 
-export const ORIGIN_URL = parseType(Type.String(), process.env.ORIGIN_URL);
+const originUrlArray = process.env.ORIGIN_URL?.split(',');
+export const ORIGIN_URLS = parseType(Type.Array(Type.String()), originUrlArray);
 
 export const JWT_PRIVATE_PEM = parseType(
   Type.String(),
