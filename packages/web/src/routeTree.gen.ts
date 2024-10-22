@@ -17,26 +17,29 @@ import { Route as SignupImport } from './routes/signup'
 import { Route as SigninImport } from './routes/signin'
 import { Route as MainImport } from './routes/_main'
 import { Route as IndexImport } from './routes/index'
+import { Route as MainGoalsNewImport } from './routes/_main.goals.new'
 
 // Create Virtual Routes
 
 const AboutLazyImport = createFileRoute('/about')()
 const MainGoalsLazyImport = createFileRoute('/_main/goals')()
-const MainGoalsNewLazyImport = createFileRoute('/_main/goals/new')()
 
 // Create/Update Routes
 
 const AboutLazyRoute = AboutLazyImport.update({
+  id: '/about',
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
 const SignupRoute = SignupImport.update({
+  id: '/signup',
   path: '/signup',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
 
 const SigninRoute = SigninImport.update({
+  id: '/signin',
   path: '/signin',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/signin.lazy').then((d) => d.Route))
@@ -47,21 +50,22 @@ const MainRoute = MainImport.update({
 } as any).lazy(() => import('./routes/_main.lazy').then((d) => d.Route))
 
 const IndexRoute = IndexImport.update({
+  id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
 const MainGoalsLazyRoute = MainGoalsLazyImport.update({
+  id: '/goals',
   path: '/goals',
   getParentRoute: () => MainRoute,
 } as any).lazy(() => import('./routes/_main.goals.lazy').then((d) => d.Route))
 
-const MainGoalsNewLazyRoute = MainGoalsNewLazyImport.update({
+const MainGoalsNewRoute = MainGoalsNewImport.update({
+  id: '/new',
   path: '/new',
   getParentRoute: () => MainGoalsLazyRoute,
-} as any).lazy(() =>
-  import('./routes/_main.goals.new.lazy').then((d) => d.Route),
-)
+} as any)
 
 // Populate the FileRoutesByPath interface
 
@@ -113,7 +117,7 @@ declare module '@tanstack/react-router' {
       id: '/_main/goals/new'
       path: '/new'
       fullPath: '/goals/new'
-      preLoaderRoute: typeof MainGoalsNewLazyImport
+      preLoaderRoute: typeof MainGoalsNewImport
       parentRoute: typeof MainGoalsLazyImport
     }
   }
@@ -122,11 +126,11 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface MainGoalsLazyRouteChildren {
-  MainGoalsNewLazyRoute: typeof MainGoalsNewLazyRoute
+  MainGoalsNewRoute: typeof MainGoalsNewRoute
 }
 
 const MainGoalsLazyRouteChildren: MainGoalsLazyRouteChildren = {
-  MainGoalsNewLazyRoute: MainGoalsNewLazyRoute,
+  MainGoalsNewRoute: MainGoalsNewRoute,
 }
 
 const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
@@ -150,7 +154,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
-  '/goals/new': typeof MainGoalsNewLazyRoute
+  '/goals/new': typeof MainGoalsNewRoute
 }
 
 export interface FileRoutesByTo {
@@ -160,7 +164,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
-  '/goals/new': typeof MainGoalsNewLazyRoute
+  '/goals/new': typeof MainGoalsNewRoute
 }
 
 export interface FileRoutesById {
@@ -171,7 +175,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/about': typeof AboutLazyRoute
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
-  '/_main/goals/new': typeof MainGoalsNewLazyRoute
+  '/_main/goals/new': typeof MainGoalsNewRoute
 }
 
 export interface FileRouteTypes {
@@ -259,7 +263,7 @@ export const routeTree = rootRoute
       ]
     },
     "/_main/goals/new": {
-      "filePath": "_main.goals.new.lazy.tsx",
+      "filePath": "_main.goals.new.tsx",
       "parent": "/_main/goals"
     }
   }
