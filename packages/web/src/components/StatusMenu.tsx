@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStatus } from '@powersync/react';
+import { format, isToday } from 'date-fns';
 import {
   CircleUserIcon,
   CloudIcon,
@@ -66,7 +67,9 @@ function StatusMenu() {
   const {
     connected,
     dataFlowStatus: { downloading, uploading },
+    lastSyncedAt,
   } = useStatus();
+
   const user = useUser();
   const { isSignedIn, isLoading } = useAuthContext();
 
@@ -97,9 +100,29 @@ function StatusMenu() {
           </Button>
         )}
         {connected ? (
-          <Button size="icon-sm" variant="ghost">
-            <CloudIcon size={18} />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size="icon-sm" variant="ghost">
+                <CloudIcon size={18} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[121px]" sideOffset={5}>
+              <div className="space-y-2">
+                <h3 className="text-pretty font-medium leading-none">
+                  Your data is synced!
+                </h3>
+                {lastSyncedAt && (
+                  <div className="text-muted-foreground">
+                    <p className="text-sm">Last synced: </p>
+                    <p className="text-xs">{format(lastSyncedAt, 'p')} </p>
+                    {!isToday(lastSyncedAt) && (
+                      <p className="text-xs">{format(lastSyncedAt, 'P')}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
         ) : (
           <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
