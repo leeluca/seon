@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 
 import SignInForm from '~/components/SignInForm';
 import { Button } from '~/components/ui/button';
-import { useUserAction } from '~/states/userContext';
 
 export const Route = createLazyFileRoute('/signin')({
   component: SignIn,
@@ -12,7 +11,6 @@ export const Route = createLazyFileRoute('/signin')({
 
 function SignIn() {
   const navigate = useNavigate();
-  const setUser = useUserAction();
   return (
     <div className="p-6 xl:p-8">
       <Link to="/">
@@ -24,7 +22,6 @@ function SignIn() {
         <h1 className="mb-8 font-medium leading-none">Sign In</h1>
         <SignInForm
           onSignInCallback={(user) => {
-            setUser({ ...user, useSync: Number(user.useSync) });
             void navigate({ to: '/' });
             toast.success(`Welcome back, ${user.name}!`);
           }}

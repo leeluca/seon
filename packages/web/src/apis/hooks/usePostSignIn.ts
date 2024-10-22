@@ -2,6 +2,7 @@ import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
 
+import { useUserAction } from '~/states/userContext';
 import { APIError } from '~/utils/errors';
 import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
@@ -29,6 +30,8 @@ interface usePostSignInProps {
 }
 
 const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
+  const setUser = useUserAction();
+
   return useSWRMutation<
     PostSignInResponse,
     APIError,
@@ -44,6 +47,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
     {
       onSuccess: (data) => {
         data.result && void mutate(AUTH_STATUS_KEY);
+        setUser({ ...data.user, useSync: Number(data.user.useSync) });
         onSuccess && onSuccess(data);
       },
       onError: (err) => {

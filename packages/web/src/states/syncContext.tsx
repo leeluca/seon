@@ -6,11 +6,23 @@ import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
 import { useAuthContext, useUser } from './userContext';
 
-const SupabaseContext = React.createContext<SupabaseConnector | null>(null);
-export const useSupabase = () => React.useContext(SupabaseContext);
+interface SupabaseConnectorContext {
+  connector: SupabaseConnector;
+  resetConnector: () => void;
+}
+const SupabaseContext = React.createContext<
+  SupabaseConnectorContext | undefined
+>(undefined);
+export const useSupabase = () => {
+  const context = React.useContext(SupabaseContext);
+  if (!context) {
+    throw new Error('useSupabase must be used within a SupabaseProvider');
+  }
+  return context;
+};
 
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
-  const [connector] = useState(new SupabaseConnector());
+  const [connector, setConnector] = useState(new SupabaseConnector());
   const [powerSync] = useState(powerSyncDb);
 
   const user = useUser();
@@ -41,13 +53,22 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
       sessionStarted: () => {},
     });
     initializeConnector();
-
     return () => listener();
   }, [powerSync, connector, user, isSignedIn]);
 
+  const connectorValue = React.useMemo(
+    () => ({
+      connector,
+      resetConnector: () => {
+        setConnector(new SupabaseConnector());
+      },
+    }),
+    [connector],
+  );
+
   return (
     <PowerSyncContext.Provider value={powerSync}>
-      <SupabaseContext.Provider value={connector}>
+      <SupabaseContext.Provider value={connectorValue}>
         {children}
       </SupabaseContext.Provider>
     </PowerSyncContext.Provider>
