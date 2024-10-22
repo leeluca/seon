@@ -1,36 +1,25 @@
-# Welcome to Remix + Vite!
+## 🚧 Alpha version 🚧
 
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/future/vite) for details on supported features.
+# Seon Goals
 
-## Development
+📖 Seon is an local-first goal management app.
 
-Run the Vite dev server:
+## Quickstart
 
-```shellscript
-npm run dev
-```
-
-## Deployment
-
-First, build your app for production:
+Install dependencies
 
 ```sh
-npm run build
+pnpm install
 ```
 
-Then run the app in production mode:
+If you do not need syncing, simply build and run the frontend app:
+(instructions for setting-up the sync service will be added later)
 
 ```sh
-npm start
+pnpm -filter seon-web build;
+pnpm -filter seon-web serve
 ```
 
-Now you'll need to pick a host to deploy it to.
+## Architecture diagram
 
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
+![goals-diagram](https://github.com/user-attachments/assets/1f4e12d6-31eb-4ff3-b9ea-a17bcc2306e6)
