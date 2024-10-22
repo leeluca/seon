@@ -11,7 +11,7 @@ app.use(
   '/api/*',
   cors({
     origin: ORIGIN_URLS,
-    allowHeaders: ['Origin', 'X-Requested-With', 'User-Agent'],
+    allowHeaders: ['Origin', 'X-Requested-With', 'User-Agent', 'Content-Type'],
     allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
     maxAge: 7200,
     credentials: true,
