@@ -107,6 +107,11 @@ export class SupabaseConnector
         const table = this.client.from(op.table);
         let result: PostgrestSingleResponse<null>;
 
+        // User is saved to the db by the backend when the user signs up
+        // since the local user only contains a subset of the user data, we need to user PATCH instead of PUT so as to not overwrite it
+        if (op.table === 'user' && op.op === UpdateType.PUT) {
+          op.op = UpdateType.PATCH;
+        }
         switch (op.op) {
           case UpdateType.PUT: {
             const record = { ...op.opData, id: op.id };

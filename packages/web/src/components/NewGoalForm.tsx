@@ -73,7 +73,6 @@ function NewGoalForm({ form }: NewGoalFormProps) {
                 <div className="col-span-2">
                   <Input
                     id="title"
-                    readOnly
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="eg. 'Learn a 1000 Japanese words'"
