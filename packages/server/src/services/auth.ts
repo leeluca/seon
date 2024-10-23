@@ -92,7 +92,7 @@ export class JWT {
 
   private static JWT_TYPE_MAP = {
     access: {
-      expiration: Math.floor(Date.now() / 1000) + this.JWT_ACCESS_EXPIRATION,
+      expiration: this.JWT_ACCESS_EXPIRATION,
       algorithm: 'RS256' as const satisfies SignatureAlgorithm,
       signingKey: this.JWT_PRIVATE_KEY,
       verificationKey: this.JWT_PUBLIC_KEY,
@@ -109,7 +109,7 @@ export class JWT {
       },
     },
     refresh: {
-      expiration: Math.floor(Date.now() / 1000) + this.JWT_REFRESH_EXPIRATION,
+      expiration: this.JWT_REFRESH_EXPIRATION,
       algorithm: 'HS256' as const satisfies SignatureAlgorithm,
       signingKey: this.JWT_REFRESH_SECRET,
       verificationKey: this.JWT_REFRESH_SECRET,
@@ -126,7 +126,7 @@ export class JWT {
       },
     },
     db_access: {
-      expiration: Math.floor(Date.now() / 1000) + this.JWT_DB_ACCESS_EXPIRATION,
+      expiration: this.JWT_DB_ACCESS_EXPIRATION,
       algorithm: 'HS256' as const satisfies SignatureAlgorithm,
       signingKey: this.JWT_DB_PRIVATE_KEY,
       verificationKey: this.JWT_DB_PRIVATE_KEY,
@@ -154,7 +154,8 @@ export class JWT {
   ): JWTTokenPayload {
     return {
       sub: userId,
-      exp: this.JWT_TYPE_MAP[JWTType].expiration,
+      exp:
+        Math.floor(Date.now() / 1000) + this.JWT_TYPE_MAP[JWTType].expiration,
       iat: Math.floor(Date.now() / 1000),
       aud: this.JWT_TYPE_MAP[JWTType].aud,
       role: this.JWT_TYPE_MAP[JWTType].role,
