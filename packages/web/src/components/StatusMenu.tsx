@@ -164,6 +164,7 @@ function StatusMenu() {
                 variant="outline"
                 disabled={isMutating}
                 // TODO: alert if there is unsynced data
+                // TODO: add loading state
                 onClick={() => {
                   void signOut();
                 }}
