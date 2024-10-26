@@ -1,7 +1,7 @@
 import { BaseColumnType, ColumnType, Schema, Table } from '@powersync/web';
 
-// Postgres schema: prisma/schema.prisma
-// NOTE: mapping postgres types to sqlite types, including required types
+// Postgres schema: packages/server/src/db/schema.ts
+// NOTE: used to map postgres types to sqlite types, including required types
 const column = {
   integer: { type: ColumnType.INTEGER } as BaseColumnType<number>,
   text: { type: ColumnType.TEXT } as BaseColumnType<string>,

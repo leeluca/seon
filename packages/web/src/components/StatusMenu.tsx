@@ -1,3 +1,5 @@
+import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
+
 import { useState } from 'react';
 import { useStatus } from '@powersync/react';
 import { format, isToday } from 'date-fns';
@@ -18,7 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 interface ConnectionErrorComponentProps {
   isSignedIn: boolean;
   connected: boolean;
-  onSignInCallback: () => void;
+  onSignInCallback: (userData: PostSignInResponse['user']) => void;
 }
 const ConnectionErrorComponent = ({
   isSignedIn,
@@ -137,10 +139,9 @@ function StatusMenu() {
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
                 connected={connected}
-                onSignInCallback={() => {
+                onSignInCallback={({ name: userName }) => {
                   setOpen(false);
-
-                  toast.success(`Welcome back, ${user?.name}!`);
+                  userName && toast.success(`Welcome back, ${userName}!`);
                 }}
               />
             </PopoverContent>
