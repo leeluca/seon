@@ -3,15 +3,16 @@ import type { APIError } from '~/utils/errors';
 
 import useSWR from 'swr';
 
+import { FAILED_TO_FETCH } from '~/constants/errors';
 import { SESSION_EXP_KEY } from '~/constants/storage';
 import fetcher from '../fetcher';
 
 const getInitialData = () => {
-  const sessionExp = localStorage.getItem('sessionExp');
+  const sessionExp = localStorage.getItem(SESSION_EXP_KEY);
   const currentTime = Math.floor(Date.now() / 1000);
 
   if (!sessionExp || Number(sessionExp) < currentTime) {
-    return undefined;
+    return { result: false, expiresAt: 0 };
   }
   return { result: true, expiresAt: Number(sessionExp) };
 };
@@ -30,7 +31,7 @@ function useAuthStatus(user: ReturnType<typeof useUser>) {
     {
       errorRetryCount: 3,
       focusThrottleInterval: 30000, // 30 sec
-      dedupingInterval: 5000, // 5 sec
+      dedupingInterval: 10000, // 10 sec
       fallbackData: user && getInitialData(),
       onErrorRetry(err, _key, _config, _revalidate, { retryCount }) {
         // Never retry for specific status codes.
@@ -48,19 +49,31 @@ function useAuthStatus(user: ReturnType<typeof useUser>) {
       onSuccess: (data) => {
         localStorage.setItem(SESSION_EXP_KEY, JSON.stringify(data.expiresAt));
       },
+      onError: (err) => {
+        if (err.status === 401) {
+          localStorage.removeItem(SESSION_EXP_KEY);
+        }
+      },
     },
   );
 
-  // TODO: improve error handling (display tost on error)
-  const authStatus = {
-    isSignedIn: !error && !!data?.result,
-    expiresAt: data?.expiresAt || 0,
-  };
+  let authStatus;
+
+  // If server not reachable, return auth status saved in localStorage
+  if (error?.message === FAILED_TO_FETCH) {
+    authStatus = getInitialData();
+  } else {
+    authStatus = {
+      result: !error && !!data?.result,
+      expiresAt: data?.expiresAt || 0,
+    };
+  }
 
   return {
     data: authStatus,
     isLoading,
-    isError: error,
+    isError: !!error,
+    error,
   };
 }
 
