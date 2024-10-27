@@ -1,23 +1,23 @@
-import { useForm } from '@tanstack/react-form'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { toast } from 'sonner'
+import { useForm } from '@tanstack/react-form';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { toast } from 'sonner';
 
-import NewGoalForm, { NewGoal } from '~/components/NewGoalForm'
+import NewGoalForm, { NewGoal } from '~/components/NewGoalForm';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '~/components/ui/dialog'
-import db from '~/lib/database'
-import { Database } from '~/lib/powersync/AppSchema'
-import { useUser } from '~/states/userContext'
-import { generateUUIDs } from '~/utils'
+} from '~/components/ui/dialog';
+import db from '~/lib/database';
+import { Database } from '~/lib/powersync/AppSchema';
+import { useUser } from '~/states/userContext';
+import { generateUUIDs } from '~/utils';
 
 export const Route = createFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
-})
+});
 
 type GoalSubmitData = Pick<
   Database['goal'],
@@ -28,7 +28,7 @@ type GoalSubmitData = Pick<
   | 'targetDate'
   | 'initialValue'
   | 'userId'
->
+>;
 
 async function handleSave(
   {
@@ -42,7 +42,7 @@ async function handleSave(
   }: GoalSubmitData,
   callback?: () => void,
 ) {
-  const { uuid, shortUuid } = generateUUIDs()
+  const { uuid, shortUuid } = generateUUIDs();
 
   try {
     await db
@@ -61,22 +61,22 @@ async function handleSave(
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
-      .executeTakeFirstOrThrow()
+      .executeTakeFirstOrThrow();
 
-    toast.success('Sucessfully added goal')
-    callback && callback()
+    toast.success('Sucessfully added goal');
+    callback && callback();
   } catch (error) {
-    console.error(error)
-    toast.error('Failed to add goal')
+    console.error(error);
+    toast.error('Failed to add goal');
   }
 }
 
 function NewGoalDialog() {
-  const navigate = useNavigate()
-  const user = useUser()
+  const navigate = useNavigate();
+  const user = useUser();
   const handleClose = () => {
-    void navigate({ from: '/goals/new', to: '/goals', replace: true })
-  }
+    void navigate({ from: '/goals/new', to: '/goals', replace: true });
+  };
   const form = useForm<NewGoal>({
     defaultValues: {
       title: '',
@@ -88,19 +88,19 @@ function NewGoalDialog() {
     },
     validators: {
       onChange({ value }) {
-        const { title, targetValue, targetDate } = value
+        const { title, targetValue, targetDate } = value;
         if (!title || !targetValue || !targetDate) {
-          return 'Missing required fields'
+          return 'Missing required fields';
         }
       },
     },
     onSubmit: async ({ value }) => {
-      const { startDate, targetDate, targetValue } = value
+      const { startDate, targetDate, targetValue } = value;
       if (!targetDate || !user || !targetValue) {
-        return
+        return;
       }
-      const stringStartDate = startDate.toISOString()
-      const stringTargetDate = targetDate.toISOString()
+      const stringStartDate = startDate.toISOString();
+      const stringTargetDate = targetDate.toISOString();
       await handleSave(
         {
           ...value,
@@ -112,15 +112,15 @@ function NewGoalDialog() {
           targetDate: stringTargetDate,
         },
         handleClose,
-      )
+      );
     },
-  })
+  });
 
   return (
     <Dialog
       open={true}
       onOpenChange={() => {
-        handleClose()
+        handleClose();
       }}
     >
       <DialogContent className="sm:max-w-screen-sm">
@@ -133,7 +133,7 @@ function NewGoalDialog() {
         <NewGoalForm form={form} />
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
-export default NewGoalDialog
+export default NewGoalDialog;

@@ -75,7 +75,7 @@ function NewGoalForm({ form }: NewGoalFormProps) {
                     id="title"
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="eg. 'Learn a 1000 Japanese words'"
+                    placeholder="eg. 'Learn 1000 Japanese words'"
                     maxLength={100}
                   />
                 </div>
@@ -107,12 +107,12 @@ function NewGoalForm({ form }: NewGoalFormProps) {
                     id="target-value"
                     type="number"
                     // Removes leading zeros
-                    value={value?.toString()}
+                    value={value?.toString() || ''}
                     onKeyDown={(e) => blockNonNumberInput(e)}
                     onChange={(e) => {
                       parseInputtedNumber(e.target.value, field.handleChange);
                     }}
-                    placeholder="Numbers only"
+                    placeholder="Value for goal completion (number)"
                     min={0}
                     max={MAX_INPUT_NUMBER}
                   />
@@ -233,7 +233,7 @@ function NewGoalForm({ form }: NewGoalFormProps) {
                     id="initial-value"
                     type="number"
                     // Removes leading zeros
-                    value={value.toString()}
+                    value={value?.toString()}
                     onKeyDown={(e) => blockNonNumberInput(e)}
                     onChange={(e) => {
                       parseInputtedNumber(
