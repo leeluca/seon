@@ -25,14 +25,20 @@ interface usePostSignOutProps {
   onError?: (error: APIError) => void;
 }
 
-const onSignOut = async (resetConnector: () => void) => {
+const onSignOut = async (resetConnector: () => void, resetLocalUser: () => void) => {
   sessionStorage.removeItem(DB_TOKEN_KEY);
   sessionStorage.removeItem(DB_TOKEN_EXP_KEY);
   localStorage.removeItem(SESSION_EXP_KEY);
+
   await powerSyncDb.disconnectAndClear();
   resetConnector();
+
+  resetLocalUser();
   toast.success('Successfuly signed out');
+
+  await mutate(AUTH_STATUS_KEY);
   await router.navigate({ to: '/' });
+
   return;
 };
 
@@ -50,9 +56,7 @@ const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
       onSuccess: (data) => {
         if (data.result) {
           onSuccess && onSuccess(data);
-          void mutate(AUTH_STATUS_KEY);
-          setUser(undefined);
-          void onSignOut(resetConnector);
+          void onSignOut(resetConnector, () => setUser(undefined));
         }
       },
       onError: (err) => {
