@@ -136,7 +136,9 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
         onSuccess && onSuccess(data);
       },
       onError: (err) => {
-        toast.error('Failed to sign in, please try again later.');
+        if (err.status !== 401) {
+          toast.error('Failed to sign in, please try again later.');
+        }
         onError && onError(err);
       },
     },

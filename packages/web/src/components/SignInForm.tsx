@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import { LoaderCircleIcon } from 'lucide-react';
@@ -17,7 +18,7 @@ interface SignInFormProps {
   onSignInCallback: (user: PostSignInResponse['user']) => void;
 }
 function SignInForm({ onSignInCallback }: SignInFormProps) {
-  const { trigger: postSignIn } = usePostSignIn({
+  const { trigger: postSignIn, error } = usePostSignIn({
     onSuccess: (data) => {
       if (data.result) {
         onSignInCallback(data.user);
@@ -49,6 +50,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
     clearExistingTimeout: clearTimeout,
   } = useDelayedExecution(() => void form.validateAllFields('change'));
 
+  useEffect(() => {}, []);
   return (
     <form
       className="grid gap-4 py-4"
@@ -123,7 +125,10 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
             } = field.state;
             return (
               <FormError.Wrapper
-                errors={errors}
+                errors={[
+                  ...errors,
+                  error?.status === 401 && 'Invalid credentials',
+                ].filter(Boolean)}
                 errorClassName="col-span-2 col-start-2"
               >
                 <div className="col-span-2">
