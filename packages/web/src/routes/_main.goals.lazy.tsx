@@ -8,10 +8,11 @@ import {
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 
 import GoalCard from '~/components/GoalCard';
-import { Button } from '~/components/ui/button';
+import { buttonVariants } from '~/components/ui/button';
 import { CDN_URL } from '~/constants';
 import db from '~/lib/database';
 import { useUser } from '~/states/userContext';
+import { cn } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
@@ -57,8 +58,14 @@ function Goals() {
   return (
     <div className="w-full">
       <div className="mb-8 flex justify-between">
-        <Link from="/goals" to="/goals/new">
-          <Button>New Goal</Button>
+        <Link
+          from="/goals"
+          to="/goals/new"
+          className={cn(
+            buttonVariants({ variant: 'default', size: 'default' }),
+          )}
+        >
+          New Goal
         </Link>
       </div>
       <main

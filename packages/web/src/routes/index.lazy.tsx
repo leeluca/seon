@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
-import { Button } from '~/components/ui/button';
+import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUser, useUserAction } from '~/states/userContext';
-import { generateOfflineUser } from '~/utils';
+import { cn, generateOfflineUser } from '~/utils';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -53,8 +53,14 @@ function Index() {
             </div>
             <div>
               <h5 className="mb-1 text-sm font-medium">Already a user?</h5>
-              <Link to="/signin" preload="intent">
-                <Button size="lg">Sign In</Button>
+              <Link
+                to="/signin"
+                preload="intent"
+                className={cn(
+                  buttonVariants({ variant: 'default', size: 'default' }),
+                )}
+              >
+                Sign In
               </Link>
             </div>
           </div>
