@@ -16,7 +16,8 @@ function SignIn() {
     <div className="p-6 xl:p-8">
       <Link
         to="/"
-        className={cn(buttonVariants({ variant: 'default', size: 'default' }))}
+        className={cn(buttonVariants({ variant: 'outline', size: 'default' }))}
+        aria-label="Go back"
       >
         <ArrowBigLeftIcon />
       </Link>

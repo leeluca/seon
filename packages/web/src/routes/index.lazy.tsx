@@ -57,7 +57,7 @@ function Index() {
                 to="/signin"
                 preload="intent"
                 className={cn(
-                  buttonVariants({ variant: 'default', size: 'default' }),
+                  buttonVariants({ variant: 'default', size: 'lg' }),
                 )}
               >
                 Sign In

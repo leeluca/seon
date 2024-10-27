@@ -13,8 +13,9 @@ import { toast } from 'sonner';
 
 import usePostSignOut from '~/apis/hooks/usePostSignOut';
 import { useAuthContext, useUser } from '~/states/userContext';
+import { cn } from '~/utils';
 import SignInForm from './SignInForm';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface ConnectionErrorComponentProps {
@@ -104,17 +105,26 @@ function StatusMenu() {
     <>
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
-          <Button size="icon-sm" variant="ghost">
+          <div
+            className={cn(
+              buttonVariants({ variant: 'ghost', size: 'icon-sm' }),
+            )}
+            aria-label="Syncing"
+          >
             <RefreshCcwIcon
               size={18}
               className="rotate-180 transform animate-spin"
             />
-          </Button>
+          </div>
         )}
         {connected && hasSynced ? (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="ghost">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Check last sync time"
+              >
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
@@ -138,7 +148,11 @@ function StatusMenu() {
         ) : (
           <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="ghost">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                aria-label="Check sync error or sign in"
+              >
                 <CloudOffIcon size={18} />
               </Button>
             </PopoverTrigger>
@@ -161,7 +175,7 @@ function StatusMenu() {
         {(isSignedIn || Boolean(user?.useSync)) && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="ghost">
+              <Button size="icon-sm" variant="ghost" aria-label="User info">
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
