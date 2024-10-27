@@ -1,9 +1,10 @@
 import type { IAuthContext, useUser } from '~/states/userContext';
 
+import React, { Suspense } from 'react';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
 import { Toaster } from '~/components/ui/sonner';
+import { TooltipProvider } from '~/components/ui/tooltip';
 import SyncProvider from '~/states/syncContext';
 
 interface RouterContext {
@@ -14,12 +15,25 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
 });
 
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === 'development'
+    ? React.lazy(() =>
+        import('@tanstack/router-devtools').then((res) => ({
+          default: res.TanStackRouterDevtools,
+        })),
+      )
+    : () => null;
+
 function Root() {
   return (
     <SyncProvider>
-      <Toaster position="top-right" duration={2500} closeButton />
-      <Outlet />
-      <TanStackRouterDevtools />
+      <TooltipProvider delayDuration={400}>
+        <Toaster position="top-right" duration={2500} closeButton />
+        <Outlet />
+        <Suspense>
+          <TanStackRouterDevtools />
+        </Suspense>
+      </TooltipProvider>
     </SyncProvider>
   );
 }
