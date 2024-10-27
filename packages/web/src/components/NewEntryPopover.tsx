@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
-import { Button } from '~/components/ui/button';
+import { Button, buttonVariants } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import {
   Popover,
@@ -21,6 +21,12 @@ import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './ui/tooltip';
 
 async function handleSubmit(
   {
@@ -198,7 +204,7 @@ const NewEntryForm = ({
               name="value"
               validators={{
                 onChange: ({ value }) => {
-                  return !value && 'Set a target value for your goal.';
+                  return !value && 'Choose a value higher than 0.';
                 },
               }}
             >
@@ -225,7 +231,7 @@ const NewEntryForm = ({
                             field.handleChange,
                           );
                         }}
-                        placeholder="Numbers only"
+                        placeholder="numbers only"
                         min={0}
                         max={MAX_INPUT_NUMBER}
                       />
@@ -307,11 +313,19 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
 
   return (
     <Popover open={open} onOpenChange={togglePopover}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="icon">
-          <PlusIcon size={18} />
-        </Button>
-      </PopoverTrigger>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <PopoverTrigger
+            className={cn(buttonVariants({ variant: 'outline', size: 'icon' }))}
+            aria-label="Add new goal entry"
+          >
+            <PlusIcon size={18} />
+          </PopoverTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Record goal progress</p>
+        </TooltipContent>
+      </Tooltip>
       <PopoverContent className="w-fit max-w-[325px]">
         <NewEntryForm id={id} onSubmitCallback={togglePopover} />
       </PopoverContent>

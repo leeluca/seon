@@ -177,7 +177,7 @@ export default function GoalCard({
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="outline">
+              <Button size="icon-sm" variant="outline" aria-label='Delete goal'>
                 <Trash2Icon size={18} />
               </Button>
             </PopoverTrigger>
@@ -208,6 +208,7 @@ export default function GoalCard({
             size="icon-sm"
             variant="outline"
             onClick={() => setSidePanelOpen(true)}
+            aria-label='Toggle goal details'
           >
             <Maximize2Icon size={18} />
           </Button>

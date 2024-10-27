@@ -2,7 +2,8 @@ import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowBigLeftIcon } from 'lucide-react';
 
 import SignUpForm from '~/components/SignUpForm';
-import { Button } from '~/components/ui/button';
+import { buttonVariants } from '~/components/ui/button';
+import { cn } from '~/utils';
 
 export const Route = createLazyFileRoute('/signup')({
   component: SignUp,
@@ -12,10 +13,12 @@ function SignUp() {
   const navigate = useNavigate();
   return (
     <div className="p-6 xl:p-8">
-      <Link to="/">
-        <Button variant="outline" size="icon">
-          <ArrowBigLeftIcon />
-        </Button>
+      <Link
+        to="/"
+        className={cn(buttonVariants({ variant: 'outline', size: 'default' }))}
+        aria-label="Go back"
+      >
+        <ArrowBigLeftIcon />
       </Link>
       <div className="m-auto mt-4 max-w-md">
         <h1 className="mb-8 font-medium leading-none">Sign Up</h1>
