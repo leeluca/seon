@@ -1,4 +1,3 @@
-import { callback } from 'node_modules/chart.js/dist/helpers/helpers.core';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
