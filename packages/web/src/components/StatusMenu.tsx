@@ -20,11 +20,13 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 interface ConnectionErrorComponentProps {
   isSignedIn: boolean;
   connected: boolean;
+  isSyncEnabledUser: boolean;
   onSignInCallback: (userData: PostSignInResponse['user']) => void;
 }
 const ConnectionErrorComponent = ({
   isSignedIn,
   connected,
+  isSyncEnabledUser,
   onSignInCallback,
 }: ConnectionErrorComponentProps) => {
   if (!window.navigator.onLine) {
@@ -43,9 +45,16 @@ const ConnectionErrorComponent = ({
       <>
         <div className="space-y-2 pb-4">
           <h4 className="font-medium leading-none">Sync is off</h4>
-          <p className="text-muted-foreground text-sm">
-            Sign in to sync your data.
-          </p>
+          {isSyncEnabledUser ? (
+            <div className="text-muted-foreground text-sm">
+              <p>Your session has expired.</p>
+              <p>Sign in again to sync your data.</p>
+            </div>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              Sign in to sync your data.
+            </p>
+          )}
         </div>
 
         <SignInForm onSignInCallback={onSignInCallback} />
@@ -70,6 +79,7 @@ function StatusMenu() {
     connected,
     dataFlowStatus: { downloading, uploading },
     lastSyncedAt,
+    hasSynced,
   } = useStatus();
 
   const user = useUser();
@@ -101,7 +111,7 @@ function StatusMenu() {
             />
           </Button>
         )}
-        {connected ? (
+        {connected && hasSynced ? (
           <Popover>
             <PopoverTrigger asChild>
               <Button size="icon-sm" variant="ghost">
@@ -139,6 +149,7 @@ function StatusMenu() {
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
                 connected={connected}
+                isSyncEnabledUser={Boolean(user?.useSync)}
                 onSignInCallback={({ name: userName }) => {
                   setOpen(false);
                   userName && toast.success(`Welcome back, ${userName}!`);
@@ -147,7 +158,7 @@ function StatusMenu() {
             </PopoverContent>
           </Popover>
         )}
-        {isSignedIn && (
+        {(isSignedIn || Boolean(user?.useSync)) && (
           <Popover>
             <PopoverTrigger asChild>
               <Button size="icon-sm" variant="ghost">
