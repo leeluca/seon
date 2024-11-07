@@ -28,7 +28,12 @@ function Root() {
   return (
     <SyncProvider>
       <TooltipProvider delayDuration={400}>
-        <Toaster position="top-right" duration={2500} closeButton />
+        <Toaster
+          position="top-right"
+          duration={2500}
+          closeButton
+          className="mt-6"
+        />
         <Outlet />
         <Suspense>
           <TanStackRouterDevtools />
