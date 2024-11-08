@@ -1,11 +1,10 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { ReactElement } from 'react';
 
-import { useState } from 'react';
 import { useQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 // import { format } from 'date-fns';
-import { PencilIcon, SaveIcon, XIcon } from 'lucide-react';
+import { SaveIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -19,6 +18,7 @@ import {
   // SheetTrigger,
 } from '~/components/ui/sheet';
 import db from '~/lib/database';
+import { cn } from '~/utils';
 import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import { Button } from './ui/button';
 
@@ -83,7 +83,6 @@ export function GoalDetailPanel({
 }: GoalDetailPanelProps) {
   // const { selectedGoal } = useSelectedGoal();
 
-  const [isEditing, setIsEditing] = useState(false);
   interface NewGoal {
     title: string;
     targetValue?: number;
@@ -148,6 +147,7 @@ export function GoalDetailPanel({
         startDate: stringStartDate,
         targetDate: stringTargetDate,
       });
+      form.reset();
     },
   });
 
@@ -167,304 +167,65 @@ export function GoalDetailPanel({
             <p className="text-muted-foreground mr-2 text-xs">
               {/* Last updated at: {format(updatedAt, 'PPpp')} */}
             </p>
-            {isEditing ? (
-              <div className="flex gap-1">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditing(false);
-                    form.reset();
-                  }}
-                  aria-label="Cancel editing"
-                >
-                  <XIcon />
-                </Button>
-                <form.Subscribe
-                  selector={(state) => [
-                    state.isSubmitting,
-                    !state.isDirty || !state.canSubmit || state.isSubmitting,
-                  ]}
-                >
-                  {([isSubmitting, isSubmitDisabled]) => (
-                    <div
-                      className={isSubmitDisabled ? 'cursor-not-allowed' : ''}
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isDirty || state.isSubmitting,
+                !state.isDirty || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isCancelDisabled, isSubmitDisabled]) => (
+                <div className="flex gap-2">
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isCancelDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        form.reset();
+                      }}
+                      aria-label="Cancel editing"
+                      disabled={isCancelDisabled}
                     >
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label="Save"
-                        form={GOAL_FORM_ID}
-                        onClick={() => {
-                          setIsEditing(false);
-                        }}
-                        disabled={isSubmitDisabled || isSubmitting}
-                      >
-                        <SaveIcon />
-                      </Button>
-                    </div>
-                  )}
-                </form.Subscribe>
-              </div>
-            ) : (
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-                aria-label="Edit"
-              >
-                <PencilIcon />
-              </Button>
-            )}
+                      <XIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isCancelDisabled,
+                      })}
+                    >
+                      Cancel
+                    </span>
+                  </div>
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isSubmitDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      aria-label="Save"
+                      form={GOAL_FORM_ID}
+                      disabled={isSubmitDisabled || isSubmitting}
+                    >
+                      <SaveIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isSubmitDisabled,
+                      })}
+                    >
+                      Save
+                    </span>
+                  </div>
+                </div>
+              )}
+            </form.Subscribe>
           </div>
-          {/* <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className="grid gap-4 py-4"
-          >
-            <FormItem label="Goal name" labelFor="title" className="block">
-              <form.Field
-                name="title"
-                validators={{
-                  onChange: ({ value }) => {
-                    if (!value.trim()) return 'Choose a name for your goal.';
-                    return (
-                      maxLengthValidator(
-                        value,
-                        MAX_GOAL_NAME_LENGTH,
-                        'Goal name',
-                      ) || undefined
-                    );
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="title"
-                          value={value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="eg. 'Learn a 1000 Japanese words'"
-                          maxLength={100}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Target value"
-              labelFor="target-value"
-              className="block"
-            >
-              <form.Field
-                name="targetValue"
-                validators={{
-                  onChange: ({ value }) =>
-                    !value && 'Set a target value for your goal.',
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="target-value"
-                          type="number"
-                          // Removes leading zeros
-                          value={value?.toString()}
-                          onKeyDown={(e) => blockNonNumberInput(e)}
-                          onChange={(e) => {
-                            parseInputtedNumber(
-                              e.target.value,
-                              field.handleChange,
-                            );
-                          }}
-                          placeholder="Numbers only"
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Target date"
-              labelFor="targe-date"
-              className="block"
-            >
-              <form.Field
-                name="targetDate"
-                validators={{
-                  onChangeListenTo: ['startDate'],
-                  onChange: ({ value, fieldApi }) => {
-                    if (
-                      value &&
-                      value < fieldApi.form.getFieldValue('startDate')
-                    ) {
-                      return 'Target date must be after start date';
-                    }
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <DatePicker
-                          id="target-date"
-                          date={value}
-                          setDate={(date) => date && field.handleChange(date)}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Start date"
-              labelFor="start-date"
-              className="block"
-            >
-              <form.Field name="startDate">
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <DatePicker
-                          id="start-date"
-                          defaultDate={new Date()}
-                          date={value}
-                          setDate={(date) => date && field.handleChange(date)}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem label="Unit" labelFor="unit" className="block">
-              <form.Field
-                name="unit"
-                validators={{
-                  onChange: ({ value }) => {
-                    return (
-                      maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') ||
-                      undefined
-                    );
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="unit"
-                          value={value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g. words"
-                          maxLength={100}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Initial value"
-              labelFor="initial-value"
-              className="block"
-            >
-              <form.Field name="initialValue">
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="initial-value"
-                          type="number"
-                          // Removes leading zeros
-                          value={value.toString()}
-                          onKeyDown={(e) => blockNonNumberInput(e)}
-                          onChange={(e) => {
-                            parseInputtedNumber(
-                              e.target.value,
-                              (parsedNumber?: number) => {
-                                parsedNumber
-                                  ? field.handleChange(parsedNumber)
-                                  : field.handleChange(0);
-                              },
-                            );
-                          }}
-                          placeholder="Numbers only"
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-          </form> */}
           <GoalForm form={form} formItemClassName="block" />
         </section>
         <SheetFooter>
