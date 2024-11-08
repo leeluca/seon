@@ -18,22 +18,9 @@ import {
   SheetTitle,
   // SheetTrigger,
 } from '~/components/ui/sheet';
-import {
-  MAX_GOAL_NAME_LENGTH,
-  MAX_INPUT_NUMBER,
-  MAX_UNIT_LENGTH,
-} from '~/constants';
 import db from '~/lib/database';
-import {
-  blockNonNumberInput,
-  maxLengthValidator,
-  parseInputtedNumber,
-} from '~/utils/validation';
-import { DatePicker } from './DatePicker';
-import FormError from './FormError';
-import FormItem from './FormItem';
+import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
 
 async function handleUpdate(
   goalId: string,
@@ -116,7 +103,7 @@ export function GoalDetailPanel({
       .where('shortId', '=', selectedGoalId)
       .limit(1),
   );
-  console.log('selectedGoal', selectedGoal, isLoading);
+
   const {
     title,
     target,
@@ -207,8 +194,8 @@ export function GoalDetailPanel({
                         size="icon"
                         variant="outline"
                         aria-label="Save"
+                        form={GOAL_FORM_ID}
                         onClick={() => {
-                          void form.handleSubmit();
                           setIsEditing(false);
                         }}
                         disabled={isSubmitDisabled || isSubmitting}
@@ -230,7 +217,7 @@ export function GoalDetailPanel({
               </Button>
             )}
           </div>
-          <form
+          {/* <form
             onSubmit={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -477,7 +464,8 @@ export function GoalDetailPanel({
                 }}
               </form.Field>
             </FormItem>
-          </form>
+          </form> */}
+          <GoalForm form={form} formItemClassName="block" />
         </section>
         <SheetFooter>
           <SheetClose asChild></SheetClose>

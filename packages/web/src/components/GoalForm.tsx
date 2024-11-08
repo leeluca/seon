@@ -1,24 +1,21 @@
 import { useForm } from '@tanstack/react-form';
-import { LoaderCircleIcon } from 'lucide-react';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
 import FormError from '~/components/FormError';
 import FormItem from '~/components/FormItem';
-import { Button } from '~/components/ui/button';
-import { DialogFooter } from '~/components/ui/dialog';
 import { Input } from '~/components/ui/input';
 import {
   MAX_GOAL_NAME_LENGTH,
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
-import { cn } from '~/utils';
 import {
   blockNonNumberInput,
   maxLengthValidator,
   parseInputtedNumber,
 } from '~/utils/validation';
+
+export const GOAL_FORM_ID = 'goal-form';
 
 export interface NewGoal {
   title: string;
@@ -31,15 +28,12 @@ export interface NewGoal {
 
 interface NewGoalFormProps {
   form: ReturnType<typeof useForm<NewGoal>>;
+  formItemClassName?: string;
 }
-function NewGoalForm({ form }: NewGoalFormProps) {
-  const {
-    startTimeout: delayedValidation,
-    clearExistingTimeout: clearTimeout,
-  } = useDelayedExecution(() => void form.validateAllFields('change'));
-
+function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
   return (
     <form
+      id={GOAL_FORM_ID}
       onSubmit={(e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -47,7 +41,12 @@ function NewGoalForm({ form }: NewGoalFormProps) {
       }}
       className="grid gap-4 py-4"
     >
-      <FormItem label="Goal name" labelFor="title" required>
+      <FormItem
+        label="Goal name"
+        labelFor="title"
+        className={formItemClassName}
+        required
+      >
         <form.Field
           name="title"
           validators={{
@@ -84,7 +83,12 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem label="Target value" labelFor="target-value" required>
+      <FormItem
+        label="Target value"
+        labelFor="target-value"
+        required
+        className={formItemClassName}
+      >
         <form.Field
           name="targetValue"
           validators={{
@@ -122,7 +126,12 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem label="Target date" labelFor="targe-date" required>
+      <FormItem
+        label="Target date"
+        labelFor="targe-date"
+        required
+        className={formItemClassName}
+      >
         <form.Field
           name="targetDate"
           validators={{
@@ -156,7 +165,12 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem label="Start date" labelFor="start-date" required>
+      <FormItem
+        label="Start date"
+        labelFor="start-date"
+        required
+        className={formItemClassName}
+      >
         <form.Field name="startDate">
           {(field) => {
             const {
@@ -181,7 +195,7 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem label="Unit" labelFor="unit">
+      <FormItem label="Unit" labelFor="unit" className={formItemClassName}>
         <form.Field
           name="unit"
           validators={{
@@ -216,7 +230,11 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem label="Initial value" labelFor="initial-value">
+      <FormItem
+        label="Initial value"
+        labelFor="initial-value"
+        className={formItemClassName}
+      >
         <form.Field name="initialValue">
           {(field) => {
             const {
@@ -255,31 +273,6 @@ function NewGoalForm({ form }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
-        <form.Subscribe
-          selector={(state) => [
-            state.isSubmitting,
-            !state.isTouched || !state.canSubmit || state.isSubmitting,
-          ]}
-        >
-          {([isSubmitting, isSubmitDisabled]) => (
-            <div
-              onMouseEnter={delayedValidation}
-              onMouseLeave={clearTimeout}
-              className={cn('col-start-3', {
-                'cursor-not-allowed': isSubmitDisabled,
-              })}
-            >
-              <Button type="submit" disabled={isSubmitDisabled}>
-                {isSubmitting && (
-                  <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
-                )}
-                Create goal
-              </Button>
-            </div>
-          )}
-        </form.Subscribe>
-      </DialogFooter>
     </form>
   );
 }
