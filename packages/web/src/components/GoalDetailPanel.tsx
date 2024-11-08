@@ -2,8 +2,9 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import type { ReactElement } from 'react';
 
 import { useState } from 'react';
+import { useQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
-import { format } from 'date-fns';
+// import { format } from 'date-fns';
 import { PencilIcon, SaveIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -79,28 +80,21 @@ interface GoalDetailPanelProps {
   child?: ReactElement;
   description?: string;
   // FIXME: temporary, won't receive as prop
-  graphComponent: JSX.Element;
+  // graphComponent: JSX.Element;
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
-  goal: Database['goal'];
+  selectedGoalId: string;
+  // goal: Database['goal'];
 }
 export function GoalDetailPanel({
   open,
   onOpenChange,
   // description,
-  graphComponent,
-  goal,
+  // graphComponent,
+  selectedGoalId,
+  // goal,
 }: GoalDetailPanelProps) {
-  const {
-    title,
-    target,
-    targetDate,
-    startDate,
-    updatedAt,
-    description,
-    unit,
-    id: goalId,
-  } = goal;
+  // const { selectedGoal } = useSelectedGoal();
 
   const [isEditing, setIsEditing] = useState(false);
   interface NewGoal {
@@ -112,13 +106,37 @@ export function GoalDetailPanel({
     initialValue: number;
   }
 
+  const {
+    data: [selectedGoal],
+    isLoading,
+  } = useQuery(
+    db
+      .selectFrom('goal')
+      .selectAll()
+      .where('shortId', '=', selectedGoalId)
+      .limit(1),
+  );
+  console.log('selectedGoal', selectedGoal, isLoading);
+  const {
+    title,
+    target,
+    targetDate,
+    startDate,
+    description,
+    unit,
+    id: goalId,
+  } = selectedGoal || {};
+
   const form = useForm<NewGoal>({
     defaultValues: {
       title,
       targetValue: target,
       unit: unit,
-      startDate: new Date(startDate),
-      targetDate: new Date(targetDate),
+      startDate: startDate ? new Date(startDate) : new Date(),
+      targetDate: targetDate ? new Date(targetDate) : new Date(),
+      // startDate: new Date(),
+      // targetDate: new Date(),
+
       initialValue: 0,
     },
     validators: {
@@ -146,19 +164,21 @@ export function GoalDetailPanel({
     },
   });
 
+  if (!selectedGoal) return null;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
       <SheetContent className="!w-full !max-w-full sm:!max-w-3xl">
         <SheetHeader className="mb-4">
-          <SheetTitle className="text-2xl">{goal.title}</SheetTitle>
+          <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        {graphComponent}
+        {/* {graphComponent} */}
         <section className="my-6">
           <div className="flex items-center justify-end">
             <p className="text-muted-foreground mr-2 text-xs">
-              Last updated at: {format(updatedAt, 'PPpp')}
+              {/* Last updated at: {format(updatedAt, 'PPpp')} */}
             </p>
             {isEditing ? (
               <div className="flex gap-1">

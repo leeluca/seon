@@ -1,12 +1,12 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 // import { motion } from 'framer-motion';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import GoalLineGraph from '~/components/GoalLineGraph';
 import {
   Card,
   CardContent,
@@ -16,7 +16,6 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import db from '~/lib/database';
-import { GoalDetailPanel } from './GoalDetailPanel';
 import { NewEntryPopover } from './NewEntryPopover';
 import { Button } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -50,6 +49,7 @@ async function deleteGoal(goalId: string, callback?: () => void) {
   await db.deleteFrom('goal').where('id', '=', goalId).execute();
   callback && callback();
 }
+
 export default function GoalCard({
   title,
   description,
@@ -60,41 +60,29 @@ export default function GoalCard({
   startDate,
   targetDate,
   initialValue,
-  ...goalRest
+  shortId,
 }: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const [sidePanelOpen, setSidePanelOpen] = useState(false);
-  const goal = {
-    title,
-    description,
-    currentValue,
-    target,
-    unit,
-    id,
-    startDate,
-    targetDate,
-    initialValue,
-    ...goalRest,
-  };
   // FIXME: temporary, won't pass as prop
-  const GraphComponent = (
-    <GoalLineGraph
-      key={`${id}-graph`}
-      id={id}
-      currentValue={currentValue}
-      targetDate={targetDate}
-      target={target}
-      startDate={startDate}
-      initialValue={initialValue}
-    />
-  );
+  // const GraphComponent = (
+  //   <GoalLineGraph
+  //     key={`${id}-graph`}
+  //     id={id}
+  //     currentValue={currentValue}
+  //     targetDate={targetDate}
+  //     target={target}
+  //     startDate={startDate}
+  //     initialValue={initialValue}
+  //   />
+  // );
 
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
     end: new Date(targetDate),
   });
 
+  const navigate = useNavigate();
   const averageItemsPerDay = (target - initialValue) / daysUntilTarget.length;
 
   const daysSince =
@@ -117,6 +105,14 @@ export default function GoalCard({
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
+  const onOpenGoalDetails = () => {
+    void navigate({
+      to: '/goals/$id',
+      params: {
+        id: shortId,
+      },
+    });
+  };
   return (
     <Card
       className="w-full text-center shadow-sm"
@@ -177,7 +173,7 @@ export default function GoalCard({
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="outline" aria-label='Delete goal'>
+              <Button size="icon-sm" variant="outline" aria-label="Delete goal">
                 <Trash2Icon size={18} />
               </Button>
             </PopoverTrigger>
@@ -203,23 +199,16 @@ export default function GoalCard({
               </div>
             </PopoverContent>
           </Popover>
-
           <Button
             size="icon-sm"
             variant="outline"
-            onClick={() => setSidePanelOpen(true)}
-            aria-label='Toggle goal details'
+            onClick={() => onOpenGoalDetails()}
+            aria-label="Toggle goal details"
           >
             <Maximize2Icon size={18} />
           </Button>
         </div>
       </CardFooter>
-      <GoalDetailPanel
-        graphComponent={GraphComponent}
-        open={sidePanelOpen}
-        onOpenChange={setSidePanelOpen}
-        goal={goal}
-      />
     </Card>
   );
 }

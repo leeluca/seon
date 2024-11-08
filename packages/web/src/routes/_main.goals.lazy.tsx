@@ -22,7 +22,7 @@ const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
   <div
     className="animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0"
     onClick={onClick}
-    role="button"
+    role="presentation"
     tabIndex={-1}
   >
     <img
@@ -37,24 +37,22 @@ const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
   </div>
 );
 
+const SyncingPlaceholder = () => (
+  <div className="mx-auto flex flex-col items-center">
+    <h4 className="mb-2 animate-pulse text-3xl">Syncing your goals...</h4>
+  </div>
+);
+
 function Goals() {
   const { data: goals } = useQuery(
     db.selectFrom('goal').selectAll().orderBy('id asc'),
   );
-  const {
-    dataFlowStatus: { downloading, uploading },
-    hasSynced,
-  } = useStatus();
+  const { hasSynced } = useStatus();
 
   const navigate = useNavigate();
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
   const user = useUser();
 
-  const SyncingPlaceholder = () => (
-    <div className="mx-auto flex flex-col items-center">
-      <h4 className="mb-2 animate-pulse text-3xl">Syncing your goals...</h4>
-    </div>
-  );
   return (
     <div className="w-full">
       <div className="mb-8 flex justify-between">
