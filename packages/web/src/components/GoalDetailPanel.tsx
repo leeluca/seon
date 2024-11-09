@@ -1,10 +1,16 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { ReactElement } from 'react';
 
+import { useState } from 'react';
 import { useSuspenseQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { SaveIcon, XIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  SaveIcon,
+  XIcon,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -20,7 +26,13 @@ import {
 import db from '~/lib/database';
 import { cn } from '~/utils';
 import GoalForm, { GOAL_FORM_ID } from './GoalForm';
+import GoalLineGraph from './GoalLineGraph';
 import { Button } from './ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible';
 
 interface GoalDetailPanelProps {
   child?: ReactElement;
@@ -46,7 +58,16 @@ export function GoalDetailPanel({
       .limit(1),
   );
 
-  const { title, description } = selectedGoal;
+  const {
+    title,
+    description,
+    id,
+    currentValue,
+    targetDate,
+    target,
+    startDate,
+    initialValue,
+  } = selectedGoal;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -56,8 +77,20 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        {/* {graphComponent} */}
-        <GoalEditForm goal={selectedGoal} />
+        <div className="flex flex-col gap-1">
+          <div className="my-6">
+            <GoalLineGraph
+              key={`${id}-graph`}
+              id={id}
+              currentValue={currentValue}
+              targetDate={targetDate}
+              target={target}
+              startDate={startDate}
+              initialValue={initialValue}
+            />
+          </div>
+          <GoalEditForm goal={selectedGoal} />
+        </div>
         <SheetFooter>
           <SheetClose asChild></SheetClose>
         </SheetFooter>
@@ -125,6 +158,8 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     updatedAt,
   } = goal;
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const form = useForm<NewGoal>({
     defaultValues: {
       title,
@@ -162,73 +197,98 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
 
   return (
     <section className="my-6">
-      <div className="mb-1 flex items-end justify-between">
-        <header>
-          <h4 className="text-foreground text-xl font-semibold">Edit goal</h4>
-          <p className="text-muted-foreground mt-2 text-xs">
-            Last updated at: {format(updatedAt, 'PPpp')}
-          </p>
-        </header>
-        <form.Subscribe
-          selector={(state) => [
-            state.isSubmitting,
-            !state.isDirty || state.isSubmitting,
-            !state.isDirty || !state.canSubmit || state.isSubmitting,
-          ]}
-        >
-          {([isSubmitting, isCancelDisabled, isSubmitDisabled]) => (
-            <div className="flex gap-2">
-              <div
-                className={cn('flex flex-col items-center gap-1', {
-                  'cursor-not-allowed': isCancelDisabled,
-                })}
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <div className="mb-1 flex h-[3.75rem] items-end justify-between">
+          <div className="flex items-center">
+            <CollapsibleTrigger asChild className="mr-4">
+              <Button
+                aria-label="Open edit goal form"
+                size="icon-sm"
+                variant="secondary"
               >
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    form.reset();
-                  }}
-                  aria-label="Cancel editing"
-                  disabled={isCancelDisabled}
-                >
-                  <XIcon />
-                </Button>
-                <span
-                  className={cn('text-xs font-medium', {
-                    'text-muted-foreground': isCancelDisabled,
-                  })}
-                >
-                  Cancel
-                </span>
-              </div>
-              <div
-                className={cn('flex flex-col items-center gap-1', {
-                  'cursor-not-allowed': isSubmitDisabled,
-                })}
-              >
-                <Button
-                  size="icon"
-                  variant="outline"
-                  aria-label="Save"
-                  form={GOAL_FORM_ID}
-                  disabled={isSubmitDisabled || isSubmitting}
-                >
-                  <SaveIcon />
-                </Button>
-                <span
-                  className={cn('text-xs font-medium', {
-                    'text-muted-foreground': isSubmitDisabled,
-                  })}
-                >
-                  Save
-                </span>
-              </div>
-            </div>
-          )}
-        </form.Subscribe>
-      </div>
-      <GoalForm form={form} formItemClassName="block" />
+                {/* TODO: animate icon transition */}
+                {isOpen ? (
+                  <ChevronDownIcon size={18} />
+                ) : (
+                  <ChevronRightIcon size={18} />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <header>
+              <h4 className="text-foreground text-xl font-semibold">
+                Edit goal
+              </h4>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Last updated at: {format(updatedAt, 'PPp')}
+              </p>
+            </header>
+          </div>
+
+          <form.Subscribe
+            selector={(state) => [
+              state.isSubmitting,
+              !state.isDirty || state.isSubmitting,
+              !state.isDirty || !state.canSubmit || state.isSubmitting,
+            ]}
+          >
+            {([isSubmitting, isCancelDisabled, isSubmitDisabled]) =>
+              isOpen && (
+                <div className="animate-fade-in flex gap-2">
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isCancelDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        form.reset();
+                      }}
+                      aria-label="Cancel editing"
+                      disabled={isCancelDisabled}
+                    >
+                      <XIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isCancelDisabled,
+                      })}
+                    >
+                      Cancel
+                    </span>
+                  </div>
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isSubmitDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      aria-label="Save"
+                      form={GOAL_FORM_ID}
+                      disabled={isSubmitDisabled || isSubmitting}
+                    >
+                      <SaveIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isSubmitDisabled,
+                      })}
+                    >
+                      Save
+                    </span>
+                  </div>
+                </div>
+              )
+            }
+          </form.Subscribe>
+        </div>
+        <CollapsibleContent>
+          <GoalForm form={form} formItemClassName="block" />
+        </CollapsibleContent>
+      </Collapsible>
     </section>
   );
 }
