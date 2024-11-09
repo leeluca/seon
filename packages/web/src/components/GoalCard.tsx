@@ -1,7 +1,7 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
 import { useRef } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 // import { motion } from 'framer-motion';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
@@ -16,8 +16,9 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import db from '~/lib/database';
+import { cn } from '~/utils';
 import { NewEntryPopover } from './NewEntryPopover';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 // const MotionCard = motion(Card);
@@ -82,7 +83,6 @@ export default function GoalCard({
     end: new Date(targetDate),
   });
 
-  const navigate = useNavigate();
   const averageItemsPerDay = (target - initialValue) / daysUntilTarget.length;
 
   const daysSince =
@@ -105,14 +105,6 @@ export default function GoalCard({
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
 
-  const onOpenGoalDetails = () => {
-    void navigate({
-      to: '/goals/$id',
-      params: {
-        id: shortId,
-      },
-    });
-  };
   return (
     <Card
       className="w-full text-center shadow-sm"
@@ -199,14 +191,17 @@ export default function GoalCard({
               </div>
             </PopoverContent>
           </Popover>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            onClick={() => onOpenGoalDetails()}
+          <Link
+            to="/goals/$id"
+            params={{ id: shortId }}
+            replace
             aria-label="Toggle goal details"
+            className={cn(
+              buttonVariants({ variant: 'outline', size: 'icon-sm' }),
+            )}
           >
             <Maximize2Icon size={18} />
-          </Button>
+          </Link>
         </div>
       </CardFooter>
     </Card>

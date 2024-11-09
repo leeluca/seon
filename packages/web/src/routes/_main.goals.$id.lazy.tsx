@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { GoalDetailPanel } from '~/components/GoalDetailPanel';
@@ -21,12 +21,12 @@ function RouteComponent() {
   const { id: goalShortId } = Route.useParams();
 
   return (
-    <div>
+    <Suspense>
       <GoalDetailPanel
         open={isOpen}
         onOpenChange={() => close()}
         selectedGoalId={goalShortId}
       />
-    </div>
+    </Suspense>
   );
 }
