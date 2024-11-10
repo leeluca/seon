@@ -148,7 +148,11 @@ function NewGoalDialog() {
             Set up your new goal. You can always edit it later.
           </DialogDescription>
         </DialogHeader>
-        <GoalForm form={form} />
+        <GoalForm
+          form={form}
+          labelClassName="text-right"
+          collapseOptionalFields
+        />
         <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
           <form.Subscribe
             selector={(state) => [

@@ -37,8 +37,6 @@ import {
 interface GoalDetailPanelProps {
   child?: ReactElement;
   description?: string;
-  // FIXME: temporary, won't receive as prop
-  // graphComponent: JSX.Element;
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   selectedGoalId: string;
@@ -202,7 +200,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
           <div className="flex items-center">
             <CollapsibleTrigger asChild className="mr-4">
               <Button
-                aria-label="Open edit goal form"
+                id="edit-goal-toggle"
                 size="icon-sm"
                 variant="secondary"
               >
@@ -215,9 +213,12 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
               </Button>
             </CollapsibleTrigger>
             <header>
-              <h4 className="text-foreground text-xl font-semibold">
+              <label
+                className="text-foreground text-xl font-semibold"
+                htmlFor="edit-goal-toggle"
+              >
                 Edit goal
-              </h4>
+              </label>
               <p className="text-muted-foreground mt-1 text-xs">
                 Last updated at: {format(updatedAt, 'PPp')}
               </p>
@@ -286,7 +287,10 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
           </form.Subscribe>
         </div>
         <CollapsibleContent>
-          <GoalForm form={form} formItemClassName="block" />
+          <GoalForm
+            form={form}
+            formItemClassName="grid-cols-1 items-start gap-y-3"
+          />
         </CollapsibleContent>
       </Collapsible>
     </section>

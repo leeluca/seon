@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 
 import { DatePicker } from '~/components/DatePicker';
 import FormError from '~/components/FormError';
@@ -14,6 +16,12 @@ import {
   maxLengthValidator,
   parseInputtedNumber,
 } from '~/utils/validation';
+import { Button } from './ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible';
 
 export const GOAL_FORM_ID = 'goal-form';
 
@@ -29,8 +37,19 @@ export interface NewGoal {
 interface NewGoalFormProps {
   form: ReturnType<typeof useForm<NewGoal>>;
   formItemClassName?: string;
+  labelClassName?: string;
+  collapseOptionalFields?: boolean;
 }
-function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
+function NewGoalForm({
+  form,
+  formItemClassName,
+  labelClassName,
+  collapseOptionalFields = false,
+}: NewGoalFormProps) {
+  const [showOptionalFields, setShowOptionalFields] = useState(
+    !collapseOptionalFields,
+  );
+
   return (
     <form
       id={GOAL_FORM_ID}
@@ -39,12 +58,13 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
         e.stopPropagation();
         void form.handleSubmit();
       }}
-      className="grid gap-4 py-4"
+      className="grid gap-5 py-4"
     >
       <FormItem
         label="Goal name"
         labelFor="title"
         className={formItemClassName}
+        labelClassName={labelClassName}
         required
       >
         <form.Field
@@ -88,6 +108,7 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
         labelFor="target-value"
         required
         className={formItemClassName}
+        labelClassName={labelClassName}
       >
         <form.Field
           name="targetValue"
@@ -131,6 +152,7 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
         labelFor="targe-date"
         required
         className={formItemClassName}
+        labelClassName={labelClassName}
       >
         <form.Field
           name="targetDate"
@@ -166,115 +188,165 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
           }}
         </form.Field>
       </FormItem>
-      <FormItem
-        label="Start date"
-        labelFor="start-date"
-        required
-        className={formItemClassName}
+      <Collapsible
+        open={showOptionalFields}
+        onOpenChange={setShowOptionalFields}
       >
-        <form.Field name="startDate">
-          {(field) => {
-            const {
-              value,
-              meta: { errors },
-            } = field.state;
-            return (
-              <FormError.Wrapper
-                errors={errors}
-                errorClassName="col-span-3 col-start-2"
+        {collapseOptionalFields && (
+          <div className="my-2 flex items-center gap-1">
+            <CollapsibleTrigger asChild className="mr-2">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                type="button"
+                id="toggle-extra-options"
               >
-                <div className="col-span-2">
-                  <DatePicker
-                    id="start-date"
-                    defaultDate={new Date()}
-                    date={value}
-                    setDate={(date) => date && field.handleChange(date)}
-                    showPresetDates
-                  />
-                </div>
-              </FormError.Wrapper>
-            );
-          }}
-        </form.Field>
-      </FormItem>
-      <FormItem label="Unit" labelFor="unit" className={formItemClassName}>
-        <form.Field
-          name="unit"
-          validators={{
-            onChange: ({ value }) => {
-              return (
-                maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') || undefined
-              );
-            },
-          }}
-        >
-          {(field) => {
-            const {
-              value,
-              meta: { errors },
-            } = field.state;
-            return (
-              <FormError.Wrapper
-                errors={errors}
-                errorClassName="col-span-3 col-start-2"
+                {showOptionalFields ? (
+                  <ChevronDownIcon size={18} />
+                ) : (
+                  <ChevronRightIcon size={18} />
+                )}
+                {/* TODO: animate icon transition */}
+              </Button>
+            </CollapsibleTrigger>
+            {showOptionalFields ? (
+              <label
+                className="flex text-right text-xs font-medium"
+                htmlFor="toggle-extra-options"
               >
-                <div className="col-span-2">
-                  <Input
-                    id="unit"
-                    value={value}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="e.g. words"
-                    maxLength={100}
-                  />
-                </div>
-              </FormError.Wrapper>
-            );
-          }}
-        </form.Field>
-      </FormItem>
-      <FormItem
-        label="Initial value"
-        labelFor="initial-value"
-        className={formItemClassName}
-      >
-        <form.Field name="initialValue">
-          {(field) => {
-            const {
-              value,
-              meta: { errors },
-            } = field.state;
-            return (
-              <FormError.Wrapper
-                errors={errors}
-                errorClassName="col-span-3 col-start-2"
+                Hide extra options
+              </label>
+            ) : (
+              <label
+                className="flex text-right text-xs font-medium"
+                htmlFor="toggle-extra-options"
               >
-                <div className="col-span-2">
-                  <Input
-                    id="initial-value"
-                    type="number"
-                    // Removes leading zeros
-                    value={value?.toString()}
-                    onKeyDown={(e) => blockNonNumberInput(e)}
-                    onChange={(e) => {
-                      parseInputtedNumber(
-                        e.target.value,
-                        (parsedNumber?: number) => {
-                          parsedNumber
-                            ? field.handleChange(parsedNumber)
-                            : field.handleChange(0);
-                        },
-                      );
-                    }}
-                    placeholder="Numbers only"
-                    min={0}
-                    max={MAX_INPUT_NUMBER}
-                  />
-                </div>
-              </FormError.Wrapper>
-            );
-          }}
-        </form.Field>
-      </FormItem>
+                Show extra options
+              </label>
+            )}
+          </div>
+        )}
+
+        <CollapsibleContent className="grid gap-4">
+          <FormItem
+            label="Start date"
+            labelFor="start-date"
+            required
+            className={formItemClassName}
+            labelClassName={labelClassName}
+          >
+            <form.Field name="startDate">
+              {(field) => {
+                const {
+                  value,
+                  meta: { errors },
+                } = field.state;
+                return (
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
+                    <div className="col-span-2">
+                      <DatePicker
+                        id="start-date"
+                        defaultDate={new Date()}
+                        date={value}
+                        setDate={(date) => date && field.handleChange(date)}
+                        showPresetDates
+                      />
+                    </div>
+                  </FormError.Wrapper>
+                );
+              }}
+            </form.Field>
+          </FormItem>
+          <FormItem
+            label="Unit"
+            labelFor="unit"
+            className={formItemClassName}
+            labelClassName={labelClassName}
+          >
+            <form.Field
+              name="unit"
+              validators={{
+                onChange: ({ value }) => {
+                  return (
+                    maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') ||
+                    undefined
+                  );
+                },
+              }}
+            >
+              {(field) => {
+                const {
+                  value,
+                  meta: { errors },
+                } = field.state;
+                return (
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
+                    <div className="col-span-2">
+                      <Input
+                        id="unit"
+                        value={value}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        placeholder="e.g. words"
+                        maxLength={100}
+                      />
+                    </div>
+                  </FormError.Wrapper>
+                );
+              }}
+            </form.Field>
+          </FormItem>
+          <FormItem
+            label="Initial value"
+            labelFor="initial-value"
+            className={formItemClassName}
+            labelClassName={labelClassName}
+          >
+            <form.Field name="initialValue">
+              {(field) => {
+                const {
+                  value,
+                  meta: { errors },
+                } = field.state;
+                return (
+                  <FormError.Wrapper
+                    errors={errors}
+                    errorClassName="col-span-3 col-start-2"
+                  >
+                    <div className="col-span-2">
+                      <Input
+                        id="initial-value"
+                        type="number"
+                        // Removes leading zeros
+                        value={value?.toString()}
+                        onKeyDown={(e) => blockNonNumberInput(e)}
+                        onChange={(e) => {
+                          parseInputtedNumber(
+                            e.target.value,
+                            (parsedNumber?: number) => {
+                              parsedNumber
+                                ? field.handleChange(parsedNumber)
+                                : field.handleChange(0);
+                            },
+                          );
+                        }}
+                        placeholder="Numbers only"
+                        min={0}
+                        max={MAX_INPUT_NUMBER}
+                      />
+                    </div>
+                  </FormError.Wrapper>
+                );
+              }}
+            </form.Field>
+          </FormItem>
+        </CollapsibleContent>
+      </Collapsible>
     </form>
   );
 }
