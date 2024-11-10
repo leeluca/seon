@@ -1,6 +1,6 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Link } from '@tanstack/react-router';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 // import { motion } from 'framer-motion';
@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -34,50 +33,22 @@ function ProgressBar({ progressPercent }: ProgressBarProps) {
   );
 }
 
-function getOnTrackValue(differenceFromTarget: number, target: number) {
-  const percentageDifference = Math.abs(differenceFromTarget / target) * 100;
-
-  if (percentageDifference <= 5) {
-    return <p className="text-blue-500">On track</p>;
-  } else if (differenceFromTarget > 0) {
-    return <p className="text-green-500">Ahead</p>;
-  } else {
-    return <p className="text-red-500">Behind</p>;
-  }
+interface getOnTrackValueArgs {
+  currentValue: number;
+  initialValue: number;
+  target: number;
+  startDate: string;
+  targetDate: string;
+  isCompleted: boolean;
 }
-
-async function deleteGoal(goalId: string, callback?: () => void) {
-  await db.deleteFrom('goal').where('id', '=', goalId).execute();
-  callback && callback();
-}
-
-export default function GoalCard({
-  title,
-  description,
+function getOnTrackValue({
   currentValue,
+  initialValue,
   target,
-  unit,
-  id,
   startDate,
   targetDate,
-  initialValue,
-  shortId,
-}: Database['goal']) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // FIXME: temporary, won't pass as prop
-  // const GraphComponent = (
-  //   <GoalLineGraph
-  //     key={`${id}-graph`}
-  //     id={id}
-  //     currentValue={currentValue}
-  //     targetDate={targetDate}
-  //     target={target}
-  //     startDate={startDate}
-  //     initialValue={initialValue}
-  //   />
-  // );
-
+  isCompleted,
+}: getOnTrackValueArgs) {
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
     end: new Date(targetDate),
@@ -94,8 +65,35 @@ export default function GoalCard({
   );
 
   const differenceFromTarget = currentValue - expectedGoalValueToday;
+  const percentageDifference = Math.abs(differenceFromTarget / target) * 100;
 
-  const item = getOnTrackValue(differenceFromTarget, target);
+  if (isCompleted) {
+    return <p className="text-green-500">Completed</p>;
+  } else if (percentageDifference <= 5) {
+    return <p className="text-blue-500">On track</p>;
+  } else if (differenceFromTarget > 0) {
+    return <p className="text-green-500">Ahead</p>;
+  } else {
+    return <p className="text-red-500">Behind</p>;
+  }
+}
+
+async function deleteGoal(goalId: string, callback?: () => void) {
+  await db.deleteFrom('goal').where('id', '=', goalId).execute();
+  callback && callback();
+}
+
+export default function GoalCard({
+  title,
+  currentValue,
+  target,
+  id,
+  startDate,
+  targetDate,
+  initialValue,
+  shortId,
+}: Database['goal']) {
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
@@ -104,6 +102,21 @@ export default function GoalCard({
 
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
+
+  const isCompleted = currentValue >= target;
+
+  const progressStatus = useMemo(
+    () =>
+      getOnTrackValue({
+        currentValue,
+        initialValue,
+        target,
+        startDate,
+        targetDate,
+        isCompleted,
+      }),
+    [currentValue, initialValue, target, startDate, targetDate, isCompleted],
+  );
 
   return (
     <Card
@@ -133,30 +146,37 @@ export default function GoalCard({
         onPointerDownCapture={(e) => e.stopPropagation()}
       >
         <div className="flex h-16 items-center">
-          <CardTitle className="mr-2 w-60 grow text-center text-2xl">
+          <CardTitle className="mr-3 w-60 grow pl-[30px] text-center text-2xl font-medium">
             {title}
           </CardTitle>
           <NewEntryPopover id={id} />
         </div>
-        <CardDescription className="text-xs">{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <p className="text-center text-4xl font-semibold">{progressPercent}</p>
+        <p className="mb-2 text-center text-3xl font-extrabold">
+          {progressPercent}
+        </p>
         <div className="flex flex-col gap-2">
-          <div className="flex justify-between text-xs">
-            <span>{currentValue}</span>
-            <span>
-              {target} {unit || 'items'}
-            </span>
+          <div className="-mx-2 flex items-end justify-between text-xs font-light">
+            <p className="w-1/3 text-start">{currentValue}</p>
+            <div className="flex w-1/3 flex-col items-end">
+              <p className="mb-1 text-xs font-medium">Target</p>
+              <span>{target}</span>
+            </div>
           </div>
           <ProgressBar progressPercent={progressPercent} />
-          <div className="flex justify-between text-xs">
-            <span>{item}</span>
-            <span>
-              {daysLeft > 0
-                ? `${daysLeft} days left`
-                : `${Math.abs(daysLeft)} days past`}
-            </span>
+          <div className="-mx-2 flex justify-between text-xs font-light">
+            <p className="w-1/3 text-start">{progressStatus}</p>
+            {!isCompleted && (
+              <div className="flex w-1/3 flex-col items-end">
+                {/* TODO: match pluralization with number */}
+                <span>
+                  {daysLeft > 0
+                    ? `${daysLeft} days left`
+                    : `${Math.abs(daysLeft)} days late`}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </CardContent>
