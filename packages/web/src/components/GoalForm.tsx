@@ -158,6 +158,7 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
                     id="target-date"
                     date={value}
                     setDate={(date) => date && field.handleChange(date)}
+                    showPresetDates
                   />
                 </div>
               </FormError.Wrapper>
@@ -188,6 +189,7 @@ function NewGoalForm({ form, formItemClassName }: NewGoalFormProps) {
                     defaultDate={new Date()}
                     date={value}
                     setDate={(date) => date && field.handleChange(date)}
+                    showPresetDates
                   />
                 </div>
               </FormError.Wrapper>

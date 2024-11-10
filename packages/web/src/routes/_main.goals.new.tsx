@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { add, startOfDay } from 'date-fns';
 import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -95,7 +96,7 @@ function NewGoalDialog() {
       targetValue: 0,
       unit: '',
       startDate: new Date(),
-      targetDate: undefined,
+      targetDate: add(startOfDay(new Date()), { months: 1 }),
       initialValue: 0,
     },
     validators: {
