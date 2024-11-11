@@ -151,6 +151,7 @@ function NewGoalDialog() {
         <GoalForm
           form={form}
           labelClassName="text-right"
+          errorClassName='col-span-3 col-start-2'
           collapseOptionalFields
         />
         <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">

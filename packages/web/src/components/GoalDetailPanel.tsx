@@ -70,7 +70,7 @@ export function GoalDetailPanel({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
-      <SheetContent className="!w-full !max-w-full sm:!max-w-3xl">
+      <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
@@ -194,16 +194,12 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
   });
 
   return (
-    <section className="my-6">
+    <section className="my-4 overflow-y-auto">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="mb-1 flex h-[3.75rem] items-end justify-between">
           <div className="flex items-center">
             <CollapsibleTrigger asChild className="mr-4">
-              <Button
-                id="edit-goal-toggle"
-                size="icon-sm"
-                variant="secondary"
-              >
+              <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
                 {/* TODO: animate icon transition */}
                 {isOpen ? (
                   <ChevronDownIcon size={18} />
@@ -289,7 +285,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
         <CollapsibleContent>
           <GoalForm
             form={form}
-            formItemClassName="grid-cols-1 items-start gap-y-3"
+            formItemClassName="grid-cols-1 items-start gap-y-3 px-1"
           />
         </CollapsibleContent>
       </Collapsible>

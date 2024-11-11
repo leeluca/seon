@@ -38,12 +38,14 @@ interface NewGoalFormProps {
   form: ReturnType<typeof useForm<NewGoal>>;
   formItemClassName?: string;
   labelClassName?: string;
+  errorClassName?: string;
   collapseOptionalFields?: boolean;
 }
 function NewGoalForm({
   form,
   formItemClassName,
   labelClassName,
+  errorClassName,
   collapseOptionalFields = false,
 }: NewGoalFormProps) {
   const [showOptionalFields, setShowOptionalFields] = useState(
@@ -87,7 +89,7 @@ function NewGoalForm({
             return (
               <FormError.Wrapper
                 errors={errors}
-                errorClassName="col-span-3 col-start-2"
+                errorClassName={errorClassName}
               >
                 <div className="col-span-2">
                   <Input
@@ -125,7 +127,7 @@ function NewGoalForm({
             return (
               <FormError.Wrapper
                 errors={errors}
-                errorClassName="col-span-3 col-start-2"
+                errorClassName={errorClassName}
               >
                 <div className="col-span-2">
                   <Input
@@ -173,7 +175,7 @@ function NewGoalForm({
             return (
               <FormError.Wrapper
                 errors={errors}
-                errorClassName="col-span-3 col-start-2"
+                errorClassName={errorClassName}
               >
                 <div className="col-span-2">
                   <DatePicker
@@ -244,7 +246,7 @@ function NewGoalForm({
                 return (
                   <FormError.Wrapper
                     errors={errors}
-                    errorClassName="col-span-3 col-start-2"
+                    errorClassName={errorClassName}
                   >
                     <div className="col-span-2">
                       <DatePicker
@@ -285,7 +287,7 @@ function NewGoalForm({
                 return (
                   <FormError.Wrapper
                     errors={errors}
-                    errorClassName="col-span-3 col-start-2"
+                    errorClassName={errorClassName}
                   >
                     <div className="col-span-2">
                       <Input
@@ -316,7 +318,7 @@ function NewGoalForm({
                 return (
                   <FormError.Wrapper
                     errors={errors}
-                    errorClassName="col-span-3 col-start-2"
+                    errorClassName={errorClassName}
                   >
                     <div className="col-span-2">
                       <Input
