@@ -233,7 +233,6 @@ function NewGoalForm({
           <FormItem
             label="Start date"
             labelFor="start-date"
-            required
             className={formItemClassName}
             labelClassName={labelClassName}
           >
@@ -325,7 +324,7 @@ function NewGoalForm({
                         id="initial-value"
                         type="number"
                         // Removes leading zeros
-                        value={value?.toString()}
+                        value={value.toString()}
                         onKeyDown={(e) => blockNonNumberInput(e)}
                         onChange={(e) => {
                           parseInputtedNumber(

@@ -11,7 +11,7 @@ export const parseInputtedNumber = (
 ) => {
   // Input being deleted
   if (!value) {
-    callback(undefined);
+    callback(0);
     return;
   }
   const parsedNumber = parseInt(value.replace(/[^0-9]/g, ''), 10);
