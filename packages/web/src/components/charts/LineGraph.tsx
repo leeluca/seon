@@ -1,17 +1,17 @@
-import type { ChartData, ChartOptions } from "chart.js";
-import { Line } from "react-chartjs-2";
+import type { ChartData, ChartOptions } from 'chart.js';
 
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
+  Legend,
   LinearScale,
-  PointElement,
   LineElement,
+  PointElement,
   Title,
   Tooltip,
-  Legend,
-  Filler,
-} from "chart.js";
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -21,12 +21,12 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 );
 
 export interface LineGraphProps {
-  data: ChartData<"line", number[], string>;
-  options?: ChartOptions<"line">;
+  data: ChartData<'line', number[], string | string[]>;
+  options?: ChartOptions<'line'>;
 }
 export const LineGraph = ({ data, options }: LineGraphProps) => {
   return <Line data={data} options={options} />;
