@@ -64,7 +64,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         label="Email"
         labelFor="email"
         className="grid-cols-3"
-        textClassName="text-start"
+        labelClassName="text-start"
         required
       >
         <form.Field
@@ -107,7 +107,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         label="Password"
         labelFor="password"
         className="grid-cols-3"
-        textClassName="text-start"
+        labelClassName="text-start"
         required
       >
         <form.Field

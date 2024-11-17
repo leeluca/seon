@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { useQuery, useStatus } from '@powersync/react';
 import {
   createLazyFileRoute,
@@ -9,7 +10,6 @@ import { AnimatePresence, LayoutGroup } from 'framer-motion';
 
 import GoalCard from '~/components/GoalCard';
 import { buttonVariants } from '~/components/ui/button';
-import { CDN_URL } from '~/constants';
 import db from '~/lib/database';
 import { useUser } from '~/states/userContext';
 import { cn } from '~/utils';
@@ -18,23 +18,13 @@ export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
 });
 
+const LazyNoGoalsPlaceholder = lazy(
+  () => import('../components/NoGoalsPlaceholder'),
+);
 const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
-  <div
-    className="animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0"
-    onClick={onClick}
-    role="presentation"
-    tabIndex={-1}
-  >
-    <img
-      src={`${CDN_URL}/hatching_chick.png`}
-      alt="Hatching Chick"
-      width="200"
-      height="200"
-    />
-    <h4 className="mb-2 text-3xl">There are no goals</h4>
-
-    <p className="text-muted-foreground text-center">Create your first goal!</p>
-  </div>
+  <Suspense fallback={null}>
+    <LazyNoGoalsPlaceholder onClick={onClick} />
+  </Suspense>
 );
 
 const SyncingPlaceholder = () => (
