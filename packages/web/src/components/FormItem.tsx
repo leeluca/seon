@@ -7,18 +7,16 @@ interface FormMessageProps {
   labelFor: string;
   required?: boolean;
   className?: string;
-  textClassName?: string;
+  labelClassName?: string;
   children: React.ReactNode;
 }
 
-// FIXME: remove default styles for reusability
-// or provide different style options
 function FormItem({
   label,
   labelFor,
   required,
   className,
-  textClassName,
+  labelClassName,
   children,
 }: FormMessageProps) {
   return (
@@ -28,8 +26,8 @@ function FormItem({
       <Label
         htmlFor={labelFor}
         className={cn(
-          'text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-          textClassName,
+          'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
+          labelClassName,
         )}
       >
         {label}{' '}

@@ -1,19 +1,25 @@
+import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { add, startOfDay } from 'date-fns';
+import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import NewGoalForm, { NewGoal } from '~/components/NewGoalForm';
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
+import GoalForm, { GOAL_FORM_ID, NewGoal } from '~/components/GoalForm';
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
-import { generateUUIDs } from '~/utils';
+import { cn, generateUUIDs } from '~/utils';
 
 export const Route = createFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
@@ -74,16 +80,23 @@ async function handleSave(
 function NewGoalDialog() {
   const navigate = useNavigate();
   const user = useUser();
+
+  const [isOpen, setIsOpen] = useState(true);
+
   const handleClose = () => {
-    void navigate({ from: '/goals/new', to: '/goals', replace: true });
+    setIsOpen(false);
+    setTimeout(() => {
+      void navigate({ from: '/goals/new', to: '/goals', replace: true });
+    }, 250);
   };
+
   const form = useForm<NewGoal>({
     defaultValues: {
       title: '',
       targetValue: 0,
       unit: '',
       startDate: new Date(),
-      targetDate: undefined,
+      targetDate: add(startOfDay(new Date()), { months: 1 }),
       initialValue: 0,
     },
     validators: {
@@ -116,9 +129,14 @@ function NewGoalDialog() {
     },
   });
 
+  const {
+    startTimeout: delayedValidation,
+    clearExistingTimeout: clearTimeout,
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
+
   return (
     <Dialog
-      open={true}
+      open={isOpen}
       onOpenChange={() => {
         handleClose();
       }}
@@ -130,7 +148,41 @@ function NewGoalDialog() {
             Set up your new goal. You can always edit it later.
           </DialogDescription>
         </DialogHeader>
-        <NewGoalForm form={form} />
+        <GoalForm
+          form={form}
+          labelClassName="text-right"
+          errorClassName='col-span-3 col-start-2'
+          collapseOptionalFields
+        />
+        <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
+          <form.Subscribe
+            selector={(state) => [
+              state.isSubmitting,
+              !state.isTouched || !state.canSubmit || state.isSubmitting,
+            ]}
+          >
+            {([isSubmitting, isSubmitDisabled]) => (
+              <div
+                onMouseEnter={delayedValidation}
+                onMouseLeave={clearTimeout}
+                className={cn('col-start-3', {
+                  'cursor-not-allowed': isSubmitDisabled,
+                })}
+              >
+                <Button
+                  type="submit"
+                  disabled={isSubmitDisabled}
+                  form={GOAL_FORM_ID}
+                >
+                  {isSubmitting && (
+                    <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
+                  )}
+                  Create goal
+                </Button>
+              </div>
+            )}
+          </form.Subscribe>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -2,9 +2,15 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import type { ReactElement } from 'react';
 
 import { useState } from 'react';
+import { useSuspenseQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { PencilIcon, SaveIcon, XIcon } from 'lucide-react';
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  SaveIcon,
+  XIcon,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -17,22 +23,79 @@ import {
   SheetTitle,
   // SheetTrigger,
 } from '~/components/ui/sheet';
-import {
-  MAX_GOAL_NAME_LENGTH,
-  MAX_INPUT_NUMBER,
-  MAX_UNIT_LENGTH,
-} from '~/constants';
 import db from '~/lib/database';
-import {
-  blockNonNumberInput,
-  maxLengthValidator,
-  parseInputtedNumber,
-} from '~/utils/validation';
-import { DatePicker } from './DatePicker';
-import FormError from './FormError';
-import FormItem from './FormItem';
+import { cn } from '~/utils';
+import GoalForm, { GOAL_FORM_ID } from './GoalForm';
+import GoalLineGraph from './GoalLineGraph';
 import { Button } from './ui/button';
-import { Input } from './ui/input';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from './ui/collapsible';
+
+interface GoalDetailPanelProps {
+  child?: ReactElement;
+  description?: string;
+  open: boolean;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedGoalId: string;
+}
+export function GoalDetailPanel({
+  open,
+  onOpenChange,
+  selectedGoalId,
+}: GoalDetailPanelProps) {
+  const {
+    data: [selectedGoal],
+  } = useSuspenseQuery(
+    db
+      .selectFrom('goal')
+      .selectAll()
+      .where('shortId', '=', selectedGoalId)
+      .limit(1),
+  );
+
+  const {
+    title,
+    description,
+    id,
+    currentValue,
+    targetDate,
+    target,
+    startDate,
+    initialValue,
+  } = selectedGoal;
+
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
+      <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+        <SheetHeader className="mb-4">
+          <SheetTitle className="text-2xl">{title}</SheetTitle>
+          <SheetDescription>{description}</SheetDescription>
+        </SheetHeader>
+        <div className="flex flex-col gap-1">
+          <div className="my-6">
+            <GoalLineGraph
+              key={`${id}-graph`}
+              id={id}
+              currentValue={currentValue}
+              targetDate={targetDate}
+              target={target}
+              startDate={startDate}
+              initialValue={initialValue}
+            />
+          </div>
+          <GoalEditForm goal={selectedGoal} />
+        </div>
+        <SheetFooter>
+          <SheetClose asChild></SheetClose>
+        </SheetFooter>
+      </SheetContent>
+    </Sheet>
+  );
+}
 
 async function handleUpdate(
   goalId: string,
@@ -73,44 +136,27 @@ async function handleUpdate(
   }
 }
 
-// FIXME: fix types
-// TODO: move outside of goal component and have a single instance of this component
-interface GoalDetailPanelProps {
-  child?: ReactElement;
-  description?: string;
-  // FIXME: temporary, won't receive as prop
-  graphComponent: JSX.Element;
-  open: boolean;
-  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
-  goal: Database['goal'];
+interface NewGoal {
+  title: string;
+  targetValue?: number;
+  unit: string;
+  startDate: Date;
+  targetDate?: Date;
+  initialValue: number;
 }
-export function GoalDetailPanel({
-  open,
-  onOpenChange,
-  // description,
-  graphComponent,
-  goal,
-}: GoalDetailPanelProps) {
+
+function GoalEditForm({ goal }: { goal: Database['goal'] }) {
   const {
     title,
     target,
     targetDate,
     startDate,
-    updatedAt,
-    description,
     unit,
     id: goalId,
+    updatedAt,
   } = goal;
 
-  const [isEditing, setIsEditing] = useState(false);
-  interface NewGoal {
-    title: string;
-    targetValue?: number;
-    unit: string;
-    startDate: Date;
-    targetDate?: Date;
-    initialValue: number;
-  }
+  const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<NewGoal>({
     defaultValues: {
@@ -143,326 +189,106 @@ export function GoalDetailPanel({
         startDate: stringStartDate,
         targetDate: stringTargetDate,
       });
+      form.reset();
     },
   });
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
-      <SheetContent className="!w-full !max-w-full sm:!max-w-3xl">
-        <SheetHeader className="mb-4">
-          <SheetTitle className="text-2xl">{goal.title}</SheetTitle>
-          <SheetDescription>{description}</SheetDescription>
-        </SheetHeader>
-        {graphComponent}
-        <section className="my-6">
-          <div className="flex items-center justify-end">
-            <p className="text-muted-foreground mr-2 text-xs">
-              Last updated at: {format(updatedAt, 'PPpp')}
-            </p>
-            {isEditing ? (
-              <div className="flex gap-1">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    setIsEditing(false);
-                    form.reset();
-                  }}
-                  aria-label="Cancel editing"
-                >
-                  <XIcon />
-                </Button>
-                <form.Subscribe
-                  selector={(state) => [
-                    state.isSubmitting,
-                    !state.isDirty || !state.canSubmit || state.isSubmitting,
-                  ]}
-                >
-                  {([isSubmitting, isSubmitDisabled]) => (
-                    <div
-                      className={isSubmitDisabled ? 'cursor-not-allowed' : ''}
-                    >
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        aria-label="Save"
-                        onClick={() => {
-                          void form.handleSubmit();
-                          setIsEditing(false);
-                        }}
-                        disabled={isSubmitDisabled || isSubmitting}
-                      >
-                        <SaveIcon />
-                      </Button>
-                    </div>
-                  )}
-                </form.Subscribe>
-              </div>
-            ) : (
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => setIsEditing(true)}
-                aria-label="Edit"
-              >
-                <PencilIcon />
+    <section className="my-4 overflow-y-auto">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <div className="mb-1 flex h-[3.75rem] items-end justify-between">
+          <div className="flex items-center">
+            <CollapsibleTrigger asChild className="mr-4">
+              <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
+                {/* TODO: animate icon transition */}
+                {isOpen ? (
+                  <ChevronDownIcon size={18} />
+                ) : (
+                  <ChevronRightIcon size={18} />
+                )}
               </Button>
-            )}
+            </CollapsibleTrigger>
+            <header>
+              <label
+                className="text-foreground text-xl font-semibold"
+                htmlFor="edit-goal-toggle"
+              >
+                Edit goal
+              </label>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Last updated at: {format(updatedAt, 'PPp')}
+              </p>
+            </header>
           </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            className="grid gap-4 py-4"
+
+          <form.Subscribe
+            selector={(state) => [
+              state.isSubmitting,
+              !state.isDirty || state.isSubmitting,
+              !state.isDirty || !state.canSubmit || state.isSubmitting,
+            ]}
           >
-            <FormItem label="Goal name" labelFor="title" className="block">
-              <form.Field
-                name="title"
-                validators={{
-                  onChange: ({ value }) => {
-                    if (!value.trim()) return 'Choose a name for your goal.';
-                    return (
-                      maxLengthValidator(
-                        value,
-                        MAX_GOAL_NAME_LENGTH,
-                        'Goal name',
-                      ) || undefined
-                    );
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
+            {([isSubmitting, isCancelDisabled, isSubmitDisabled]) =>
+              isOpen && (
+                <div className="animate-fade-in flex gap-2">
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isCancelDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        form.reset();
+                      }}
+                      aria-label="Cancel editing"
+                      disabled={isCancelDisabled}
                     >
-                      <div className="col-span-2">
-                        <Input
-                          id="title"
-                          value={value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="eg. 'Learn a 1000 Japanese words'"
-                          maxLength={100}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Target value"
-              labelFor="target-value"
-              className="block"
-            >
-              <form.Field
-                name="targetValue"
-                validators={{
-                  onChange: ({ value }) =>
-                    !value && 'Set a target value for your goal.',
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
+                      <XIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isCancelDisabled,
+                      })}
                     >
-                      <div className="col-span-2">
-                        <Input
-                          id="target-value"
-                          type="number"
-                          // Removes leading zeros
-                          value={value?.toString()}
-                          onKeyDown={(e) => blockNonNumberInput(e)}
-                          onChange={(e) => {
-                            parseInputtedNumber(
-                              e.target.value,
-                              field.handleChange,
-                            );
-                          }}
-                          placeholder="Numbers only"
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Target date"
-              labelFor="targe-date"
-              className="block"
-            >
-              <form.Field
-                name="targetDate"
-                validators={{
-                  onChangeListenTo: ['startDate'],
-                  onChange: ({ value, fieldApi }) => {
-                    if (
-                      value &&
-                      value < fieldApi.form.getFieldValue('startDate')
-                    ) {
-                      return 'Target date must be after start date';
-                    }
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
+                      Cancel
+                    </span>
+                  </div>
+                  <div
+                    className={cn('flex flex-col items-center gap-1', {
+                      'cursor-not-allowed': isSubmitDisabled,
+                    })}
+                  >
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      aria-label="Save"
+                      form={GOAL_FORM_ID}
+                      disabled={isSubmitDisabled || isSubmitting}
                     >
-                      <div className="col-span-2">
-                        <DatePicker
-                          id="target-date"
-                          date={value}
-                          setDate={(date) => date && field.handleChange(date)}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Start date"
-              labelFor="start-date"
-              className="block"
-            >
-              <form.Field name="startDate">
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
+                      <SaveIcon />
+                    </Button>
+                    <span
+                      className={cn('text-xs font-medium', {
+                        'text-muted-foreground': isSubmitDisabled,
+                      })}
                     >
-                      <div className="col-span-2">
-                        <DatePicker
-                          id="start-date"
-                          defaultDate={new Date()}
-                          date={value}
-                          setDate={(date) => date && field.handleChange(date)}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem label="Unit" labelFor="unit" className="block">
-              <form.Field
-                name="unit"
-                validators={{
-                  onChange: ({ value }) => {
-                    return (
-                      maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') ||
-                      undefined
-                    );
-                  },
-                }}
-              >
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="unit"
-                          value={value}
-                          onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g. words"
-                          maxLength={100}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-            <FormItem
-              label="Initial value"
-              labelFor="initial-value"
-              className="block"
-            >
-              <form.Field name="initialValue">
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-3 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <Input
-                          id="initial-value"
-                          type="number"
-                          // Removes leading zeros
-                          value={value.toString()}
-                          onKeyDown={(e) => blockNonNumberInput(e)}
-                          onChange={(e) => {
-                            parseInputtedNumber(
-                              e.target.value,
-                              (parsedNumber?: number) => {
-                                parsedNumber
-                                  ? field.handleChange(parsedNumber)
-                                  : field.handleChange(0);
-                              },
-                            );
-                          }}
-                          placeholder="Numbers only"
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          readOnly={!isEditing}
-                        />
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-          </form>
-        </section>
-        <SheetFooter>
-          <SheetClose asChild></SheetClose>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+                      Save
+                    </span>
+                  </div>
+                </div>
+              )
+            }
+          </form.Subscribe>
+        </div>
+        <CollapsibleContent>
+          <GoalForm
+            form={form}
+            formItemClassName="grid-cols-1 items-start gap-y-3 px-1"
+          />
+        </CollapsibleContent>
+      </Collapsible>
+    </section>
   );
 }
