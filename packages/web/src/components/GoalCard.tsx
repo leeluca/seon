@@ -68,13 +68,13 @@ function getOnTrackValue({
   const percentageDifference = Math.abs(differenceFromTarget / target) * 100;
 
   if (isCompleted) {
-    return <p className="text-green-500">Completed</p>;
+    return <span className="text-green-500">Completed</span>;
   } else if (percentageDifference <= 5) {
-    return <p className="text-blue-500">On track</p>;
+    return <span className="text-blue-500">On track</span>;
   } else if (differenceFromTarget > 0) {
-    return <p className="text-green-500">Ahead</p>;
+    return <span className="text-green-500">Ahead</span>;
   } else {
-    return <p className="text-red-500">Behind</p>;
+    return <span className="text-red-500">Behind</span>;
   }
 }
 

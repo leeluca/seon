@@ -21,12 +21,7 @@ import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 async function handleSubmit(
   {
@@ -165,7 +160,7 @@ const NewEntryForm = ({
             label="Date"
             labelFor="entry-date"
             className="grid grid-cols-3 items-center gap-4"
-            textClassName="text-start"
+            labelClassName="text-start"
           >
             <form.Field name="date">
               {(field) => {
@@ -197,7 +192,7 @@ const NewEntryForm = ({
             label="How many?"
             labelFor="entry-value"
             className="grid grid-cols-3 items-center"
-            textClassName="text-start"
+            labelClassName="text-start"
             required
           >
             <form.Field
@@ -234,6 +229,7 @@ const NewEntryForm = ({
                         placeholder="numbers only"
                         min={0}
                         max={MAX_INPUT_NUMBER}
+                        autoFocus
                       />
                     </div>
                     <form.Subscribe selector={(state) => [state.values.date]}>

@@ -5,12 +5,7 @@ import { useState } from 'react';
 import { useSuspenseQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import {
-  ChevronDownIcon,
-  ChevronRightIcon,
-  SaveIcon,
-  XIcon,
-} from 'lucide-react';
+import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import {
@@ -200,12 +195,12 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
           <div className="flex items-center">
             <CollapsibleTrigger asChild className="mr-4">
               <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
-                {/* TODO: animate icon transition */}
-                {isOpen ? (
-                  <ChevronDownIcon size={18} />
-                ) : (
-                  <ChevronRightIcon size={18} />
-                )}
+                <ChevronRightIcon
+                  size={18}
+                  className={`transform transition-transform duration-300 ${
+                    isOpen ? 'rotate-90' : 'rotate-0'
+                  }`}
+                />
               </Button>
             </CollapsibleTrigger>
             <header>

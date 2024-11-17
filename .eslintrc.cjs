@@ -42,6 +42,14 @@ module.exports = {
           typescript: {},
         },
       },
+      rules: {
+        'jsx-a11y/no-autofocus': [
+          2,
+          {
+            ignoreNonDOM: true,
+          },
+        ],
+      },
     },
 
     // Typescript
