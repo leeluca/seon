@@ -1,6 +1,7 @@
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, Plugin } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -19,6 +20,14 @@ export default defineConfig({
     tsconfigPaths(),
     wasm(),
     topLevelAwait(),
+    VitePWA({
+      injectRegister: 'script-defer',
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
+      manifest: false,
+    }),
   ],
   worker: {
     format: 'es',

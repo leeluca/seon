@@ -9,3 +9,4 @@ dev.db*
 *.local
 dist
 .DS_Store
+dev-dist
