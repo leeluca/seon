@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
+import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
 
 import { DatePicker } from '~/components/DatePicker';
@@ -161,7 +162,11 @@ function NewGoalForm({
           validators={{
             onChangeListenTo: ['startDate'],
             onChange: ({ value, fieldApi }) => {
-              if (value && value < fieldApi.form.getFieldValue('startDate')) {
+              if (
+                value &&
+                !isSameDay(value, fieldApi.form.getFieldValue('startDate')) &&
+                value < fieldApi.form.getFieldValue('startDate')
+              ) {
                 return 'Target date must be after start date';
               }
             },
@@ -230,7 +235,7 @@ function NewGoalForm({
         )}
 
         <CollapsibleContent>
-          <div className="grid gap-4">
+          <div className="grid gap-4 my-[1px]">
             <FormItem
               label="Start date"
               labelFor="start-date"
