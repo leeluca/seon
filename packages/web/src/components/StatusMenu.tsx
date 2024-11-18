@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 
 import usePostSignOut from '~/apis/hooks/usePostSignOut';
+import { useIsOnline } from '~/states/isOnlineContext';
 import { useAuthContext, useUser } from '~/states/userContext';
 import { cn } from '~/utils';
 import SignInForm from './SignInForm';
@@ -20,17 +21,19 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface ConnectionErrorComponentProps {
   isSignedIn: boolean;
-  connected: boolean;
+  isOnline: boolean;
   isSyncEnabledUser: boolean;
+  isSyncConnected: boolean;
   onSignInCallback: (userData: PostSignInResponse['user']) => void;
 }
 const ConnectionErrorComponent = ({
   isSignedIn,
-  connected,
+  isOnline,
   isSyncEnabledUser,
+  isSyncConnected,
   onSignInCallback,
 }: ConnectionErrorComponentProps) => {
-  if (!window.navigator.onLine) {
+  if (!isOnline) {
     return (
       <div className="space-y-2">
         <h4 className="font-medium leading-none">Sync is off</h4>
@@ -63,7 +66,7 @@ const ConnectionErrorComponent = ({
     );
   }
 
-  if (!connected) {
+  if (!isSyncConnected) {
     return (
       <div className="space-y-2">
         <h4 className="font-medium leading-none">Sync is off</h4>
@@ -77,7 +80,7 @@ const ConnectionErrorComponent = ({
 
 function StatusMenu() {
   const {
-    connected,
+    connected: isSyncConnected,
     dataFlowStatus: { downloading, uploading },
     lastSyncedAt,
     hasSynced,
@@ -85,6 +88,7 @@ function StatusMenu() {
 
   const user = useUser();
   const { isSignedIn, isLoading } = useAuthContext();
+  const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;
 
@@ -119,7 +123,7 @@ function StatusMenu() {
             />
           </div>
         )}
-        {connected && hasSynced ? (
+        {isOnline && isSyncConnected && hasSynced ? (
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -164,7 +168,8 @@ function StatusMenu() {
             >
               <ConnectionErrorComponent
                 isSignedIn={isSignedIn}
-                connected={connected}
+                isOnline={isOnline}
+                isSyncConnected={isSyncConnected}
                 isSyncEnabledUser={Boolean(user?.useSync)}
                 onSignInCallback={({ name: userName }) => {
                   setOpen(false);

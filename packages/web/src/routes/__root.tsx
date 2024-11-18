@@ -5,6 +5,7 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '~/components/ui/sonner';
 import { TooltipProvider } from '~/components/ui/tooltip';
+import OnlineStatusProvider from '~/states/isOnlineContext';
 import SyncProvider from '~/states/syncContext';
 
 interface RouterContext {
@@ -34,7 +35,9 @@ function Root() {
           closeButton
           className="mt-6"
         />
-        <Outlet />
+        <OnlineStatusProvider>
+          <Outlet />
+        </OnlineStatusProvider>
         <Suspense>
           <TanStackRouterDevtools />
         </Suspense>
