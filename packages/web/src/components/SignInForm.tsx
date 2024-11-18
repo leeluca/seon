@@ -92,10 +92,12 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 <div className="col-span-2">
                   <Input
                     id="email"
+                    type='email'
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     maxLength={100}
+                    autoComplete="username"
                   />
                 </div>
               </FormError.Wrapper>
@@ -138,6 +140,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     maxLength={100}
+                    autoComplete="current-password"
                   />
                 </div>
               </FormError.Wrapper>

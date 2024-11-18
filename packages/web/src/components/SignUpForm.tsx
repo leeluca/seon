@@ -89,7 +89,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         label="Name"
         labelFor="name"
         className="grid-cols-3"
-        textClassName="text-start"
+        labelClassName="text-start"
         required
       >
         <form.Field
@@ -133,7 +133,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         label="Email"
         labelFor="email"
         className="grid-cols-3"
-        textClassName="text-start"
+        labelClassName="text-start"
         required
       >
         <form.Field
@@ -161,10 +161,12 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
                 <div className="col-span-2">
                   <Input
                     id="email"
+                    type="email"
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     maxLength={100}
+                    autoComplete="username"
                   />
                 </div>
               </FormError.Wrapper>
@@ -177,7 +179,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         label="Password"
         labelFor="password"
         className="grid-cols-3"
-        textClassName="text-start"
+        labelClassName="text-start"
         required
       >
         <form.Field
@@ -210,6 +212,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     maxLength={100}
+                    autoComplete='new-password'
                   />
                 </div>
               </FormError.Wrapper>
