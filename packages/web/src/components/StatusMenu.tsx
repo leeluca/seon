@@ -95,8 +95,10 @@ function StatusMenu() {
 
   if (isLoading) {
     return (
-      <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
-        <div className="h-7" />
+      <div className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1">
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]"></div>
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]"></div>
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500"></div>
       </div>
     );
   }
