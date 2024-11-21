@@ -118,7 +118,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
             useSync: Number(data.user.useSync),
           });
 
-        if (localUser && localUser?.id !== data.user.id) {
+        if (localUser && localUser.id !== data.user.id) {
           void updateLocalDataUserId({
             localUserId: localUser.id,
             newUserId: data.user.id,
