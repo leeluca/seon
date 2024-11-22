@@ -12,7 +12,6 @@ import GoalCard from '~/components/GoalCard';
 import { buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUser } from '~/states/userContext';
-import { cn } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
@@ -49,9 +48,7 @@ function Goals() {
         <Link
           from="/goals"
           to="/goals/new"
-          className={cn(
-            buttonVariants({ variant: 'default', size: 'default' }),
-          )}
+          className={buttonVariants({ variant: 'default', size: 'default' })}
         >
           New Goal
         </Link>

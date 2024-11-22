@@ -56,9 +56,7 @@ function Index() {
               <Link
                 to="/signin"
                 preload="intent"
-                className={cn(
-                  buttonVariants({ variant: 'default', size: 'lg' }),
-                )}
+                className={buttonVariants({ variant: 'default', size: 'lg' })}
               >
                 Sign In
               </Link>

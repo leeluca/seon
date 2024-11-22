@@ -13,7 +13,6 @@ import { toast } from 'sonner';
 
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useAuthContext, useUser } from '~/states/userContext';
-import { cn } from '~/utils';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
@@ -111,9 +110,7 @@ function StatusMenu() {
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
           <div
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'icon-sm' }),
-            )}
+            className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
             aria-label="Syncing"
           >
             <RefreshCcwIcon
