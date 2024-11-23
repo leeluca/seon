@@ -92,7 +92,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 <div className="col-span-2">
                   <Input
                     id="email"
-                    type='email'
+                    type="email"
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -152,12 +152,13 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         selector={(state) => [
           state.isSubmitting,
           !state.isTouched || !state.canSubmit || state.isSubmitting,
+          state.isTouched,
         ]}
       >
-        {([isSubmitting, isSubmitDisabled]) => (
+        {([isSubmitting, isSubmitDisabled, isTouched]) => (
           <div className="mt-4 flex w-full flex-col items-center gap-2">
             <div
-              onMouseEnter={delayedValidation}
+              onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >

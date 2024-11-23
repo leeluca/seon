@@ -212,7 +212,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     maxLength={100}
-                    autoComplete='new-password'
+                    autoComplete="new-password"
                   />
                 </div>
               </FormError.Wrapper>
@@ -224,12 +224,13 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         selector={(state) => [
           state.isSubmitting,
           !state.isTouched || !state.canSubmit || state.isSubmitting,
+          state.isTouched,
         ]}
       >
-        {([isSubmitting, isSubmitDisabled]) => (
+        {([isSubmitting, isSubmitDisabled, isTouched]) => (
           <div className="mt-4 flex flex-col items-center gap-2">
             <div
-              onMouseEnter={delayedValidation}
+              onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >
