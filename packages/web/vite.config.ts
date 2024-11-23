@@ -1,3 +1,4 @@
+import { lingui } from '@lingui/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, Plugin } from 'vite';
@@ -16,7 +17,12 @@ export default defineConfig({
   },
   plugins: [
     TanStackRouterVite(),
-    viteReact(),
+    viteReact({
+      babel: {
+        plugins: ['macros'],
+      },
+    }),
+    lingui(),
     tsconfigPaths(),
     wasm(),
     topLevelAwait(),
@@ -24,6 +30,9 @@ export default defineConfig({
       injectRegister: 'script-defer',
       registerType: 'autoUpdate',
       manifest: false,
+      devOptions: {
+        enabled: false,
+      },
     }),
   ],
   worker: {

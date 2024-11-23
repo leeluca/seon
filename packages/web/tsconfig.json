@@ -21,7 +21,8 @@
     "src/**/*",
     "postcss.config.js",
     "vite.config.ts",
-    "tailwind.config.ts"
+    "tailwind.config.ts",
+    "lingui.config.ts"
   ],
   "noEmit": true
 }
