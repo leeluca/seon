@@ -25,7 +25,15 @@ interface usePostSignOutProps {
   onError?: (error: APIError) => void;
 }
 
-const onSignOut = async (resetConnector: () => void, resetLocalUser: () => void) => {
+const onSignOut = async (
+  resetConnector: () => void,
+  resetLocalUser: () => void,
+) => {
+  const signOutToast = toast('Signing you out...', {
+    dismissible: false,
+    duration: Infinity,
+  });
+
   sessionStorage.removeItem(DB_TOKEN_KEY);
   sessionStorage.removeItem(DB_TOKEN_EXP_KEY);
   localStorage.removeItem(SESSION_EXP_KEY);
@@ -34,7 +42,8 @@ const onSignOut = async (resetConnector: () => void, resetLocalUser: () => void)
   resetConnector();
 
   resetLocalUser();
-  toast.success('Successfuly signed out');
+  toast.dismiss(signOutToast);
+  toast.success('See you again!');
 
   await mutate(AUTH_STATUS_KEY);
   await router.navigate({ to: '/' });
@@ -60,8 +69,8 @@ const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
         }
       },
       onError: (err) => {
-        toast.error('Failed to sign out, please try again later.');
         onError && onError(err);
+        void onSignOut(resetConnector, () => setUser(undefined));
       },
     },
   );

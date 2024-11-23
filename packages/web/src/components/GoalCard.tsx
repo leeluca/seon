@@ -15,7 +15,6 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import db from '~/lib/database';
-import { cn } from '~/utils';
 import { NewEntryPopover } from './NewEntryPopover';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -216,9 +215,7 @@ export default function GoalCard({
             params={{ id: shortId }}
             replace
             aria-label="Toggle goal details"
-            className={cn(
-              buttonVariants({ variant: 'outline', size: 'icon-sm' }),
-            )}
+            className={buttonVariants({ variant: 'outline', size: 'icon-sm' })}
           >
             <Maximize2Icon size={18} />
           </Link>

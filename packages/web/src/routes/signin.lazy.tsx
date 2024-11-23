@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 
 import SignInForm from '~/components/SignInForm';
 import { buttonVariants } from '~/components/ui/button';
-import { cn } from '~/utils';
 
 export const Route = createLazyFileRoute('/signin')({
   component: SignIn,
@@ -16,7 +15,7 @@ function SignIn() {
     <div className="p-6 xl:p-8">
       <Link
         to="/"
-        className={cn(buttonVariants({ variant: 'outline', size: 'default' }))}
+        className={buttonVariants({ variant: 'outline', size: 'default' })}
         aria-label="Go back"
       >
         <ArrowBigLeftIcon />

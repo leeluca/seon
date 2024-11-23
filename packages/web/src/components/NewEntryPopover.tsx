@@ -312,7 +312,7 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
       <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger
-            className={cn(buttonVariants({ variant: 'outline', size: 'icon' }))}
+            className={buttonVariants({ variant: 'outline', size: 'icon' })}
             aria-label="Add new goal entry"
           >
             <PlusIcon size={18} />

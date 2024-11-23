@@ -1,16 +1,17 @@
-import { useEffect } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
-import { LoaderCircleIcon } from 'lucide-react';
+import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import usePostSignIn, {
   PostSignInResponse,
   SignInParams,
 } from '~/apis/hooks/usePostSignIn';
+import { useIsOnline } from '~/states/isOnlineContext';
 import { emailValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -18,6 +19,8 @@ interface SignInFormProps {
   onSignInCallback: (user: PostSignInResponse['user']) => void;
 }
 function SignInForm({ onSignInCallback }: SignInFormProps) {
+  const isOnline = useIsOnline();
+
   const { trigger: postSignIn, error } = usePostSignIn({
     onSuccess: (data) => {
       if (data.result) {
@@ -50,7 +53,6 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
     clearExistingTimeout: clearTimeout,
   } = useDelayedExecution(() => void form.validateAllFields('change'));
 
-  useEffect(() => {}, []);
   return (
     <form
       className="grid gap-4 py-4"
@@ -92,7 +94,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 <div className="col-span-2">
                   <Input
                     id="email"
-                    type='email'
+                    type="email"
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
@@ -148,16 +150,27 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           }}
         </form.Field>
       </FormItem>
+      {!isOnline && (
+        <Alert
+          variant="warning"
+          icon={<CircleAlertIcon size={18} />}
+          className="-mb-1 mt-3"
+        >
+          <AlertTitle>It looks like you are not connected!</AlertTitle>
+          <AlertDescription>Sign in will not work. </AlertDescription>
+        </Alert>
+      )}
       <form.Subscribe
         selector={(state) => [
           state.isSubmitting,
           !state.isTouched || !state.canSubmit || state.isSubmitting,
+          state.isTouched,
         ]}
       >
-        {([isSubmitting, isSubmitDisabled]) => (
+        {([isSubmitting, isSubmitDisabled, isTouched]) => (
           <div className="mt-4 flex w-full flex-col items-center gap-2">
             <div
-              onMouseEnter={delayedValidation}
+              onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}
               className={isSubmitDisabled ? 'cursor-not-allowed' : undefined}
             >

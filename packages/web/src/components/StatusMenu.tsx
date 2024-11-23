@@ -11,11 +11,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-import usePostSignOut from '~/apis/hooks/usePostSignOut';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useAuthContext, useUser } from '~/states/userContext';
-import { cn } from '~/utils';
 import SignInForm from './SignInForm';
+import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
@@ -95,7 +94,6 @@ function StatusMenu() {
   const [open, setOpen] = useState(false);
 
   const togglePopover = () => setOpen((prev) => !prev);
-  const { trigger: signOut, isMutating } = usePostSignOut();
 
   if (isLoading) {
     return (
@@ -112,9 +110,7 @@ function StatusMenu() {
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
           <div
-            className={cn(
-              buttonVariants({ variant: 'ghost', size: 'icon-sm' }),
-            )}
+            className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
             aria-label="Syncing"
           >
             <RefreshCcwIcon
@@ -192,18 +188,7 @@ function StatusMenu() {
                   Hello, {user?.name}!
                 </h3>
               </div>
-
-              <Button
-                variant="outline"
-                disabled={isMutating}
-                // TODO: alert if there is unsynced data
-                // TODO: add loading state
-                onClick={() => {
-                  void signOut();
-                }}
-              >
-                Sign out
-              </Button>
+              <SignOutButton />
             </PopoverContent>
           </Popover>
         )}
