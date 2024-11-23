@@ -1,15 +1,17 @@
 import { useForm } from '@tanstack/react-form';
-import { LoaderCircleIcon } from 'lucide-react';
+import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import usePostSignUp, { SignUpParams } from '~/apis/hooks/usePostSignUp';
 import { MAX_USER_NAME_LENGTH } from '~/constants';
 import db from '~/lib/database';
+import { useIsOnline } from '~/states/isOnlineContext';
 import { useUser, useUserAction } from '~/states/userContext';
 import { emailValidator, maxLengthValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -18,6 +20,7 @@ interface SignInFormProps {
 }
 function SignUpForm({ onSignUpCallback }: SignInFormProps) {
   const user = useUser();
+  const isOnline = useIsOnline();
 
   const { trigger: postSignUp } = usePostSignUp({
     onSuccess: ({ result, user }) => {
@@ -220,6 +223,16 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           }}
         </form.Field>
       </FormItem>
+      {!isOnline && (
+        <Alert
+          variant="warning"
+          icon={<CircleAlertIcon size={18} />}
+          className="-mb-1 mt-3"
+        >
+          <AlertTitle>It seems like you are not connected!</AlertTitle>
+          <AlertDescription>Sign up will not work. </AlertDescription>
+        </Alert>
+      )}
       <form.Subscribe
         selector={(state) => [
           state.isSubmitting,
