@@ -15,6 +15,7 @@
   "dependencies": {
     "@journeyapps/wa-sqlite": "^0.4.1",
     "@lingui/core": "^4.14.0",
+    "@lingui/detect-locale": "^4.14.0",
     "@lingui/macro": "^4.14.0",
     "@lingui/react": "^4.14.0",
     "@powersync/common": "^1.20.2",

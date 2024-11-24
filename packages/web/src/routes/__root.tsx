@@ -1,16 +1,15 @@
 import type { IAuthContext, useUser } from '~/states/userContext';
 
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '~/components/ui/sonner';
 import { TooltipProvider } from '~/components/ui/tooltip';
+import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import SyncProvider from '~/states/syncContext';
-import { messages as enMessages } from '../locales/en/messages';
-import { messages as koMessages } from '../locales/ko/messages';
 
 interface RouterContext {
   user: ReturnType<typeof useUser>;
@@ -30,11 +29,9 @@ const TanStackRouterDevtools =
     : () => null;
 
 function Root() {
-  i18n.load({
-    en: enMessages,
-    ko: koMessages,
-  });
-  i18n.activate('ko');
+  useEffect(() => {
+    void dynamicallyImportLocale(defaultLocale);
+  }, []);
 
   return (
     <SyncProvider>
