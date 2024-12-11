@@ -52,3 +52,12 @@ export const COOKIE_SECURITY_SETTINGS = {
   httpOnly: true,
   sameSite: 'none' as const satisfies CookieOptions['sameSite'],
 };
+
+export const GITHUB_CLIENT_ID = parseType(
+  Type.String(),
+  process.env.GITHUB_CLIENT_ID,
+);
+export const GITHUB_CLIENT_SECRET = parseType(
+  Type.String(),
+  process.env.GITHUB_CLIENT_SECRET,
+);

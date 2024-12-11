@@ -60,6 +60,9 @@ importers:
       '@hono/node-server':
         specifier: ^1.13.5
         version: 1.13.5(hono@4.6.9)
+      '@hono/oauth-providers':
+        specifier: ^0.6.2
+        version: 0.6.2(hono@4.6.9)
       '@hono/typebox-validator':
         specifier: ^0.2.5
         version: 0.2.5(@sinclair/typebox@0.33.21)(hono@4.6.9)
@@ -1500,6 +1503,12 @@ packages:
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
+
+  '@hono/oauth-providers@0.6.2':
+    resolution: {integrity: sha512-Uo2Lf+GnaPGebkC4GUQMRD9spIKonav/gWwSapEJhCKQjq1WVxTLIlCykNRhJtcizPCPc6OAV3A9RAYk0kX9XQ==}
+    engines: {node: '>=18.4.0'}
+    peerDependencies:
+      hono: '>=3.*'
 
   '@hono/typebox-validator@0.2.5':
     resolution: {integrity: sha512-x9KCKv9TDaVzCi2WtQdahUads4gvhOwhaSYjYETUVnWZNIXAArtK9GPxi/WUjXWjyhHDwAzFGJ+ZVIBS3PRgGQ==}
@@ -6192,6 +6201,10 @@ snapshots:
   '@floating-ui/utils@0.2.2': {}
 
   '@hono/node-server@1.13.5(hono@4.6.9)':
+    dependencies:
+      hono: 4.6.9
+
+  '@hono/oauth-providers@0.6.2(hono@4.6.9)':
     dependencies:
       hono: 4.6.9
 

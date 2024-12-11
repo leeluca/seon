@@ -1,11 +1,16 @@
+import { githubAuth } from '@hono/oauth-providers/github';
 import { tbValidator } from '@hono/typebox-validator';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import short from 'short-uuid';
 
-import { SYNC_URL } from '../constants/config.js';
+import {
+  GITHUB_CLIENT_ID,
+  GITHUB_CLIENT_SECRET,
+  SYNC_URL,
+} from '../constants/config.js';
 import { db } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
@@ -22,7 +27,7 @@ import {
   validateRefreshToken,
 } from '../services/auth.js';
 import { signInSchema, signUpSchema } from '../types/validation.js';
-import { validateUuidV7 } from '../utils/id.js';
+import { generateUUIDs, validateUuidV7 } from '../utils/id.js';
 
 const auth = new Hono();
 
@@ -38,7 +43,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
     user &&
     (await comparePW({
       receivedPassword: password,
-      storedPassword: user.password,
+      storedPassword: user.password || '',
     }));
 
   if (!isPasswordCorrect) {
@@ -56,7 +61,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   setJWTCookie(c, 'access', accessToken);
   setJWTCookie(c, 'refresh', refreshToken);
 
-  const { password: _password, status, ...returnUser } = user ;
+  const { password: _password, status, ...returnUser } = user;
   return c.json({
     result: true,
     expiresAt: refreshPayload.exp,
@@ -116,6 +121,70 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     expiresAt: refreshPayload.exp,
   });
 });
+
+auth.get(
+  '/github',
+  githubAuth({
+    client_id: GITHUB_CLIENT_ID,
+    client_secret: GITHUB_CLIENT_SECRET,
+  }),
+  async (c) => {
+    const token = c.get('token');
+    const githubUser = c.get('user-github');
+
+    // TODO: validation with typebox?
+    if (!githubUser || !token || !githubUser.email || !githubUser.name) {
+      throw new HTTPException(401, {
+        message: 'Not authenticated',
+      });
+    }
+
+    type SavedUser = Pick<
+      typeof usersTable.$inferSelect,
+      'name' | 'email' | 'id' | 'shortId' | 'useSync'
+    >;
+
+    const query = sql`
+    SELECT name, email, id, "shortId", "useSync"
+    FROM "user"
+    WHERE "user"."thirdParty"->'github'->>'id' = ${githubUser.id}
+    LIMIT 1
+  `;
+    const result = await db.execute<SavedUser>(query);
+    let savedUser = result.length ? result[0] : undefined;
+
+    // NOTE: Create new user if not found (sign up)
+    if (!savedUser) {
+      type NewUser = typeof usersTable.$inferInsert;
+      const { uuid, shortUuid } = generateUUIDs();
+      const newUser = {
+        id: uuid,
+        shortId: shortUuid,
+        email: githubUser.email,
+        name: githubUser.name,
+        useSync: true,
+      } satisfies NewUser;
+      const [{ name: savedName, email: savedEmail, id, shortId, useSync }] =
+        await db.insert(usersTable).values(newUser).returning();
+      savedUser = { name: savedName, email: savedEmail, id, shortId, useSync };
+    }
+
+    const [accessToken, { token: refreshToken, payload: refreshPayload }] =
+      await Promise.all([
+        JWT.sign(savedUser.id, 'access'),
+        issueRefreshToken(savedUser.id),
+      ]);
+
+    setJWTCookie(c, 'access', accessToken);
+    setJWTCookie(c, 'refresh', refreshToken);
+
+    return c.json({
+      result: true,
+      user: savedUser,
+      expiresAt: refreshPayload.exp,
+    });
+  },
+);
 
 auth.get('/status', validateAccess, (c) => {
   const payload = c.get('jwtRefreshPayload');
