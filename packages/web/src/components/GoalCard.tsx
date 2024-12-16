@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import db from '~/lib/database';
+import CalendarHeatmap from './CalendarHeatmap';
 import { NewEntryPopover } from './NewEntryPopover';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -152,9 +153,10 @@ export default function GoalCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
-        <p className="mb-2 text-center text-3xl font-extrabold">
+        <CalendarHeatmap goalId={id} />
+        {/* <p className="mb-2 text-center text-3xl font-extrabold">
           {progressPercent}
-        </p>
+        </p> */}
         <div className="flex flex-col gap-2">
           <div className="-mx-2 flex items-end justify-between text-xs font-light">
             <p className="w-1/3 text-start">{currentValue}</p>
