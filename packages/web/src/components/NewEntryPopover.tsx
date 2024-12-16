@@ -11,6 +11,7 @@ import { Button, buttonVariants } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import {
   Popover,
+  PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
@@ -297,19 +298,19 @@ const NewEntryForm = ({
 };
 
 interface NewEntryPopoverProps {
-  isOpen?: boolean;
-  onOpenChange?: () => void;
   id: string;
+  isOpen?: boolean;
+  toggle?: () => void;
 }
 
-export function NewEntryPopover({ id }: NewEntryPopoverProps) {
-  const [open, setOpen] = useState(false);
+export function NewEntryPopover({ id, isOpen, toggle }: NewEntryPopoverProps) {
+  // const [open, setOpen] = useState(false);
 
-  const togglePopover = () => setOpen((prev) => !prev);
+  // const toggle = () => setOpen((prev) => !prev);
 
   return (
-    <Popover open={open} onOpenChange={togglePopover}>
-      <Tooltip>
+    <Popover open={isOpen} onOpenChange={toggle}>
+      {/* <Tooltip>
         <TooltipTrigger asChild>
           <PopoverTrigger
             className={buttonVariants({ variant: 'outline', size: 'icon' })}
@@ -321,9 +322,11 @@ export function NewEntryPopover({ id }: NewEntryPopoverProps) {
         <TooltipContent>
           <p>Record goal progress</p>
         </TooltipContent>
-      </Tooltip>
+      </Tooltip> */}
+      <PopoverAnchor />
+
       <PopoverContent className="w-fit max-w-[325px]">
-        <NewEntryForm id={id} onSubmitCallback={togglePopover} />
+        <NewEntryForm id={id} onSubmitCallback={toggle} />
       </PopoverContent>
     </Popover>
   );
