@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Trans } from '@lingui/macro';
+import { Trans } from '@lingui/react/macro';
 import { useQuery, useStatus } from '@powersync/react';
 import {
   createLazyFileRoute,

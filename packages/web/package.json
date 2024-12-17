@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "@journeyapps/wa-sqlite": "^0.4.1",
-    "@lingui/core": "^4.14.0",
-    "@lingui/detect-locale": "^4.14.0",
-    "@lingui/macro": "^4.14.0",
-    "@lingui/react": "^4.14.0",
+    "@lingui/core": "^5.1.2",
+    "@lingui/detect-locale": "^5.1.2",
+    "@lingui/macro": "^5.1.2",
+    "@lingui/react": "^5.1.2",
     "@powersync/common": "^1.20.2",
     "@powersync/kysely-driver": "^1.0.0",
     "@powersync/react": "^1.5.0",
@@ -55,9 +55,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@lingui/cli": "^4.14.0",
-    "@lingui/conf": "^4.14.0",
-    "@lingui/vite-plugin": "^4.14.0",
+    "@lingui/cli": "^5.1.2",
+    "@lingui/conf": "^5.1.2",
+    "@lingui/vite-plugin": "^5.1.2",
     "@tanstack/router-devtools": "^1.79.0",
     "@tanstack/router-plugin": "^1.79.0",
     "@types/react": "^18.3.3",
