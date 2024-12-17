@@ -1,6 +1,7 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
 import { useMemo, useRef } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 // import { motion } from 'framer-motion';
@@ -92,6 +93,7 @@ export default function GoalCard({
   initialValue,
   shortId,
 }: Database['goal']) {
+  const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
 
   const progressPercent = `${Math.max(
@@ -184,15 +186,17 @@ export default function GoalCard({
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="outline" aria-label="Delete goal">
+              <Button size="icon-sm" variant="outline" aria-label={t`Delete goal`}>
                 <Trash2Icon size={18} />
               </Button>
             </PopoverTrigger>
             <PopoverContent sideOffset={5}>
               <div className="space-y-2 pb-4">
-                <h3 className="font-medium leading-none">Delete goal</h3>
+                <h3 className="font-medium leading-none">
+                  <Trans>Delete goal</Trans>
+                </h3>
                 <p className="text-muted-foreground text-pretty text-sm">
-                  Are you sure you want to delete{' '}
+                  <Trans>Are you sure you want to delete</Trans>{' '}
                   <span className="font-bold">{title}</span>?
                 </p>
               </div>
@@ -201,11 +205,11 @@ export default function GoalCard({
                   variant="destructive"
                   onClick={() => {
                     void deleteGoal(id, () =>
-                      toast.success(`Deleted goal: ${title}`),
+                      toast.success(t`Deleted goal: ${title}`),
                     );
                   }}
                 >
-                  Delete
+                  <Trans>Delete</Trans>
                 </Button>
               </div>
             </PopoverContent>
@@ -214,7 +218,7 @@ export default function GoalCard({
             to="/goals/$id"
             params={{ id: shortId }}
             replace
-            aria-label="Toggle goal details"
+            aria-label={t`Toggle goal details`}
             className={buttonVariants({ variant: 'outline', size: 'icon-sm' })}
           >
             <Maximize2Icon size={18} />

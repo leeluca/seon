@@ -31,7 +31,7 @@ export const blockNonNumberInput = (
     e.preventDefault();
   }
 };
-
+// FIXME: internationalization
 export const maxLengthValidator = (
   value: string,
   max: number,
@@ -42,6 +42,7 @@ export const maxLengthValidator = (
   }
 };
 
+// FIXME: internationalization
 export const emailValidator = (value: string) => {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!EMAIL_REGEX.test(value)) {

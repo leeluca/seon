@@ -2,6 +2,7 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import type { ReactElement } from 'react';
 
 import { useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
@@ -123,11 +124,11 @@ async function handleUpdate(
       .where('id', '=', goalId)
       .executeTakeFirstOrThrow();
 
-    toast.success('Sucessfully updated goal');
+    toast.success(<Trans>Sucessfully updated goal</Trans>);
     callback && callback();
   } catch (error) {
     console.error(error);
-    toast.error('Failed to update goal');
+    toast.error(<Trans>Failed to update goal</Trans>);
   }
 }
 
@@ -150,6 +151,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     id: goalId,
     updatedAt,
   } = goal;
+  const { t } = useLingui();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -166,7 +168,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
       onChange({ value }) {
         const { title, targetValue, targetDate } = value;
         if (!title || !targetValue || !targetDate) {
-          return 'Missing required fields';
+          return t`Missing required fields`;
         }
       },
     },
@@ -208,10 +210,10 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
                 className="text-foreground text-xl font-semibold"
                 htmlFor="edit-goal-toggle"
               >
-                Edit goal
+                <Trans>Edit goal</Trans>
               </label>
               <p className="text-muted-foreground mt-1 text-xs">
-                Last updated at: {format(updatedAt, 'PPp')}
+                <Trans>Last updated at: {format(updatedAt, 'PPp')}</Trans>
               </p>
             </header>
           </div>
@@ -237,7 +239,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
                       onClick={() => {
                         form.reset();
                       }}
-                      aria-label="Cancel editing"
+                      aria-label={t`Cancel editing`}
                       disabled={isCancelDisabled}
                     >
                       <XIcon />
@@ -258,7 +260,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
                     <Button
                       size="icon"
                       variant="outline"
-                      aria-label="Save"
+                      aria-label={t`Save`}
                       form={GOAL_FORM_ID}
                       disabled={isSubmitDisabled || isSubmitting}
                     >
@@ -269,7 +271,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
                         'text-muted-foreground': isSubmitDisabled,
                       })}
                     >
-                      Save
+                      <Trans>Save</Trans>
                     </span>
                   </div>
                 </div>

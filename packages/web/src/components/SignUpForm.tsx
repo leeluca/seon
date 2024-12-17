@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,6 +20,8 @@ interface SignInFormProps {
   onSignUpCallback?: () => void;
 }
 function SignUpForm({ onSignUpCallback }: SignInFormProps) {
+  const { t } = useLingui();
+
   const user = useUser();
   const isOnline = useIsOnline();
 
@@ -42,7 +45,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
             .executeTakeFirstOrThrow();
 
           setUser(updatedUser);
-          toast.success(`Welcome, ${updatedUser.name}!`);
+          toast.success(t`Welcome, ${updatedUser.name}!`);
           onSignUpCallback?.();
         }
       })();
@@ -61,7 +64,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
       onChange({ value }) {
         const { name, email, password } = value;
         if (!name.trim() || !email.trim() || !password.trim()) {
-          return 'Missing required fields';
+          return t`Missing required fields`;
         }
       },
     },
@@ -99,11 +102,11 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           name="name"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Name is required';
+              if (!value.trim()) return t`Name is required`;
               const errorMessage = maxLengthValidator(
                 value,
                 MAX_USER_NAME_LENGTH,
-                'Name',
+                t`Name`,
               );
               if (errorMessage) return errorMessage;
             },
@@ -143,7 +146,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           name="email"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Email is required';
+              if (!value.trim()) return t`Email is required`;
             },
             onBlur: ({ value }) => {
               if (!value.trim()) return undefined;
@@ -189,7 +192,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           name="password"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Password is required';
+              if (!value.trim()) return `Password is required`;
             },
             // TODO: validate password with minimum length etc
             // onBlur: ({ value }) => {
@@ -229,8 +232,12 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           icon={<CircleAlertIcon size={18} />}
           className="-mb-1 mt-3"
         >
-          <AlertTitle>It seems like you are not connected!</AlertTitle>
-          <AlertDescription>Sign up will not work. </AlertDescription>
+          <AlertTitle>
+            <Trans>It seems like you are not connected!</Trans>
+          </AlertTitle>
+          <AlertDescription>
+            <Trans>Sign up will not work.</Trans>
+          </AlertDescription>
         </Alert>
       )}
       <form.Subscribe
@@ -255,7 +262,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
                 {isSubmitting && (
                   <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
                 )}
-                Sign Up
+                <Trans>Sign Up</Trans>
               </Button>
             </div>
           </div>

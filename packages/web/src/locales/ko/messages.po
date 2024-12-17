@@ -13,6 +13,301 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/routes/_main.goals.new.tsx:182
+msgid " Create goal"
+msgstr ""
+
+#: src/components/GoalForm.tsx:232
+msgid " Show extra options"
+msgstr ""
+
+#: src/components/SignOutButton.tsx:49
+msgid " Unsynced data will be lost"
+msgstr ""
+
+#: src/routes/index.lazy.tsx:59
+msgid "Already a user?"
+msgstr ""
+
+#: src/components/GoalCard.tsx:199
+msgid "Are you sure you want to delete"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:242
+msgid "Cancel editing"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:170
+msgid "Check sync error or sign in"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:43
+msgid "Check your internet connection and try again."
+msgstr ""
+
+#: src/components/GoalForm.tsx:78
+msgid "Choose a name for your goal."
+msgstr ""
+
+#: src/components/StatusMenu.tsx:82
+msgid "Could not connect with the sync service. Try again later."
+msgstr ""
+
+#: src/components/SignInForm.tsx:199
+msgid "Create account"
+msgstr ""
+
+#: src/components/NoGoalsPlaceholder.tsx:31
+msgid "Create your first goal!"
+msgstr ""
+
+#: src/components/GoalCard.tsx:212
+msgid "Delete"
+msgstr ""
+
+#: src/components/GoalCard.tsx:189
+#: src/components/GoalCard.tsx:196
+msgid "Delete goal"
+msgstr ""
+
+#: src/components/GoalCard.tsx:208
+msgid "Deleted goal: {title}"
+msgstr ""
+
+#: src/components/GoalForm.tsx:303
+msgid "e.g. words"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:213
+msgid "Edit goal"
+msgstr ""
+
+#: src/components/GoalForm.tsx:101
+msgid "eg. 'Learn 1000 French words'"
+msgstr ""
+
+#: src/components/SignInForm.tsx:68
+msgid "Email"
+msgstr ""
+
+#: src/components/SignUpForm.tsx:149
+#: src/components/SignInForm.tsx:78
+msgid "Email is required"
+msgstr ""
+
+#: src/routes/_main.goals.new.tsx:77
+msgid "Failed to add goal"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:131
+msgid "Failed to update goal"
+msgstr ""
+
+#: src/routes/index.lazy.tsx:47
+msgid "First time?"
+msgstr ""
+
+#: src/routes/signup.lazy.tsx:20
+#: src/routes/signin.lazy.tsx:21
+msgid "Go back"
+msgstr ""
+
+#: src/components/GoalForm.tsx:68
+#: src/components/GoalForm.tsx:80
+msgid "Goal name"
+msgstr ""
+
+#. placeholder {0}: user?.name
+#: src/components/StatusMenu.tsx:202
+msgid "Hello, {0}!"
+msgstr ""
+
+#: src/components/GoalForm.tsx:225
+msgid "Hide extra options"
+msgstr ""
+
+#: src/components/SignOutButton.tsx:58
+msgid "If you sign out now, this data will be permanently lost!"
+msgstr ""
+
+#: src/components/GoalForm.tsx:313
+msgid "Initial value"
+msgstr ""
+
+#: src/components/SignInForm.tsx:136
+msgid "Invalid credentials"
+msgstr ""
+
+#: src/components/SignInForm.tsx:162
+msgid "It looks like you are offline!"
+msgstr ""
+
+#: src/components/SignUpForm.tsx:236
+msgid "It seems like you are not connected!"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:153
+msgid "Last synced:"
+msgstr ""
+
+#. placeholder {0}: format(updatedAt, 'PPp')
+#: src/components/GoalDetailPanel.tsx:216
+msgid "Last updated at: {0}"
+msgstr ""
+
+#: src/routes/_main.goals.new.tsx:108
+#: src/components/SignUpForm.tsx:67
+#: src/components/GoalDetailPanel.tsx:171
+msgid "Missing required fields"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:171
+#~ msgid "Missing required fields  "
+#~ msgstr ""
+
+#: src/components/SignUpForm.tsx:109
+msgid "Name"
+msgstr ""
+
+#: src/components/SignUpForm.tsx:105
+msgid "Name is required"
+msgstr ""
+
 #: src/routes/_main.goals.lazy.tsx:54
 msgid "New Goal"
 msgstr "새로운 목표"
+
+#: src/components/GoalForm.tsx:346
+msgid "Numbers only"
+msgstr ""
+
+#: src/components/SignInForm.tsx:113
+msgid "Password"
+msgstr ""
+
+#: src/components/SignInForm.tsx:123
+msgid "Password is required"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:263
+#: src/components/GoalDetailPanel.tsx:274
+msgid "Save"
+msgstr ""
+
+#: src/components/GoalForm.tsx:121
+msgid "Set a target value for your goal."
+msgstr ""
+
+#: src/routes/_main.goals.new.tsx:150
+msgid "Set up your new goal. You can always edit it later."
+msgstr ""
+
+#: src/routes/signin.lazy.tsx:27
+#: src/components/SignInForm.tsx:191
+msgid "Sign In"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:60
+msgid "Sign in again to sync your data."
+msgstr ""
+
+#: src/components/StatusMenu.tsx:65
+msgid "Sign in to sync your data."
+msgstr ""
+
+#: src/components/SignInForm.tsx:165
+msgid "Sign in will not work."
+msgstr ""
+
+#: src/components/SignOutButton.tsx:70
+msgid "Sign out"
+msgstr ""
+
+#: src/routes/signup.lazy.tsx:26
+#: src/components/SignUpForm.tsx:265
+msgid "Sign Up"
+msgstr ""
+
+#: src/components/SignUpForm.tsx:239
+msgid "Sign up will not work."
+msgstr ""
+
+#: src/components/GoalForm.tsx:241
+msgid "Start date"
+msgstr ""
+
+#: src/routes/index.lazy.tsx:54
+msgid "Start New"
+msgstr ""
+
+#: src/routes/_main.goals.new.tsx:73
+msgid "Sucessfully added goal"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:127
+msgid "Sucessfully updated goal"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:40
+#: src/components/StatusMenu.tsx:79
+msgid "Sync is off"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:126
+msgid "Syncing"
+msgstr ""
+
+#: src/components/GoalForm.tsx:155
+msgid "Target date"
+msgstr ""
+
+#: src/components/GoalForm.tsx:171
+msgid "Target date must be after start date"
+msgstr ""
+
+#: src/components/GoalForm.tsx:111
+msgid "Target value"
+msgstr ""
+
+#: src/components/NoGoalsPlaceholder.tsx:28
+msgid "There are no goals"
+msgstr ""
+
+#: src/components/GoalCard.tsx:221
+msgid "Toggle goal details"
+msgstr ""
+
+#: src/components/GoalForm.tsx:272
+#: src/components/GoalForm.tsx:282
+msgid "Unit"
+msgstr ""
+
+#: src/components/GoalForm.tsx:144
+msgid "Value for goal completion (number)"
+msgstr ""
+
+#. placeholder {0}: user.name
+#: src/routes/signin.lazy.tsx:32
+msgid "Welcome back, {0}!"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:186
+msgid "Welcome back, {userName}!"
+msgstr ""
+
+#. placeholder {0}: updatedUser.name
+#: src/components/SignUpForm.tsx:48
+msgid "Welcome, {0}!"
+msgstr ""
+
+#: src/components/StatusMenu.tsx:148
+msgid "Your data is synced!"
+msgstr ""
+
+#: src/components/SignOutButton.tsx:53
+msgid "Your most recent changes have not been synced yet."
+msgstr ""
+
+#: src/components/StatusMenu.tsx:57
+msgid "Your session has expired."
+msgstr ""

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
@@ -52,7 +53,7 @@ function NewGoalForm({
   const [showOptionalFields, setShowOptionalFields] = useState(
     !collapseOptionalFields,
   );
-
+  const { t } = useLingui();
   return (
     <form
       id={GOAL_FORM_ID}
@@ -64,7 +65,7 @@ function NewGoalForm({
       className="grid gap-5 py-4"
     >
       <FormItem
-        label="Goal name"
+        label={t`Goal name`}
         labelFor="title"
         className={formItemClassName}
         labelClassName={labelClassName}
@@ -74,9 +75,9 @@ function NewGoalForm({
           name="title"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Choose a name for your goal.';
+              if (!value.trim()) return t`Choose a name for your goal.`;
               return (
-                maxLengthValidator(value, MAX_GOAL_NAME_LENGTH, 'Goal name') ||
+                maxLengthValidator(value, MAX_GOAL_NAME_LENGTH, t`Goal name`) ||
                 undefined
               );
             },
@@ -97,7 +98,7 @@ function NewGoalForm({
                     id="title"
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="eg. 'Learn 1000 Japanese words'"
+                    placeholder={t`eg. 'Learn 1000 French words'`}
                     maxLength={100}
                   />
                 </div>
@@ -107,7 +108,7 @@ function NewGoalForm({
         </form.Field>
       </FormItem>
       <FormItem
-        label="Target value"
+        label={t`Target value`}
         labelFor="target-value"
         required
         className={formItemClassName}
@@ -117,7 +118,7 @@ function NewGoalForm({
           name="targetValue"
           validators={{
             onChange: ({ value }) =>
-              !value && 'Set a target value for your goal.',
+              !value && t`Set a target value for your goal.`,
           }}
         >
           {(field) => {
@@ -140,7 +141,7 @@ function NewGoalForm({
                     onChange={(e) => {
                       parseInputtedNumber(e.target.value, field.handleChange);
                     }}
-                    placeholder="Value for goal completion (number)"
+                    placeholder={t`Value for goal completion (number)`}
                     min={0}
                     max={MAX_INPUT_NUMBER}
                   />
@@ -151,7 +152,7 @@ function NewGoalForm({
         </form.Field>
       </FormItem>
       <FormItem
-        label="Target date"
+        label={t`Target date`}
         labelFor="targe-date"
         required
         className={formItemClassName}
@@ -167,7 +168,7 @@ function NewGoalForm({
                 !isSameDay(value, fieldApi.form.getFieldValue('startDate')) &&
                 value < fieldApi.form.getFieldValue('startDate')
               ) {
-                return 'Target date must be after start date';
+                return t`Target date must be after start date`;
               }
             },
           }}
@@ -221,23 +222,23 @@ function NewGoalForm({
                 className="flex text-right text-xs font-medium"
                 htmlFor="toggle-extra-options"
               >
-                Hide extra options
+                <Trans>Hide extra options</Trans>
               </label>
             ) : (
               <label
                 className="flex text-right text-xs font-medium"
                 htmlFor="toggle-extra-options"
               >
-                Show extra options
+                <Trans> Show extra options</Trans>
               </label>
             )}
           </div>
         )}
 
         <CollapsibleContent>
-          <div className="grid gap-4 my-[1px]">
+          <div className="my-[1px] grid gap-4">
             <FormItem
-              label="Start date"
+              label={t`Start date`}
               labelFor="start-date"
               className={formItemClassName}
               labelClassName={labelClassName}
@@ -268,7 +269,7 @@ function NewGoalForm({
               </form.Field>
             </FormItem>
             <FormItem
-              label="Unit"
+              label={t`Unit`}
               labelFor="unit"
               className={formItemClassName}
               labelClassName={labelClassName}
@@ -278,7 +279,7 @@ function NewGoalForm({
                 validators={{
                   onChange: ({ value }) => {
                     return (
-                      maxLengthValidator(value, MAX_UNIT_LENGTH, 'Unit') ||
+                      maxLengthValidator(value, MAX_UNIT_LENGTH, t`Unit`) ||
                       undefined
                     );
                   },
@@ -299,7 +300,7 @@ function NewGoalForm({
                           id="unit"
                           value={value}
                           onChange={(e) => field.handleChange(e.target.value)}
-                          placeholder="e.g. words"
+                          placeholder={t`e.g. words`}
                           maxLength={100}
                         />
                       </div>
@@ -309,7 +310,7 @@ function NewGoalForm({
               </form.Field>
             </FormItem>
             <FormItem
-              label="Initial value"
+              label={t`Initial value`}
               labelFor="initial-value"
               className={formItemClassName}
               labelClassName={labelClassName}
@@ -342,7 +343,7 @@ function NewGoalForm({
                               },
                             );
                           }}
-                          placeholder="Numbers only"
+                          placeholder={t`Numbers only`}
                           min={0}
                           max={MAX_INPUT_NUMBER}
                         />
