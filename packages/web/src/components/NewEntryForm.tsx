@@ -1,19 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
-import { InfoIcon, LoaderCircleIcon, PlusIcon } from 'lucide-react';
+import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
-import { Button, buttonVariants } from '~/components/ui/button';
+import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
 import { useUser } from '~/states/userContext';
@@ -21,7 +16,6 @@ import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 async function handleSubmit(
   {
@@ -92,10 +86,13 @@ async function handleSubmit(
 
 interface NewEntryFormProps {
   id: string;
+  date?: Date;
   onSubmitCallback?: () => void;
 }
+
 const NewEntryForm = ({
   id,
+  date = new Date(),
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
   const user = useUser();
@@ -112,7 +109,7 @@ const NewEntryForm = ({
   );
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
-      date: new Date(),
+      date,
       value: 0,
     },
     validators: {
@@ -296,35 +293,4 @@ const NewEntryForm = ({
   );
 };
 
-interface NewEntryPopoverProps {
-  isOpen?: boolean;
-  onOpenChange?: () => void;
-  id: string;
-}
-
-export function NewEntryPopover({ id }: NewEntryPopoverProps) {
-  const [open, setOpen] = useState(false);
-
-  const togglePopover = () => setOpen((prev) => !prev);
-
-  return (
-    <Popover open={open} onOpenChange={togglePopover}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <PopoverTrigger
-            className={buttonVariants({ variant: 'outline', size: 'icon' })}
-            aria-label="Add new goal entry"
-          >
-            <PlusIcon size={18} />
-          </PopoverTrigger>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Record goal progress</p>
-        </TooltipContent>
-      </Tooltip>
-      <PopoverContent className="w-fit max-w-[325px]">
-        <NewEntryForm id={id} onSubmitCallback={togglePopover} />
-      </PopoverContent>
-    </Popover>
-  );
-}
+export default NewEntryForm;

@@ -1,32 +1,22 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useQuery } from '@powersync/react';
-import {
-  addDays,
-  addWeeks,
-  format,
-  set,
-  startOfWeek,
-  subWeeks,
-} from 'date-fns';
+import { addDays, addWeeks, format, startOfWeek, subWeeks } from 'date-fns';
+import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import db from '~/lib/database';
 import { cn } from '~/utils';
-import { NewEntryPopover } from './NewEntryPopover';
-import { PopoverAnchor } from './ui/popover';
+import NewEntryForm from './NewEntryForm';
+import { Button } from './ui/button';
+import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
 
 interface CalendarHeatmapProps {
   goalId: string;
-  onClick?: (date: Date) => void;
 }
 
-const CalendarHeatmap: React.FC<CalendarHeatmapProps> = ({
-  goalId,
-  onClick,
-}) => {
+const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
   );
-  const [entryPopoverOpen, setEntryPopoverOpen] = useState(false);
 
   const entriesMap = useMemo(
     () =>
@@ -50,53 +40,64 @@ const CalendarHeatmap: React.FC<CalendarHeatmapProps> = ({
   const days = Array.from({ length: 7 }).map((_, index) =>
     addDays(currentWeekStart, index),
   );
-  const startMonth = format(days[0], 'MMMM');
-  const endMonth = format(days[days.length - 1], 'MMMM');
-  console.log({ entryPopoverOpen });
+  const startMonth = format(days[0], 'MMM');
+  const endMonth = format(days[days.length - 1], 'MMM');
+
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const popoverAnchorRef = useRef<HTMLElement | null>(null);
+
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-2 flex w-full content-center justify-between">
-        <button
-          onClick={handlePrevWeek}
-          className="mr-2 rounded bg-gray-200 px-2 py-1"
-        >
-          이전 주
-        </button>
-        <p className="text-sm font-medium">
+      <div className="mb-3 flex w-full content-center justify-center">
+        <p className="text-sm">
           {startMonth === endMonth ? startMonth : `${startMonth} • ${endMonth}`}
-          {/* {startMonth}/{endMonth} */}
         </p>
-        <button
-          onClick={handleNextWeek}
-          className="rounded bg-gray-200 px-2 py-1"
-        >
-          다음 주
-        </button>
       </div>
-      <div className="flex">
+
+      <div className="mb-2 grid w-full max-w-[440px] auto-cols-fr grid-flow-col items-end justify-items-center gap-2">
+        <Button variant="secondary" size="icon-sm" onClick={handlePrevWeek}>
+          <ArrowBigLeftIcon size={18} />
+        </Button>
         {days.map((day) => {
           const stringDate = day.toDateString();
           const dayEntry = entriesMap.get(stringDate);
 
           return (
-            <div
-              key={stringDate}
-              className={cn(
-                'm-1 h-10 w-10 cursor-pointer rounded bg-gray-100',
-                { 'bg-green-400 text-white': dayEntry },
-              )}
-              onClick={() => setEntryPopoverOpen((prev) => !prev)}
-            >
-              <div className="text-center text-xs">{format(day, 'd')}</div>
+            <div key={stringDate} className="flex flex-col">
+              <p className="mb-1 text-xs font-light">{format(day, 'EEEEE')}</p>
+              <Button
+                variant={dayEntry ? null : 'outline'}
+                className={cn('min-w-0 rounded', {
+                  'border-input border bg-green-500 text-white hover:bg-green-500/90':
+                    dayEntry,
+                })}
+                size="sm"
+                onClick={(e) => {
+                  popoverAnchorRef.current = e.currentTarget;
+                  setSelectedDate(day);
+                  setPopoverOpen(true);
+                }}
+              >
+                <div className="text-center text-xs">{format(day, 'd')}</div>
+              </Button>
             </div>
           );
         })}
-        <NewEntryPopover
-          id={goalId}
-          isOpen={entryPopoverOpen}
-          toggle={() => setEntryPopoverOpen((prev) => !prev)}
-        />
+        <Button variant="secondary" size="icon-sm" onClick={handleNextWeek}>
+          <ArrowBigRightIcon size={16} />
+        </Button>
       </div>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverAnchor virtualRef={popoverAnchorRef} />
+        <PopoverContent>
+          <NewEntryForm
+            id={goalId}
+            date={selectedDate}
+            onSubmitCallback={() => setPopoverOpen(false)}
+          />
+        </PopoverContent>
+      </Popover>
     </div>
   );
 };

@@ -16,7 +16,6 @@ import {
 } from '~/components/ui/card';
 import db from '~/lib/database';
 import CalendarHeatmap from './CalendarHeatmap';
-import { NewEntryPopover } from './NewEntryPopover';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
@@ -146,10 +145,9 @@ export default function GoalCard({
         onPointerDownCapture={(e) => e.stopPropagation()}
       >
         <div className="flex h-16 items-center">
-          <CardTitle className="mr-3 w-60 grow pl-[30px] text-center text-2xl font-medium">
+          <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
             {title}
           </CardTitle>
-          <NewEntryPopover id={id} />
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
