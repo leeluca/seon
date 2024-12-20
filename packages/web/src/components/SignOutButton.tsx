@@ -46,7 +46,7 @@ function SignOutButton() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="mb-3 text-xl">
-              <Trans> Unsynced data will be lost</Trans>
+              <Trans>Unsynced data will be lost</Trans>
             </AlertDialogTitle>
             <AlertDialogDescription>
               <p>

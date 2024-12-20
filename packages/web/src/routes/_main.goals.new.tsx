@@ -179,7 +179,7 @@ function NewGoalDialog() {
                   {isSubmitting && (
                     <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
                   )}
-                  <Trans> Create goal</Trans>
+                  <Trans>Create goal</Trans>
                 </Button>
               </div>
             )}

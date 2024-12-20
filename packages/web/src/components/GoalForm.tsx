@@ -229,7 +229,7 @@ function NewGoalForm({
                 className="flex text-right text-xs font-medium"
                 htmlFor="toggle-extra-options"
               >
-                <Trans> Show extra options</Trans>
+                <Trans>Show extra options</Trans>
               </label>
             )}
           </div>
