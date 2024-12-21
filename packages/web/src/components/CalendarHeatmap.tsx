@@ -45,7 +45,7 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedDateValue, setSelectedDateValue] = useState<
-    [Date | null, number]
+    [Date | undefined, number]
   >([new Date(), 0]);
   const popoverAnchorRef = useRef<HTMLElement | null>(null);
 
@@ -58,7 +58,7 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
 
     if (!isPopoverOpen && selectedDateValue[0]) {
       timeoutRef.current = setTimeout(
-        () => setSelectedDateValue([null, 0]),
+        () => setSelectedDateValue([undefined, 0]),
         150,
       );
     }
@@ -127,8 +127,12 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
         <PopoverAnchor virtualRef={popoverAnchorRef} />
         <PopoverContent className="w-64">
           <NewEntryForm
-            id={goalId}
-            date={selectedDateValue[0] || undefined}
+            goalId={goalId}
+            entryId={
+              selectedDateValue[0] &&
+              entriesMap.get(selectedDateValue[0].toDateString())?.id
+            }
+            date={selectedDateValue[0]}
             value={selectedDateValue[1]}
             onSubmitCallback={() => setIsPopoverOpen(false)}
           />

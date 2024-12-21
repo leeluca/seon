@@ -1,8 +1,7 @@
 import { useForm } from '@tanstack/react-form';
-import { LoaderCircleIcon } from 'lucide-react';
+import { LoaderCircleIcon, Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -13,6 +12,11 @@ import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+
+async function deleteEntry(id: string, callback?: () => void) {
+  await db.deleteFrom('entry').where('id', '=', id).execute();
+  callback && callback();
+}
 
 async function handleSubmit(
   {
@@ -70,7 +74,6 @@ async function handleSubmit(
       await tx.executeQuery(goalUpdateOperation);
     });
 
-    toast.success('Successfully added entry ');
     onSubmitCallback();
     return true;
   } catch (error) {
@@ -82,14 +85,16 @@ async function handleSubmit(
 }
 
 interface NewEntryFormProps {
-  id: string;
+  goalId: string;
+  entryId?: string;
   date?: Date;
   value?: number;
   onSubmitCallback?: () => void;
 }
 
 const NewEntryForm = ({
-  id,
+  goalId,
+  entryId,
   date = new Date(),
   value,
   onSubmitCallback = () => {},
@@ -117,18 +122,13 @@ const NewEntryForm = ({
         {
           value: inputtedValue,
           date,
-          goalId: id,
+          goalId,
           userId: user.id,
         },
         onSubmitCallback,
       );
     },
   });
-
-  const {
-    startTimeout: delayedValidation,
-    clearExistingTimeout: clearTimeout,
-  } = useDelayedExecution(() => void form.validateAllFields('change'));
 
   return (
     <form
@@ -180,14 +180,7 @@ const NewEntryForm = ({
             labelClassName="text-start"
             required
           >
-            <form.Field
-              name="value"
-              validators={{
-                onChange: ({ value }) => {
-                  return !value && 'Choose a value higher than 0.';
-                },
-              }}
-            >
+            <form.Field name="value">
               {(field) => {
                 const {
                   value,
@@ -230,16 +223,26 @@ const NewEntryForm = ({
           >
             {([isSubmitting, isSubmitDisabled]) => (
               <div
-                onMouseEnter={delayedValidation}
-                onMouseLeave={clearTimeout}
-                className={cn('grid grid-cols-3', {
+                className={cn('grid grid-cols-3 gap-2 mt-1', {
                   'cursor-not-allowed': isSubmitDisabled,
                 })}
               >
+                {/* FIXME: apply cursor-not-allowed to delete button individually */}
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="col-span-1"
+                  disabled={!entryId}
+                  onClick={() =>
+                    entryId && void deleteEntry(entryId, onSubmitCallback)
+                  }
+                >
+                  <Trash2Icon size={18} />
+                </Button>
                 <Button
                   type="submit"
                   disabled={isSubmitDisabled}
-                  className="col-span-full mt-2"
+                  className="col-span-2"
                 >
                   {isSubmitting && (
                     <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
