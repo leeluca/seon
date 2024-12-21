@@ -1,8 +1,5 @@
-import { useMemo } from 'react';
-import { useQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
-import { format } from 'date-fns';
-import { InfoIcon, LoaderCircleIcon } from 'lucide-react';
+import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
@@ -87,30 +84,21 @@ async function handleSubmit(
 interface NewEntryFormProps {
   id: string;
   date?: Date;
+  value?: number;
   onSubmitCallback?: () => void;
 }
 
 const NewEntryForm = ({
   id,
   date = new Date(),
+  value,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
   const user = useUser();
-  const { data: entries } = useQuery(
-    db.selectFrom('entry').selectAll().where('goalId', '=', id),
-  );
-
-  const entriesMap = useMemo(
-    () =>
-      new Map(
-        entries.map((entry) => [new Date(entry.date).toDateString(), entry]),
-      ),
-    [entries],
-  );
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
-      value: 0,
+      value: value ?? 0,
     },
     validators: {
       onChange({ value }) {
@@ -151,7 +139,6 @@ const NewEntryForm = ({
       }}
     >
       <div className="grid gap-4">
-        <h4 className="mb-1 font-medium leading-none">New entry</h4>
         <div className="grid gap-2">
           <FormItem
             label="Date"
@@ -177,6 +164,7 @@ const NewEntryForm = ({
                         defaultDate={value}
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
+                        readOnly
                       />
                     </div>
                   </FormError.Wrapper>
@@ -186,7 +174,7 @@ const NewEntryForm = ({
           </FormItem>
 
           <FormItem
-            label="How many?"
+            label="Amount"
             labelFor="entry-value"
             className="grid grid-cols-3 items-center"
             labelClassName="text-start"
@@ -229,32 +217,6 @@ const NewEntryForm = ({
                         autoFocus
                       />
                     </div>
-                    <form.Subscribe selector={(state) => [state.values.date]}>
-                      {([date]) => {
-                        const sameDayEntry = entriesMap.get(
-                          date.toDateString(),
-                        );
-
-                        if (!sameDayEntry) {
-                          return null;
-                        }
-                        return (
-                          <div className="col-span-2 col-start-2">
-                            <div className="flex items-center text-[0.8rem] font-medium text-gray-500">
-                              <InfoIcon size={18} className="mr-1 shrink-0" />
-                              <p>
-                                Your entry of{' '}
-                                <span className="italic">
-                                  {sameDayEntry.value}
-                                </span>{' '}
-                                for {format(sameDayEntry.date, 'PP')} will be
-                                overwritten.
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      }}
-                    </form.Subscribe>
                   </FormError.Wrapper>
                 );
               }}

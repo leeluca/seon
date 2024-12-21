@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@powersync/react';
 import { addDays, addWeeks, format, startOfWeek, subWeeks } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
@@ -43,40 +43,70 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
   const startMonth = format(days[0], 'MMM');
   const endMonth = format(days[days.length - 1], 'MMM');
 
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [selectedDateValue, setSelectedDateValue] = useState<
+    [Date | null, number]
+  >([new Date(), 0]);
   const popoverAnchorRef = useRef<HTMLElement | null>(null);
+
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (!isPopoverOpen && selectedDateValue[0]) {
+      timeoutRef.current = setTimeout(
+        () => setSelectedDateValue([null, 0]),
+        150,
+      );
+    }
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isPopoverOpen, selectedDateValue]);
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-3 flex w-full content-center justify-center">
-        <p className="text-sm">
-          {startMonth === endMonth ? startMonth : `${startMonth} • ${endMonth}`}
+      <div className="mb-2 ml-2 flex w-full content-center justify-start">
+        <p className="text-xs font-medium">
+          {startMonth === endMonth
+            ? format(days[0], 'MMMM')
+            : `${startMonth} • ${endMonth}`}
         </p>
       </div>
-
-      <div className="mb-2 grid w-full max-w-[440px] auto-cols-fr grid-flow-col items-end justify-items-center gap-2">
-        <Button variant="secondary" size="icon-sm" onClick={handlePrevWeek}>
+      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-2">
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          onClick={handlePrevWeek}
+          className="mb-1 justify-self-center"
+        >
           <ArrowBigLeftIcon size={18} />
         </Button>
         {days.map((day) => {
           const stringDate = day.toDateString();
-          const dayEntry = entriesMap.get(stringDate);
-
+          const savedEntry = entriesMap.get(stringDate);
+          const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
           return (
             <div key={stringDate} className="flex flex-col">
-              <p className="mb-1 text-xs font-light">{format(day, 'EEEEE')}</p>
+              <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
               <Button
-                variant={dayEntry ? null : 'outline'}
-                className={cn('min-w-0 rounded', {
-                  'border-input border bg-green-500 text-white hover:bg-green-500/90':
-                    dayEntry,
+                variant={savedEntry ? null : 'outline'}
+                className={cn('aspect-square w-full min-w-0 rounded', {
+                  'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
+                    savedEntry,
+                  'bg-emerald-500/80': savedEntry && isSelected,
+                  'bg-accent text-accent-foreground': !savedEntry && isSelected,
                 })}
-                size="sm"
+                // size="sm"
                 onClick={(e) => {
                   popoverAnchorRef.current = e.currentTarget;
-                  setSelectedDate(day);
-                  setPopoverOpen(true);
+                  setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
+                  setIsPopoverOpen(true);
                 }}
               >
                 <div className="text-center text-xs">{format(day, 'd')}</div>
@@ -84,17 +114,23 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
             </div>
           );
         })}
-        <Button variant="secondary" size="icon-sm" onClick={handleNextWeek}>
-          <ArrowBigRightIcon size={16} />
+        <Button
+          variant="secondary"
+          size="icon-sm"
+          onClick={handleNextWeek}
+          className="mb-1 justify-self-center"
+        >
+          <ArrowBigRightIcon size={18} />
         </Button>
       </div>
-      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverAnchor virtualRef={popoverAnchorRef} />
-        <PopoverContent>
+        <PopoverContent className="w-64">
           <NewEntryForm
             id={goalId}
-            date={selectedDate}
-            onSubmitCallback={() => setPopoverOpen(false)}
+            date={selectedDateValue[0] || undefined}
+            value={selectedDateValue[1]}
+            onSubmitCallback={() => setIsPopoverOpen(false)}
           />
         </PopoverContent>
       </Popover>
