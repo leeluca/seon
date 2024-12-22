@@ -59,20 +59,7 @@ async function handleSubmit(
           });
         })();
 
-    const updatedGoalValue = sameDayEntry
-      ? -Number(sameDayEntry.value) + value
-      : value;
-    const goalUpdateOperation = db
-      .updateTable('goal')
-      .set((eb) => ({
-        currentValue: eb('currentValue', '+', updatedGoalValue),
-      }))
-      .where('id', '=', goalId);
-
-    await db.transaction().execute(async (tx) => {
-      await tx.executeQuery(entryOperation);
-      await tx.executeQuery(goalUpdateOperation);
-    });
+    await db.executeQuery(entryOperation);
 
     onSubmitCallback();
     return true;
@@ -223,7 +210,7 @@ const NewEntryForm = ({
           >
             {([isSubmitting, isSubmitDisabled]) => (
               <div
-                className={cn('grid grid-cols-3 gap-2 mt-1', {
+                className={cn('mt-1 grid grid-cols-3 gap-2', {
                   'cursor-not-allowed': isSubmitDisabled,
                 })}
               >

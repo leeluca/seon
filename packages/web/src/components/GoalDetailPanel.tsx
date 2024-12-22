@@ -55,12 +55,12 @@ export function GoalDetailPanel({
     title,
     description,
     id,
-    currentValue,
     targetDate,
     target,
     startDate,
     initialValue,
   } = selectedGoal;
+
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -74,8 +74,7 @@ export function GoalDetailPanel({
           <div className="my-6">
             <GoalLineGraph
               key={`${id}-graph`}
-              id={id}
-              currentValue={currentValue}
+              goalId={id}
               targetDate={targetDate}
               target={target}
               startDate={startDate}
@@ -112,7 +111,6 @@ async function handleUpdate(
       .updateTable('goal')
       .set({
         title,
-        currentValue: initialValue,
         initialValue,
         target: target,
         unit,

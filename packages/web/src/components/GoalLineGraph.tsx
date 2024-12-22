@@ -16,7 +16,7 @@ import { LineGraph, LineGraphProps } from './charts/LineGraph';
 
 // TODO: include entries that happened after targetDate
 // TODO: improve mobile view
-interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'id'> {
+interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'goalId'> {
   entries: Database['entry'][];
 }
 function getGraphData({
@@ -172,28 +172,25 @@ function getGraphData({
   return graphData;
 }
 interface GoalLineGraphProps {
-  id: string;
-  currentValue: Database['goal']['currentValue'];
+  goalId: string;
   target: Database['goal']['target'];
   targetDate: string;
   startDate: string;
   initialValue: Database['goal']['initialValue'];
 }
 const GoalLineGraph = ({
-  id,
-  currentValue,
+  goalId,
   target,
   targetDate,
   startDate,
   initialValue,
 }: GoalLineGraphProps) => {
   const { data: entries } = useQuery(
-    db.selectFrom('entry').selectAll().where('goalId', '=', id),
+    db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
   );
 
   const { data: preparedData } = getGraphData({
     entries,
-    currentValue,
     target,
     targetDate,
     startDate,

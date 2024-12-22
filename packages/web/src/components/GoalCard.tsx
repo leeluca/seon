@@ -3,8 +3,8 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import { useMemo, useRef } from 'react';
 import { Link } from '@tanstack/react-router';
 import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
-// import { motion } from 'framer-motion';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
+// import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 import {
@@ -14,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import useGoalEntriesSum from '~/hooks/useGoalEntriesSum';
 import db from '~/lib/database';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
@@ -84,7 +85,6 @@ async function deleteGoal(goalId: string, callback?: () => void) {
 
 export default function GoalCard({
   title,
-  currentValue,
   target,
   id,
   startDate,
@@ -93,6 +93,10 @@ export default function GoalCard({
   shortId,
 }: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
+
+  const entriesSum = useGoalEntriesSum(id);
+
+  const currentValue = entriesSum + initialValue;
 
   const progressPercent = `${Math.max(
     Math.min((currentValue / target) * 100, 100),
