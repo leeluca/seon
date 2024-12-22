@@ -23,12 +23,30 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 // const MotionCard = motion(Card);
 
 interface ProgressBarProps {
-  progressPercent: string;
+  progressPercent: number;
+  target: number;
+  currentValue: number;
 }
-function ProgressBar({ progressPercent }: ProgressBarProps) {
+function ProgressBar({
+  progressPercent,
+  target,
+  currentValue,
+}: ProgressBarProps) {
   return (
-    <div className="w-[calc(100% + 48px)] -mx-3 flex h-3 rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md">
-      <div className="h-3 bg-blue-200" style={{ width: progressPercent }} />
+    <div className="w-[calc(100% + 48px)] group relative -mx-3 flex h-3 rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md">
+      <p className="absolute bottom-[17px] right-[2px] text-xs opacity-0 transition-opacity group-hover:opacity-100">
+        {progressPercent <= 100 ? `${currentValue}/${target}` : target}
+      </p>
+      <div
+        className="relative h-3 border bg-blue-200 transition-all group-hover:border-blue-300 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
+        style={{ width: `${progressPercent}%` }}
+      >
+        {progressPercent <= 90 && (
+          <p className="absolute -right-5 bottom-4 text-sm font-medium opacity-0 transition-opacity group-hover:opacity-100">
+            {progressPercent.toFixed(0)}%
+          </p>
+        )}
+      </div>
     </div>
   );
 }
@@ -98,10 +116,10 @@ export default function GoalCard({
 
   const currentValue = entriesSum + initialValue;
 
-  const progressPercent = `${Math.max(
+  const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
-  ).toFixed(0)}%`;
+  );
 
   const daysLeft =
     differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
@@ -154,20 +172,17 @@ export default function GoalCard({
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
+      <CardContent className="flex flex-col gap-7">
         <CalendarHeatmap goalId={id} />
         {/* <p className="mb-2 text-center text-3xl font-extrabold">
           {progressPercent}
         </p> */}
         <div className="flex flex-col gap-2">
-          <div className="-mx-2 flex items-end justify-between text-xs font-light">
-            <p className="w-1/3 text-start">{currentValue}</p>
-            <div className="flex w-1/3 flex-col items-end">
-              <p className="mb-1 text-xs font-medium">Target</p>
-              <span>{target}</span>
-            </div>
-          </div>
-          <ProgressBar progressPercent={progressPercent} />
+          <ProgressBar
+            progressPercent={progressPercent}
+            target={target}
+            currentValue={currentValue}
+          />
           <div className="-mx-2 flex justify-between text-xs font-light">
             <p className="w-1/3 text-start">{progressStatus}</p>
             {!isCompleted && (
