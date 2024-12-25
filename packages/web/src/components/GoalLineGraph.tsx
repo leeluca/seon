@@ -1,6 +1,6 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
-import { useQuery } from '@powersync/react';
+import { useSuspenseQuery } from '@powersync/react';
 import {
   closestTo,
   differenceInDays,
@@ -106,7 +106,9 @@ function getGraphData({
 
   const lastEntryDate = new Date(entries[entries.length - 1]?.date);
 
-  const latestDate = Math.max(lastEntryDate.getTime(), targetDateObj.getTime());
+  const latestDate = new Date(
+    Math.max(lastEntryDate.getTime(), targetDateObj.getTime()),
+  );
 
   const totalDays = differenceInDays(latestDate, startDateObj);
 
@@ -116,7 +118,7 @@ function getGraphData({
 
   const aggregated = buildIntervals({
     start: startDateObj,
-    end: new Date(latestDate),
+    end: latestDate,
     mode,
     entries,
     targetDate: targetDateObj,
@@ -157,7 +159,6 @@ function getGraphData({
     },
     data: {
       labels,
-      // TODO: separate data that's after the target date into a separate dataset?
       datasets: [
         {
           label: 'Your Progress',
@@ -238,6 +239,19 @@ function getGraphData({
       ],
     },
   };
+  // TODO: move data that's after the target date into this separate dataset?
+  // NOTE: empty dataset to show the legend
+  if (lastEntryDate > targetDateObj) {
+    graphData.data.datasets.push({
+      label: 'Entries after target date',
+      data: [],
+      fill: true,
+      borderColor: 'rgba(255, 205, 86, 0.8)',
+      backgroundColor: 'rgba(255, 205, 86, 0.1)',
+      pointRadius: 0,
+      pointHoverRadius: 0,
+    });
+  }
 
   return graphData;
 }
@@ -249,7 +263,7 @@ function GoalLineGraph({
   startDate,
   initialValue,
 }: GoalLineGraphProps) {
-  const { data: entries } = useQuery(
+  const { data: entries } = useSuspenseQuery(
     db
       .selectFrom('entry')
       .selectAll()
