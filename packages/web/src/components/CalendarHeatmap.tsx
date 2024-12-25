@@ -8,12 +8,19 @@ import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface CalendarHeatmapProps {
   goalId: string;
+  checkBlockedDateFn?: (date: Date) => boolean;
+  blockedDateFeedback?: string;
 }
 
-const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
+const CalendarHeatmap = ({
+  goalId,
+  checkBlockedDateFn,
+  blockedDateFeedback,
+}: CalendarHeatmapProps) => {
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
   );
@@ -32,7 +39,6 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
   const handlePrevWeek = () => {
     setCurrentWeekStart(subWeeks(currentWeekStart, 1));
   };
-
   const handleNextWeek = () => {
     setCurrentWeekStart(addWeeks(currentWeekStart, 1));
   };
@@ -91,26 +97,49 @@ const CalendarHeatmap = ({ goalId }: CalendarHeatmapProps) => {
           const stringDate = day.toDateString();
           const savedEntry = entriesMap.get(stringDate);
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
+          const isBlocked = checkBlockedDateFn?.(day);
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
-              <Button
-                variant={savedEntry ? null : 'outline'}
-                className={cn('aspect-square w-full min-w-0 rounded', {
-                  'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
-                    savedEntry,
-                  'bg-emerald-500/80': savedEntry && isSelected,
-                  'bg-accent text-accent-foreground': !savedEntry && isSelected,
-                })}
-                // size="sm"
-                onClick={(e) => {
-                  popoverAnchorRef.current = e.currentTarget;
-                  setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
-                  setIsPopoverOpen(true);
-                }}
-              >
-                <div className="text-center text-xs">{format(day, 'd')}</div>
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  asChild
+                  className="disabled:pointer-events-auto"
+                >
+                  <Button
+                    variant={savedEntry ? null : 'outline'}
+                    className={cn('aspect-square w-full min-w-0 rounded', {
+                      'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
+                        savedEntry,
+                      'bg-emerald-500/80': savedEntry && isSelected,
+                      'bg-accent text-accent-foreground':
+                        !savedEntry && isSelected,
+                      'cursor-not-allowed': isBlocked,
+                    })}
+                    disabled={isBlocked}
+                    // size="sm"
+                    onClick={(e) => {
+                      popoverAnchorRef.current = e.currentTarget;
+                      setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
+                      setIsPopoverOpen(true);
+                    }}
+                  >
+                    <div className="text-center text-xs">
+                      {format(day, 'd')}
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                {savedEntry && (
+                  <TooltipContent>
+                    <p>{savedEntry.value}</p>
+                  </TooltipContent>
+                )}
+                {isBlocked && blockedDateFeedback && (
+                  <TooltipContent>
+                    <p>{blockedDateFeedback}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
             </div>
           );
         })}

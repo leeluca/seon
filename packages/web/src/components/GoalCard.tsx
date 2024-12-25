@@ -2,7 +2,12 @@ import type { Database } from '~/lib/powersync/AppSchema';
 
 import { useMemo, useRef } from 'react';
 import { Link } from '@tanstack/react-router';
-import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
+import {
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  isBefore,
+  startOfDay,
+} from 'date-fns';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
 // import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -136,6 +141,7 @@ export default function GoalCard({
 }: Database['goal']) {
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // FIXME: use a join query instead?
   const { value: entriesSum, isLoading: isLoadingEntries } =
     useGoalEntriesSum(id);
 
@@ -201,7 +207,13 @@ export default function GoalCard({
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-9">
-        <CalendarHeatmap goalId={id} />
+        <CalendarHeatmap
+          goalId={id}
+          checkBlockedDateFn={(date) =>
+            isBefore(startOfDay(date), startOfDay(startDate))
+          }
+          blockedDateFeedback="Before goal's start date"
+        />
         <div className="flex flex-col gap-2">
           <ProgressBar
             progressPercent={progressPercent}
@@ -213,6 +225,7 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
+            // FIXME: Tooltip doesnt show on touch devices
             <Tooltip>
               <TooltipTrigger asChild>
                 <p
