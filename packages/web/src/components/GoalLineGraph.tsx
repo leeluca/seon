@@ -2,6 +2,7 @@ import type { Database } from '~/lib/powersync/AppSchema';
 
 import { useQuery } from '@powersync/react';
 import {
+  closestTo,
   differenceInDays,
   eachDayOfInterval,
   eachMonthOfInterval,
@@ -61,14 +62,10 @@ function buildIntervals({
     dates = eachDayOfInterval({ start, end });
     datesUntilTarget = eachDayOfInterval({ start, end: targetDate });
   } else if (mode === 'week') {
-    // TODO: Always display startDate and targetDate
-    // const adjustedWeeks = [
-    //   new Date(startDate),
-    //   ...weeks.slice(1, -1),
-    //   new Date(targetDate),
-    // ];
+    const weeks = eachWeekOfInterval({ start, end }, { weekStartsOn: 1 });
+    // NOTE: Always display startDate and targetDate days
+    dates = [new Date(start), ...weeks.slice(1, -1), new Date(targetDate)];
 
-    dates = eachWeekOfInterval({ start, end }, { weekStartsOn: 1 });
     datesUntilTarget = eachWeekOfInterval(
       { start, end: targetDate },
       { weekStartsOn: 1 },
@@ -125,10 +122,21 @@ function getGraphData({
     target,
   });
 
-  // X-axis labels
   const labels = aggregated.map((item) => {
-    if (mode === 'day' || mode === 'week') return format(item.date, 'MMM, do');
-    return format(item.date, 'MMM, yyyy');
+    if (mode === 'month') {
+      return [
+        format(item.date, 'MMM, yyyy'),
+        // NOTE: display start and target dates's day
+        isSameMonth(item.date, startDateObj) ||
+        isSameMonth(item.date, targetDateObj)
+          ? format(
+              closestTo(item.date, [startDateObj, targetDateObj]) || item.date,
+              ' (do)',
+            )
+          : '',
+      ];
+    }
+    return format(item.date, 'MMM, do');
   });
 
   let runningTotal = initialValue;
@@ -137,7 +145,9 @@ function getGraphData({
     return { date: item.date, total: runningTotal, baseline: item.baseline };
   });
 
-  const fullProgress = cumulativeAll.map((p) => p.total);
+  const progress = cumulativeAll
+    .filter(({ date }) => date <= new Date(lastEntryDate))
+    .map((p) => p.total);
   const baselineData = cumulativeAll.map((p) => p.baseline);
 
   const graphData: LineGraphProps = {
@@ -150,7 +160,7 @@ function getGraphData({
       datasets: [
         {
           label: 'Your Progress',
-          data: fullProgress,
+          data: progress,
           fill: true,
           borderColor: 'rgba(54, 162, 235, 0.8)',
           backgroundColor: 'rgba(54, 162, 235, 0.1)',
