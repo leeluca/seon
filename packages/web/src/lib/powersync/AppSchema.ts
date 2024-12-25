@@ -52,7 +52,6 @@ const goal = new Table(
     shortId: column.text,
     title: column.text,
     description: column.optionalText,
-    currentValue: column.integer,
     target: column.integer,
     unit: column.text,
     userId: column.text,

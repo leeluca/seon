@@ -28,7 +28,7 @@ const TanStackRouterDevtools =
 function Root() {
   return (
     <SyncProvider>
-      <TooltipProvider delayDuration={400}>
+      <TooltipProvider delayDuration={350}>
         <Toaster
           position="top-right"
           duration={2500}

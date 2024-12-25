@@ -10,13 +10,13 @@ function Dashboard() {
   return (
     <div>
       <div className="px-8 py-4">
-        <div className="mx-auto flex max-w-screen-xl content-center justify-between">
+        <div className="mx-auto flex max-w-screen-2xl content-center justify-between">
           <AppStatusMenu />
         </div>
       </div>
 
       <div className="mb-10 px-6 py-4 xl:p-8">
-        <div className="m-auto max-w-screen-xl">
+        <div className="m-auto max-w-screen-2xl">
           <Outlet />
         </div>
       </div>

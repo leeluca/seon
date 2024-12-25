@@ -55,7 +55,6 @@ export function GoalDetailPanel({
     title,
     description,
     id,
-    currentValue,
     targetDate,
     target,
     startDate,
@@ -70,20 +69,19 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-1">
-          <div className="my-6">
+        <article className="flex h-full flex-col gap-1">
+          <section className="my-4 min-h-[20%]">
             <GoalLineGraph
               key={`${id}-graph`}
-              id={id}
-              currentValue={currentValue}
+              goalId={id}
               targetDate={targetDate}
               target={target}
               startDate={startDate}
               initialValue={initialValue}
             />
-          </div>
+          </section>
           <GoalEditForm goal={selectedGoal} />
-        </div>
+        </article>
         <SheetFooter>
           <SheetClose asChild></SheetClose>
         </SheetFooter>
@@ -112,7 +110,6 @@ async function handleUpdate(
       .updateTable('goal')
       .set({
         title,
-        currentValue: initialValue,
         initialValue,
         target: target,
         unit,
@@ -151,7 +148,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     updatedAt,
   } = goal;
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const form = useForm<NewGoal>({
     defaultValues: {
@@ -191,7 +188,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
   return (
     <section className="my-4 overflow-y-auto">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="mb-1 flex h-[3.75rem] items-end justify-between">
+        <div className="flex h-[3.75rem] items-start justify-between">
           <div className="flex items-center">
             <CollapsibleTrigger asChild className="mr-4">
               <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
@@ -280,7 +277,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
         <CollapsibleContent>
           <GoalForm
             form={form}
-            formItemClassName="grid-cols-1 items-start gap-y-3 px-1"
+            formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
           />
         </CollapsibleContent>
       </Collapsible>

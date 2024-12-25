@@ -63,7 +63,6 @@ export const goal = pgTable(
     title: text('title').notNull(),
     description: text('description'),
     initialValue: integer('initialValue').default(0).notNull(),
-    currentValue: integer('currentValue').default(0).notNull(),
     target: integer('target').notNull(),
     unit: text('unit').default('').notNull(),
     userId: uuid('userId').notNull(),
