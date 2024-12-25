@@ -12,6 +12,7 @@ import {
   isSameMonth,
   isSameWeek,
 } from 'date-fns';
+import { ChartLineIcon } from 'lucide-react';
 
 import db from '~/lib/database';
 import { LineGraph, LineGraphProps } from './charts/LineGraph';
@@ -256,8 +257,17 @@ function GoalLineGraph({
       .orderBy('date', 'asc'),
   );
 
-  // TODO: add a placeholder for when no entries exist
-  if (!entries.length) return null;
+  if (!entries.length) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-2">
+        <div className="flex items-center gap-2">
+          <ChartLineIcon size={28} />
+          <p className="text-lg">Your progress graph will be shown here</p>
+        </div>
+        <p className="text-md">Add your first entry to start</p>
+      </div>
+    );
+  }
 
   const graphData = getGraphData({
     entries,

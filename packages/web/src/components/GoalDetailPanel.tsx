@@ -61,7 +61,6 @@ export function GoalDetailPanel({
     initialValue,
   } = selectedGoal;
 
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
@@ -70,8 +69,8 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <div className="flex flex-col gap-1">
-          <div className="my-6">
+        <div className="flex h-full flex-col gap-1">
+          <div className="my-5 min-h-[20%]">
             <GoalLineGraph
               key={`${id}-graph`}
               goalId={id}
