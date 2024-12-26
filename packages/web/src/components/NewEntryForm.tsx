@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { LoaderCircleIcon, Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -87,6 +88,7 @@ const NewEntryForm = ({
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
   const user = useUser();
+  const { t } = useLingui();
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
@@ -128,7 +130,7 @@ const NewEntryForm = ({
       <div className="grid gap-4">
         <div className="grid gap-2">
           <FormItem
-            label="Date"
+            label={t`Date`}
             labelFor="entry-date"
             className="grid grid-cols-3 items-center gap-4"
             labelClassName="text-start"
@@ -161,7 +163,7 @@ const NewEntryForm = ({
           </FormItem>
 
           <FormItem
-            label="Amount"
+            label={t`Amount`}
             labelFor="entry-value"
             className="grid grid-cols-3 items-center"
             labelClassName="text-start"
@@ -234,7 +236,7 @@ const NewEntryForm = ({
                   {isSubmitting && (
                     <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
                   )}
-                  Save
+                  <Trans>Save</Trans>
                 </Button>
               </div>
             )}

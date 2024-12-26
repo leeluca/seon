@@ -13,30 +13,27 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/components/GoalForm.tsx:232
-#~ msgid " Show extra options"
-#~ msgstr ""
-
-#: src/components/SignOutButton.tsx:49
-#~ msgid " Unsynced data will be lost"
-#~ msgstr ""
-
 #: src/routes/_main.goals.new.tsx:148
 msgid "Add new goal"
-msgstr ""
+msgstr "Add new goal"
 
 #: src/components/GoalLineGraph.tsx:285
 msgid "Add your first entry to start"
-msgstr ""
+msgstr "Add your first entry to start"
 
 #: src/routes/index.lazy.tsx:59
 msgid "Already a user?"
 msgstr "Already a user?"
 
+#: src/components/NewEntryForm.tsx:166
+msgid "Amount"
+msgstr ""
+
 #: src/components/GoalCard.tsx:263
 msgid "Are you sure you want to delete"
 msgstr "Are you sure you want to delete"
 
+#: src/components/SignOutButton.tsx:66
 #: src/components/GoalDetailPanel.tsx:249
 msgid "Cancel"
 msgstr ""
@@ -72,6 +69,10 @@ msgstr "Create goal"
 #: src/components/NoGoalsPlaceholder.tsx:31
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
+
+#: src/components/NewEntryForm.tsx:133
+msgid "Date"
+msgstr ""
 
 #: src/components/GoalCard.tsx:276
 msgid "Delete"
@@ -205,6 +206,7 @@ msgstr "Password is required"
 msgid "Pick a date"
 msgstr ""
 
+#: src/components/NewEntryForm.tsx:239
 #: src/components/GoalDetailPanel.tsx:260
 #: src/components/GoalDetailPanel.tsx:271
 msgid "Save"
@@ -223,6 +225,7 @@ msgid "Show extra options"
 msgstr "Show extra options"
 
 #: src/routes/signin.lazy.tsx:27
+#: src/routes/index.lazy.tsx:66
 #: src/components/SignInForm.tsx:191
 msgid "Sign In"
 msgstr "Sign In"
@@ -239,7 +242,7 @@ msgstr "Sign in to sync your data."
 msgid "Sign in will not work."
 msgstr "Sign in will not work."
 
-#: src/components/SignOutButton.tsx:70
+#: src/components/SignOutButton.tsx:72
 msgid "Sign out"
 msgstr "Sign out"
 

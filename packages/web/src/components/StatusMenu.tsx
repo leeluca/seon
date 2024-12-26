@@ -142,6 +142,7 @@ function StatusMenu() {
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
+            {/* FIXME: Increase the width so that Korean text fits */}
             <PopoverContent className="w-[121px]" sideOffset={5}>
               <div className="space-y-2">
                 <h3 className="text-pretty font-medium leading-none">
@@ -198,7 +199,7 @@ function StatusMenu() {
             </PopoverTrigger>
             <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
               <div className="space-y-2 pb-4">
-                <h3 className="text-balance font-medium leading-none">
+                <h3 className="text-pretty font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>
                 </h3>
               </div>

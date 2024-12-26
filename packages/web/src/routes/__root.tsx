@@ -36,7 +36,7 @@ function Root() {
   return (
     <SyncProvider>
       <I18nProvider i18n={i18n}>
-        <TooltipProvider delayDuration={350}>
+        <TooltipProvider delayDuration={300}>
           <Toaster
             position="top-right"
             duration={2500}

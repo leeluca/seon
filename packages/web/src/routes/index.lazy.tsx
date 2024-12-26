@@ -63,7 +63,7 @@ function Index() {
                 preload="intent"
                 className={buttonVariants({ variant: 'default', size: 'lg' })}
               >
-                Sign In
+                <Trans>Sign In</Trans>
               </Link>
             </div>
           </div>

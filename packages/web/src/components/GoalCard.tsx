@@ -64,7 +64,11 @@ type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
 function getProgressIconAndMessage(status: ProgressStatus) {
   switch (status) {
     case 'behind':
-      return { icon: '😟', message: 'Behind schedule!', progressStatus: status };
+      return {
+        icon: '😟',
+        message: 'Behind schedule!',
+        progressStatus: status,
+      };
     case 'onTrack':
       return { icon: '🙂', message: 'Right on track!', progressStatus: status };
     case 'ahead':
@@ -250,7 +254,11 @@ export default function GoalCard({
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="outline" aria-label={t`Delete goal`}>
+              <Button
+                size="icon-sm"
+                variant="outline"
+                aria-label={t`Delete goal`}
+              >
                 <Trash2Icon size={18} />
               </Button>
             </PopoverTrigger>
@@ -260,6 +268,7 @@ export default function GoalCard({
                   <Trans>Delete goal</Trans>
                 </h3>
                 <p className="text-muted-foreground text-pretty text-sm">
+                  {/* FIXME: Korean translation has wrong word order */}
                   <Trans>Are you sure you want to delete</Trans>{' '}
                   <span className="font-bold">{title}</span>?
                 </p>

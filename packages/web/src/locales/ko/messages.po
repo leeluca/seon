@@ -25,10 +25,15 @@ msgstr "시작하려면 첫 번째 항목을 추가하세요"
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
+#: src/components/NewEntryForm.tsx:166
+msgid "Amount"
+msgstr "개수"
+
 #: src/components/GoalCard.tsx:263
 msgid "Are you sure you want to delete"
 msgstr "정말 삭제하시겠습니까?"
 
+#: src/components/SignOutButton.tsx:66
 #: src/components/GoalDetailPanel.tsx:249
 msgid "Cancel"
 msgstr "취소"
@@ -43,7 +48,7 @@ msgstr "동기화 오류를 확인하거나 로그인하세요"
 
 #: src/components/StatusMenu.tsx:43
 msgid "Check your internet connection and try again."
-msgstr "인터넷 연결을 확인하고 다시 시도해주세요."
+msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 
 #: src/components/GoalForm.tsx:78
 msgid "Choose a name for your goal."
@@ -63,7 +68,11 @@ msgstr "목표 만들기"
 
 #: src/components/NoGoalsPlaceholder.tsx:31
 msgid "Create your first goal!"
-msgstr "첫 번째 목표를 만드세요!"
+msgstr "첫 번째 목표를 만들어 보세요!"
+
+#: src/components/NewEntryForm.tsx:133
+msgid "Date"
+msgstr "날짜"
 
 #: src/components/GoalCard.tsx:276
 msgid "Delete"
@@ -97,7 +106,7 @@ msgstr "이메일"
 #: src/components/SignUpForm.tsx:149
 #: src/components/SignInForm.tsx:78
 msgid "Email is required"
-msgstr "이메일을 입력해주세요"
+msgstr "이메일을 입력해 주세요"
 
 #: src/routes/_main.goals.new.tsx:76
 msgid "Failed to add goal"
@@ -163,11 +172,7 @@ msgstr "마지막 업데이트: {0}"
 #: src/components/SignUpForm.tsx:67
 #: src/components/GoalDetailPanel.tsx:168
 msgid "Missing required fields"
-msgstr "필수 항목을 입력해주세요"
-
-#: src/components/GoalDetailPanel.tsx:171
-#~ msgid "Missing required fields  "
-#~ msgstr ""
+msgstr "필수 항목을 입력해 주세요"
 
 #: src/components/SignUpForm.tsx:109
 msgid "Name"
@@ -197,6 +202,7 @@ msgstr "비밀번호를 입력해주세요"
 msgid "Pick a date"
 msgstr "날짜 선택"
 
+#: src/components/NewEntryForm.tsx:239
 #: src/components/GoalDetailPanel.tsx:260
 #: src/components/GoalDetailPanel.tsx:271
 msgid "Save"
@@ -204,7 +210,7 @@ msgstr "저장"
 
 #: src/components/GoalForm.tsx:121
 msgid "Set a target value for your goal."
-msgstr "목표 달성 값을 설정해주세요."
+msgstr "목표 달성 값을 설정해 주세요."
 
 #: src/routes/_main.goals.new.tsx:151
 msgid "Set up your new goal. You can always edit it later."
@@ -215,6 +221,7 @@ msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
 #: src/routes/signin.lazy.tsx:27
+#: src/routes/index.lazy.tsx:66
 #: src/components/SignInForm.tsx:191
 msgid "Sign In"
 msgstr "로그인"
@@ -225,24 +232,24 @@ msgstr "데이터 동기화를 위해 다시 로그인해주세요."
 
 #: src/components/StatusMenu.tsx:65
 msgid "Sign in to sync your data."
-msgstr "데이터 동기화를 위해 로그인해주세요."
+msgstr "데이터 동기화를 위해 로그인해 주세요."
 
 #: src/components/SignInForm.tsx:165
 msgid "Sign in will not work."
 msgstr "로그인을 할 수 없습니다."
 
-#: src/components/SignOutButton.tsx:70
+#: src/components/SignOutButton.tsx:72
 msgid "Sign out"
 msgstr "로그아웃"
 
 #: src/routes/signup.lazy.tsx:26
 #: src/components/SignUpForm.tsx:265
 msgid "Sign Up"
-msgstr "회원가입"
+msgstr "회원 가입"
 
 #: src/components/SignUpForm.tsx:239
 msgid "Sign up will not work."
-msgstr "회원가입을 할 수 없습니다."
+msgstr "회원 가입을 할 수 없습니다."
 
 #: src/components/GoalForm.tsx:241
 msgid "Start date"
