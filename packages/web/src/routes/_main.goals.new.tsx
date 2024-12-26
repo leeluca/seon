@@ -144,7 +144,9 @@ function NewGoalDialog() {
     >
       <DialogContent className="sm:max-w-screen-sm">
         <DialogHeader>
-          <DialogTitle>Add new goal</DialogTitle>
+          <DialogTitle>
+            <Trans>Add new goal</Trans>
+          </DialogTitle>
           <DialogDescription>
             <Trans>Set up your new goal. You can always edit it later.</Trans>
           </DialogDescription>

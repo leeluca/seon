@@ -13,10 +13,6 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_main.goals.new.tsx:182
-#~ msgid " Create goal"
-#~ msgstr ""
-
 #: src/components/GoalForm.tsx:232
 #~ msgid " Show extra options"
 #~ msgstr ""
@@ -25,15 +21,27 @@ msgstr ""
 #~ msgid " Unsynced data will be lost"
 #~ msgstr ""
 
+#: src/routes/_main.goals.new.tsx:148
+msgid "Add new goal"
+msgstr ""
+
+#: src/components/GoalLineGraph.tsx:285
+msgid "Add your first entry to start"
+msgstr ""
+
 #: src/routes/index.lazy.tsx:59
 msgid "Already a user?"
 msgstr "Already a user?"
 
-#: src/components/GoalCard.tsx:199
+#: src/components/GoalCard.tsx:263
 msgid "Are you sure you want to delete"
 msgstr "Are you sure you want to delete"
 
-#: src/components/GoalDetailPanel.tsx:242
+#: src/components/GoalDetailPanel.tsx:249
+msgid "Cancel"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:239
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
@@ -57,7 +65,7 @@ msgstr "Could not connect with the sync service. Try again later."
 msgid "Create account"
 msgstr "Create account"
 
-#: src/routes/_main.goals.new.tsx:182
+#: src/routes/_main.goals.new.tsx:183
 msgid "Create goal"
 msgstr "Create goal"
 
@@ -65,16 +73,16 @@ msgstr "Create goal"
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
-#: src/components/GoalCard.tsx:212
+#: src/components/GoalCard.tsx:276
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/GoalCard.tsx:189
-#: src/components/GoalCard.tsx:196
+#: src/components/GoalCard.tsx:253
+#: src/components/GoalCard.tsx:260
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:208
+#: src/components/GoalCard.tsx:272
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
@@ -82,7 +90,7 @@ msgstr "Deleted goal: {title}"
 msgid "e.g. words"
 msgstr "e.g. words"
 
-#: src/components/GoalDetailPanel.tsx:213
+#: src/components/GoalDetailPanel.tsx:210
 msgid "Edit goal"
 msgstr "Edit goal"
 
@@ -99,11 +107,11 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/routes/_main.goals.new.tsx:77
+#: src/routes/_main.goals.new.tsx:76
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
-#: src/components/GoalDetailPanel.tsx:131
+#: src/components/GoalDetailPanel.tsx:128
 msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
@@ -155,13 +163,13 @@ msgid "Last synced:"
 msgstr "Last synced:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/components/GoalDetailPanel.tsx:216
+#: src/components/GoalDetailPanel.tsx:213
 msgid "Last updated at: {0}"
 msgstr "Last updated at: {0}"
 
-#: src/routes/_main.goals.new.tsx:108
+#: src/routes/_main.goals.new.tsx:107
 #: src/components/SignUpForm.tsx:67
-#: src/components/GoalDetailPanel.tsx:171
+#: src/components/GoalDetailPanel.tsx:168
 msgid "Missing required fields"
 msgstr "Missing required fields"
 
@@ -193,8 +201,12 @@ msgstr "Password"
 msgid "Password is required"
 msgstr "Password is required"
 
-#: src/components/GoalDetailPanel.tsx:263
-#: src/components/GoalDetailPanel.tsx:274
+#: src/components/DatePicker.tsx:117
+msgid "Pick a date"
+msgstr ""
+
+#: src/components/GoalDetailPanel.tsx:260
+#: src/components/GoalDetailPanel.tsx:271
 msgid "Save"
 msgstr "Save"
 
@@ -202,7 +214,7 @@ msgstr "Save"
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
-#: src/routes/_main.goals.new.tsx:150
+#: src/routes/_main.goals.new.tsx:151
 msgid "Set up your new goal. You can always edit it later."
 msgstr "Set up your new goal. You can always edit it later."
 
@@ -248,11 +260,11 @@ msgstr "Start date"
 msgid "Start New"
 msgstr "Start New"
 
-#: src/routes/_main.goals.new.tsx:73
+#: src/routes/_main.goals.new.tsx:72
 msgid "Sucessfully added goal"
 msgstr "Sucessfully added goal"
 
-#: src/components/GoalDetailPanel.tsx:127
+#: src/components/GoalDetailPanel.tsx:124
 msgid "Sucessfully updated goal"
 msgstr "Sucessfully updated goal"
 
@@ -281,7 +293,7 @@ msgstr "Target value"
 msgid "There are no goals"
 msgstr "There are no goals"
 
-#: src/components/GoalCard.tsx:221
+#: src/components/GoalCard.tsx:285
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 
@@ -319,6 +331,10 @@ msgstr "Your data is synced!"
 #: src/components/SignOutButton.tsx:53
 msgid "Your most recent changes have not been synced yet."
 msgstr "Your most recent changes have not been synced yet."
+
+#: src/components/GoalLineGraph.tsx:281
+msgid "Your progress graph will be shown here"
+msgstr ""
 
 #: src/components/StatusMenu.tsx:57
 msgid "Your session has expired."

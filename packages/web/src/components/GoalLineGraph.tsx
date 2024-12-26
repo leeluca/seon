@@ -1,5 +1,6 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
+import { Trans } from '@lingui/macro';
 import { useSuspenseQuery } from '@powersync/react';
 import {
   closestTo,
@@ -276,9 +277,13 @@ function GoalLineGraph({
       <div className="flex h-full w-full flex-col items-center justify-center gap-2">
         <div className="flex items-center gap-2">
           <ChartLineIcon size={28} />
-          <p className="text-lg">Your progress graph will be shown here</p>
+          <p className="text-lg">
+            <Trans>Your progress graph will be shown here</Trans>
+          </p>
         </div>
-        <p className="text-md">Add your first entry to start</p>
+        <p className="text-md">
+          <Trans>Add your first entry to start</Trans>
+        </p>
       </div>
     );
   }

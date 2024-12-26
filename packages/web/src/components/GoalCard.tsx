@@ -64,7 +64,7 @@ type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
 function getProgressIconAndMessage(status: ProgressStatus) {
   switch (status) {
     case 'behind':
-      return { icon: '😟', message: 'Behind target!', progressStatus: status };
+      return { icon: '😟', message: 'Behind schedule!', progressStatus: status };
     case 'onTrack':
       return { icon: '🙂', message: 'Right on track!', progressStatus: status };
     case 'ahead':

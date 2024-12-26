@@ -246,7 +246,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
                         'text-muted-foreground': isCancelDisabled,
                       })}
                     >
-                      Cancel
+                      <Trans>Cancel</Trans>
                     </span>
                   </div>
                   <div
