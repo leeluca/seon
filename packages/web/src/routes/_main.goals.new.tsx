@@ -58,7 +58,6 @@ async function handleSave(
         id: uuid,
         shortId: shortUuid as string,
         title,
-        currentValue: initialValue,
         initialValue,
         target: target,
         unit,

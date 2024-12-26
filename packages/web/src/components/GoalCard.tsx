@@ -3,9 +3,14 @@ import type { Database } from '~/lib/powersync/AppSchema';
 import { useMemo, useRef } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
-// import { motion } from 'framer-motion';
+import {
+  differenceInCalendarDays,
+  eachDayOfInterval,
+  isBefore,
+  startOfDay,
+} from 'date-fns';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
+// import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 import {
@@ -15,25 +20,67 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import useGoalEntriesSum from '~/hooks/useGoalEntriesSum';
 import db from '~/lib/database';
-import { NewEntryPopover } from './NewEntryPopover';
+import { cn } from '~/utils';
+import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-
-// const MotionCard = motion(Card);
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface ProgressBarProps {
-  progressPercent: string;
+  progressPercent: number;
+  target: number;
+  currentValue: number;
 }
-function ProgressBar({ progressPercent }: ProgressBarProps) {
+function ProgressBar({
+  progressPercent,
+  target,
+  currentValue,
+}: ProgressBarProps) {
   return (
-    <div className="w-[calc(100% + 48px)] -mx-3 flex h-3 rounded bg-gray-200 [&>:first-child]:rounded-l [&>:last-child]:rounded-r-md">
-      <div className="h-3 bg-blue-200" style={{ width: progressPercent }} />
+    <div className="w-[calc(100% + 48px)] group relative -mx-3 flex h-3 rounded bg-gray-200">
+      <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
+        {progressPercent <= 100 ? `${currentValue}/${target}` : target}
+      </p>
+      <div
+        className="relative h-3 rounded border bg-blue-200 transition-all group-hover:border-blue-300 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
+        style={{ width: `${Math.max(progressPercent, 2)}%` }}
+      >
+        <p
+          className={cn(
+            'absolute bottom-4 pb-[1px] text-sm font-medium opacity-0 transition-opacity group-hover:opacity-100',
+            progressPercent <= 85 ? '-right-5' : '-bottom-6 right-0',
+          )}
+        >
+          {progressPercent.toFixed(0)}%
+        </p>
+      </div>
     </div>
   );
 }
 
-interface getOnTrackValueArgs {
+type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
+function getProgressIconAndMessage(status: ProgressStatus) {
+  switch (status) {
+    case 'behind':
+      return { icon: '😟', message: 'Behind target!', progressStatus: status };
+    case 'onTrack':
+      return { icon: '🙂', message: 'Right on track!', progressStatus: status };
+    case 'ahead':
+      return {
+        icon: '😎',
+        message: 'Ahead of schedule!',
+        progressStatus: status,
+      };
+    case 'complete':
+      return { icon: '🥳', message: 'Goal achieved!', progressStatus: status };
+    default:
+      return { icon: '', message: '' };
+  }
+}
+
+interface getProgressStatusArgs {
   currentValue: number;
   initialValue: number;
   target: number;
@@ -41,14 +88,14 @@ interface getOnTrackValueArgs {
   targetDate: string;
   isCompleted: boolean;
 }
-function getOnTrackValue({
+function getProgressStatus({
   currentValue,
   initialValue,
   target,
   startDate,
   targetDate,
   isCompleted,
-}: getOnTrackValueArgs) {
+}: getProgressStatusArgs): ProgressStatus {
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
     end: new Date(targetDate),
@@ -65,16 +112,17 @@ function getOnTrackValue({
   );
 
   const differenceFromTarget = currentValue - expectedGoalValueToday;
-  const percentageDifference = Math.abs(differenceFromTarget / target) * 100;
+  const percentageDifference =
+    Math.abs((currentValue - expectedGoalValueToday) / target) * 100;
 
   if (isCompleted) {
-    return <span className="text-green-500">Completed</span>;
+    return 'complete';
   } else if (percentageDifference <= 5) {
-    return <span className="text-blue-500">On track</span>;
+    return 'onTrack';
   } else if (differenceFromTarget > 0) {
-    return <span className="text-green-500">Ahead</span>;
+    return 'ahead';
   } else {
-    return <span className="text-red-500">Behind</span>;
+    return 'behind';
   }
 }
 
@@ -85,7 +133,6 @@ async function deleteGoal(goalId: string, callback?: () => void) {
 
 export default function GoalCard({
   title,
-  currentValue,
   target,
   id,
   startDate,
@@ -96,26 +143,35 @@ export default function GoalCard({
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const progressPercent = `${Math.max(
+  // FIXME: use a join query instead?
+  const { value: entriesSum, isLoading: isLoadingEntries } =
+    useGoalEntriesSum(id);
+
+  const currentValue = entriesSum + initialValue;
+
+  const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
-  ).toFixed(0)}%`;
-
-  const daysLeft =
-    differenceInCalendarDays(new Date(targetDate), new Date()) || 0;
+  );
 
   const isCompleted = currentValue >= target;
 
-  const progressStatus = useMemo(
+  const {
+    icon,
+    message: progressMessage,
+    progressStatus,
+  } = useMemo(
     () =>
-      getOnTrackValue({
-        currentValue,
-        initialValue,
-        target,
-        startDate,
-        targetDate,
-        isCompleted,
-      }),
+      getProgressIconAndMessage(
+        getProgressStatus({
+          currentValue,
+          initialValue,
+          target,
+          startDate,
+          targetDate,
+          isCompleted,
+        }),
+      ),
     [currentValue, initialValue, target, startDate, targetDate, isCompleted],
   );
 
@@ -147,42 +203,50 @@ export default function GoalCard({
         onPointerDownCapture={(e) => e.stopPropagation()}
       >
         <div className="flex h-16 items-center">
-          <CardTitle className="mr-3 w-60 grow pl-[30px] text-center text-2xl font-medium">
+          <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
             {title}
           </CardTitle>
-          <NewEntryPopover id={id} />
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        <p className="mb-2 text-center text-3xl font-extrabold">
-          {progressPercent}
-        </p>
+      <CardContent className="flex flex-col gap-9">
+        <CalendarHeatmap
+          goalId={id}
+          checkBlockedDateFn={(date) =>
+            isBefore(startOfDay(date), startOfDay(startDate))
+          }
+          blockedDateFeedback="Before goal's start date"
+        />
         <div className="flex flex-col gap-2">
-          <div className="-mx-2 flex items-end justify-between text-xs font-light">
-            <p className="w-1/3 text-start">{currentValue}</p>
-            <div className="flex w-1/3 flex-col items-end">
-              <p className="mb-1 text-xs font-medium">Target</p>
-              <span>{target}</span>
-            </div>
-          </div>
-          <ProgressBar progressPercent={progressPercent} />
-          <div className="-mx-2 flex justify-between text-xs font-light">
-            <p className="w-1/3 text-start">{progressStatus}</p>
-            {!isCompleted && (
-              <div className="flex w-1/3 flex-col items-end">
-                {/* TODO: match pluralization with number */}
-                <span>
-                  {daysLeft > 0
-                    ? `${daysLeft} days left`
-                    : `${Math.abs(daysLeft)} days late`}
-                </span>
-              </div>
-            )}
-          </div>
+          <ProgressBar
+            progressPercent={progressPercent}
+            target={target}
+            currentValue={currentValue}
+          />
         </div>
       </CardContent>
       <CardFooter className="px-3 pb-3">
-        {/* <span className="text-xs">Category</span> */}
+        <div className="flex w-full justify-start">
+          {!isLoadingEntries && (
+            // FIXME: Tooltip doesnt show on touch devices
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p
+                  className={cn(
+                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
+                    {
+                      'text-[22px]': progressStatus === 'complete',
+                    },
+                  )}
+                >
+                  {icon}
+                </p>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>{progressMessage}</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>
             <PopoverTrigger asChild>

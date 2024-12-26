@@ -55,6 +55,7 @@ interface DatePickerProps {
   setDate?: (date?: Date) => void;
   disabled?: boolean;
   readOnly?: boolean;
+  useRelativeDistance?: boolean;
 }
 export const DatePicker = React.forwardRef(
   (
@@ -68,6 +69,7 @@ export const DatePicker = React.forwardRef(
       setDate: setDateProp,
       disabled,
       readOnly,
+      useRelativeDistance = false,
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
@@ -90,19 +92,26 @@ export const DatePicker = React.forwardRef(
     }));
 
     return (
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+      <Popover
+        open={isPopoverOpen}
+        onOpenChange={readOnly ? undefined : setIsPopoverOpen}
+      >
         <PopoverTrigger asChild disabled={disabled}>
           <Button
             variant={'outline'}
             className={cn(
               'w-full justify-start text-left font-normal',
-              !date && 'text-muted-foreground',
+              {
+                'text-muted-foreground': !date,
+                'hover:bg-background cursor-default': readOnly,
+              },
               className,
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? (
-              getPresetRelativeDateText(date) || formatDate(date, 'PP')
+              (useRelativeDistance && getPresetRelativeDateText(date)) ||
+              formatDate(date, 'PP')
             ) : (
               <span>Pick a date</span>
             )}

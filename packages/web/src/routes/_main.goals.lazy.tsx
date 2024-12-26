@@ -57,7 +57,7 @@ function Goals() {
       <main
         className="grid grid-flow-row-dense gap-6"
         style={{
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, auto))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, auto))',
         }}
       >
         {!goals.length &&
