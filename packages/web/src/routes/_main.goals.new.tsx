@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { add, startOfDay } from 'date-fns';
@@ -68,17 +69,18 @@ async function handleSave(
       })
       .executeTakeFirstOrThrow();
 
-    toast.success('Sucessfully added goal');
+    toast.success(<Trans>Sucessfully added goal</Trans>);
     callback && callback();
   } catch (error) {
     console.error(error);
-    toast.error('Failed to add goal');
+    toast.error(<Trans>Failed to add goal</Trans>);
   }
 }
 
 function NewGoalDialog() {
   const navigate = useNavigate();
   const user = useUser();
+  const { t } = useLingui();
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -102,7 +104,7 @@ function NewGoalDialog() {
       onChange({ value }) {
         const { title, targetValue, targetDate } = value;
         if (!title || !targetValue || !targetDate) {
-          return 'Missing required fields';
+          return t`Missing required fields`;
         }
       },
     },
@@ -142,15 +144,17 @@ function NewGoalDialog() {
     >
       <DialogContent className="sm:max-w-screen-sm">
         <DialogHeader>
-          <DialogTitle>Add new goal</DialogTitle>
+          <DialogTitle>
+            <Trans>Add new goal</Trans>
+          </DialogTitle>
           <DialogDescription>
-            Set up your new goal. You can always edit it later.
+            <Trans>Set up your new goal. You can always edit it later.</Trans>
           </DialogDescription>
         </DialogHeader>
         <GoalForm
           form={form}
           labelClassName="text-right"
-          errorClassName='col-span-3 col-start-2'
+          errorClassName="col-span-3 col-start-2"
           collapseOptionalFields
         />
         <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
@@ -176,7 +180,7 @@ function NewGoalDialog() {
                   {isSubmitting && (
                     <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
                   )}
-                  Create goal
+                  <Trans>Create goal</Trans>
                 </Button>
               </div>
             )}

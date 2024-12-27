@@ -1,6 +1,7 @@
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 
 import { useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useStatus } from '@powersync/react';
 import { format, isToday } from 'date-fns';
 import {
@@ -35,9 +36,11 @@ const ConnectionErrorComponent = ({
   if (!isOnline) {
     return (
       <div className="space-y-2">
-        <h4 className="font-medium leading-none">Sync is off</h4>
+        <h4 className="font-medium leading-none">
+          <Trans>Sync is off</Trans>
+        </h4>
         <p className="text-muted-foreground text-sm">
-          Check your internet connection and try again.
+          <Trans>Check your internet connection and try again.</Trans>
         </p>
       </div>
     );
@@ -50,12 +53,16 @@ const ConnectionErrorComponent = ({
           <h4 className="font-medium leading-none">Sync is off</h4>
           {isSyncEnabledUser ? (
             <div className="text-muted-foreground text-sm">
-              <p>Your session has expired.</p>
-              <p>Sign in again to sync your data.</p>
+              <p>
+                <Trans>Your session has expired.</Trans>
+              </p>
+              <p>
+                <Trans>Sign in again to sync your data.</Trans>
+              </p>
             </div>
           ) : (
             <p className="text-muted-foreground text-sm">
-              Sign in to sync your data.
+              <Trans>Sign in to sync your data.</Trans>
             </p>
           )}
         </div>
@@ -68,9 +75,13 @@ const ConnectionErrorComponent = ({
   if (!isSyncConnected) {
     return (
       <div className="space-y-2">
-        <h4 className="font-medium leading-none">Sync is off</h4>
+        <h4 className="font-medium leading-none">
+          <Trans>Sync is off</Trans>
+        </h4>
         <p className="text-muted-foreground text-sm">
-          Could not connect with the sync service. Try again later.
+          <Trans>
+            Could not connect with the sync service. Try again later.
+          </Trans>
         </p>
       </div>
     );
@@ -78,6 +89,7 @@ const ConnectionErrorComponent = ({
 };
 
 function StatusMenu() {
+  const { t } = useLingui();
   const {
     connected: isSyncConnected,
     dataFlowStatus: { downloading, uploading },
@@ -111,7 +123,7 @@ function StatusMenu() {
         {isSyncing && (
           <div
             className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
-            aria-label="Syncing"
+            aria-label={t`Syncing`}
           >
             <RefreshCcwIcon
               size={18}
@@ -130,14 +142,17 @@ function StatusMenu() {
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
+            {/* FIXME: Increase the width so that Korean text fits */}
             <PopoverContent className="w-[121px]" sideOffset={5}>
               <div className="space-y-2">
                 <h3 className="text-pretty font-medium leading-none">
-                  Your data is synced!
+                  <Trans>Your data is synced!</Trans>
                 </h3>
                 {lastSyncedAt && (
                   <div className="text-muted-foreground">
-                    <p className="text-sm">Last synced: </p>
+                    <p className="text-sm">
+                      <Trans>Last synced:</Trans>{' '}
+                    </p>
                     <p className="text-xs">{format(lastSyncedAt, 'p')} </p>
                     {!isToday(lastSyncedAt) && (
                       <p className="text-xs">{format(lastSyncedAt, 'P')}</p>
@@ -153,7 +168,7 @@ function StatusMenu() {
               <Button
                 size="icon-sm"
                 variant="ghost"
-                aria-label="Check sync error or sign in"
+                aria-label={t`Check sync error or sign in`}
               >
                 <CloudOffIcon size={18} />
               </Button>
@@ -169,7 +184,7 @@ function StatusMenu() {
                 isSyncEnabledUser={Boolean(user?.useSync)}
                 onSignInCallback={({ name: userName }) => {
                   setOpen(false);
-                  userName && toast.success(`Welcome back, ${userName}!`);
+                  userName && toast.success(t`Welcome back, ${userName}!`);
                 }}
               />
             </PopoverContent>
@@ -184,8 +199,8 @@ function StatusMenu() {
             </PopoverTrigger>
             <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
               <div className="space-y-2 pb-4">
-                <h3 className="text-balance font-medium leading-none">
-                  Hello, {user?.name}!
+                <h3 className="text-pretty font-medium leading-none">
+                  <Trans>Hello, {user?.name}!</Trans>
                 </h3>
               </div>
               <SignOutButton />

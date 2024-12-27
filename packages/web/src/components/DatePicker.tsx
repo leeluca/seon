@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { cn } from '~/utils';
+import { Trans } from '@lingui/macro';
 
 const DATE_DISTANCE_NAMES: { [key: number]: string } = {
   0: 'Today',
@@ -113,7 +114,7 @@ export const DatePicker = React.forwardRef(
               (useRelativeDistance && getPresetRelativeDateText(date)) ||
               formatDate(date, 'PP')
             ) : (
-              <span>Pick a date</span>
+              <span><Trans>Pick a date</Trans></span>
             )}
           </Button>
         </PopoverTrigger>

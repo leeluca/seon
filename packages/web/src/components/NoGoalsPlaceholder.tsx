@@ -1,3 +1,5 @@
+import { Trans } from '@lingui/react/macro';
+
 import { CDN_URL } from '~/constants';
 
 const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
@@ -22,8 +24,12 @@ const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
       // eslint-disable-next-line react/no-unknown-property
       fetchpriority="high"
     />
-    <h4 className="mb-2 text-3xl">There are no goals</h4>
-    <p className="text-muted-foreground text-center">Create your first goal!</p>
+    <h4 className="mb-2 text-3xl">
+      <Trans>There are no goals</Trans>
+    </h4>
+    <p className="text-muted-foreground text-center">
+      <Trans>Create your first goal!</Trans>
+    </p>
   </div>
 );
 

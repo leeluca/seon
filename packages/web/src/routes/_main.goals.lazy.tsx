@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { useQuery, useStatus } from '@powersync/react';
 import {
   createLazyFileRoute,
@@ -50,7 +51,7 @@ function Goals() {
           to="/goals/new"
           className={buttonVariants({ variant: 'default', size: 'default' })}
         >
-          New Goal
+          <Trans>New Goal</Trans>
         </Link>
       </div>
       <main

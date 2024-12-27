@@ -1,3 +1,4 @@
+import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { Link } from '@tanstack/react-router';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
@@ -20,6 +21,7 @@ interface SignInFormProps {
 }
 function SignInForm({ onSignInCallback }: SignInFormProps) {
   const isOnline = useIsOnline();
+  const { t } = useLingui();
 
   const { trigger: postSignIn, error } = usePostSignIn({
     onSuccess: (data) => {
@@ -63,7 +65,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
       }}
     >
       <FormItem
-        label="Email"
+        label={t`Email`}
         labelFor="email"
         className="grid-cols-3"
         labelClassName="text-start"
@@ -73,7 +75,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           name="email"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Email is required';
+              if (!value.trim()) return t`Email is required`;
             },
             onBlur: ({ value }) => {
               if (!value.trim()) return undefined;
@@ -108,7 +110,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         </form.Field>
       </FormItem>
       <FormItem
-        label="Password"
+        label={t`Password`}
         labelFor="password"
         className="grid-cols-3"
         labelClassName="text-start"
@@ -118,7 +120,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           name="password"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return 'Password is required';
+              if (!value.trim()) return t`Password is required`;
             },
           }}
         >
@@ -131,7 +133,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
               <FormError.Wrapper
                 errors={[
                   ...errors,
-                  error?.status === 401 && 'Invalid credentials',
+                  error?.status === 401 && t`Invalid credentials`,
                 ].filter(Boolean)}
                 errorClassName="col-span-2 col-start-2"
               >
@@ -156,8 +158,12 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           icon={<CircleAlertIcon size={18} />}
           className="-mb-1 mt-3"
         >
-          <AlertTitle>It looks like you are not connected!</AlertTitle>
-          <AlertDescription>Sign in will not work. </AlertDescription>
+          <AlertTitle>
+            <Trans>It looks like you are offline!</Trans>
+          </AlertTitle>
+          <AlertDescription>
+            <Trans>Sign in will not work.</Trans>
+          </AlertDescription>
         </Alert>
       )}
       <form.Subscribe
@@ -182,7 +188,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 {isSubmitting && (
                   <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
                 )}
-                Sign In
+                <Trans>Sign In</Trans>
               </Button>
             </div>
             <Link
@@ -190,7 +196,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
               className="text-muted-foreground text-sm"
               preload="intent"
             >
-              Create account
+              <Trans>Create account</Trans>
             </Link>
           </div>
         )}

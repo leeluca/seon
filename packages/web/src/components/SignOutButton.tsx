@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { usePowerSync } from '@powersync/react';
 
 import usePostSignOut from '~/apis/hooks/usePostSignOut';
-import { cn } from '~/utils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,20 +46,30 @@ function SignOutButton() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="mb-3 text-xl">
-              Unsynced data will be lost
+              <Trans>Unsynced data will be lost</Trans>
             </AlertDialogTitle>
             <AlertDialogDescription>
-              <p>Your most recent changes have not been synced yet.</p>
-              <p> If you sign out now, this data will be permanently lost.</p>
+              <p>
+                <Trans>
+                  Your most recent changes have not been synced yet.
+                </Trans>
+              </p>
+              <p>
+                <Trans>
+                  If you sign out now, this data will be permanently lost!
+                </Trans>
+              </p>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>
+              <Trans>Cancel</Trans>
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => void signOut()}
               className={buttonVariants({ variant: 'destructive' })}
             >
-              Sign out
+              <Trans>Sign out</Trans>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
