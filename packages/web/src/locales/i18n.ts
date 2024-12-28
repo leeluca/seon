@@ -4,17 +4,14 @@ import { i18n } from '@lingui/core';
 import { fromNavigator, multipleDetect } from '@lingui/detect-locale';
 import { setDefaultOptions } from 'date-fns';
 
-export const locales = {
-  en: 'English',
-  ko: '한국어',
-};
+import { LOCALES } from '~/constants/locales';
 
 const DEFAULT_FALLBACK = 'en';
 export const defaultLocale = multipleDetect(fromNavigator(), DEFAULT_FALLBACK)
   .map((locale) => locale.split('-')[0])
-  .find((locale) => locale in locales) as keyof typeof locales;
+  .find((locale) => locale in LOCALES) as keyof typeof LOCALES;
 
-export async function dynamicallyImportLocale(locale: keyof typeof locales) {
+export async function dynamicallyImportLocale(locale: keyof typeof LOCALES) {
   const dateFnslocaleMap = {
     en: async () => (await import('date-fns/locale/en-US')).enUS,
     ko: async () => (await import('date-fns/locale/ko')).ko,
