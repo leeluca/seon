@@ -146,6 +146,7 @@ export default function GoalCard({
 }: Database['goal']) {
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef(null);
 
   // FIXME: use a join query instead?
   const { value: entriesSum, isLoading: isLoadingEntries } =
@@ -161,7 +162,7 @@ export default function GoalCard({
   const isCompleted = currentValue >= target;
 
   const {
-    icon,
+    icon: progressIcon,
     message: progressMessage,
     progressStatus,
   } = useMemo(
@@ -231,21 +232,30 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
-            // FIXME: Tooltip doesnt show on touch devices
             <Tooltip>
               <TooltipTrigger asChild>
-                <p
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
                   className={cn(
                     'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
                     {
                       'text-[22px]': progressStatus === 'complete',
                     },
                   )}
+                  ref={triggerRef}
+                  onClick={(e) => e.preventDefault()}
                 >
-                  {icon}
-                </p>
+                  {progressIcon}
+                </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
+              <TooltipContent
+                side="bottom"
+                onPointerDownOutside={(event) => {
+                  if (event.target === triggerRef.current)
+                    event.preventDefault();
+                }}
+              >
                 <p>{progressMessage}</p>
               </TooltipContent>
             </Tooltip>
