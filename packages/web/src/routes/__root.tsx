@@ -47,7 +47,7 @@ function Root() {
             <Outlet />
           </OnlineStatusProvider>
           <Suspense>
-            <TanStackRouterDevtools />
+            <TanStackRouterDevtools position="bottom-right" />
           </Suspense>
         </TooltipProvider>
       </I18nProvider>

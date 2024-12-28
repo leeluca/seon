@@ -1,5 +1,7 @@
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
+import { GlobeIcon } from 'lucide-react';
 
+import LanguageSelector from '~/components/LanguageSelector';
 import AppStatusMenu from '~/components/StatusMenu';
 
 export const Route = createLazyFileRoute('/_main')({
@@ -19,6 +21,9 @@ function Dashboard() {
         <div className="m-auto max-w-screen-2xl">
           <Outlet />
         </div>
+      </div>
+      <div className="mb-1 px-6 py-4 xl:p-8">
+        <LanguageSelector />
       </div>
     </div>
   );
