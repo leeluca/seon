@@ -203,10 +203,7 @@ export default function GoalCard({
       // transition={{ ease: 'easeInOut' }}
       ref={cardRef}
     >
-      <CardHeader
-        className="p-4"
-        onPointerDownCapture={(e) => e.stopPropagation()}
-      >
+      <CardHeader className="p-4">
         <div className="flex h-16 items-center">
           <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
             {title}

@@ -77,13 +77,11 @@ const CalendarHeatmap = ({
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-2 ml-2 flex w-full content-center justify-start">
-        <p className="text-xs font-medium">
-          {startMonth === endMonth
-            ? format(days[0], 'MMMM')
-            : `${startMonth} • ${endMonth}`}
-        </p>
-      </div>
+      <p className="mb-2 ml-2 self-start text-xs font-medium">
+        {startMonth === endMonth
+          ? format(days[0], 'MMMM')
+          : `${startMonth} • ${endMonth}`}
+      </p>
       <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-2">
         <Button
           variant="secondary"
@@ -117,6 +115,7 @@ const CalendarHeatmap = ({
                       'cursor-not-allowed': isBlocked,
                     })}
                     disabled={isBlocked}
+                    aria-label={`Add entry for ${format(day, 'd')}`}
                     // size="sm"
                     onClick={(e) => {
                       popoverAnchorRef.current = e.currentTarget;
@@ -130,7 +129,11 @@ const CalendarHeatmap = ({
                   </Button>
                 </TooltipTrigger>
                 {savedEntry && (
-                  <TooltipContent>
+                  <TooltipContent
+                    onPointerDownOutside={(e) => {
+                      e.preventDefault();
+                    }}
+                  >
                     <p>{savedEntry.value}</p>
                   </TooltipContent>
                 )}
