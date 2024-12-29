@@ -15,15 +15,41 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover';
 import { LOCALES } from '~/constants/locales';
-import { dynamicallyImportLocale } from '~/locales/i18n';
+import db from '~/lib/database';
+import { IPreferences, usePreferences, useUser } from '~/states/userContext';
 import { cn } from '~/utils/';
+
+interface UpdateUserLanguageArgs {
+  userId: string;
+  currentPreferences: IPreferences;
+  updatedLanguage: keyof typeof LOCALES;
+}
+
+async function updateUserLanguage({
+  userId,
+  currentPreferences,
+  updatedLanguage,
+}: UpdateUserLanguageArgs) {
+  await db
+    .updateTable('user')
+    .set({
+      preferences: JSON.stringify({
+        ...currentPreferences,
+        language: updatedLanguage,
+      }),
+    })
+    .where('id', '=', userId)
+    .execute();
+}
 
 export default function LanguageSelector() {
   const {
     i18n: { locale },
-  } = useLingui();
+  } = useLingui() as { i18n: { locale: keyof typeof LOCALES } };
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(locale);
+  const user = useUser();
+  const { preferences, setPreferences } = usePreferences();
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -35,7 +61,7 @@ export default function LanguageSelector() {
           className="-ml-2 justify-between p-2"
         >
           <GlobeIcon size={18} className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-          <p>{LOCALES[locale as keyof typeof LOCALES]}</p>
+          <p>{LOCALES[locale]}</p>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
@@ -46,8 +72,19 @@ export default function LanguageSelector() {
                 <CommandItem
                   value={key}
                   onSelect={() => {
-                    setValue(key);
-                    void dynamicallyImportLocale(key as keyof typeof LOCALES);
+                    // FIXME: remove type assertion and validate on runtime
+                    setValue(key as keyof typeof LOCALES);
+                    user &&
+                      void updateUserLanguage({
+                        userId: user.id,
+                        currentPreferences: preferences || {},
+                        updatedLanguage: key as keyof typeof LOCALES,
+                      });
+                    setPreferences((prev) => ({
+                      ...prev,
+                      language: key as keyof typeof LOCALES,
+                    }));
+
                     setOpen(false);
                   }}
                 >

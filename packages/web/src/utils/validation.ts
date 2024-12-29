@@ -1,4 +1,5 @@
 import type { Updater } from '@tanstack/react-form';
+import type { IPreferences } from '~/states/userContext';
 
 import { MAX_INPUT_NUMBER } from '~/constants';
 
@@ -47,5 +48,16 @@ export const emailValidator = (value: string) => {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!EMAIL_REGEX.test(value)) {
     return 'Invalid email address';
+  }
+};
+
+// FIXME: validate type on runtime
+export const parseUserPreferences = (preferences?: string | null) => {
+  try {
+    if (!preferences) return undefined;
+    const userPreferences = JSON.parse(preferences) as IPreferences;
+    return userPreferences;
+  } catch {
+    return undefined;
   }
 };

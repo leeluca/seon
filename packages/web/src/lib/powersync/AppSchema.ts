@@ -28,6 +28,7 @@ const user = new Table(
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
     useSync: column.boolean,
+    preferences: column.optionalText,
   },
   { indexes: {} },
 );

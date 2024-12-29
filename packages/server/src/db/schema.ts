@@ -3,6 +3,7 @@ import {
   boolean,
   foreignKey,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
   serial,
@@ -36,6 +37,9 @@ export const user = pgTable(
       .notNull(),
     status: userStatus('status').default('PENDING').notNull(),
     useSync: boolean('useSync'),
+    preferences: jsonb().$type<{
+      language?: 'en' | 'ko';
+    }>(),
   },
   (table) => {
     return {
@@ -156,7 +160,10 @@ export const refreshToken = pgTable(
     id: serial('id').primaryKey().notNull(),
     token: text('token').unique().notNull(),
     userId: uuid('userId').notNull(),
-    expiration: timestamp('expiration', { precision: 3, mode: 'date' }).notNull(),
+    expiration: timestamp('expiration', {
+      precision: 3,
+      mode: 'date',
+    }).notNull(),
     createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
       .defaultNow()
       .notNull(),

@@ -10,6 +10,7 @@ import { TooltipProvider } from '~/components/ui/tooltip';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import SyncProvider from '~/states/syncContext';
+import { usePreferences } from '~/states/userContext';
 
 interface RouterContext {
   user: ReturnType<typeof useUser>;
@@ -29,9 +30,10 @@ const TanStackRouterDevtools =
     : () => null;
 
 function Root() {
+  const { preferences } = usePreferences();
   useEffect(() => {
-    void dynamicallyImportLocale(defaultLocale);
-  }, []);
+    void dynamicallyImportLocale(preferences?.language ?? defaultLocale);
+  }, [preferences]);
 
   return (
     <SyncProvider>
