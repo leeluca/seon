@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/routes/index.lazy.tsx:45
+msgid "🚧 Seon Goals 🚧"
+msgstr ""
+
 #: src/routes/_main.goals.new.tsx:148
 msgid "Add new goal"
 msgstr "Add new goal"
@@ -21,7 +25,7 @@ msgstr "Add new goal"
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
-#: src/routes/index.lazy.tsx:59
+#: src/routes/index.lazy.tsx:62
 msgid "Already a user?"
 msgstr "Already a user?"
 
@@ -42,7 +46,7 @@ msgstr "Cancel"
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
-#: src/components/StatusMenu.tsx:171
+#: src/components/StatusMenu.tsx:173
 msgid "Check sync error or sign in"
 msgstr "Check sync error or sign in"
 
@@ -54,7 +58,7 @@ msgstr "Check your internet connection and try again."
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
-#: src/components/StatusMenu.tsx:82
+#: src/components/StatusMenu.tsx:84
 msgid "Could not connect with the sync service. Try again later."
 msgstr "Could not connect with the sync service. Try again later."
 
@@ -66,7 +70,7 @@ msgstr "Create account"
 msgid "Create goal"
 msgstr "Create goal"
 
-#: src/components/NoGoalsPlaceholder.tsx:31
+#: src/components/NoGoalsPlaceholder.tsx:40
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
@@ -99,6 +103,7 @@ msgstr "Edit goal"
 msgid "eg. 'Learn 1000 French words'"
 msgstr "eg. 'Learn 1000 French words'"
 
+#: src/components/SignUpForm.tsx:139
 #: src/components/SignInForm.tsx:68
 msgid "Email"
 msgstr "Email"
@@ -116,12 +121,12 @@ msgstr "Failed to add goal"
 msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
-#: src/routes/index.lazy.tsx:47
+#: src/routes/index.lazy.tsx:50
 msgid "First time?"
 msgstr "First time?"
 
-#: src/routes/signup.lazy.tsx:20
-#: src/routes/signin.lazy.tsx:21
+#: src/routes/signup.lazy.tsx:21
+#: src/routes/signin.lazy.tsx:22
 msgid "Go back"
 msgstr "Go back"
 
@@ -131,7 +136,7 @@ msgid "Goal name"
 msgstr "Goal name"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:203
+#: src/components/StatusMenu.tsx:205
 msgid "Hello, {0}!"
 msgstr "Hello, {0}!"
 
@@ -159,7 +164,7 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
-#: src/components/StatusMenu.tsx:154
+#: src/components/StatusMenu.tsx:156
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -174,6 +179,7 @@ msgstr "Last updated at: {0}"
 msgid "Missing required fields"
 msgstr "Missing required fields"
 
+#: src/components/SignUpForm.tsx:95
 #: src/components/SignUpForm.tsx:109
 msgid "Name"
 msgstr "Name"
@@ -182,7 +188,7 @@ msgstr "Name"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main.goals.lazy.tsx:54
+#: src/routes/_main.goals.lazy.tsx:61
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -190,6 +196,7 @@ msgstr "New Goal"
 msgid "Numbers only"
 msgstr "Numbers only"
 
+#: src/components/SignUpForm.tsx:185
 #: src/components/SignInForm.tsx:113
 msgid "Password"
 msgstr "Password"
@@ -220,17 +227,17 @@ msgstr "Set up your new goal. You can always edit it later."
 msgid "Show extra options"
 msgstr "Show extra options"
 
-#: src/routes/signin.lazy.tsx:27
-#: src/routes/index.lazy.tsx:66
+#: src/routes/signin.lazy.tsx:28
+#: src/routes/index.lazy.tsx:69
 #: src/components/SignInForm.tsx:191
 msgid "Sign In"
 msgstr "Sign In"
 
-#: src/components/StatusMenu.tsx:60
+#: src/components/StatusMenu.tsx:62
 msgid "Sign in again to sync your data."
 msgstr "Sign in again to sync your data."
 
-#: src/components/StatusMenu.tsx:65
+#: src/components/StatusMenu.tsx:67
 msgid "Sign in to sync your data."
 msgstr "Sign in to sync your data."
 
@@ -242,7 +249,7 @@ msgstr "Sign in will not work."
 msgid "Sign out"
 msgstr "Sign out"
 
-#: src/routes/signup.lazy.tsx:26
+#: src/routes/signup.lazy.tsx:27
 #: src/components/SignUpForm.tsx:265
 msgid "Sign Up"
 msgstr "Sign Up"
@@ -255,7 +262,7 @@ msgstr "Sign up will not work."
 msgid "Start date"
 msgstr "Start date"
 
-#: src/routes/index.lazy.tsx:54
+#: src/routes/index.lazy.tsx:57
 msgid "Start New"
 msgstr "Start New"
 
@@ -268,13 +275,18 @@ msgid "Sucessfully updated goal"
 msgstr "Sucessfully updated goal"
 
 #: src/components/StatusMenu.tsx:40
-#: src/components/StatusMenu.tsx:79
+#: src/components/StatusMenu.tsx:54
+#: src/components/StatusMenu.tsx:81
 msgid "Sync is off"
 msgstr "Sync is off"
 
-#: src/components/StatusMenu.tsx:126
+#: src/components/StatusMenu.tsx:128
 msgid "Syncing"
 msgstr "Syncing"
+
+#: src/routes/_main.goals.lazy.tsx:38
+msgid "Syncing your goals..."
+msgstr "Syncing your goals..."
 
 #: src/components/GoalForm.tsx:155
 msgid "Target date"
@@ -288,9 +300,9 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
-#: src/components/NoGoalsPlaceholder.tsx:28
-msgid "There are no goals"
-msgstr "There are no goals"
+#: src/components/NoGoalsPlaceholder.tsx:37
+msgid "There are no goals."
+msgstr "There are no goals."
 
 #: src/components/GoalCard.tsx:303
 msgid "Toggle goal details"
@@ -310,11 +322,11 @@ msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
 
 #. placeholder {0}: user.name
-#: src/routes/signin.lazy.tsx:32
+#: src/routes/signin.lazy.tsx:33
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:187
+#: src/components/StatusMenu.tsx:189
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -323,7 +335,7 @@ msgstr "Welcome back, {userName}!"
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
-#: src/components/StatusMenu.tsx:149
+#: src/components/StatusMenu.tsx:151
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 
@@ -335,6 +347,6 @@ msgstr "Your most recent changes have not been synced yet."
 msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 
-#: src/components/StatusMenu.tsx:57
+#: src/components/StatusMenu.tsx:59
 msgid "Your session has expired."
 msgstr "Your session has expired."

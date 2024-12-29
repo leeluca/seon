@@ -50,7 +50,9 @@ const ConnectionErrorComponent = ({
     return (
       <>
         <div className="space-y-2 pb-4">
-          <h4 className="font-medium leading-none">Sync is off</h4>
+          <h4 className="font-medium leading-none">
+            <Trans>Sync is off</Trans>
+          </h4>
           {isSyncEnabledUser ? (
             <div className="text-muted-foreground text-sm">
               <p>
