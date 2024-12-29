@@ -74,6 +74,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<IUserContext | undefined>(existingUser);
   const { data: authStatus, isLoading, isError, error } = useAuthStatus(user);
   // TODO: add default preferences object on user creation
+  // FIXME: needs to update automatically
   const [preferences, setPreferences] = useState<IPreferences | undefined>(
     parseUserPreferences(existingUser?.preferences),
   );

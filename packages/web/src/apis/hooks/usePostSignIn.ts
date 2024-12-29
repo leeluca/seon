@@ -5,7 +5,12 @@ import useSWRMutation from 'swr/mutation';
 
 import db from '~/lib/database';
 import { Database } from '~/lib/powersync/AppSchema';
-import { useUser, useUserAction } from '~/states/userContext';
+import {
+  IPreferences,
+  usePreferences,
+  useUser,
+  useUserAction,
+} from '~/states/userContext';
 import { APIError } from '~/utils/errors';
 import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
@@ -27,6 +32,7 @@ export interface PostSignInResponse {
     useSync: true;
     createdAt: string;
     updatedAt: string;
+    preferences?: IPreferences;
   };
 }
 
@@ -74,6 +80,7 @@ const updateLocalDataUserId = async ({
   // Clear the upload queue
   await powerSync.execute('DELETE FROM ps_crud');
 
+  // Insert the updated goals and entries (these will be included in the upload queue)
   await db.transaction().execute(async (tx) => {
     if (updatedGoals.length) {
       await tx.executeQuery(db.insertInto('goal').values(updatedGoals));
@@ -83,7 +90,6 @@ const updateLocalDataUserId = async ({
     }
   });
 
-  // Insert the updated goals and entries (these will be included in the upload queue)
   updateUserState();
 };
 
@@ -94,6 +100,7 @@ interface usePostSignInProps {
 const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
   const setUser = useUserAction();
   const localUser = useUser();
+  const { setPreferences } = usePreferences();
   const powerSync = usePowerSync();
 
   return useSWRMutation<
@@ -112,11 +119,15 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
       onSuccess: (data) => {
         data.result && void mutate(AUTH_STATUS_KEY);
 
-        const updateUserState = () =>
+        // FIXME: refactor needed
+        const updateUserState = () => {
           setUser({
             ...data.user,
             useSync: Number(data.user.useSync),
+            preferences: JSON.stringify(data.user.preferences || {}),
           });
+          setPreferences(data.user.preferences || undefined);
+        };
 
         if (localUser && localUser.id !== data.user.id) {
           void updateLocalDataUserId({
@@ -125,6 +136,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
             user: {
               ...data.user,
               useSync: Number(data.user.useSync),
+              preferences: JSON.stringify(data.user.preferences || {}),
             },
             updateUserState,
             powerSync,

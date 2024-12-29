@@ -58,6 +58,7 @@ export const parseUserPreferences = (preferences?: string | null) => {
     const userPreferences = JSON.parse(preferences) as IPreferences;
     return userPreferences;
   } catch {
+    console.error('Invalid user preferences');
     return undefined;
   }
 };
