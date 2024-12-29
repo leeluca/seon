@@ -26,11 +26,11 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
   const [powerSync] = useState(powerSyncDb);
 
   const user = useUser();
-  const { isSignedIn } = useAuthContext();
+  const { isSignedIn, isError, isLoading } = useAuthContext();
+  const isSignInVerified = isSignedIn && !isLoading && !isError;
 
   useEffect(() => {
-    if (!user?.useSync || !isSignedIn) return;
-
+    if (!user?.useSync || !isSignInVerified) return;
     // eslint-disable-next-line react-hooks/rules-of-hooks
     Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
@@ -54,7 +54,7 @@ const SyncProvider = ({ children }: { children: React.ReactNode }) => {
     });
     initializeConnector();
     return () => listener();
-  }, [powerSync, connector, user, isSignedIn]);
+  }, [powerSync, connector, user, isSignInVerified]);
 
   const connectorValue = React.useMemo(
     () => ({
