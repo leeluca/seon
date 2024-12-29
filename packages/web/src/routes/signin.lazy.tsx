@@ -3,6 +3,7 @@ import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowBigLeftIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
+import LanguageSelector from '~/components/LanguageSelector';
 import SignInForm from '~/components/SignInForm';
 import { buttonVariants } from '~/components/ui/button';
 
@@ -32,6 +33,9 @@ function SignIn() {
             toast.success(t`Welcome back, ${user.name}!`);
           }}
         />
+      </div>
+      <div className="absolute bottom-0 mb-1 px-6 py-4 xl:p-8">
+        <LanguageSelector />
       </div>
     </div>
   );

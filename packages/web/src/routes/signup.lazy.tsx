@@ -2,6 +2,7 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowBigLeftIcon } from 'lucide-react';
 
+import LanguageSelector from '~/components/LanguageSelector';
 import SignUpForm from '~/components/SignUpForm';
 import { buttonVariants } from '~/components/ui/button';
 
@@ -26,6 +27,9 @@ function SignUp() {
           <Trans>Sign Up</Trans>
         </h1>
         <SignUpForm onSignUpCallback={() => void navigate({ to: '/' })} />
+      </div>
+      <div className="absolute bottom-0 mb-1 px-6 py-4 xl:p-8">
+        <LanguageSelector />
       </div>
     </div>
   );

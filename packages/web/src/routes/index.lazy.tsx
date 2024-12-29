@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 
+import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUser, useUserAction } from '~/states/userContext';
@@ -40,7 +41,9 @@ function Index() {
     <div>
       <div className="mb-10 mt-4 px-6 py-4 xl:p-8">
         <div className="m-auto flex max-w-screen-xl flex-col items-center">
-          <h1 className="mb-16 text-3xl">🚧 Seon Goals 🚧</h1>
+          <h1 className="mb-16 text-3xl">
+            <Trans>🚧 Seon Goals 🚧</Trans>
+          </h1>
           <div className="flex items-end gap-8">
             <div>
               <h5 className="mb-1 text-sm font-medium">
@@ -68,6 +71,9 @@ function Index() {
             </div>
           </div>
         </div>
+      </div>
+      <div className="absolute bottom-0 mb-1 px-6 py-4 xl:p-8">
+        <LanguageSelector />
       </div>
     </div>
   );
