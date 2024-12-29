@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useLingui } from '@lingui/react';
 import { CheckIcon, GlobeIcon } from 'lucide-react';
 
@@ -19,11 +19,11 @@ import { dynamicallyImportLocale } from '~/locales/i18n';
 import { cn } from '~/utils/';
 
 export default function LanguageSelector() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('kor');
   const {
     i18n: { locale },
   } = useLingui();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(locale);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

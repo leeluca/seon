@@ -1,6 +1,6 @@
 import type { LinguiConfig } from '@lingui/conf';
 
-import { LOCALES } from '~/constants/locales';
+import { LOCALES } from './src/constants/locales';
 
 const config: LinguiConfig = {
   locales: Object.keys(LOCALES),

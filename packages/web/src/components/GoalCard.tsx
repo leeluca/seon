@@ -276,8 +276,10 @@ export default function GoalCard({
                 </h3>
                 <p className="text-muted-foreground text-pretty text-sm">
                   {/* FIXME: Korean translation has wrong word order */}
-                  <Trans>Are you sure you want to delete</Trans>{' '}
-                  <span className="font-bold">{title}</span>?
+                  <Trans>
+                    Are you sure you want to delete{' '}
+                    <span className="font-bold">{title}</span>?
+                  </Trans>
                 </p>
               </div>
               <div className="grid gap-4">

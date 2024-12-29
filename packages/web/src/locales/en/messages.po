@@ -27,22 +27,22 @@ msgstr "Already a user?"
 
 #: src/components/NewEntryForm.tsx:166
 msgid "Amount"
-msgstr ""
+msgstr "Amount"
 
-#: src/components/GoalCard.tsx:263
-msgid "Are you sure you want to delete"
-msgstr "Are you sure you want to delete"
+#: src/components/GoalCard.tsx:279
+msgid "Are you sure you want to delete <0>{title}</0>?"
+msgstr "Are you sure you want to delete <0>{title}</0>?"
 
 #: src/components/SignOutButton.tsx:66
 #: src/components/GoalDetailPanel.tsx:249
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: src/components/GoalDetailPanel.tsx:239
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
-#: src/components/StatusMenu.tsx:170
+#: src/components/StatusMenu.tsx:171
 msgid "Check sync error or sign in"
 msgstr "Check sync error or sign in"
 
@@ -72,18 +72,18 @@ msgstr "Create your first goal!"
 
 #: src/components/NewEntryForm.tsx:133
 msgid "Date"
-msgstr ""
+msgstr "Date"
 
-#: src/components/GoalCard.tsx:276
+#: src/components/GoalCard.tsx:294
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/GoalCard.tsx:253
-#: src/components/GoalCard.tsx:260
+#: src/components/GoalCard.tsx:267
+#: src/components/GoalCard.tsx:275
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:272
+#: src/components/GoalCard.tsx:290
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
@@ -131,7 +131,7 @@ msgid "Goal name"
 msgstr "Goal name"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:202
+#: src/components/StatusMenu.tsx:203
 msgid "Hello, {0}!"
 msgstr "Hello, {0}!"
 
@@ -159,7 +159,7 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
-#: src/components/StatusMenu.tsx:153
+#: src/components/StatusMenu.tsx:154
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -173,10 +173,6 @@ msgstr "Last updated at: {0}"
 #: src/components/GoalDetailPanel.tsx:168
 msgid "Missing required fields"
 msgstr "Missing required fields"
-
-#: src/components/GoalDetailPanel.tsx:171
-#~ msgid "Missing required fields  "
-#~ msgstr ""
 
 #: src/components/SignUpForm.tsx:109
 msgid "Name"
@@ -204,7 +200,7 @@ msgstr "Password is required"
 
 #: src/components/DatePicker.tsx:117
 msgid "Pick a date"
-msgstr ""
+msgstr "Pick a date"
 
 #: src/components/NewEntryForm.tsx:239
 #: src/components/GoalDetailPanel.tsx:260
@@ -296,7 +292,7 @@ msgstr "Target value"
 msgid "There are no goals"
 msgstr "There are no goals"
 
-#: src/components/GoalCard.tsx:285
+#: src/components/GoalCard.tsx:303
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 
@@ -318,7 +314,7 @@ msgstr "Value for goal completion (number)"
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:186
+#: src/components/StatusMenu.tsx:187
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -327,7 +323,7 @@ msgstr "Welcome back, {userName}!"
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
-#: src/components/StatusMenu.tsx:148
+#: src/components/StatusMenu.tsx:149
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 
@@ -337,7 +333,7 @@ msgstr "Your most recent changes have not been synced yet."
 
 #: src/components/GoalLineGraph.tsx:281
 msgid "Your progress graph will be shown here"
-msgstr ""
+msgstr "Your progress graph will be shown here"
 
 #: src/components/StatusMenu.tsx:57
 msgid "Your session has expired."
