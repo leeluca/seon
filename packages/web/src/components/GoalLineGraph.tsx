@@ -1,6 +1,8 @@
 import type { Database } from '~/lib/powersync/AppSchema';
 
-import { Trans } from '@lingui/macro';
+import { i18n } from '@lingui/core';
+import { t } from '@lingui/core/macro';
+import { Trans } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@powersync/react';
 import {
   closestTo,
@@ -125,11 +127,12 @@ function getGraphData({
     targetDate: targetDateObj,
     target,
   });
+  const { locale } = i18n;
 
   const labels = aggregated.map((item) => {
     if (mode === 'month') {
       return [
-        format(item.date, 'MMM, yyyy'),
+        format(item.date, locale === 'ko' ? 'MMMyy년' : 'MMM, yyyy'),
         // NOTE: display start and target dates's day
         isSameMonth(item.date, startDateObj) ||
         isSameMonth(item.date, targetDateObj)
@@ -140,7 +143,7 @@ function getGraphData({
           : '',
       ];
     }
-    return format(item.date, 'MMM, do');
+    return format(item.date, locale === 'ko' ? 'MMMdo' : 'MMM, do');
   });
 
   let runningTotal = initialValue;
@@ -162,7 +165,7 @@ function getGraphData({
       labels,
       datasets: [
         {
-          label: 'Your Progress',
+          label: t`Your Progress`,
           data: progress,
           fill: true,
           borderColor: 'rgba(54, 162, 235, 0.8)',
@@ -224,7 +227,7 @@ function getGraphData({
         },
 
         {
-          label: 'Goal Benchmark',
+          label: t`Goal Benchmark`,
           data: baselineData,
           fill: false,
           borderColor: 'rgba(255, 99, 132, 0.8)',
@@ -244,7 +247,7 @@ function getGraphData({
   // NOTE: empty dataset to show the legend
   if (lastEntryDate > targetDateObj) {
     graphData.data.datasets.push({
-      label: 'Entries after target date',
+      label: t`Entries after target date`,
       data: [],
       fill: true,
       borderColor: 'rgba(255, 205, 86, 0.8)',

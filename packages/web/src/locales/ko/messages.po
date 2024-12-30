@@ -21,9 +21,13 @@ msgstr "🚧 Seon 목표 관리 🚧"
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
-#: src/components/GoalLineGraph.tsx:285
+#: src/components/GoalLineGraph.tsx:289
 msgid "Add your first entry to start"
-msgstr "시작하려면 첫 번째 항목을 추가하세요"
+msgstr "아직 목표를 진행하지 않았습니다."
+
+#: src/components/GoalCard.tsx:78
+msgid "Ahead of schedule!"
+msgstr "예정보다 빠름"
 
 #: src/routes/index.lazy.tsx:62
 msgid "Already a user?"
@@ -33,9 +37,13 @@ msgstr "이미 계정이 있으신가요?"
 msgid "Amount"
 msgstr "개수"
 
-#: src/components/GoalCard.tsx:279
+#: src/components/GoalCard.tsx:280
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠습니까?"
+
+#: src/components/GoalCard.tsx:70
+msgid "Behind schedule!"
+msgstr "일정 지연"
 
 #: src/components/SignOutButton.tsx:66
 #: src/components/GoalDetailPanel.tsx:249
@@ -78,16 +86,16 @@ msgstr "첫 번째 목표를 만들어 보세요!"
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/GoalCard.tsx:294
+#: src/components/GoalCard.tsx:295
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/GoalCard.tsx:267
-#: src/components/GoalCard.tsx:275
+#: src/components/GoalCard.tsx:268
+#: src/components/GoalCard.tsx:276
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:290
+#: src/components/GoalCard.tsx:291
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
@@ -113,6 +121,10 @@ msgstr "이메일"
 msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
 
+#: src/components/GoalLineGraph.tsx:251
+msgid "Entries after target date"
+msgstr "목표일 이후의 기록"
+
 #: src/routes/_main.goals.new.tsx:76
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
@@ -129,6 +141,14 @@ msgstr "처음이신가요?"
 #: src/routes/signin.lazy.tsx:22
 msgid "Go back"
 msgstr "뒤로 가기"
+
+#: src/components/GoalCard.tsx:82
+msgid "Goal achieved!"
+msgstr "목표 달성!"
+
+#: src/components/GoalLineGraph.tsx:231
+msgid "Goal Benchmark"
+msgstr "목표 기준선"
 
 #: src/components/GoalForm.tsx:68
 #: src/components/GoalForm.tsx:80
@@ -208,6 +228,10 @@ msgstr "비밀번호를 입력해주세요"
 #: src/components/DatePicker.tsx:117
 msgid "Pick a date"
 msgstr "날짜 선택"
+
+#: src/components/GoalCard.tsx:74
+msgid "Right on track!"
+msgstr "진행 상황 원활"
 
 #: src/components/NewEntryForm.tsx:239
 #: src/components/GoalDetailPanel.tsx:260
@@ -304,7 +328,7 @@ msgstr "목표값"
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
 
-#: src/components/GoalCard.tsx:303
+#: src/components/GoalCard.tsx:304
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 
@@ -343,7 +367,11 @@ msgstr "데이터가 동기화되었습니다!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "최근 변경사항이 아직 동기화되지 않았습니다."
 
-#: src/components/GoalLineGraph.tsx:281
+#: src/components/GoalLineGraph.tsx:169
+msgid "Your Progress"
+msgstr "진행 상황"
+
+#: src/components/GoalLineGraph.tsx:285
 msgid "Your progress graph will be shown here"
 msgstr "여기에 진행 상황 그래프가 표시됩니다"
 

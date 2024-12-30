@@ -27,6 +27,7 @@ import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { t } from '@lingui/core/macro';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -66,19 +67,19 @@ function getProgressIconAndMessage(status: ProgressStatus) {
     case 'behind':
       return {
         icon: '😟',
-        message: 'Behind schedule!',
+        message: t`Behind schedule!`,
         progressStatus: status,
       };
     case 'onTrack':
-      return { icon: '🙂', message: 'Right on track!', progressStatus: status };
+      return { icon: '🙂', message: t`Right on track!`, progressStatus: status };
     case 'ahead':
       return {
         icon: '😎',
-        message: 'Ahead of schedule!',
+        message: t`Ahead of schedule!`,
         progressStatus: status,
       };
     case 'complete':
-      return { icon: '🥳', message: 'Goal achieved!', progressStatus: status };
+      return { icon: '🥳', message: t`Goal achieved!`, progressStatus: status };
     default:
       return { icon: '', message: '' };
   }
