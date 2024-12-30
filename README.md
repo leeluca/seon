@@ -1,14 +1,14 @@
 <div align="center">
   
-  # Seon Goals (선)
+  # Seon Goals
   
-  <p>A local-first goal management application</p>
+  <p>A local-first goal management application.<br>🚧 Under development 🚧</p>
 
 </div>
 
 ## 🎯 About
 
-Seon (선) is a local-first goal management application designed to help track and achieve your objectives. Named after the Korean word for "line" (선), it reflects both the upward trajectory shown in the progress charts and the path towards achievement, one step at a time.
+The name Seon, Korean for "line" (선), relates to the trajectory shown in the progress charts and suggests a path towards achievement, one step at a time.
 
 ## ✨ Features
 
@@ -19,11 +19,20 @@ Seon (선) is a local-first goal management application designed to help track a
 - 📊 Visual goal tracking
 - 🌐 Multi-language support (Korean and English)
 
+## 🏗 Architecture
+
+Seon implements a local-first architecture pattern using SQLite as the primary data store. All CRUD operations execute against the client SQLite instance first, which servers as the source of truth for the client application. Changes are queued for eventual (optional) replication to the backend PostgreSQL database. The database is secured with RLS (Row-Level Security) with no intermediate server between client and DB. 
+
+The backend uses a change stream mechanism to detect modifications and propagate them to relevant client, ensuring that local databases remain current while maintaining their ability to operate independently. Client's data is partitioned according to developer-defined Sync rules that determine which data subsets should be replicated to each client (intermediated by PowerSync).<br><br>
+ 
+![Architecture Diagram v2](https://github.com/user-attachments/assets/96a28bf7-45e4-46a8-933a-af3ec98e3ac7)
+<br>
+
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 20 or higher
+- Node.js 20.12.0 or higher
 - pnpm package manager
 
 ### Installation
@@ -48,9 +57,3 @@ pnpm -filter seon-web serve
 ```
 
 → Server setting instructions coming soon.
-
-## 🏗 Architecture
-
-The application is built with a local-first architecture, meaning all CRUD happens locally and data can be optionally synced. 
-
-![Architecture Diagram](https://github.com/user-attachments/assets/1f4e12d6-31eb-4ff3-b9ea-a17bcc2306e6)
