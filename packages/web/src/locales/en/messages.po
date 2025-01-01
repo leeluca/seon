@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/utils/validation.ts:43
+msgid "{fieldName} should be no longer than {max} characters."
+msgstr "{fieldName} should be no longer than {max} characters."
+
 #: src/routes/index.lazy.tsx:45
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
@@ -21,7 +25,7 @@ msgstr "🚧 Seon Goals 🚧"
 msgid "Add new goal"
 msgstr "Add new goal"
 
-#: src/components/GoalLineGraph.tsx:289
+#: src/components/GoalLineGraph.tsx:288
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
@@ -121,7 +125,7 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/components/GoalLineGraph.tsx:251
+#: src/components/GoalLineGraph.tsx:250
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
@@ -146,7 +150,7 @@ msgstr "Go back"
 msgid "Goal achieved!"
 msgstr "Goal achieved!"
 
-#: src/components/GoalLineGraph.tsx:231
+#: src/components/GoalLineGraph.tsx:230
 msgid "Goal Benchmark"
 msgstr "Goal Benchmark"
 
@@ -175,6 +179,10 @@ msgstr "Initial value"
 #: src/components/SignInForm.tsx:136
 msgid "Invalid credentials"
 msgstr "Invalid credentials"
+
+#: src/utils/validation.ts:51
+msgid "Invalid email address"
+msgstr "Invalid email address"
 
 #: src/components/SignInForm.tsx:162
 msgid "It looks like you are offline!"
@@ -269,6 +277,7 @@ msgstr "Sign in to sync your data."
 msgid "Sign in will not work."
 msgstr "Sign in will not work."
 
+#: src/components/SignOutButton.tsx:43
 #: src/components/SignOutButton.tsx:72
 msgid "Sign out"
 msgstr "Sign out"
@@ -367,11 +376,11 @@ msgstr "Your data is synced!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "Your most recent changes have not been synced yet."
 
-#: src/components/GoalLineGraph.tsx:169
+#: src/components/GoalLineGraph.tsx:168
 msgid "Your Progress"
 msgstr "Your Progress"
 
-#: src/components/GoalLineGraph.tsx:285
+#: src/components/GoalLineGraph.tsx:284
 msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 

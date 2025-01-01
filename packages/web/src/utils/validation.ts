@@ -2,6 +2,7 @@ import type { Updater } from '@tanstack/react-form';
 import type { IPreferences } from '~/states/userContext';
 
 import { MAX_INPUT_NUMBER } from '~/constants';
+import { t } from '@lingui/core/macro';
 
 export const parseInputtedNumber = (
   value: string,
@@ -39,7 +40,7 @@ export const maxLengthValidator = (
   fieldName: string,
 ) => {
   if (value.length > max) {
-    return `${fieldName} should be no longer than ${max} characters.`;
+    return t`${fieldName} should be no longer than ${max} characters.`;
   }
 };
 
@@ -47,7 +48,7 @@ export const maxLengthValidator = (
 export const emailValidator = (value: string) => {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!EMAIL_REGEX.test(value)) {
-    return 'Invalid email address';
+    return t`Invalid email address`;
   }
 };
 

@@ -199,7 +199,7 @@ function StatusMenu() {
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
+            <PopoverContent className="mr-8 w-min max-w-96" sideOffset={5}>
               <div className="space-y-2 pb-4">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>

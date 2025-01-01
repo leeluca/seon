@@ -13,6 +13,10 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/utils/validation.ts:43
+msgid "{fieldName} should be no longer than {max} characters."
+msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
+
 #: src/routes/index.lazy.tsx:45
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
@@ -21,7 +25,7 @@ msgstr "🚧 Seon 목표 관리 🚧"
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
-#: src/components/GoalLineGraph.tsx:289
+#: src/components/GoalLineGraph.tsx:288
 msgid "Add your first entry to start"
 msgstr "아직 목표를 진행하지 않았습니다."
 
@@ -121,7 +125,7 @@ msgstr "이메일"
 msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
 
-#: src/components/GoalLineGraph.tsx:251
+#: src/components/GoalLineGraph.tsx:250
 msgid "Entries after target date"
 msgstr "목표일 이후의 기록"
 
@@ -146,7 +150,7 @@ msgstr "뒤로 가기"
 msgid "Goal achieved!"
 msgstr "목표 달성!"
 
-#: src/components/GoalLineGraph.tsx:231
+#: src/components/GoalLineGraph.tsx:230
 msgid "Goal Benchmark"
 msgstr "목표 기준선"
 
@@ -175,6 +179,10 @@ msgstr "초기값"
 #: src/components/SignInForm.tsx:136
 msgid "Invalid credentials"
 msgstr "잘못된 로그인 정보입니다"
+
+#: src/utils/validation.ts:51
+msgid "Invalid email address"
+msgstr "유효하지 않은 이메일 주소입니다"
 
 #: src/components/SignInForm.tsx:162
 msgid "It looks like you are offline!"
@@ -269,6 +277,7 @@ msgstr "데이터 동기화를 위해 로그인해 주세요."
 msgid "Sign in will not work."
 msgstr "로그인을 할 수 없습니다."
 
+#: src/components/SignOutButton.tsx:43
 #: src/components/SignOutButton.tsx:72
 msgid "Sign out"
 msgstr "로그아웃"
@@ -367,11 +376,11 @@ msgstr "데이터가 동기화되었습니다!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "최근 변경사항이 아직 동기화되지 않았습니다."
 
-#: src/components/GoalLineGraph.tsx:169
+#: src/components/GoalLineGraph.tsx:168
 msgid "Your Progress"
 msgstr "진행 상황"
 
-#: src/components/GoalLineGraph.tsx:285
+#: src/components/GoalLineGraph.tsx:284
 msgid "Your progress graph will be shown here"
 msgstr "여기에 진행 상황 그래프가 표시됩니다"
 
