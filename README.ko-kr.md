@@ -9,11 +9,11 @@
 
 </div>
 
-## 🎯 소개
+## 소개
 
 Seon(선)이라는 이름은 '선(線)'을 뜻하며, 진행 차트에 표시되는 궤적과 한 걸음씩 목표를 향해 나아가는 길, 두 가지의 의미를 담고 있습니다.
 
-## ✨ 주요 기능
+## 주요 기능
 
 - 📱 프로그레시브 웹 앱 (PWA) - 모바일과 데스크톱 지원
 - 💾 로컬 우선 아키텍처 - 서버 없이 완전한 오프라인 작동
@@ -22,7 +22,7 @@ Seon(선)이라는 이름은 '선(線)'을 뜻하며, 진행 차트에 표시되
 - 📊 시각적 목표 추적
 - 🌐 다국어 지원 (한국어, 영어)
 
-## 🏗 아키텍처
+## 아키텍처
 
 Seon은 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 아키텍처로 개발되었습니다. 모든 CRUD 작업은 먼저 클라이언트 SQLite 인스턴스에서 실행되며, 이는 클라이언트 애플리케이션의 진실 공급원 역할을 합니다. 변경 사항은 백엔드 PostgreSQL 데이터베이스와의 선택적 복제를 위해 대기열에 추가됩니다. 데이터베이스는 클라이언트와 DB 사이에 중간 서버 없이 RLS(Row-Level Security)로 보호됩니다.
 
@@ -31,7 +31,40 @@ Seon은 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 아키�
 ![Architecture Diagram](https://github.com/user-attachments/assets/94693c6d-df97-456f-861a-de76a2a8c1a2)
 <br>
 
-## 🚀 시작하기
+## 기술 스택
+
+<table>
+<tr>
+  <td><b>프론트엔드</b></td>
+  <td><b>백엔드</b></td>
+  <td><b>동기화</b></td>
+</tr>
+<tr valign="top">
+  <td>
+    • React + Vite<br>
+    • TypeScript<br>
+    • Tanstack Router<br>
+    • TailwindCSS<br>
+    • Radix UI<br>
+    • Chart.js<br>
+    • SQLite (wa-sqlite)<br>
+    • Vite PWA<br>
+    • Lingui (다국어)
+  </td>
+  <td>
+    • Hono<br>
+    • PostgreSQL<br>
+    • Drizzle ORM<br>
+    • jose (인증)
+  </td>
+  <td>
+    • PowerSync<br>
+    • Supabase SDK
+  </td>
+</tr>
+</table>
+
+## 시작하기
 
 ### 필수 조건
 
