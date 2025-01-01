@@ -147,7 +147,6 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
-                      {/* FIXME: only values between goal start and end dates should be selectable  */}
                       <DatePicker
                         id="entry-date"
                         defaultDate={value}

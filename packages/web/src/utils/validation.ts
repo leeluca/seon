@@ -1,8 +1,9 @@
 import type { Updater } from '@tanstack/react-form';
 import type { IPreferences } from '~/states/userContext';
 
-import { MAX_INPUT_NUMBER } from '~/constants';
 import { t } from '@lingui/core/macro';
+
+import { MAX_INPUT_NUMBER } from '~/constants';
 
 export const parseInputtedNumber = (
   value: string,
@@ -11,7 +12,7 @@ export const parseInputtedNumber = (
     | ((updater: Updater<number | undefined>) => void),
   { max = MAX_INPUT_NUMBER } = {},
 ) => {
-  // Input being deleted
+  // Input value being deleted
   if (!value) {
     callback(0);
     return;
@@ -33,7 +34,7 @@ export const blockNonNumberInput = (
     e.preventDefault();
   }
 };
-// FIXME: internationalization
+
 export const maxLengthValidator = (
   value: string,
   max: number,
@@ -44,7 +45,6 @@ export const maxLengthValidator = (
   }
 };
 
-// FIXME: internationalization
 export const emailValidator = (value: string) => {
   const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!EMAIL_REGEX.test(value)) {

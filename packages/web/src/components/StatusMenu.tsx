@@ -144,8 +144,7 @@ function StatusMenu() {
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
-            {/* FIXME: Increase the width so that Korean text fits */}
-            <PopoverContent className="w-[121px]" sideOffset={5}>
+            <PopoverContent className="min-w-[121px] max-w-fit" sideOffset={5}>
               <div className="space-y-2">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Your data is synced!</Trans>
