@@ -27,6 +27,7 @@ import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { t } from '@lingui/core/macro';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -66,19 +67,19 @@ function getProgressIconAndMessage(status: ProgressStatus) {
     case 'behind':
       return {
         icon: '😟',
-        message: 'Behind schedule!',
+        message: t`Behind schedule!`,
         progressStatus: status,
       };
     case 'onTrack':
-      return { icon: '🙂', message: 'Right on track!', progressStatus: status };
+      return { icon: '🙂', message: t`Right on track!`, progressStatus: status };
     case 'ahead':
       return {
         icon: '😎',
-        message: 'Ahead of schedule!',
+        message: t`Ahead of schedule!`,
         progressStatus: status,
       };
     case 'complete':
-      return { icon: '🥳', message: 'Goal achieved!', progressStatus: status };
+      return { icon: '🥳', message: t`Goal achieved!`, progressStatus: status };
     default:
       return { icon: '', message: '' };
   }
@@ -146,6 +147,7 @@ export default function GoalCard({
 }: Database['goal']) {
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef(null);
 
   // FIXME: use a join query instead?
   const { value: entriesSum, isLoading: isLoadingEntries } =
@@ -161,7 +163,7 @@ export default function GoalCard({
   const isCompleted = currentValue >= target;
 
   const {
-    icon,
+    icon: progressIcon,
     message: progressMessage,
     progressStatus,
   } = useMemo(
@@ -202,10 +204,7 @@ export default function GoalCard({
       // transition={{ ease: 'easeInOut' }}
       ref={cardRef}
     >
-      <CardHeader
-        className="p-4"
-        onPointerDownCapture={(e) => e.stopPropagation()}
-      >
+      <CardHeader className="p-4">
         <div className="flex h-16 items-center">
           <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
             {title}
@@ -231,21 +230,30 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
-            // FIXME: Tooltip doesnt show on touch devices
             <Tooltip>
               <TooltipTrigger asChild>
-                <p
+                <Button
+                  size="icon-sm"
+                  variant="ghost"
                   className={cn(
                     'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
                     {
                       'text-[22px]': progressStatus === 'complete',
                     },
                   )}
+                  ref={triggerRef}
+                  onClick={(e) => e.preventDefault()}
                 >
-                  {icon}
-                </p>
+                  {progressIcon}
+                </Button>
               </TooltipTrigger>
-              <TooltipContent side="bottom">
+              <TooltipContent
+                side="bottom"
+                onPointerDownOutside={(event) => {
+                  if (event.target === triggerRef.current)
+                    event.preventDefault();
+                }}
+              >
                 <p>{progressMessage}</p>
               </TooltipContent>
             </Tooltip>
@@ -269,8 +277,10 @@ export default function GoalCard({
                 </h3>
                 <p className="text-muted-foreground text-pretty text-sm">
                   {/* FIXME: Korean translation has wrong word order */}
-                  <Trans>Are you sure you want to delete</Trans>{' '}
-                  <span className="font-bold">{title}</span>?
+                  <Trans>
+                    Are you sure you want to delete{' '}
+                    <span className="font-bold">{title}</span>?
+                  </Trans>
                 </p>
               </div>
               <div className="grid gap-4">

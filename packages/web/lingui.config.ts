@@ -1,7 +1,9 @@
 import type { LinguiConfig } from '@lingui/conf';
 
+import { LOCALES } from './src/constants/locales';
+
 const config: LinguiConfig = {
-  locales: ['en', 'ko'],
+  locales: Object.keys(LOCALES),
   catalogs: [
     {
       path: '<rootDir>/src/locales/{locale}/messages',

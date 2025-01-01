@@ -1,6 +1,8 @@
+import type { NoGoalsPlaceholderProps } from '../components/NoGoalsPlaceholder';
+
 import { lazy, Suspense } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useQuery, useStatus } from '@powersync/react';
+import { useStatus, useSuspenseQuery } from '@powersync/react';
 import {
   createLazyFileRoute,
   Link,
@@ -21,20 +23,25 @@ export const Route = createLazyFileRoute('/_main/goals')({
 const LazyNoGoalsPlaceholder = lazy(
   () => import('../components/NoGoalsPlaceholder'),
 );
-const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
+const NoGoalsPlaceholder = ({
+  onClick,
+  className,
+}: NoGoalsPlaceholderProps) => (
   <Suspense fallback={null}>
-    <LazyNoGoalsPlaceholder onClick={onClick} />
+    <LazyNoGoalsPlaceholder onClick={onClick} className={className} />
   </Suspense>
 );
 
 const SyncingPlaceholder = () => (
   <div className="mx-auto flex flex-col items-center">
-    <h4 className="mb-2 animate-pulse text-3xl">Syncing your goals...</h4>
+    <h4 className="mb-2 animate-pulse text-3xl">
+      <Trans>Syncing your goals...</Trans>
+    </h4>
   </div>
 );
 
 function Goals() {
-  const { data: goals } = useQuery(
+  const { data: goals } = useSuspenseQuery(
     db.selectFrom('goal').selectAll().orderBy('id asc'),
   );
   const { hasSynced } = useStatus();
@@ -63,12 +70,12 @@ function Goals() {
         {!goals.length &&
           (user?.useSync ? (
             hasSynced ? (
-              <NoGoalsPlaceholder onClick={openNewGoalForm} />
+              <NoGoalsPlaceholder onClick={openNewGoalForm} className='mt-5'/>
             ) : (
               <SyncingPlaceholder />
             )
           ) : (
-            <NoGoalsPlaceholder onClick={openNewGoalForm} />
+            <NoGoalsPlaceholder onClick={openNewGoalForm} className='mt-5'/>
           ))}
         <LayoutGroup>
           <AnimatePresence>

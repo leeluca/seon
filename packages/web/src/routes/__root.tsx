@@ -10,6 +10,7 @@ import { TooltipProvider } from '~/components/ui/tooltip';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import SyncProvider from '~/states/syncContext';
+import { usePreferences } from '~/states/userContext';
 
 interface RouterContext {
   user: ReturnType<typeof useUser>;
@@ -29,9 +30,12 @@ const TanStackRouterDevtools =
     : () => null;
 
 function Root() {
+  const { preferences } = usePreferences();
   useEffect(() => {
-    void dynamicallyImportLocale(defaultLocale);
-  }, []);
+    const locale = preferences?.language ?? defaultLocale;
+    void dynamicallyImportLocale(locale);
+    document.documentElement.lang = locale;
+  }, [preferences]);
 
   return (
     <SyncProvider>
@@ -47,7 +51,7 @@ function Root() {
             <Outlet />
           </OnlineStatusProvider>
           <Suspense>
-            <TanStackRouterDevtools />
+            <TanStackRouterDevtools position="bottom-right" />
           </Suspense>
         </TooltipProvider>
       </I18nProvider>

@@ -40,7 +40,7 @@ function SignOutButton() {
           void onSignOut();
         }}
       >
-        Sign out
+        <Trans>Sign out</Trans>
       </Button>
       <AlertDialog open={signOutAlertOpen} onOpenChange={setSignOutAlertOpen}>
         <AlertDialogContent>

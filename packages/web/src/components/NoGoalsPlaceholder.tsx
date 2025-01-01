@@ -1,10 +1,19 @@
 import { Trans } from '@lingui/react/macro';
 
 import { CDN_URL } from '~/constants';
+import { cn } from '~/utils';
 
-const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
+export interface NoGoalsPlaceholderProps {
+  onClick: () => void;
+  className?: string;
+}
+
+const NoGoalsPlaceholder = ({ onClick, className }: NoGoalsPlaceholderProps) => (
   <div
-    className="animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0"
+    className={cn(
+      'animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0',
+      className,
+    )}
     onClick={onClick}
     role="button"
     tabIndex={0}
@@ -25,7 +34,7 @@ const NoGoalsPlaceholder = ({ onClick }: { onClick: () => void }) => (
       fetchpriority="high"
     />
     <h4 className="mb-2 text-3xl">
-      <Trans>There are no goals</Trans>
+      <Trans>There are no goals.</Trans>
     </h4>
     <p className="text-muted-foreground text-center">
       <Trans>Create your first goal!</Trans>

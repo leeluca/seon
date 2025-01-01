@@ -92,7 +92,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
       }}
     >
       <FormItem
-        label="Name"
+        label={t`Name`}
         labelFor="name"
         className="grid-cols-3"
         labelClassName="text-start"
@@ -136,7 +136,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
         </form.Field>
       </FormItem>
       <FormItem
-        label="Email"
+        label={t`Email`}
         labelFor="email"
         className="grid-cols-3"
         labelClassName="text-start"
@@ -182,7 +182,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
       </FormItem>
 
       <FormItem
-        label="Password"
+        label={t`Password`}
         labelFor="password"
         className="grid-cols-3"
         labelClassName="text-start"

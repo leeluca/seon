@@ -50,7 +50,9 @@ const ConnectionErrorComponent = ({
     return (
       <>
         <div className="space-y-2 pb-4">
-          <h4 className="font-medium leading-none">Sync is off</h4>
+          <h4 className="font-medium leading-none">
+            <Trans>Sync is off</Trans>
+          </h4>
           {isSyncEnabledUser ? (
             <div className="text-muted-foreground text-sm">
               <p>
@@ -142,8 +144,7 @@ function StatusMenu() {
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
-            {/* FIXME: Increase the width so that Korean text fits */}
-            <PopoverContent className="w-[121px]" sideOffset={5}>
+            <PopoverContent className="min-w-[121px] max-w-fit" sideOffset={5}>
               <div className="space-y-2">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Your data is synced!</Trans>
@@ -197,7 +198,7 @@ function StatusMenu() {
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="mr-8 w-[121px]" sideOffset={5}>
+            <PopoverContent className="mr-8 w-min max-w-96" sideOffset={5}>
               <div className="space-y-2 pb-4">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>

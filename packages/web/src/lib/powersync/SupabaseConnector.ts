@@ -1,3 +1,5 @@
+import type { IPreferences } from '~/states/userContext';
+
 import {
   AbstractPowerSyncDatabase,
   BaseObserver,
@@ -108,7 +110,7 @@ export class SupabaseConnector
         let result: PostgrestSingleResponse<null>;
 
         // User is saved to the db by the backend when the user signs up
-        // since the local user only contains a subset of the user data, we need to user PATCH instead of PUT so as to not overwrite it
+        // since the local user only contains a subset of the user data, we need to user PATCH instead of PUT so as to not overwrite existing user data
         if (op.table === 'user' && op.op === UpdateType.PUT) {
           op.op = UpdateType.PATCH;
         }
@@ -119,7 +121,24 @@ export class SupabaseConnector
             break;
           }
           case UpdateType.PATCH: {
-            result = await table.update(op.opData).eq('id', op.id);
+            const patchData = { ...op.opData };
+            if (
+              op.table === 'user' &&
+              'preferences' in patchData &&
+              typeof patchData.preferences === 'string'
+            ) {
+              try {
+                // TODO: validate the preferences object
+                patchData.preferences = JSON.parse(
+                  patchData.preferences,
+                ) as IPreferences;
+              } catch (err) {
+                console.error('Error parsing JSON for user.preferences', err);
+              }
+              result = await table.update(patchData).eq('id', op.id);
+              break;
+            }
+            result = await table.update(patchData).eq('id', op.id);
             break;
           }
           case UpdateType.DELETE: {
