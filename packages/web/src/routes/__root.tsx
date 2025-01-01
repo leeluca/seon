@@ -32,7 +32,9 @@ const TanStackRouterDevtools =
 function Root() {
   const { preferences } = usePreferences();
   useEffect(() => {
-    void dynamicallyImportLocale(preferences?.language ?? defaultLocale);
+    const locale = preferences?.language ?? defaultLocale;
+    void dynamicallyImportLocale(locale);
+    document.documentElement.lang = locale;
   }, [preferences]);
 
   return (
