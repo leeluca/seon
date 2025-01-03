@@ -1,9 +1,9 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_main')({
   beforeLoad({ context }) {
     if (!context.user) {
-      return redirect({ to: '/' });
+      return redirect({ to: '/' })
     }
   },
-});
+})

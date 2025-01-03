@@ -13,42 +13,23 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as SignupImport } from './routes/signup'
-import { Route as SigninImport } from './routes/signin'
-import { Route as MainImport } from './routes/_main'
+import { Route as MainRouteImport } from './routes/_main/route'
 import { Route as IndexImport } from './routes/index'
-import { Route as MainGoalsNewImport } from './routes/_main.goals.new'
+import { Route as SignupIndexImport } from './routes/signup/index'
+import { Route as SigninIndexImport } from './routes/signin/index'
+import { Route as MainGoalsNewImport } from './routes/_main/goals.new'
 
 // Create Virtual Routes
 
-const AboutLazyImport = createFileRoute('/about')()
 const MainGoalsLazyImport = createFileRoute('/_main/goals')()
 const MainGoalsIdLazyImport = createFileRoute('/_main/goals/$id')()
 
 // Create/Update Routes
 
-const AboutLazyRoute = AboutLazyImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const SignupRoute = SignupImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
-
-const SigninRoute = SigninImport.update({
-  id: '/signin',
-  path: '/signin',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/signin.lazy').then((d) => d.Route))
-
-const MainRoute = MainImport.update({
+const MainRouteRoute = MainRouteImport.update({
   id: '/_main',
   getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/_main.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/_main/route.lazy').then((d) => d.Route))
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -56,18 +37,30 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
+const SignupIndexRoute = SignupIndexImport.update({
+  id: '/signup/',
+  path: '/signup/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/signup/index.lazy').then((d) => d.Route))
+
+const SigninIndexRoute = SigninIndexImport.update({
+  id: '/signin/',
+  path: '/signin/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/signin/index.lazy').then((d) => d.Route))
+
 const MainGoalsLazyRoute = MainGoalsLazyImport.update({
   id: '/goals',
   path: '/goals',
-  getParentRoute: () => MainRoute,
-} as any).lazy(() => import('./routes/_main.goals.lazy').then((d) => d.Route))
+  getParentRoute: () => MainRouteRoute,
+} as any).lazy(() => import('./routes/_main/goals.lazy').then((d) => d.Route))
 
 const MainGoalsIdLazyRoute = MainGoalsIdLazyImport.update({
   id: '/$id',
   path: '/$id',
   getParentRoute: () => MainGoalsLazyRoute,
 } as any).lazy(() =>
-  import('./routes/_main.goals.$id.lazy').then((d) => d.Route),
+  import('./routes/_main/goals.$id.lazy').then((d) => d.Route),
 )
 
 const MainGoalsNewRoute = MainGoalsNewImport.update({
@@ -91,28 +84,7 @@ declare module '@tanstack/react-router' {
       id: '/_main'
       path: ''
       fullPath: ''
-      preLoaderRoute: typeof MainImport
-      parentRoute: typeof rootRoute
-    }
-    '/signin': {
-      id: '/signin'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof SigninImport
-      parentRoute: typeof rootRoute
-    }
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupImport
-      parentRoute: typeof rootRoute
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutLazyImport
+      preLoaderRoute: typeof MainRouteImport
       parentRoute: typeof rootRoute
     }
     '/_main/goals': {
@@ -120,7 +92,21 @@ declare module '@tanstack/react-router' {
       path: '/goals'
       fullPath: '/goals'
       preLoaderRoute: typeof MainGoalsLazyImport
-      parentRoute: typeof MainImport
+      parentRoute: typeof MainRouteImport
+    }
+    '/signin/': {
+      id: '/signin/'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/signup/': {
+      id: '/signup/'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupIndexImport
+      parentRoute: typeof rootRoute
     }
     '/_main/goals/new': {
       id: '/_main/goals/new'
@@ -155,34 +141,34 @@ const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
   MainGoalsLazyRouteChildren,
 )
 
-interface MainRouteChildren {
+interface MainRouteRouteChildren {
   MainGoalsLazyRoute: typeof MainGoalsLazyRouteWithChildren
 }
 
-const MainRouteChildren: MainRouteChildren = {
+const MainRouteRouteChildren: MainRouteRouteChildren = {
   MainGoalsLazyRoute: MainGoalsLazyRouteWithChildren,
 }
 
-const MainRouteWithChildren = MainRoute._addFileChildren(MainRouteChildren)
+const MainRouteRouteWithChildren = MainRouteRoute._addFileChildren(
+  MainRouteRouteChildren,
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof MainRouteWithChildren
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
-  '/about': typeof AboutLazyRoute
+  '': typeof MainRouteRouteWithChildren
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/signin': typeof SigninIndexRoute
+  '/signup': typeof SignupIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
   '/goals/$id': typeof MainGoalsIdLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof MainRouteWithChildren
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
-  '/about': typeof AboutLazyRoute
+  '': typeof MainRouteRouteWithChildren
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/signin': typeof SigninIndexRoute
+  '/signup': typeof SignupIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
   '/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -190,11 +176,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/_main': typeof MainRouteWithChildren
-  '/signin': typeof SigninRoute
-  '/signup': typeof SignupRoute
-  '/about': typeof AboutLazyRoute
+  '/_main': typeof MainRouteRouteWithChildren
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
+  '/signin/': typeof SigninIndexRoute
+  '/signup/': typeof SignupIndexRoute
   '/_main/goals/new': typeof MainGoalsNewRoute
   '/_main/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -204,30 +189,20 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/goals'
     | '/signin'
     | '/signup'
-    | '/about'
-    | '/goals'
     | '/goals/new'
     | '/goals/$id'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | ''
-    | '/signin'
-    | '/signup'
-    | '/about'
-    | '/goals'
-    | '/goals/new'
-    | '/goals/$id'
+  to: '/' | '' | '/goals' | '/signin' | '/signup' | '/goals/new' | '/goals/$id'
   id:
     | '__root__'
     | '/'
     | '/_main'
-    | '/signin'
-    | '/signup'
-    | '/about'
     | '/_main/goals'
+    | '/signin/'
+    | '/signup/'
     | '/_main/goals/new'
     | '/_main/goals/$id'
   fileRoutesById: FileRoutesById
@@ -235,18 +210,16 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  MainRoute: typeof MainRouteWithChildren
-  SigninRoute: typeof SigninRoute
-  SignupRoute: typeof SignupRoute
-  AboutLazyRoute: typeof AboutLazyRoute
+  MainRouteRoute: typeof MainRouteRouteWithChildren
+  SigninIndexRoute: typeof SigninIndexRoute
+  SignupIndexRoute: typeof SignupIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  MainRoute: MainRouteWithChildren,
-  SigninRoute: SigninRoute,
-  SignupRoute: SignupRoute,
-  AboutLazyRoute: AboutLazyRoute,
+  MainRouteRoute: MainRouteRouteWithChildren,
+  SigninIndexRoute: SigninIndexRoute,
+  SignupIndexRoute: SignupIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -261,43 +234,39 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_main",
-        "/signin",
-        "/signup",
-        "/about"
+        "/signin/",
+        "/signup/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
     "/_main": {
-      "filePath": "_main.tsx",
+      "filePath": "_main/route.tsx",
       "children": [
         "/_main/goals"
       ]
     },
-    "/signin": {
-      "filePath": "signin.tsx"
-    },
-    "/signup": {
-      "filePath": "signup.tsx"
-    },
-    "/about": {
-      "filePath": "about.lazy.tsx"
-    },
     "/_main/goals": {
-      "filePath": "_main.goals.lazy.tsx",
+      "filePath": "_main/goals.lazy.tsx",
       "parent": "/_main",
       "children": [
         "/_main/goals/new",
         "/_main/goals/$id"
       ]
     },
+    "/signin/": {
+      "filePath": "signin/index.tsx"
+    },
+    "/signup/": {
+      "filePath": "signup/index.tsx"
+    },
     "/_main/goals/new": {
-      "filePath": "_main.goals.new.tsx",
+      "filePath": "_main/goals.new.tsx",
       "parent": "/_main/goals"
     },
     "/_main/goals/$id": {
-      "filePath": "_main.goals.$id.lazy.tsx",
+      "filePath": "_main/goals.$id.lazy.tsx",
       "parent": "/_main/goals"
     }
   }

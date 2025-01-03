@@ -1,11 +1,11 @@
-import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
+import { createLazyFileRoute, Outlet } from '@tanstack/react-router'
 
-import LanguageSelector from '~/components/LanguageSelector';
-import AppStatusMenu from '~/components/StatusMenu';
+import LanguageSelector from '~/components/LanguageSelector'
+import AppStatusMenu from '~/components/StatusMenu'
 
 export const Route = createLazyFileRoute('/_main')({
   component: Dashboard,
-});
+})
 
 function Dashboard() {
   return (
@@ -26,5 +26,5 @@ function Dashboard() {
         <LanguageSelector />
       </div>
     </div>
-  );
+  )
 }

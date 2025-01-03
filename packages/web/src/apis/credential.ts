@@ -1,7 +1,6 @@
 import { DB_TOKEN_EXP_KEY, DB_TOKEN_KEY } from '~/constants/storage';
 import fetcher from './fetcher';
 
-// TODO: abstract fetch boilerplate
 export const fetchSyncCredentials = async () => {
   return fetcher<{
     result: boolean;
