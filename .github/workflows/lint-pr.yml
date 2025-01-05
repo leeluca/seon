@@ -1,4 +1,4 @@
-name: Run Biome
+name: Code quality
 
 on:
   pull_request:
@@ -6,11 +6,6 @@ on:
     types:
       - opened
       - synchronize
-  workflow_dispatch:
-
-env:
-  NODE_VERSION: 20.17.0
-  PNPM_VERSION: 9
 
 jobs:
   test:
@@ -22,19 +17,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
         with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Set Node.js version to ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install
-
+          version: latest
       - name: Run Biome
-        run: pnpm ci:biome
+        run: biome ci . --changed --no-errors-on-unmatched
