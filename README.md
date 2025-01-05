@@ -24,9 +24,9 @@ The name Seon, Korean for "line" (선), relates to the trajectory shown in the p
 
 ## Architecture
 
-Seon implements a local-first architecture pattern using SQLite as the primary data store. All CRUD operations execute against the client SQLite instance first, which servers as the source of truth for the client application. Changes are queued for eventual (optional) replication to the backend PostgreSQL database. The database is secured with RLS (Row-Level Security) with no intermediate server between client and DB.
+Seon uses a local-first architecture in which all CRUD operations execute against the client SQLite instance - the primary source of truth for the client application. Changes are queued for eventual (optional) replication to the backend PostgreSQL database. The database is secured with RLS (Row-Level Security) with no intermediate server between client and DB.
 
-The backend uses a change stream mechanism to detect modifications and propagate them to relevant client, ensuring that local databases remain current while maintaining their ability to operate independently. Client's data is partitioned according to developer-defined Sync rules that determine which data subsets should be replicated to each client (intermediated by PowerSync).<br><br>
+The backend uses a change stream mechanism to detect modifications and propagate them to relevant client, ensuring that local databases remain current while maintaining their ability to operate independently. Clients' data is partitioned according to developer-defined Sync rules that determine which data subsets should be replicated to each client (intermediated by PowerSync).<br><br>
 
 ![Architecture Diagram](https://github.com/user-attachments/assets/fe28996c-3b54-4a91-b28e-b42f16da1fdd)
 <br>
