@@ -21,6 +21,7 @@ function FormError({
     <div className={className}>
       {errors.map((error) => (
         <p
+          key={error as string}
           className={cn(
             'text-destructive text-[0.8rem] font-medium',
             textClassName,

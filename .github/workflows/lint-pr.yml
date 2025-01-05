@@ -1,43 +1,40 @@
-
-name: PR Lint and Prettier
+name: Run Biome
 
 on:
   pull_request:
-    branches: [ "main", "develop" ]
+    branches: ['main', 'develop']
+    types:
+      - opened
+      - synchronize
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: 20.17.0
+  PNPM_VERSION: 9
 
 jobs:
-  lint:
+  test:
+    name: 'Run Biome'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.12.0'
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Set Node.js version to ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
       - name: Install dependencies
         run: pnpm install
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
-      - name: Gather changed files
-        run: |
-          git diff --name-only origin/main...HEAD > changed_files.txt
-          cat changed_files.txt | grep -E '\.(js|ts|tsx|jsx)$' > js_changed_files.txt
-      # - name: Lint changed files
-      #   if: success() && always()
-      #   run: |
-      #     if [ -s js_changed_files.txt ]; then
-      #       pnpm exec eslint --cache --cache-location ./node_modules/.cache/eslint $(cat js_changed_files.txt)
-      #     fi
-      - name: Prettier check
-        if: success() && always()
-        run: |
-          if [ -s js_changed_files.txt ]; then
-            pnpm exec prettier --check $(cat js_changed_files.txt)
-          fi
+
+      - name: Run Biome
+        run: pnpm ci:biome

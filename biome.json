@@ -4,9 +4,12 @@
     "enabled": true,
     "clientKind": "git",
     "useIgnoreFile": true,
-    "defaultBranch": "develop"
+    "defaultBranch": "origin/develop"
   },
-  "files": { "ignoreUnknown": false, "ignore": [] },
+  "files": {
+    "ignoreUnknown": false,
+    "ignore": ["packages/server/src/db/*", "**/routeTree.gen.ts"]
+  },
   "formatter": {
     "enabled": true,
     "useEditorconfig": true,
