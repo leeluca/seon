@@ -17,18 +17,24 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.12.0'
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - name: Install dependencies
         run: pnpm install
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
       - name: Gather changed files
         run: |
           git diff --name-only origin/main...HEAD > changed_files.txt
           cat changed_files.txt | grep -E '\.(js|ts|tsx|jsx)$' > js_changed_files.txt
-      - name: Lint changed files
-        if: success() && always()
-        run: |
-          if [ -s js_changed_files.txt ]; then
-            pnpm exec eslint --cache --cache-location ./node_modules/.cache/eslint $(cat js_changed_files.txt)
-          fi
+      # - name: Lint changed files
+      #   if: success() && always()
+      #   run: |
+      #     if [ -s js_changed_files.txt ]; then
+      #       pnpm exec eslint --cache --cache-location ./node_modules/.cache/eslint $(cat js_changed_files.txt)
+      #     fi
       - name: Prettier check
         if: success() && always()
         run: |
