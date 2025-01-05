@@ -51,6 +51,7 @@ export const useUserAction = () => {
 
 export interface IAuthContext {
   isSignedIn: boolean;
+  isSignInVerified: boolean;
   expiresAt: number;
   isLoading: boolean;
   isError: boolean;
@@ -58,6 +59,7 @@ export interface IAuthContext {
 }
 export const authContextInitialState = {
   isSignedIn: false,
+  isSignInVerified: false,
   expiresAt: 0,
   isLoading: false,
   isError: false,
@@ -82,6 +84,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const authData = useMemo(
     () => ({
       isSignedIn: authStatus.result,
+      isSignInVerified: authStatus.result && !isLoading && !isError,
       expiresAt: authStatus.expiresAt,
       isLoading,
       isError,

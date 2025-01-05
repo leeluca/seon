@@ -1,18 +1,18 @@
-import { Trans, useLingui } from '@lingui/react/macro';
-import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import { ArrowBigLeftIcon } from 'lucide-react';
+import { Trans, useLingui } from '@lingui/react/macro'
+import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { ArrowBigLeftIcon } from 'lucide-react'
 
-import LanguageSelector from '~/components/LanguageSelector';
-import SignUpForm from '~/components/SignUpForm';
-import { buttonVariants } from '~/components/ui/button';
+import LanguageSelector from '~/components/LanguageSelector'
+import SignUpForm from '~/components/SignUpForm'
+import { buttonVariants } from '~/components/ui/button'
 
-export const Route = createLazyFileRoute('/signup')({
+export const Route = createLazyFileRoute('/signup/')({
   component: SignUp,
-});
+})
 
 function SignUp() {
-  const navigate = useNavigate();
-  const { t } = useLingui();
+  const navigate = useNavigate()
+  const { t } = useLingui()
   return (
     <div className="p-6 xl:p-8">
       <Link
@@ -32,5 +32,5 @@ function SignUp() {
         <LanguageSelector />
       </div>
     </div>
-  );
+  )
 }

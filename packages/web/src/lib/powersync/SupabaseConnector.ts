@@ -95,6 +95,7 @@ export class SupabaseConnector
     return res;
   }
 
+  // TODO: implement batching strategy to improve performance
   async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
     const transaction = await database.getNextCrudTransaction();
 

@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { PowerSyncContext } from '@powersync/react';
-import Logger from 'js-logger';
 
-import { powerSyncDb } from '~/lib/database';
+import { usePowerSyncConnector } from '~/hooks/usePowerSyncConnector';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { useAuthContext, useUser } from './userContext';
 
 interface SupabaseConnectorContext {
   connector: SupabaseConnector;
@@ -22,48 +20,14 @@ export const useSupabase = () => {
 };
 
 const SyncProvider = ({ children }: { children: React.ReactNode }) => {
-  const [connector, setConnector] = useState(new SupabaseConnector());
-  const [powerSync] = useState(powerSyncDb);
+  const { connector, powerSync, resetConnector } = usePowerSyncConnector();
 
-  const user = useUser();
-  const { isSignedIn, isError, isLoading } = useAuthContext();
-  const isSignInVerified = isSignedIn && !isLoading && !isError;
-
-  useEffect(() => {
-    if (!user?.useSync || !isSignInVerified) return;
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    Logger.useDefaults();
-    Logger.setLevel(Logger.DEBUG);
-    // FIXME: for console testing purposes, to be removed
-    window._powersync = powerSync;
-
-    const initializePowerSync = async () => {
-      await powerSync.init();
-    };
-    const initializeConnector = () => {
-      connector.init();
-    };
-
-    void initializePowerSync();
-
-    const listener = connector.registerListener({
-      initialized: () => {
-        void powerSync.connect(connector);
-      },
-      sessionStarted: () => {},
-    });
-    initializeConnector();
-    return () => listener();
-  }, [powerSync, connector, user, isSignInVerified]);
-
-  const connectorValue = React.useMemo(
+  const connectorValue = useMemo(
     () => ({
       connector,
-      resetConnector: () => {
-        setConnector(new SupabaseConnector());
-      },
+      resetConnector,
     }),
-    [connector],
+    [connector, resetConnector],
   );
 
   return (
