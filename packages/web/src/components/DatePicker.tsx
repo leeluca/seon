@@ -1,6 +1,6 @@
+import React from 'react';
 import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
-
-import * as React from 'react';
+import { Trans } from '@lingui/react/macro';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import {
   addDays,
@@ -25,9 +25,8 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import { cn } from '~/utils';
-import { Trans } from '@lingui/macro';
 
-const DATE_DISTANCE_NAMES: { [key: number]: string } = {
+const DATE_DISTANCE_NAMES: Record<number, string> = {
   0: 'Today',
   1: 'Tomorrow',
   7: 'In a week',
@@ -114,7 +113,9 @@ export const DatePicker = React.forwardRef(
               (useRelativeDistance && getPresetRelativeDateText(date)) ||
               formatDate(date, 'PP')
             ) : (
-              <span><Trans>Pick a date</Trans></span>
+              <span>
+                <Trans>Pick a date</Trans>
+              </span>
             )}
           </Button>
         </PopoverTrigger>

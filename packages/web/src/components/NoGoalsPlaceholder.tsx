@@ -30,7 +30,6 @@ const NoGoalsPlaceholder = ({ onClick, className }: NoGoalsPlaceholderProps) => 
       height="200"
       loading="lazy"
       // FIXME: change spelling to `fetchPriority` after upgrading to React 19
-      // eslint-disable-next-line react/no-unknown-property
       fetchpriority="high"
     />
     <h4 className="mb-2 text-3xl">

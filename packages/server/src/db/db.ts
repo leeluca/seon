@@ -4,10 +4,11 @@ import postgres from 'postgres';
 import * as relations from './relations.js';
 import * as schema from './schema.js';
 
+// NOTE: prevent errors when deploying
 try {
   process.loadEnvFile();
-} catch (error) {
-  console.log('No .env file found');
+} catch {
+  console.error('No .env file found');
 }
 
 const connectionString = process.env.DB_URL;
