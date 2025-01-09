@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@powersync/react';
-import { addDays, addWeeks, format, startOfWeek, subWeeks } from 'date-fns';
+import {
+  addDays,
+  addWeeks,
+  isSameWeek as checkIsSameWeek,
+  isToday as checkIsToday,
+  format,
+  startOfWeek,
+  subWeeks,
+} from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import db from '~/lib/database';
@@ -43,11 +52,16 @@ const CalendarHeatmap = ({
     setCurrentWeekStart(addWeeks(currentWeekStart, 1));
   };
 
+  const goBackToCurrentWeek = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
+  };
+
   const days = Array.from({ length: 7 }).map((_, index) =>
     addDays(currentWeekStart, index),
   );
   const startMonth = format(days[0], 'MMM');
   const endMonth = format(days[days.length - 1], 'MMM');
+  const isSameWeek = checkIsSameWeek(new Date(), currentWeekStart);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedDateValue, setSelectedDateValue] = useState<
@@ -77,11 +91,21 @@ const CalendarHeatmap = ({
 
   return (
     <div className="flex flex-col items-center">
-      <p className="mb-2 ml-2 self-start text-xs font-medium">
-        {startMonth === endMonth
-          ? format(days[0], 'MMMM')
-          : `${startMonth} • ${endMonth}`}
-      </p>
+      <div className="mb-2 flex w-full items-center justify-between">
+        <p className="ml-2 text-xs font-medium">
+          {startMonth === endMonth
+            ? format(days[0], 'MMMM')
+            : `${startMonth} • ${endMonth}`}
+        </p>
+        <Button
+          variant="outline"
+          className={isSameWeek ? 'invisible' : ''}
+          size="sm"
+          onClick={goBackToCurrentWeek}
+        >
+          <Trans>Today</Trans>
+        </Button>
+      </div>
       <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-2">
         <Button
           variant="secondary"
@@ -96,6 +120,7 @@ const CalendarHeatmap = ({
           const savedEntry = entriesMap.get(stringDate);
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
           const isBlocked = checkBlockedDateFn?.(day);
+          const isToday = checkIsToday(day);
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
@@ -113,6 +138,7 @@ const CalendarHeatmap = ({
                       'bg-accent text-accent-foreground':
                         !savedEntry && isSelected,
                       'cursor-not-allowed': isBlocked,
+                      'border-2 border-blue-200': isToday,
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}

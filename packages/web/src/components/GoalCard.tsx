@@ -1,6 +1,5 @@
-import type { Database } from '~/lib/powersync/AppSchema';
-
 import { useMemo, useRef } from 'react';
+import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import {
@@ -22,12 +21,12 @@ import {
 } from '~/components/ui/card';
 import useGoalEntriesSum from '~/hooks/useGoalEntriesSum';
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { t } from '@lingui/core/macro';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -71,7 +70,11 @@ function getProgressIconAndMessage(status: ProgressStatus) {
         progressStatus: status,
       };
     case 'onTrack':
-      return { icon: '🙂', message: t`Right on track!`, progressStatus: status };
+      return {
+        icon: '🙂',
+        message: t`Right on track!`,
+        progressStatus: status,
+      };
     case 'ahead':
       return {
         icon: '😎',
@@ -122,18 +125,19 @@ function getProgressStatus({
 
   if (isCompleted) {
     return 'complete';
-  } else if (percentageDifference <= 5) {
-    return 'onTrack';
-  } else if (differenceFromTarget > 0) {
-    return 'ahead';
-  } else {
-    return 'behind';
   }
+  if (percentageDifference <= 5) {
+    return 'onTrack';
+  }
+  if (differenceFromTarget > 0) {
+    return 'ahead';
+  }
+  return 'behind';
 }
 
 async function deleteGoal(goalId: string, callback?: () => void) {
   await db.deleteFrom('goal').where('id', '=', goalId).execute();
-  callback && callback();
+  callback?.();
 }
 
 export default function GoalCard({
@@ -204,7 +208,7 @@ export default function GoalCard({
       // transition={{ ease: 'easeInOut' }}
       ref={cardRef}
     >
-      <CardHeader className="p-4">
+      <CardHeader className="p-4 pb-2">
         <div className="flex h-16 items-center">
           <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
             {title}
@@ -217,7 +221,7 @@ export default function GoalCard({
           checkBlockedDateFn={(date) =>
             isBefore(startOfDay(date), startOfDay(startDate))
           }
-          blockedDateFeedback="Before goal's start date"
+          blockedDateFeedback={t`Before goal's start date`}
         />
         <div className="flex flex-col gap-2">
           <ProgressBar
@@ -244,7 +248,7 @@ export default function GoalCard({
                   ref={triggerRef}
                   onClick={(e) => e.preventDefault()}
                 >
-                  {progressIcon}
+                  <div className='mt-1'>{progressIcon}</div>
                 </Button>
               </TooltipTrigger>
               <TooltipContent
