@@ -123,17 +123,18 @@ export const DatePicker = React.forwardRef(
           align="start"
           className="flex w-auto flex-col space-y-2 p-2"
           id={id}
+          collisionPadding={{ bottom: 40 }}
         >
           {showPresetDates && (
             <Select
               onValueChange={(value) =>
-                setDate(addDays(new Date(), parseInt(value)))
+                setDate(addDays(new Date(), Number.parseInt(value)))
               }
             >
               <SelectTrigger>
                 <SelectValue
                   placeholder={date ? getRelativeDistanceText(date) : 'Select'}
-                ></SelectValue>
+                />
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectItem value="0">{DATE_DISTANCE_NAMES[0]}</SelectItem>
