@@ -93,7 +93,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="sm:col-span-2 col-span-3">
                   <Input
                     id="title"
                     value={value}
@@ -131,7 +131,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="sm:col-span-2 col-span-3">
                   <Input
                     id="target-value"
                     type="number"
@@ -183,7 +183,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="sm:col-span-2 col-span-3">
                   <DatePicker
                     id="target-date"
                     date={value}
@@ -254,7 +254,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2 col-span-3">
                         <DatePicker
                           id="start-date"
                           defaultDate={new Date()}
@@ -295,7 +295,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2 col-span-3">
                         <Input
                           id="unit"
                           value={value}
@@ -326,7 +326,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="sm:col-span-2 col-span-3">
                         <Input
                           id="initial-value"
                           type="number"

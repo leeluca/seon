@@ -76,7 +76,7 @@ export function GoalDetailPanel({
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <article className="flex min-h-full flex-col gap-1" ref={ref}>
-          <section className="relative mt-4 aspect-video min-h-[min(20%,25opx)]">
+          <section className="relative mt-4 flex aspect-video min-h-[min(20%,25opx)] items-center justify-center">
             <GoalLineGraph
               key={`${id}-graph-${isMobile}`}
               goalId={id}

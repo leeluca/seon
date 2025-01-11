@@ -1,14 +1,14 @@
-import { useState } from 'react'
-import { Trans, useLingui } from '@lingui/react/macro'
-import { useForm } from '@tanstack/react-form'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { add, startOfDay } from 'date-fns'
-import { LoaderCircleIcon } from 'lucide-react'
-import { toast } from 'sonner'
+import { useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useForm } from '@tanstack/react-form';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { add, startOfDay } from 'date-fns';
+import { LoaderCircleIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution'
-import GoalForm, { GOAL_FORM_ID, NewGoal } from '~/components/GoalForm'
-import { Button } from '~/components/ui/button'
+import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
+import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
+import { Button } from '~/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -16,15 +16,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '~/components/ui/dialog'
-import db from '~/lib/database'
-import { Database } from '~/lib/powersync/AppSchema'
-import { useUser } from '~/states/userContext'
-import { cn, generateUUIDs } from '~/utils'
+} from '~/components/ui/dialog';
+import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
+import { useUser } from '~/states/userContext';
+import { cn, generateUUIDs } from '~/utils';
 
 export const Route = createFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
-})
+});
 
 type GoalSubmitData = Pick<
   Database['goal'],
@@ -35,7 +35,7 @@ type GoalSubmitData = Pick<
   | 'targetDate'
   | 'initialValue'
   | 'userId'
->
+>;
 
 async function handleSave(
   {
@@ -49,7 +49,7 @@ async function handleSave(
   }: GoalSubmitData,
   callback?: () => void,
 ) {
-  const { uuid, shortUuid } = generateUUIDs()
+  const { uuid, shortUuid } = generateUUIDs();
 
   try {
     await db
@@ -67,29 +67,29 @@ async function handleSave(
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       })
-      .executeTakeFirstOrThrow()
+      .executeTakeFirstOrThrow();
 
-    toast.success(<Trans>Sucessfully added goal</Trans>)
-    callback && callback()
+    toast.success(<Trans>Sucessfully added goal</Trans>);
+    callback?.();
   } catch (error) {
-    console.error(error)
-    toast.error(<Trans>Failed to add goal</Trans>)
+    console.error(error);
+    toast.error(<Trans>Failed to add goal</Trans>);
   }
 }
 
 function NewGoalDialog() {
-  const navigate = useNavigate()
-  const user = useUser()
-  const { t } = useLingui()
+  const navigate = useNavigate();
+  const user = useUser();
+  const { t } = useLingui();
 
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true);
 
   const handleClose = () => {
-    setIsOpen(false)
+    setIsOpen(false);
     setTimeout(() => {
-      void navigate({ from: '/goals/new', to: '/goals', replace: true })
-    }, 250)
-  }
+      void navigate({ from: '/goals/new', to: '/goals', replace: true });
+    }, 250);
+  };
 
   const form = useForm<NewGoal>({
     defaultValues: {
@@ -102,19 +102,19 @@ function NewGoalDialog() {
     },
     validators: {
       onChange({ value }) {
-        const { title, targetValue, targetDate } = value
+        const { title, targetValue, targetDate } = value;
         if (!title || !targetValue || !targetDate) {
-          return t`Missing required fields`
+          return t`Missing required fields`;
         }
       },
     },
     onSubmit: async ({ value }) => {
-      const { startDate, targetDate, targetValue } = value
+      const { startDate, targetDate, targetValue } = value;
       if (!targetDate || !user || !targetValue) {
-        return
+        return;
       }
-      const stringStartDate = startDate.toISOString()
-      const stringTargetDate = targetDate.toISOString()
+      const stringStartDate = startDate.toISOString();
+      const stringTargetDate = targetDate.toISOString();
       await handleSave(
         {
           ...value,
@@ -126,23 +126,23 @@ function NewGoalDialog() {
           targetDate: stringTargetDate,
         },
         handleClose,
-      )
+      );
     },
-  })
+  });
 
   const {
     startTimeout: delayedValidation,
     clearExistingTimeout: clearTimeout,
-  } = useDelayedExecution(() => void form.validateAllFields('change'))
+  } = useDelayedExecution(() => void form.validateAllFields('change'));
 
   return (
     <Dialog
       open={isOpen}
       onOpenChange={() => {
-        handleClose()
+        handleClose();
       }}
     >
-      <DialogContent className="sm:max-w-screen-sm">
+      <DialogContent className="p-4 sm:max-w-screen-sm sm:p-6">
         <DialogHeader>
           <DialogTitle>
             <Trans>Add new goal</Trans>
@@ -157,7 +157,7 @@ function NewGoalDialog() {
           errorClassName="col-span-3 col-start-2"
           collapseOptionalFields
         />
-        <DialogFooter className="mt-4 grid grid-cols-4 justify-items-end gap-4">
+        <DialogFooter className="grid grid-cols-4 justify-items-end gap-4 sm:mt-4">
           <form.Subscribe
             selector={(state) => [
               state.isSubmitting,
@@ -168,7 +168,7 @@ function NewGoalDialog() {
               <div
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}
-                className={cn('col-start-3', {
+                className={cn('col-start-4', {
                   'cursor-not-allowed': isSubmitDisabled,
                 })}
               >
@@ -176,6 +176,7 @@ function NewGoalDialog() {
                   type="submit"
                   disabled={isSubmitDisabled}
                   form={GOAL_FORM_ID}
+                  size="lg"
                 >
                   {isSubmitting && (
                     <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
@@ -188,7 +189,7 @@ function NewGoalDialog() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
-export default NewGoalDialog
+export default NewGoalDialog;
