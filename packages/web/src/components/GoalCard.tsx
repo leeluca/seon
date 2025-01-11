@@ -216,7 +216,7 @@ export default function GoalCard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  size="icon-sm"
+                  size="icon-responsive"
                   variant="ghost"
                   className={cn(
                     'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
@@ -246,7 +246,7 @@ export default function GoalCard({
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="outline"
                 aria-label={t`Delete goal`}
               >
@@ -285,7 +285,7 @@ export default function GoalCard({
             params={{ id: shortId }}
             replace
             aria-label={t`Toggle goal details`}
-            className={buttonVariants({ variant: 'outline', size: 'icon-sm' })}
+            className={buttonVariants({ variant: 'outline', size: 'icon-responsive' })}
           >
             <Maximize2Icon size={18} />
           </Link>

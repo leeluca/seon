@@ -1,5 +1,3 @@
-import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
-
 import { useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useStatus } from '@powersync/react';
@@ -12,6 +10,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useAuthContext, useUser } from '~/states/userContext';
 import SignInForm from './SignInForm';
@@ -112,9 +111,9 @@ function StatusMenu() {
   if (isLoading) {
     return (
       <div className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1">
-        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]"></div>
-        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]"></div>
-        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500"></div>
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]" />
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]" />
+        <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
       </div>
     );
   }
@@ -124,7 +123,10 @@ function StatusMenu() {
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
         {isSyncing && (
           <div
-            className={buttonVariants({ variant: 'ghost', size: 'icon-sm' })}
+            className={buttonVariants({
+              variant: 'ghost',
+              size: 'icon-responsive',
+            })}
             aria-label={t`Syncing`}
           >
             <RefreshCcwIcon
@@ -137,14 +139,17 @@ function StatusMenu() {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="ghost"
                 aria-label="Check last sync time"
               >
                 <CloudIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="min-w-[121px] max-w-fit" sideOffset={5}>
+            <PopoverContent
+              className="mr-3 min-w-[121px] max-w-fit sm:mr-8"
+              sideOffset={5}
+            >
               <div className="space-y-2">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Your data is synced!</Trans>
@@ -167,7 +172,7 @@ function StatusMenu() {
           <Popover open={open} onOpenChange={togglePopover}>
             <PopoverTrigger asChild>
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="ghost"
                 aria-label={t`Check sync error or sign in`}
               >
@@ -175,7 +180,7 @@ function StatusMenu() {
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className={!isSignedIn ? 'mr-8' : undefined}
+              className={!isSignedIn ? 'mr-3 sm:mr-8' : undefined}
               sideOffset={5}
             >
               <ConnectionErrorComponent
@@ -194,11 +199,18 @@ function StatusMenu() {
         {(isSignedIn || Boolean(user?.useSync)) && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button size="icon-sm" variant="ghost" aria-label="User info">
+              <Button
+                size="icon-responsive"
+                variant="ghost"
+                aria-label="User info"
+              >
                 <CircleUserIcon size={18} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="mr-8 w-min max-w-96" sideOffset={5}>
+            <PopoverContent
+              className="mr-3 w-min max-w-96 sm:mr-8"
+              sideOffset={5}
+            >
               <div className="space-y-2 pb-4">
                 <h3 className="text-pretty font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>

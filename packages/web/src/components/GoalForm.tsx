@@ -204,7 +204,7 @@ function NewGoalForm({
           <div className="my-2 flex items-center gap-1">
             <CollapsibleTrigger asChild className="mr-2">
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="ghost"
                 type="button"
                 id="toggle-extra-options"
