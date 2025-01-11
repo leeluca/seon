@@ -106,7 +106,7 @@ const CalendarHeatmap = ({
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-2">
+      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-1 sm:gap-2">
         <Button
           variant="secondary"
           size="icon-sm"
