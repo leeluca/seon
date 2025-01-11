@@ -23,12 +23,14 @@ interface CalendarHeatmapProps {
   goalId: string;
   checkBlockedDateFn?: (date: Date) => boolean;
   blockedDateFeedback?: string;
+  className?: string;
 }
 
 const CalendarHeatmap = ({
   goalId,
   checkBlockedDateFn,
   blockedDateFeedback,
+  className,
 }: CalendarHeatmapProps) => {
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
@@ -90,7 +92,7 @@ const CalendarHeatmap = ({
   }, [isPopoverOpen, selectedDateValue]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className={cn('flex flex-col items-center', className)}>
       <div className="mb-2 flex w-full items-center justify-between">
         <p className="ml-2 text-xs font-medium">
           {startMonth === endMonth
@@ -106,12 +108,12 @@ const CalendarHeatmap = ({
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-1 sm:gap-2">
+      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2">
         <Button
           variant="secondary"
           size="icon-sm"
           onClick={handlePrevWeek}
-          className="mb-1 justify-self-center"
+          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigLeftIcon size={18} />
         </Button>
@@ -131,18 +133,20 @@ const CalendarHeatmap = ({
                 >
                   <Button
                     variant={savedEntry ? null : 'outline'}
-                    className={cn('aspect-square w-full min-w-0 rounded', {
-                      'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
-                        savedEntry,
-                      'bg-emerald-500/80': savedEntry && isSelected,
-                      'bg-accent text-accent-foreground':
-                        !savedEntry && isSelected,
-                      'cursor-not-allowed': isBlocked,
-                      'border-2 border-blue-200': isToday,
-                    })}
+                    className={cn(
+                      'aspect-square h-auto w-full min-w-0 rounded sm:h-9',
+                      {
+                        'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
+                          savedEntry,
+                        'bg-emerald-500/80': savedEntry && isSelected,
+                        'bg-accent text-accent-foreground':
+                          !savedEntry && isSelected,
+                        'cursor-not-allowed': isBlocked,
+                        'border-2 border-blue-200': isToday,
+                      },
+                    )}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
-                    // size="sm"
                     onClick={(e) => {
                       popoverAnchorRef.current = e.currentTarget;
                       setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
@@ -176,7 +180,7 @@ const CalendarHeatmap = ({
           variant="secondary"
           size="icon-sm"
           onClick={handleNextWeek}
-          className="mb-1 justify-self-center"
+          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
         </Button>

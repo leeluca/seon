@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute('/_main')({
 
 function Dashboard() {
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen min-w-[375px]">
       <div className="px-3 py-2 sm:px-8 sm:py-4">
         <div className="mx-auto flex max-w-screen-2xl content-center justify-between">
           <AppStatusMenu />

@@ -9,7 +9,6 @@ import {
   startOfDay,
 } from 'date-fns';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
-// import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 import {
@@ -39,7 +38,7 @@ function ProgressBar({
   currentValue,
 }: ProgressBarProps) {
   return (
-    <div className="w-[calc(100% + 48px)] group relative -mx-3 flex h-3 rounded bg-gray-200">
+    <div className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3">
       <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
         {progressPercent <= 100 ? `${currentValue}/${target}` : target}
       </p>
@@ -186,42 +185,22 @@ export default function GoalCard({
   );
 
   return (
-    <Card
-      className="w-full text-center shadow-sm"
-      // whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
-      // initial={{ scale: 0 }}
-      // animate={{
-      //   scale: 1,
-      //   transition: {
-      //     delay: 0.25,
-      //     type: 'tween',
-      //   },
-      // }}
-      // exit={{
-      //   opacity: 0,
-      //   scale: 0,
-      //   transition: {
-      //     type: 'tween',
-      //   },
-      // }}
-      // layout
-      // transition={{ ease: 'easeInOut' }}
-      ref={cardRef}
-    >
-      <CardHeader className="p-4 pb-2">
-        <div className="flex h-16 items-center">
-          <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
+    <Card className="w-full text-center shadow-sm" ref={cardRef}>
+      <CardHeader className="pb-2 sm:p-4">
+        <div className="flex h-12 items-center sm:h-14">
+          <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
             {title}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-9">
+      <CardContent className="flex flex-col gap-9 px-4 sm:px-6">
         <CalendarHeatmap
           goalId={id}
           checkBlockedDateFn={(date) =>
             isBefore(startOfDay(date), startOfDay(startDate))
           }
           blockedDateFeedback={t`Before goal's start date`}
+          className="-mx-2 sm:mx-0"
         />
         <div className="flex flex-col gap-2">
           <ProgressBar
@@ -248,7 +227,7 @@ export default function GoalCard({
                   ref={triggerRef}
                   onClick={(e) => e.preventDefault()}
                 >
-                  <div className='mt-1'>{progressIcon}</div>
+                  <div className="mt-1">{progressIcon}</div>
                 </Button>
               </TooltipTrigger>
               <TooltipContent
