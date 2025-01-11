@@ -8,11 +8,13 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
+import { PlusIcon } from 'lucide-react';
 
 import GoalCard from '~/components/GoalCard';
 import { buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUser } from '~/states/userContext';
+import { cn } from '~/utils';
 import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
 export const Route = createLazyFileRoute('/_main/goals')({
@@ -55,12 +57,18 @@ function Goals() {
         <Link
           from="/goals"
           to="/goals/new"
-          className={buttonVariants({ variant: 'default', size: 'default' })}
+          className={cn(
+            buttonVariants({ variant: 'default', size: 'lg' }),
+            'pl-4 pr-5',
+          )}
         >
-          <Trans>New Goal</Trans>
+          <div className="flex items-center justify-center text-base">
+            <PlusIcon size={18} className="mr-2" />
+            <Trans>New Goal</Trans>
+          </div>
         </Link>
       </div>
-      <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] gap-4 sm:gap-6 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))]">
+      <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
         {!goals.length &&
           (user?.useSync ? (
             hasSynced ? (
