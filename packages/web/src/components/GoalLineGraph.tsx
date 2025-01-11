@@ -1,5 +1,4 @@
-import type { Database } from '~/lib/powersync/AppSchema';
-
+import { memo } from 'react';
 import { i18n } from '@lingui/core';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
@@ -18,7 +17,8 @@ import {
 import { ChartLineIcon } from 'lucide-react';
 
 import db from '~/lib/database';
-import { LineGraph, LineGraphProps } from './charts/LineGraph';
+import type { Database } from '~/lib/powersync/AppSchema';
+import { LineGraph, type LineGraphProps } from './charts/LineGraph';
 
 interface GoalLineGraphProps {
   goalId: string;
@@ -266,7 +266,8 @@ function GoalLineGraph({
   targetDate,
   startDate,
   initialValue,
-}: GoalLineGraphProps) {
+  isMobile,
+}: GoalLineGraphProps & { isMobile?: boolean }) {
   const { data: entries } = useSuspenseQuery(
     db
       .selectFrom('entry')
@@ -310,6 +311,7 @@ function GoalLineGraph({
             },
           },
         },
+        aspectRatio: isMobile ? 1.5 : undefined,
       }}
     />
   );

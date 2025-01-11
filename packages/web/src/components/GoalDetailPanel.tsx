@@ -1,7 +1,5 @@
-import type { Database } from '~/lib/powersync/AppSchema';
-import type { ReactElement } from 'react';
-
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
+import { useResizeDetector } from 'react-resize-detector';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@powersync/react';
 import { useForm } from '@tanstack/react-form';
@@ -17,9 +15,10 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-  // SheetTrigger,
 } from '~/components/ui/sheet';
+import { BREAKPOINTS } from '~/constants/style';
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
 import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import GoalLineGraph from './GoalLineGraph';
@@ -62,29 +61,36 @@ export function GoalDetailPanel({
     initialValue,
   } = selectedGoal;
 
+  const { width, ref } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 200,
+  });
+  const isMobile = !!width && width < BREAKPOINTS.sm;
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      {/* <SheetTrigger asChild>{child}</SheetTrigger> */}
       <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+        {/* FIXME: header should be sticky and always visible regardgless of scroll position */}
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex h-full flex-col gap-1">
-          <section className="my-4 min-h-[20%]">
+        <article className="flex min-h-full flex-col gap-1" ref={ref}>
+          <section className="relative mt-4 aspect-video min-h-[min(20%,25opx)]">
             <GoalLineGraph
-              key={`${id}-graph`}
+              key={`${id}-graph-${isMobile}`}
               goalId={id}
               targetDate={targetDate}
               target={target}
               startDate={startDate}
               initialValue={initialValue}
+              isMobile={isMobile}
             />
           </section>
           <GoalEditForm goal={selectedGoal} />
         </article>
         <SheetFooter>
-          <SheetClose asChild></SheetClose>
+          <SheetClose asChild />
         </SheetFooter>
       </SheetContent>
     </Sheet>
@@ -122,7 +128,7 @@ async function handleUpdate(
       .executeTakeFirstOrThrow();
 
     toast.success(<Trans>Sucessfully updated goal</Trans>);
-    callback && callback();
+    callback?.();
   } catch (error) {
     console.error(error);
     toast.error(<Trans>Failed to update goal</Trans>);
@@ -188,7 +194,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
   });
 
   return (
-    <section className="my-4 overflow-y-auto">
+    <section className="my-4">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex h-[3.75rem] items-start justify-between">
           <div className="flex items-center">
