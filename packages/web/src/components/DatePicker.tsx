@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
 import { Trans } from '@lingui/react/macro';
 import { CalendarIcon } from '@radix-ui/react-icons';
@@ -31,6 +31,7 @@ const DATE_DISTANCE_NAMES: Record<number, string> = {
   1: 'Tomorrow',
   7: 'In a week',
   30: 'In a month',
+  31: 'In a month',
 };
 
 function getPresetRelativeDateText(date: Date) {
@@ -73,10 +74,9 @@ export const DatePicker = React.forwardRef(
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
-    const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
-    const [dateState, setDateState] = React.useState<Date | undefined>(
-      defaultDate,
-    );
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+    const [dateState, setDateState] = useState<Date | undefined>(defaultDate);
+    const [month, setMonth] = useState<Date | undefined>(dateState);
 
     const date = dateProp ?? dateState;
     const setDate = setDateProp ?? setDateState;
@@ -123,17 +123,20 @@ export const DatePicker = React.forwardRef(
           align="start"
           className="flex w-auto flex-col space-y-2 p-2"
           id={id}
+          collisionPadding={{ bottom: 40 }}
         >
           {showPresetDates && (
             <Select
-              onValueChange={(value) =>
-                setDate(addDays(new Date(), parseInt(value)))
-              }
+              onValueChange={(value) => {
+                const newDate = addDays(new Date(), Number.parseInt(value));
+                setDate(newDate);
+                setMonth(newDate);
+              }}
             >
               <SelectTrigger>
                 <SelectValue
                   placeholder={date ? getRelativeDistanceText(date) : 'Select'}
-                ></SelectValue>
+                />
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectItem value="0">{DATE_DISTANCE_NAMES[0]}</SelectItem>
@@ -151,6 +154,8 @@ export const DatePicker = React.forwardRef(
               disabled={disabledDates}
               disableNavigation={readOnly}
               defaultMonth={date ?? defaultDate}
+              month={month}
+              onMonthChange={setMonth}
             />
           </div>
         </PopoverContent>

@@ -1,28 +1,29 @@
-import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder'
-
-import { lazy, Suspense } from 'react'
-import { Trans } from '@lingui/react/macro'
-import { useStatus, useSuspenseQuery } from '@powersync/react'
+import { lazy, Suspense } from 'react';
+import { Trans } from '@lingui/react/macro';
+import { useStatus, useSuspenseQuery } from '@powersync/react';
 import {
   createLazyFileRoute,
   Link,
   Outlet,
   useNavigate,
-} from '@tanstack/react-router'
-import { AnimatePresence, LayoutGroup } from 'framer-motion'
+} from '@tanstack/react-router';
+import { AnimatePresence, LayoutGroup } from 'framer-motion';
+import { PlusIcon } from 'lucide-react';
 
-import GoalCard from '~/components/GoalCard'
-import { buttonVariants } from '~/components/ui/button'
-import db from '~/lib/database'
-import { useUser } from '~/states/userContext'
+import GoalCard from '~/components/GoalCard';
+import { buttonVariants } from '~/components/ui/button';
+import db from '~/lib/database';
+import { useUser } from '~/states/userContext';
+import { cn } from '~/utils';
+import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
-})
+});
 
 const LazyNoGoalsPlaceholder = lazy(
   () => import('../../components/NoGoalsPlaceholder'),
-)
+);
 const NoGoalsPlaceholder = ({
   onClick,
   className,
@@ -30,7 +31,7 @@ const NoGoalsPlaceholder = ({
   <Suspense fallback={null}>
     <LazyNoGoalsPlaceholder onClick={onClick} className={className} />
   </Suspense>
-)
+);
 
 const SyncingPlaceholder = () => (
   <div className="mx-auto flex flex-col items-center">
@@ -38,17 +39,17 @@ const SyncingPlaceholder = () => (
       <Trans>Syncing your goals...</Trans>
     </h4>
   </div>
-)
+);
 
 function Goals() {
   const { data: goals } = useSuspenseQuery(
     db.selectFrom('goal').selectAll().orderBy('id asc'),
-  )
-  const { hasSynced } = useStatus()
+  );
+  const { hasSynced } = useStatus();
 
-  const navigate = useNavigate()
-  const openNewGoalForm = () => void navigate({ to: '/goals/new' })
-  const user = useUser()
+  const navigate = useNavigate();
+  const openNewGoalForm = () => void navigate({ to: '/goals/new' });
+  const user = useUser();
 
   return (
     <div className="w-full">
@@ -56,17 +57,18 @@ function Goals() {
         <Link
           from="/goals"
           to="/goals/new"
-          className={buttonVariants({ variant: 'default', size: 'default' })}
+          className={cn(
+            buttonVariants({ variant: 'default', size: 'lg' }),
+            'pl-4 pr-5',
+          )}
         >
-          <Trans>New Goal</Trans>
+          <div className="flex items-center justify-center text-base">
+            <PlusIcon size={18} className="mr-2" />
+            <Trans>New Goal</Trans>
+          </div>
         </Link>
       </div>
-      <main
-        className="grid grid-flow-row-dense gap-6"
-        style={{
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, auto))',
-        }}
-      >
+      <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
         {!goals.length &&
           (user?.useSync ? (
             hasSynced ? (
@@ -87,5 +89,5 @@ function Goals() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }

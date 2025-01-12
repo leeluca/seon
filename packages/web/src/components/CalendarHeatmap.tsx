@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@powersync/react';
-import { addDays, addWeeks, format, startOfWeek, subWeeks } from 'date-fns';
+import {
+  addDays,
+  addWeeks,
+  isSameWeek as checkIsSameWeek,
+  isToday as checkIsToday,
+  format,
+  startOfWeek,
+  subWeeks,
+} from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import db from '~/lib/database';
@@ -14,12 +23,14 @@ interface CalendarHeatmapProps {
   goalId: string;
   checkBlockedDateFn?: (date: Date) => boolean;
   blockedDateFeedback?: string;
+  className?: string;
 }
 
 const CalendarHeatmap = ({
   goalId,
   checkBlockedDateFn,
   blockedDateFeedback,
+  className,
 }: CalendarHeatmapProps) => {
   const { data: entries } = useQuery(
     db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
@@ -43,11 +54,16 @@ const CalendarHeatmap = ({
     setCurrentWeekStart(addWeeks(currentWeekStart, 1));
   };
 
+  const goBackToCurrentWeek = () => {
+    setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
+  };
+
   const days = Array.from({ length: 7 }).map((_, index) =>
     addDays(currentWeekStart, index),
   );
   const startMonth = format(days[0], 'MMM');
   const endMonth = format(days[days.length - 1], 'MMM');
+  const isSameWeek = checkIsSameWeek(new Date(), currentWeekStart);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [selectedDateValue, setSelectedDateValue] = useState<
@@ -76,18 +92,28 @@ const CalendarHeatmap = ({
   }, [isPopoverOpen, selectedDateValue]);
 
   return (
-    <div className="flex flex-col items-center">
-      <p className="mb-2 ml-2 self-start text-xs font-medium">
-        {startMonth === endMonth
-          ? format(days[0], 'MMMM')
-          : `${startMonth} • ${endMonth}`}
-      </p>
-      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-end justify-items-stretch gap-2">
+    <div className={cn('flex flex-col items-center', className)}>
+      <div className="mb-2 flex w-full items-center justify-between">
+        <p className="ml-2 text-xs font-medium">
+          {startMonth === endMonth
+            ? format(days[0], 'MMMM')
+            : `${startMonth} • ${endMonth}`}
+        </p>
+        <Button
+          variant="outline"
+          className={isSameWeek ? 'invisible' : ''}
+          size="sm"
+          onClick={goBackToCurrentWeek}
+        >
+          <Trans>Today</Trans>
+        </Button>
+      </div>
+      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2">
         <Button
           variant="secondary"
           size="icon-sm"
           onClick={handlePrevWeek}
-          className="mb-1 justify-self-center"
+          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigLeftIcon size={18} />
         </Button>
@@ -96,6 +122,7 @@ const CalendarHeatmap = ({
           const savedEntry = entriesMap.get(stringDate);
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
           const isBlocked = checkBlockedDateFn?.(day);
+          const isToday = checkIsToday(day);
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
@@ -106,17 +133,20 @@ const CalendarHeatmap = ({
                 >
                   <Button
                     variant={savedEntry ? null : 'outline'}
-                    className={cn('aspect-square w-full min-w-0 rounded', {
-                      'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
-                        savedEntry,
-                      'bg-emerald-500/80': savedEntry && isSelected,
-                      'bg-accent text-accent-foreground':
-                        !savedEntry && isSelected,
-                      'cursor-not-allowed': isBlocked,
-                    })}
+                    className={cn(
+                      'aspect-square h-auto w-full min-w-0 rounded sm:h-9',
+                      {
+                        'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
+                          savedEntry,
+                        'bg-emerald-500/80': savedEntry && isSelected,
+                        'bg-accent text-accent-foreground':
+                          !savedEntry && isSelected,
+                        'cursor-not-allowed': isBlocked,
+                        'border-2 border-blue-200': isToday,
+                      },
+                    )}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
-                    // size="sm"
                     onClick={(e) => {
                       popoverAnchorRef.current = e.currentTarget;
                       setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
@@ -150,7 +180,7 @@ const CalendarHeatmap = ({
           variant="secondary"
           size="icon-sm"
           onClick={handleNextWeek}
-          className="mb-1 justify-self-center"
+          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
         </Button>

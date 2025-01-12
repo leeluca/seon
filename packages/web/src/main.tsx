@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
@@ -33,6 +33,9 @@ function InnerApp() {
 }
 
 function App() {
+  useEffect(() => {
+    document.querySelector('#loading-container')?.remove();
+  }, []);
   return (
     <UserProvider>
       <InnerApp />

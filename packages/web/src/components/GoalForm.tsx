@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
+import type { useForm } from '@tanstack/react-form';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
 
@@ -93,7 +93,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="col-span-3 sm:col-span-2">
                   <Input
                     id="title"
                     value={value}
@@ -131,7 +131,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="col-span-3 sm:col-span-2">
                   <Input
                     id="target-value"
                     type="number"
@@ -183,7 +183,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-2">
+                <div className="col-span-3 sm:col-span-2">
                   <DatePicker
                     id="target-date"
                     date={value}
@@ -204,7 +204,7 @@ function NewGoalForm({
           <div className="my-2 flex items-center gap-1">
             <CollapsibleTrigger asChild className="mr-2">
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="ghost"
                 type="button"
                 id="toggle-extra-options"
@@ -254,7 +254,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="col-span-3 sm:col-span-2">
                         <DatePicker
                           id="start-date"
                           defaultDate={new Date()}
@@ -295,7 +295,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="col-span-3 sm:col-span-2">
                         <Input
                           id="unit"
                           value={value}
@@ -326,7 +326,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-2">
+                      <div className="col-span-3 sm:col-span-2">
                         <Input
                           id="initial-value"
                           type="number"

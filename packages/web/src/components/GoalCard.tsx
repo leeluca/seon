@@ -1,6 +1,5 @@
-import type { Database } from '~/lib/powersync/AppSchema';
-
 import { useMemo, useRef } from 'react';
+import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import {
@@ -10,7 +9,6 @@ import {
   startOfDay,
 } from 'date-fns';
 import { Maximize2Icon, Trash2Icon } from 'lucide-react';
-// import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
 import {
@@ -22,12 +20,12 @@ import {
 } from '~/components/ui/card';
 import useGoalEntriesSum from '~/hooks/useGoalEntriesSum';
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-import { t } from '@lingui/core/macro';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -40,7 +38,7 @@ function ProgressBar({
   currentValue,
 }: ProgressBarProps) {
   return (
-    <div className="w-[calc(100% + 48px)] group relative -mx-3 flex h-3 rounded bg-gray-200">
+    <div className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3">
       <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
         {progressPercent <= 100 ? `${currentValue}/${target}` : target}
       </p>
@@ -71,7 +69,11 @@ function getProgressIconAndMessage(status: ProgressStatus) {
         progressStatus: status,
       };
     case 'onTrack':
-      return { icon: '🙂', message: t`Right on track!`, progressStatus: status };
+      return {
+        icon: '🙂',
+        message: t`Right on track!`,
+        progressStatus: status,
+      };
     case 'ahead':
       return {
         icon: '😎',
@@ -122,18 +124,19 @@ function getProgressStatus({
 
   if (isCompleted) {
     return 'complete';
-  } else if (percentageDifference <= 5) {
-    return 'onTrack';
-  } else if (differenceFromTarget > 0) {
-    return 'ahead';
-  } else {
-    return 'behind';
   }
+  if (percentageDifference <= 5) {
+    return 'onTrack';
+  }
+  if (differenceFromTarget > 0) {
+    return 'ahead';
+  }
+  return 'behind';
 }
 
 async function deleteGoal(goalId: string, callback?: () => void) {
   await db.deleteFrom('goal').where('id', '=', goalId).execute();
-  callback && callback();
+  callback?.();
 }
 
 export default function GoalCard({
@@ -182,42 +185,22 @@ export default function GoalCard({
   );
 
   return (
-    <Card
-      className="w-full text-center shadow-sm"
-      // whileTap={{ scale: 0.97, transition: { ease: 'easeIn' } }}
-      // initial={{ scale: 0 }}
-      // animate={{
-      //   scale: 1,
-      //   transition: {
-      //     delay: 0.25,
-      //     type: 'tween',
-      //   },
-      // }}
-      // exit={{
-      //   opacity: 0,
-      //   scale: 0,
-      //   transition: {
-      //     type: 'tween',
-      //   },
-      // }}
-      // layout
-      // transition={{ ease: 'easeInOut' }}
-      ref={cardRef}
-    >
-      <CardHeader className="p-4">
-        <div className="flex h-16 items-center">
-          <CardTitle className="mr-3 w-60 grow text-center text-2xl font-medium">
+    <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
+      <CardHeader className="pb-2 sm:p-4">
+        <div className="flex h-12 items-center sm:h-14">
+          <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
             {title}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-9">
+      <CardContent className="flex flex-col gap-9 px-4 sm:px-6">
         <CalendarHeatmap
           goalId={id}
           checkBlockedDateFn={(date) =>
             isBefore(startOfDay(date), startOfDay(startDate))
           }
-          blockedDateFeedback="Before goal's start date"
+          blockedDateFeedback={t`Before goal's start date`}
+          className="-mx-2 sm:mx-0"
         />
         <div className="flex flex-col gap-2">
           <ProgressBar
@@ -233,18 +216,19 @@ export default function GoalCard({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  size="icon-sm"
+                  size="icon-responsive"
                   variant="ghost"
                   className={cn(
-                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
+                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
                     {
-                      'text-[22px]': progressStatus === 'complete',
+                      'text-[26px] sm:text-[22px]':
+                        progressStatus === 'complete',
                     },
                   )}
                   ref={triggerRef}
                   onClick={(e) => e.preventDefault()}
                 >
-                  {progressIcon}
+                  <div className="mt-1">{progressIcon}</div>
                 </Button>
               </TooltipTrigger>
               <TooltipContent
@@ -263,7 +247,7 @@ export default function GoalCard({
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                size="icon-sm"
+                size="icon-responsive"
                 variant="outline"
                 aria-label={t`Delete goal`}
               >
@@ -302,7 +286,10 @@ export default function GoalCard({
             params={{ id: shortId }}
             replace
             aria-label={t`Toggle goal details`}
-            className={buttonVariants({ variant: 'outline', size: 'icon-sm' })}
+            className={buttonVariants({
+              variant: 'outline',
+              size: 'icon-responsive',
+            })}
           >
             <Maximize2Icon size={18} />
           </Link>
