@@ -1,4 +1,4 @@
-import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
+import { Outlet, createLazyFileRoute } from '@tanstack/react-router';
 
 import LanguageSelector from '~/components/LanguageSelector';
 import AppStatusMenu from '~/components/StatusMenu';

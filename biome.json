@@ -8,7 +8,11 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["packages/server/src/db/*", "**/routeTree.gen.ts"]
+    "ignore": [
+      "packages/server/src/db/*",
+      "**/routeTree.gen.ts",
+      "**/messages.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -21,7 +25,7 @@
     "attributePosition": "auto",
     "bracketSpacing": true
   },
-  "organizeImports": { "enabled": true },
+  "organizeImports": { "enabled": false },
   "linter": {
     "enabled": true,
     "rules": {
@@ -36,7 +40,8 @@
         "recommended": true
       },
       "correctness": {
-        "recommended": true
+        "recommended": true,
+        "noUnusedImports": "warn"
       },
       "performance": {
         "recommended": true
