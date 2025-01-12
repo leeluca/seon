@@ -29,6 +29,20 @@
     />
   </head>
   <body>
+    <div
+      id="loading-container"
+      class="w-100 animate-delayed-fade-in flex h-dvh w-dvw justify-center align-middle opacity-0"
+    >
+      <!-- This spinner shows if it takes more than 400ms for React and dependencies to load. 
+       It only shows for production build. -->
+      <div
+        class="flex items-center justify-center gap-2 px-2 py-1 [&>*]:rounded-full [&>*]:bg-gray-500"
+      >
+        <div class="h-2 w-2 animate-bounce [animation-delay:-0.3s]"></div>
+        <div class="h-2 w-2 animate-bounce [animation-delay:-0.15s]"></div>
+        <div class="h-2 w-2 animate-bounce"></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
