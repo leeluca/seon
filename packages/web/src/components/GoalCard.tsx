@@ -185,7 +185,7 @@ export default function GoalCard({
   );
 
   return (
-    <Card className="w-full text-center shadow-sm" ref={cardRef}>
+    <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
       <CardHeader className="pb-2 sm:p-4">
         <div className="flex h-12 items-center sm:h-14">
           <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
@@ -219,9 +219,10 @@ export default function GoalCard({
                   size="icon-responsive"
                   variant="ghost"
                   className={cn(
-                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-xl font-light opacity-0',
+                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
                     {
-                      'text-[22px]': progressStatus === 'complete',
+                      'text-[26px] sm:text-[22px]':
+                        progressStatus === 'complete',
                     },
                   )}
                   ref={triggerRef}
@@ -285,7 +286,10 @@ export default function GoalCard({
             params={{ id: shortId }}
             replace
             aria-label={t`Toggle goal details`}
-            className={buttonVariants({ variant: 'outline', size: 'icon-responsive' })}
+            className={buttonVariants({
+              variant: 'outline',
+              size: 'icon-responsive',
+            })}
           >
             <Maximize2Icon size={18} />
           </Link>
