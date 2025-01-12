@@ -186,14 +186,14 @@ export default function GoalCard({
 
   return (
     <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
-      <CardHeader className="pb-2 sm:p-4">
+      <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
         <div className="flex h-12 items-center sm:h-14">
           <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
             {title}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-9 px-4 sm:px-6">
+      <CardContent className="flex flex-col gap-8 px-4 pb-4 sm:gap-9 sm:px-6 sm:pb-6">
         <CalendarHeatmap
           goalId={id}
           checkBlockedDateFn={(date) =>
