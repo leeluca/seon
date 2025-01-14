@@ -35,6 +35,7 @@ type GoalSubmitData = Pick<
   | 'targetDate'
   | 'initialValue'
   | 'userId'
+  | 'type'
 >;
 
 async function handleSave(
@@ -46,6 +47,7 @@ async function handleSave(
     targetDate,
     initialValue,
     userId,
+    type,
   }: GoalSubmitData,
   callback?: () => void,
 ) {
@@ -66,6 +68,7 @@ async function handleSave(
         targetDate: targetDate,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        type,
       })
       .executeTakeFirstOrThrow();
 
@@ -99,6 +102,7 @@ function NewGoalDialog() {
       startDate: new Date(),
       targetDate: add(startOfDay(new Date()), { months: 1 }),
       initialValue: 0,
+      type: 'COUNT',
     },
     validators: {
       onChange({ value }) {

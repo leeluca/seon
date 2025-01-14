@@ -1,1 +1,1 @@
-type goalTypes = 'COUNT' | 'PROGRESS' | 'BOOLEAN';
+type GoalType = 'COUNT' | 'PROGRESS' | 'BOOLEAN';

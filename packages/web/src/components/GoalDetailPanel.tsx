@@ -135,6 +135,7 @@ async function handleUpdate(
   }
 }
 
+// FIXME: use common goal interface
 interface NewGoal {
   title: string;
   targetValue?: number;
@@ -142,6 +143,7 @@ interface NewGoal {
   startDate: Date;
   targetDate?: Date;
   initialValue: number;
+  type: GoalType;
 }
 
 function GoalEditForm({ goal }: { goal: Database['goal'] }) {
@@ -153,6 +155,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     unit,
     id: goalId,
     updatedAt,
+    type,
   } = goal;
   const { t } = useLingui();
 
@@ -166,6 +169,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
       startDate: new Date(startDate),
       targetDate: new Date(targetDate),
       initialValue: 0,
+      type: type as GoalType,
     },
     validators: {
       onChange({ value }) {
