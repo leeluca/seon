@@ -1,4 +1,4 @@
-import { BaseColumnType, ColumnType, Schema, Table } from '@powersync/web';
+import { ColumnType, Schema, Table, type BaseColumnType } from '@powersync/web';
 
 // Postgres schema: packages/server/src/db/schema.ts
 // NOTE: used to map postgres types to sqlite types, including required types
@@ -61,6 +61,7 @@ const goal = new Table(
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
     initialValue: column.integer,
+    type: column.text,
   },
   { indexes: {} },
 );

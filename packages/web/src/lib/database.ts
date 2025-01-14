@@ -1,8 +1,7 @@
 import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
 import { PowerSyncDatabase } from '@powersync/web';
 
-import { AppSchema, Database } from '~/lib/powersync/AppSchema';
-
+import { AppSchema, type Database } from '~/lib/powersync/AppSchema';
 
 // NOTE: should be accessed through PowerSyncContext
 export const powerSyncDb = new PowerSyncDatabase({
