@@ -32,8 +32,18 @@ const CalendarHeatmap = ({
   blockedDateFeedback,
   className,
 }: CalendarHeatmapProps) => {
+  const {
+    data: [goal],
+  } = useQuery(
+    db.selectFrom('goal').select('type').where('id', '=', goalId).limit(1),
+  );
+
   const { data: entries } = useQuery(
-    db.selectFrom('entry').selectAll().where('goalId', '=', goalId),
+    db
+      .selectFrom('entry')
+      .selectAll()
+      .where('goalId', '=', goalId)
+      .orderBy('date', 'asc'),
   );
 
   const entriesMap = useMemo(
@@ -187,7 +197,7 @@ const CalendarHeatmap = ({
       </div>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverAnchor virtualRef={popoverAnchorRef} />
-        <PopoverContent className="w-64">
+        <PopoverContent className="w-fit">
           <NewEntryForm
             goalId={goalId}
             entryId={
@@ -196,6 +206,8 @@ const CalendarHeatmap = ({
             }
             date={selectedDateValue[0]}
             value={selectedDateValue[1]}
+            orderedEntries={entries}
+            goalType={goal?.type as GoalType}
             onSubmitCallback={() => setIsPopoverOpen(false)}
           />
         </PopoverContent>

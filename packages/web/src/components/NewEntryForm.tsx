@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { LoaderCircleIcon, Trash2Icon } from 'lucide-react';
@@ -8,6 +9,7 @@ import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
 import { cn, generateUUIDs } from '~/utils';
 import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
@@ -16,8 +18,17 @@ import FormItem from './FormItem';
 
 async function deleteEntry(id: string, callback?: () => void) {
   await db.deleteFrom('entry').where('id', '=', id).execute();
-  callback && callback();
+  callback?.();
 }
+
+const findPreviousEntry = (
+  entries: Database['entry'][],
+  selectedDate: Date,
+) => {
+  return entries
+    .filter((entry) => new Date(entry.date) < selectedDate)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+};
 
 async function handleSubmit(
   {
@@ -72,11 +83,18 @@ async function handleSubmit(
   }
 }
 
+const goalTypeTitle = {
+  COUNT: t`Amount`,
+  PROGRESS: t`Progress`,
+  BOOLEAN: t`Yes or No`,
+};
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
   date?: Date;
   value?: number;
+  orderedEntries: Database['entry'][];
+  goalType: GoalType;
   onSubmitCallback?: () => void;
 }
 
@@ -85,14 +103,21 @@ const NewEntryForm = ({
   entryId,
   date = new Date(),
   value,
+  goalType,
+  orderedEntries,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
   const user = useUser();
   const { t } = useLingui();
+  const previousValue =
+    (goalType === 'PROGRESS' &&
+      findPreviousEntry(orderedEntries, date)?.value) ||
+    0;
+
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
-      value: value ?? 0,
+      value: value || previousValue,
     },
     validators: {
       onChange({ value }) {
@@ -162,7 +187,7 @@ const NewEntryForm = ({
           </FormItem>
 
           <FormItem
-            label={t`Amount`}
+            label={goalTypeTitle[goalType]}
             labelFor="entry-value"
             className="grid grid-cols-3 items-center"
             labelClassName="text-start"
@@ -180,6 +205,7 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
+                      {/* TODO: custom number input */}
                       <Input
                         id="entry-value"
                         type="number"
