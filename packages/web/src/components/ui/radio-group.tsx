@@ -31,8 +31,8 @@ const RadioGroupItem = React.forwardRef<
       )}
       {...props}
     >
-      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <DotFilledIcon className="fill-primary h-3.5 w-3.5" />
+      <RadioGroupPrimitive.Indicator className="relative block">
+        <DotFilledIcon className="fill-primary absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );

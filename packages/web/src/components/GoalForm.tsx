@@ -14,6 +14,7 @@ import {
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
+import { cn } from '~/utils';
 import {
   blockNonNumberInput,
   maxLengthValidator,
@@ -211,7 +212,7 @@ function NewGoalForm({
         label={t`Type`}
         labelFor="type"
         required
-        className={formItemClassName}
+        className={cn(formItemClassName, 'h-9')}
         labelClassName={labelClassName}
       >
         <form.Field name="type">
@@ -254,10 +255,11 @@ function NewGoalForm({
                       <TooltipContent side="bottom">
                         <p>
                           <Trans>
-                            Track your overall progress towards a target.
+                            Track how many times you complete something each
+                            day.
                             <br />
-                            E.g. reading a book (current page) or saving money
-                            (total amount saved).
+                            E.g. '30 minutes of exercise' or 'drink 8 glasses of
+                            water'.
                           </Trans>
                         </p>
                       </TooltipContent>
@@ -281,11 +283,10 @@ function NewGoalForm({
                       <TooltipContent side="bottom">
                         <p>
                           <Trans>
-                            Track how many times you complete something each
-                            day.
+                            Track your overall progress towards a target.
                             <br />
-                            E.g. '30 minutes of exercise' or 'drink 8 glasses of
-                            water'.
+                            E.g. reading a book (current page) or saving money
+                            (total amount saved).
                           </Trans>
                         </p>
                       </TooltipContent>
