@@ -85,7 +85,7 @@ async function handleSubmit(
 const goalTypeTitle = {
   COUNT: t`Amount`,
   PROGRESS: t`Progress`,
-  BOOLEAN: t`Yes or No`,
+  BOOLEAN: t`Did you achieve it?`,
 };
 interface NewEntryFormProps {
   goalId: string;
@@ -121,14 +121,14 @@ const NewEntryForm = ({
     validators: {
       onChange({ value }) {
         const { value: inputtedValue } = value;
-        if (!inputtedValue) {
+        if (!inputtedValue === undefined) {
           return 'Missing required fields';
         }
       },
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (!inputtedValue || !user) {
+      if (inputtedValue === undefined || !user) {
         return;
       }
       await handleSubmit(
@@ -184,85 +184,154 @@ const NewEntryForm = ({
               }}
             </form.Field>
           </FormItem>
-
-          <FormItem
-            label={goalTypeTitle[goalType]}
-            labelFor="entry-value"
-            className="grid grid-cols-3 items-center"
-            labelClassName="text-start"
-            required
-          >
-            <form.Field name="value">
-              {(field) => {
-                const {
-                  value,
-                  meta: { errors },
-                } = field.state;
-                return (
-                  <FormError.Wrapper
-                    errors={errors}
-                    errorClassName="col-span-2 col-start-2"
-                  >
-                    <div className="col-span-2">
-                      <NumberInput.Root
-                        value={value}
-                        onChange={(e) => {
-                          field.handleChange(Number(e.target.value));
-                        }}
-                        min={0}
-                        max={MAX_INPUT_NUMBER}
-                        buttonStacked
-                      >
-                        <NumberInput.Field
-                          id="entry-value"
-                          // FIXME: remove autoFocus for touchscreen
-                          autoFocus
-                        />
-                        <div className="flex flex-col">
-                          <NumberInput.Button direction="inc" />
-                          <NumberInput.Button direction="dec" />
+          {goalType === 'BOOLEAN' ? (
+            <FormItem
+              label={goalTypeTitle[goalType]}
+              labelFor="entry-value"
+              className="mt-2 flex w-full flex-col items-start gap-y-2"
+              labelClassName="text-start col-span-2"
+              required
+            >
+              <form.Field name="value">
+                {(field) => {
+                  const {
+                    value,
+                    meta: { errors },
+                  } = field.state;
+                  return (
+                    <FormError.Wrapper errors={errors}>
+                      <div className="mt-1 flex w-full items-center gap-1">
+                        <div className="flex w-full items-center gap-1">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              field.handleChange(1);
+                            }}
+                            className={cn(
+                              value === 1
+                                ? 'border-emerald-200 bg-emerald-100'
+                                : '',
+                              'h-10 w-1/2 px-8 text-base',
+                            )}
+                          >
+                            <Trans>Yes</Trans>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              field.handleChange(0);
+                            }}
+                            className={cn(
+                              value === 0
+                                ? 'border-orange-200 bg-orange-100'
+                                : '',
+                              'h-10 w-1/2 px-8 text-base',
+                            )}
+                          >
+                            <Trans>No</Trans>
+                          </Button>
                         </div>
-                      </NumberInput.Root>
-                    </div>
-                  </FormError.Wrapper>
-                );
-              }}
-            </form.Field>
-          </FormItem>
-          <form.Subscribe
-            selector={(state) => [
-              state.isSubmitting,
-              !state.isTouched || !state.canSubmit || state.isSubmitting,
-            ]}
-          >
-            {([isSubmitting, isSubmitDisabled]) => (
-              <div
-                className={cn('mt-1 grid grid-cols-3 gap-2', {
-                  'cursor-not-allowed': isSubmitDisabled,
-                })}
-              >
-                {/* FIXME: apply cursor-not-allowed to delete button individually */}
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="col-span-1"
-                  disabled={!entryId}
-                  onClick={() =>
-                    entryId && void deleteEntry(entryId, onSubmitCallback)
-                  }
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="hover:bg-destructive/90 hover:text-destructive-foreground flex-shrink-0 justify-self-end"
+                          size="icon"
+                          disabled={!entryId}
+                          onClick={() =>
+                            entryId &&
+                            void deleteEntry(entryId, onSubmitCallback)
+                          }
+                        >
+                          <Trash2Icon size={18} />
+                        </Button>
+                      </div>
+                    </FormError.Wrapper>
+                  );
+                }}
+              </form.Field>
+            </FormItem>
+          ) : (
+            <FormItem
+              label={goalTypeTitle[goalType]}
+              labelFor="entry-value"
+              className="grid grid-cols-3 items-center"
+              labelClassName="text-start"
+              required
+            >
+              <form.Field name="value">
+                {(field) => {
+                  const {
+                    value,
+                    meta: { errors },
+                  } = field.state;
+                  return (
+                    <FormError.Wrapper
+                      errors={errors}
+                      errorClassName="col-span-2 col-start-2"
+                    >
+                      <div className="col-span-2">
+                        <NumberInput.Root
+                          value={value}
+                          onChange={(e) => {
+                            field.handleChange(Number(e.target.value));
+                          }}
+                          min={0}
+                          max={MAX_INPUT_NUMBER}
+                          buttonStacked
+                        >
+                          <NumberInput.Field
+                            id="entry-value"
+                            // FIXME: remove autoFocus for touchscreen
+                            autoFocus
+                          />
+                          <div className="flex flex-col">
+                            <NumberInput.Button direction="inc" />
+                            <NumberInput.Button direction="dec" />
+                          </div>
+                        </NumberInput.Root>
+                      </div>
+                    </FormError.Wrapper>
+                  );
+                }}
+              </form.Field>
+            </FormItem>
+          )}
+          {goalType !== 'BOOLEAN' && (
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isTouched || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isSubmitDisabled]) => (
+                <div
+                  className={cn('mt-1 grid grid-cols-3 gap-2', {
+                    'cursor-not-allowed': isSubmitDisabled,
+                  })}
                 >
-                  <Trash2Icon size={18} />
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitDisabled}
-                  className="col-span-2"
-                >
-                  <Trans>Save</Trans>
-                </Button>
-              </div>
-            )}
-          </form.Subscribe>
+                  {/* FIXME: apply cursor-not-allowed to delete button individually */}
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="col-span-1"
+                    disabled={!entryId}
+                    onClick={() =>
+                      entryId && void deleteEntry(entryId, onSubmitCallback)
+                    }
+                  >
+                    <Trash2Icon size={18} />
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitDisabled}
+                    className="col-span-2"
+                  >
+                    <Trans>Save</Trans>
+                  </Button>
+                </div>
+              )}
+            </form.Subscribe>
+          )}
         </div>
       </div>
     </form>
