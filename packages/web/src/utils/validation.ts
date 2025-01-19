@@ -1,9 +1,8 @@
-import type { Updater } from '@tanstack/react-form';
-import type { IPreferences } from '~/states/userContext';
-
 import { t } from '@lingui/core/macro';
+import type { Updater } from '@tanstack/react-form';
 
 import { MAX_INPUT_NUMBER } from '~/constants';
+import type { IPreferences } from '~/states/userContext';
 
 export const parseInputtedNumber = (
   value: string,
@@ -17,7 +16,7 @@ export const parseInputtedNumber = (
     callback(0);
     return;
   }
-  const parsedNumber = parseInt(value.replace(/[^0-9]/g, ''), 10);
+  const parsedNumber = Number.parseInt(value.replace(/[^0-9]/g, ''), 10);
   if (parsedNumber < 0 || parsedNumber >= max) {
     return;
   }
@@ -29,8 +28,19 @@ export const parseInputtedNumber = (
 export const blockNonNumberInput = (
   e: React.KeyboardEvent<HTMLInputElement>,
 ) => {
-  const NON_NUMBER_VALUES = new Set(['e', 'E', '-', '+', '.', ',']);
-  if (NON_NUMBER_VALUES.has(e.key)) {
+  const NUMBER_VALUES = new Set([
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+  ]);
+  if (e.key !== 'Backspace' && !NUMBER_VALUES.has(e.key)) {
     e.preventDefault();
   }
 };

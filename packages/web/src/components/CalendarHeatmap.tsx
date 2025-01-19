@@ -197,7 +197,7 @@ const CalendarHeatmap = ({
       </div>
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
         <PopoverAnchor virtualRef={popoverAnchorRef} />
-        <PopoverContent className="w-fit">
+        <PopoverContent className="w-fit max-w-72">
           <NewEntryForm
             goalId={goalId}
             entryId={

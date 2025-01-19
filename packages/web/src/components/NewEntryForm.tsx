@@ -1,20 +1,19 @@
 import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
-import { LoaderCircleIcon, Trash2Icon } from 'lucide-react';
+import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
 import { cn, generateUUIDs } from '~/utils';
-import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+import { NumberInput } from './ui/number-input';
 
 async function deleteEntry(id: string, callback?: () => void) {
   await db.deleteFrom('entry').where('id', '=', id).execute();
@@ -205,24 +204,25 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
-                      {/* TODO: custom number input */}
-                      <Input
-                        id="entry-value"
-                        type="number"
-                        // Removes leading zeros
-                        value={value?.toString()}
-                        onKeyDown={(e) => blockNonNumberInput(e)}
+                      <NumberInput.Root
+                        value={value}
                         onChange={(e) => {
-                          parseInputtedNumber(
-                            e.target.value,
-                            field.handleChange,
-                          );
+                          field.handleChange(Number(e.target.value));
                         }}
-                        placeholder="numbers only"
                         min={0}
                         max={MAX_INPUT_NUMBER}
-                        autoFocus
-                      />
+                        buttonStacked
+                      >
+                        <NumberInput.Field
+                          id="entry-value"
+                          // FIXME: remove autoFocus for touchscreen
+                          autoFocus
+                        />
+                        <div className="flex flex-col">
+                          <NumberInput.Button direction="inc" />
+                          <NumberInput.Button direction="dec" />
+                        </div>
+                      </NumberInput.Root>
                     </div>
                   </FormError.Wrapper>
                 );
@@ -258,9 +258,6 @@ const NewEntryForm = ({
                   disabled={isSubmitDisabled}
                   className="col-span-2"
                 >
-                  {isSubmitting && (
-                    <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
-                  )}
                   <Trans>Save</Trans>
                 </Button>
               </div>
