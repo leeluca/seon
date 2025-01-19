@@ -91,7 +91,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const preferencesValue = useMemo(
     () => ({ preferences, setPreferences }),
-    [preferences, setPreferences],
+    [preferences],
   );
 
   return (
