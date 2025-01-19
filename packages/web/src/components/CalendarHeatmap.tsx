@@ -4,6 +4,7 @@ import { useQuery } from '@powersync/react';
 import {
   addDays,
   addWeeks,
+  isPast as checkIsPast,
   isSameWeek as checkIsSameWeek,
   isToday as checkIsToday,
   format,
@@ -19,6 +20,33 @@ import { Button } from './ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
+interface GetButtonStylesArgs {
+  entryValue: number | undefined;
+  isSelected: boolean;
+  isToday: boolean;
+  isPast: boolean;
+}
+const getButtonStyles = ({
+  entryValue,
+  isSelected,
+  isToday,
+  isPast,
+}: GetButtonStylesArgs) => {
+  const entryValueZero = (isPast && !entryValue) || entryValue === 0;
+  const entryUndefined = entryValue === undefined && !isPast;
+  const baseStyles = entryUndefined
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded sm:h-9 hover:bg-accent hover:text-accent-foreground'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded sm:h-9';
+
+  return cn(baseStyles, {
+    'bg-emerald-500 hover:bg-emerald-500/80': entryValue && entryValue > 0,
+    'bg-emerald-500/70': entryValue && entryValue > 0 && isSelected,
+    'bg-orange-400 hover:bg-orange-400/80': entryValueZero,
+    'bg-orange-400/70': entryValueZero && isSelected,
+    'bg-accent text-accent-foreground': entryUndefined && isSelected,
+    'border-2 border-blue-200': isToday,
+  });
+};
 interface CalendarHeatmapProps {
   goalId: string;
   checkBlockedDateFn?: (date: Date) => boolean;
@@ -130,9 +158,12 @@ const CalendarHeatmap = ({
         {days.map((day) => {
           const stringDate = day.toDateString();
           const savedEntry = entriesMap.get(stringDate);
+          const entryValue = savedEntry?.value;
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
           const isBlocked = checkBlockedDateFn?.(day);
           const isToday = checkIsToday(day);
+          const isPast = !isToday && checkIsPast(day);
+
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
@@ -143,23 +174,17 @@ const CalendarHeatmap = ({
                 >
                   <Button
                     variant={savedEntry ? null : 'outline'}
-                    className={cn(
-                      'aspect-square h-auto w-full min-w-0 rounded sm:h-9',
-                      {
-                        'border-input border bg-emerald-500 text-white hover:bg-emerald-500/80':
-                          savedEntry,
-                        'bg-emerald-500/80': savedEntry && isSelected,
-                        'bg-accent text-accent-foreground':
-                          !savedEntry && isSelected,
-                        'cursor-not-allowed': isBlocked,
-                        'border-2 border-blue-200': isToday,
-                      },
-                    )}
+                    className={getButtonStyles({
+                      entryValue,
+                      isSelected,
+                      isToday,
+                      isPast: isPast && !isBlocked,
+                    })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
                     onClick={(e) => {
                       popoverAnchorRef.current = e.currentTarget;
-                      setSelectedDateValue(() => [day, savedEntry?.value ?? 0]);
+                      setSelectedDateValue(() => [day, entryValue ?? 0]);
                       setIsPopoverOpen(true);
                     }}
                   >
@@ -168,13 +193,13 @@ const CalendarHeatmap = ({
                     </div>
                   </Button>
                 </TooltipTrigger>
-                {savedEntry && (
+                {!!entryValue && (
                   <TooltipContent
                     onPointerDownOutside={(e) => {
                       e.preventDefault();
                     }}
                   >
-                    <p>{savedEntry.value}</p>
+                    <p>{entryValue}</p>
                   </TooltipContent>
                 )}
                 {isBlocked && blockedDateFeedback && (
