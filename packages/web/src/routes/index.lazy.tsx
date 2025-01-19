@@ -1,41 +1,41 @@
 import { useEffect, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { useShallow } from 'zustand/react/shallow';
 
 import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
-import { useUser, useUserAction } from '~/states/userContext';
-import { generateOfflineUser } from '~/utils';
+import { useUserStore } from '~/states/stores/userStore';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
 });
 
 function Index() {
-  const user = useUser();
-  const setUser = useUserAction();
+  const [isUserInitialized, user, fetchUser] = useUserStore(
+    useShallow((state) => [state.isInitialized, state.user, state.fetch]),
+  );
+
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(false);
 
   const initializeUser = async () => {
     setIsLoading(true);
-    const newUserInfo = generateOfflineUser();
-    const newUser = await db
+    await db
       .insertInto('user')
-      .values(newUserInfo)
+      .values(user)
       .returningAll()
       .executeTakeFirstOrThrow();
-
-    setUser(newUser);
+    fetchUser();
   };
 
   useEffect(() => {
-    if (user) {
+    if (isUserInitialized) {
       void navigate({ to: '/goals' });
     }
-  }, [user, navigate]);
+  }, [isUserInitialized, navigate]);
 
   return (
     <div>

@@ -167,7 +167,6 @@ export function NumberInputField({
   }, [combinedRef, context]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('e.target.value', e.target.value, typeof e.target.value);
     const newVal =
       e.target.value === '' ? undefined : Number.parseFloat(e.target.value);
     context.setValue(newVal);

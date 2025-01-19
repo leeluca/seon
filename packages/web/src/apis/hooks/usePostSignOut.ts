@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
@@ -9,13 +10,13 @@ import {
 } from '~/constants/storage';
 import { powerSyncDb } from '~/lib/database';
 import { router } from '~/main';
+import { useUserStore } from '~/states/stores/userStore';
 import { useSupabase } from '~/states/syncContext';
-import { useUserAction } from '~/states/userContext';
-import { APIError } from '~/utils/errors';
+import type { APIError } from '~/utils/errors';
 import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
 
-export const POST_SIGNOUT_KEY = `/api/auth/signout`;
+export const POST_SIGNOUT_KEY = '/api/auth/signout';
 
 interface PostSignOutResponse {
   result: boolean;
@@ -31,7 +32,7 @@ const onSignOut = async (
 ) => {
   const signOutToast = toast('Signing you out...', {
     dismissible: false,
-    duration: Infinity,
+    duration: Number.POSITIVE_INFINITY,
   });
 
   sessionStorage.removeItem(DB_TOKEN_KEY);
@@ -43,7 +44,7 @@ const onSignOut = async (
 
   resetLocalUser();
   toast.dismiss(signOutToast);
-  toast.success('See you again!');
+  toast.success(t`See you again!`);
 
   await mutate(AUTH_STATUS_KEY);
   await router.navigate({ to: '/' });
@@ -52,7 +53,7 @@ const onSignOut = async (
 };
 
 const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
-  const setUser = useUserAction();
+  const setUserIsInitialized = useUserStore((state) => state.setIsInitialized);
   const { resetConnector } = useSupabase();
 
   return useSWRMutation<PostSignOutResponse, APIError, typeof POST_SIGNOUT_KEY>(
@@ -64,13 +65,13 @@ const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
     {
       onSuccess: (data) => {
         if (data.result) {
-          onSuccess && onSuccess(data);
-          void onSignOut(resetConnector, () => setUser(undefined));
+          onSuccess?.(data);
+          void onSignOut(resetConnector, () => setUserIsInitialized(false));
         }
       },
       onError: (err) => {
-        onError && onError(err);
-        void onSignOut(resetConnector, () => setUser(undefined));
+        onError?.(err);
+        void onSignOut(resetConnector, () => setUserIsInitialized(false));
       },
     },
   );

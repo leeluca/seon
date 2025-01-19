@@ -13,7 +13,7 @@ import { PlusIcon } from 'lucide-react';
 import GoalCard from '~/components/GoalCard';
 import { buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
-import { useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
@@ -49,7 +49,7 @@ function Goals() {
 
   const navigate = useNavigate();
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
 
   return (
     <div className="w-full">

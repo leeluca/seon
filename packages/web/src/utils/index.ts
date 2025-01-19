@@ -1,10 +1,10 @@
-import type { Database } from '~/lib/powersync/AppSchema';
-import type { ClassValue } from 'clsx';
-
-import { clsx } from 'clsx';
+import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import short from 'short-uuid';
 import { v7 as uuidv7 } from 'uuid';
+
+import type { Database } from '~/lib/powersync/AppSchema';
+import { defaultLocale } from '~/locales/i18n';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -28,5 +28,8 @@ export const generateOfflineUser = () => {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     useSync: Number(false),
+    preferences: JSON.stringify({
+      language: defaultLocale,
+    }),
   } satisfies Database['user'];
 };

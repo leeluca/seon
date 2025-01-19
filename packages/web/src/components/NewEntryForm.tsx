@@ -9,7 +9,7 @@ import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { cn, generateUUIDs } from '~/utils';
 import FormError from './FormError';
 import FormItem from './FormItem';
@@ -106,7 +106,7 @@ const NewEntryForm = ({
   orderedEntries,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
-  const user = useUser();
+  const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
   const previousValue =
     (goalType === 'PROGRESS' &&
@@ -128,7 +128,7 @@ const NewEntryForm = ({
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (inputtedValue === undefined || !user) {
+      if (inputtedValue === undefined) {
         return;
       }
       await handleSubmit(
@@ -136,7 +136,7 @@ const NewEntryForm = ({
           value: inputtedValue,
           date,
           goalId,
-          userId: user.id,
+          userId,
         },
         onSubmitCallback,
       );

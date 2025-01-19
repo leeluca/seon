@@ -5,8 +5,8 @@ import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 
 import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import usePostSignIn, {
-  PostSignInResponse,
-  SignInParams,
+  type PostSignInResponse,
+  type SignInParams,
 } from '~/apis/hooks/usePostSignIn';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { emailValidator } from '~/utils/validation';

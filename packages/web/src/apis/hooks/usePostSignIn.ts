@@ -2,20 +2,17 @@ import { usePowerSync } from '@powersync/react';
 import { toast } from 'sonner';
 import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
+import { useShallow } from 'zustand/react/shallow';
 
 import db from '~/lib/database';
-import { Database } from '~/lib/powersync/AppSchema';
-import {
-  IPreferences,
-  usePreferences,
-  useUser,
-  useUserAction,
-} from '~/states/userContext';
-import { APIError } from '~/utils/errors';
+import type { Database } from '~/lib/powersync/AppSchema';
+import { useUserStore } from '~/states/stores/userStore';
+import { usePreferences, type IPreferences } from '~/states/userContext';
+import type { APIError } from '~/utils/errors';
 import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
 
-export const POST_SIGNIN_KEY = `/api/auth/signin`;
+export const POST_SIGNIN_KEY = '/api/auth/signin';
 
 export interface SignInParams {
   email: string;
@@ -98,8 +95,13 @@ interface usePostSignInProps {
   onError?: (error: APIError) => void;
 }
 const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
-  const setUser = useUserAction();
-  const localUser = useUser();
+  const [localUserId, setUser, setIsUserInitialized] = useUserStore(
+    useShallow((state) => [
+      state.user.id,
+      state.setUser,
+      state.setIsInitialized,
+    ]),
+  );
   const { setPreferences } = usePreferences();
   const powerSync = usePowerSync();
 
@@ -116,22 +118,21 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
         body: JSON.stringify(arg),
       }),
     {
-      onSuccess: (data) => {
+      onSuccess: async (data) => {
         data.result && void mutate(AUTH_STATUS_KEY);
 
-        // FIXME: refactor needed
         const updateUserState = () => {
           setUser({
             ...data.user,
             useSync: Number(data.user.useSync),
             preferences: JSON.stringify(data.user.preferences || {}),
           });
-          setPreferences(data.user.preferences || undefined);
+          setIsUserInitialized(true);
         };
 
-        if (localUser && localUser.id !== data.user.id) {
-          void updateLocalDataUserId({
-            localUserId: localUser.id,
+        if (localUserId !== data.user.id) {
+          await updateLocalDataUserId({
+            localUserId: localUserId,
             newUserId: data.user.id,
             user: {
               ...data.user,
@@ -145,13 +146,13 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
           updateUserState();
         }
 
-        onSuccess && onSuccess(data);
+        onSuccess?.(data);
       },
       onError: (err) => {
         if (err.status !== 401) {
           toast.error('Failed to sign in, please try again later.');
         }
-        onError && onError(err);
+        onError?.(err);
       },
     },
   );

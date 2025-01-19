@@ -12,7 +12,8 @@ import { toast } from 'sonner';
 
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import { useIsOnline } from '~/states/isOnlineContext';
-import { useAuthContext, useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
+import { useAuthContext } from '~/states/userContext';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
@@ -98,7 +99,8 @@ function StatusMenu() {
     hasSynced,
   } = useStatus();
 
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
+
   const { isSignedIn, isLoading } = useAuthContext();
   const isOnline = useIsOnline();
 

@@ -16,7 +16,8 @@ import {
 } from '~/components/ui/popover';
 import { LOCALES } from '~/constants/locales';
 import db from '~/lib/database';
-import { IPreferences, usePreferences, useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
+import { usePreferences, type IPreferences } from '~/states/userContext';
 import { cn } from '~/utils/';
 
 interface UpdateUserLanguageArgs {
@@ -48,7 +49,8 @@ export default function LanguageSelector() {
   } = useLingui() as { i18n: { locale: keyof typeof LOCALES } };
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(locale);
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
+
   const { preferences, setPreferences } = usePreferences();
 
   return (
@@ -56,7 +58,7 @@ export default function LanguageSelector() {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          role="combobox"
+          // role="combobox"
           aria-expanded={open}
           className="-ml-2 justify-between p-2"
         >

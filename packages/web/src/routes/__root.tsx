@@ -15,6 +15,7 @@ import { usePreferences } from '~/states/userContext';
 interface RouterContext {
   user: ReturnType<typeof useUser>;
   authStatus: IAuthContext;
+  isUserInitialized: boolean;
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
