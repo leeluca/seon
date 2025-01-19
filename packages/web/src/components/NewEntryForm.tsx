@@ -1,23 +1,33 @@
+import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
-import { LoaderCircleIcon, Trash2Icon } from 'lucide-react';
+import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
-import { Input } from '~/components/ui/input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { useUser } from '~/states/userContext';
 import { cn, generateUUIDs } from '~/utils';
-import { blockNonNumberInput, parseInputtedNumber } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
+import { NumberInput } from './ui/number-input';
 
 async function deleteEntry(id: string, callback?: () => void) {
   await db.deleteFrom('entry').where('id', '=', id).execute();
-  callback && callback();
+  callback?.();
 }
+
+const findPreviousEntry = (
+  entries: Database['entry'][],
+  selectedDate: Date,
+) => {
+  return entries
+    .filter((entry) => new Date(entry.date) < selectedDate)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+};
 
 async function handleSubmit(
   {
@@ -72,11 +82,18 @@ async function handleSubmit(
   }
 }
 
+const goalTypeTitle = {
+  COUNT: t`Amount`,
+  PROGRESS: t`Progress`,
+  BOOLEAN: t`Did you achieve it?`,
+};
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
   date?: Date;
   value?: number;
+  orderedEntries: Database['entry'][];
+  goalType: GoalType;
   onSubmitCallback?: () => void;
 }
 
@@ -85,26 +102,33 @@ const NewEntryForm = ({
   entryId,
   date = new Date(),
   value,
+  goalType,
+  orderedEntries,
   onSubmitCallback = () => {},
 }: NewEntryFormProps) => {
   const user = useUser();
   const { t } = useLingui();
+  const previousValue =
+    (goalType === 'PROGRESS' &&
+      findPreviousEntry(orderedEntries, date)?.value) ||
+    0;
+
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
-      value: value ?? 0,
+      value: value || previousValue,
     },
     validators: {
       onChange({ value }) {
         const { value: inputtedValue } = value;
-        if (!inputtedValue) {
+        if (!inputtedValue === undefined) {
           return 'Missing required fields';
         }
       },
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (!inputtedValue || !user) {
+      if (inputtedValue === undefined || !user) {
         return;
       }
       await handleSubmit(
@@ -160,86 +184,154 @@ const NewEntryForm = ({
               }}
             </form.Field>
           </FormItem>
-
-          <FormItem
-            label={t`Amount`}
-            labelFor="entry-value"
-            className="grid grid-cols-3 items-center"
-            labelClassName="text-start"
-            required
-          >
-            <form.Field name="value">
-              {(field) => {
-                const {
-                  value,
-                  meta: { errors },
-                } = field.state;
-                return (
-                  <FormError.Wrapper
-                    errors={errors}
-                    errorClassName="col-span-2 col-start-2"
+          {goalType === 'BOOLEAN' ? (
+            <FormItem
+              label={goalTypeTitle[goalType]}
+              labelFor="entry-value"
+              className="mt-2 flex w-full flex-col items-start gap-y-2"
+              labelClassName="text-start col-span-2"
+              required
+            >
+              <form.Field name="value">
+                {(field) => {
+                  const {
+                    value,
+                    meta: { errors },
+                  } = field.state;
+                  return (
+                    <FormError.Wrapper errors={errors}>
+                      <div className="mt-1 flex w-full items-center gap-1">
+                        <div className="flex w-full items-center gap-1">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              field.handleChange(1);
+                            }}
+                            className={cn(
+                              value === 1
+                                ? 'border-emerald-200 bg-emerald-100'
+                                : '',
+                              'h-10 w-1/2 px-8 text-base',
+                            )}
+                          >
+                            <Trans>Yes</Trans>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              field.handleChange(0);
+                            }}
+                            className={cn(
+                              value === 0
+                                ? 'border-orange-200 bg-orange-100'
+                                : '',
+                              'h-10 w-1/2 px-8 text-base',
+                            )}
+                          >
+                            <Trans>No</Trans>
+                          </Button>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          className="hover:bg-destructive/90 hover:text-destructive-foreground flex-shrink-0 justify-self-end"
+                          size="icon"
+                          disabled={!entryId}
+                          onClick={() =>
+                            entryId &&
+                            void deleteEntry(entryId, onSubmitCallback)
+                          }
+                        >
+                          <Trash2Icon size={18} />
+                        </Button>
+                      </div>
+                    </FormError.Wrapper>
+                  );
+                }}
+              </form.Field>
+            </FormItem>
+          ) : (
+            <FormItem
+              label={goalTypeTitle[goalType]}
+              labelFor="entry-value"
+              className="grid grid-cols-3 items-center"
+              labelClassName="text-start"
+              required
+            >
+              <form.Field name="value">
+                {(field) => {
+                  const {
+                    value,
+                    meta: { errors },
+                  } = field.state;
+                  return (
+                    <FormError.Wrapper
+                      errors={errors}
+                      errorClassName="col-span-2 col-start-2"
+                    >
+                      <div className="col-span-2">
+                        <NumberInput.Root
+                          value={value}
+                          onChange={(e) => {
+                            field.handleChange(Number(e.target.value));
+                          }}
+                          min={0}
+                          max={MAX_INPUT_NUMBER}
+                          buttonStacked
+                        >
+                          <NumberInput.Field
+                            id="entry-value"
+                            // FIXME: remove autoFocus for touchscreen
+                            autoFocus
+                          />
+                          <div className="flex flex-col">
+                            <NumberInput.Button direction="inc" />
+                            <NumberInput.Button direction="dec" />
+                          </div>
+                        </NumberInput.Root>
+                      </div>
+                    </FormError.Wrapper>
+                  );
+                }}
+              </form.Field>
+            </FormItem>
+          )}
+          {goalType !== 'BOOLEAN' && (
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isTouched || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isSubmitDisabled]) => (
+                <div
+                  className={cn('mt-1 grid grid-cols-3 gap-2', {
+                    'cursor-not-allowed': isSubmitDisabled,
+                  })}
+                >
+                  {/* FIXME: apply cursor-not-allowed to delete button individually */}
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    className="col-span-1"
+                    disabled={!entryId}
+                    onClick={() =>
+                      entryId && void deleteEntry(entryId, onSubmitCallback)
+                    }
                   >
-                    <div className="col-span-2">
-                      <Input
-                        id="entry-value"
-                        type="number"
-                        // Removes leading zeros
-                        value={value?.toString()}
-                        onKeyDown={(e) => blockNonNumberInput(e)}
-                        onChange={(e) => {
-                          parseInputtedNumber(
-                            e.target.value,
-                            field.handleChange,
-                          );
-                        }}
-                        placeholder="numbers only"
-                        min={0}
-                        max={MAX_INPUT_NUMBER}
-                        autoFocus
-                      />
-                    </div>
-                  </FormError.Wrapper>
-                );
-              }}
-            </form.Field>
-          </FormItem>
-          <form.Subscribe
-            selector={(state) => [
-              state.isSubmitting,
-              !state.isTouched || !state.canSubmit || state.isSubmitting,
-            ]}
-          >
-            {([isSubmitting, isSubmitDisabled]) => (
-              <div
-                className={cn('mt-1 grid grid-cols-3 gap-2', {
-                  'cursor-not-allowed': isSubmitDisabled,
-                })}
-              >
-                {/* FIXME: apply cursor-not-allowed to delete button individually */}
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="col-span-1"
-                  disabled={!entryId}
-                  onClick={() =>
-                    entryId && void deleteEntry(entryId, onSubmitCallback)
-                  }
-                >
-                  <Trash2Icon size={18} />
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitDisabled}
-                  className="col-span-2"
-                >
-                  {isSubmitting && (
-                    <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
-                  )}
-                  <Trans>Save</Trans>
-                </Button>
-              </div>
-            )}
-          </form.Subscribe>
+                    <Trash2Icon size={18} />
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitDisabled}
+                    className="col-span-2"
+                  >
+                    <Trans>Save</Trans>
+                  </Button>
+                </div>
+              )}
+            </form.Subscribe>
+          )}
         </div>
       </div>
     </form>

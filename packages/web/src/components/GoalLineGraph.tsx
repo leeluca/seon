@@ -1,4 +1,3 @@
-import { memo } from 'react';
 import { i18n } from '@lingui/core';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
@@ -26,6 +25,7 @@ interface GoalLineGraphProps {
   targetDate: string;
   startDate: string;
   initialValue: Database['goal']['initialValue'];
+  goalType: GoalType;
 }
 
 interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'goalId'> {
@@ -103,6 +103,7 @@ function getGraphData({
   target,
   targetDate,
   startDate,
+  goalType,
 }: GetGraphDataArgs) {
   const startDateObj = new Date(startDate);
   const targetDateObj = new Date(targetDate);
@@ -148,12 +149,16 @@ function getGraphData({
 
   let runningTotal = initialValue;
   const cumulativeAll = aggregated.map((item) => {
-    runningTotal += item.value;
+    if (goalType === 'PROGRESS') {
+      runningTotal = item.value || runningTotal;
+    } else {
+      runningTotal += item.value;
+    }
     return { date: item.date, total: runningTotal, baseline: item.baseline };
   });
 
   const progress = cumulativeAll
-    .filter(({ date }) => date <= new Date(lastEntryDate))
+    .filter(({ date }) => date <= new Date())
     .map((p) => p.total);
   const baselineData = cumulativeAll.map((p) => p.baseline);
 
@@ -267,6 +272,7 @@ function GoalLineGraph({
   startDate,
   initialValue,
   isMobile,
+  goalType,
 }: GoalLineGraphProps & { isMobile?: boolean }) {
   const { data: entries } = useSuspenseQuery(
     db
@@ -298,6 +304,7 @@ function GoalLineGraph({
     targetDate,
     startDate,
     initialValue,
+    goalType,
   });
 
   return (

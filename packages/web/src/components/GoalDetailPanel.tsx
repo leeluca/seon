@@ -59,6 +59,7 @@ export function GoalDetailPanel({
     target,
     startDate,
     initialValue,
+    type,
   } = selectedGoal;
 
   const { width, ref } = useResizeDetector({
@@ -85,6 +86,7 @@ export function GoalDetailPanel({
               startDate={startDate}
               initialValue={initialValue}
               isMobile={isMobile}
+              goalType={type as GoalType}
             />
           </section>
           <GoalEditForm goal={selectedGoal} />
@@ -106,9 +108,16 @@ async function handleUpdate(
     startDate,
     targetDate,
     initialValue,
+    type,
   }: Pick<
     Database['goal'],
-    'title' | 'target' | 'unit' | 'startDate' | 'targetDate' | 'initialValue'
+    | 'title'
+    | 'target'
+    | 'unit'
+    | 'startDate'
+    | 'targetDate'
+    | 'initialValue'
+    | 'type'
   >,
   callback?: () => void,
 ) {
@@ -123,6 +132,7 @@ async function handleUpdate(
         startDate: startDate,
         targetDate: targetDate,
         updatedAt: new Date().toISOString(),
+        type,
       })
       .where('id', '=', goalId)
       .executeTakeFirstOrThrow();
@@ -135,6 +145,7 @@ async function handleUpdate(
   }
 }
 
+// FIXME: use common goal interface
 interface NewGoal {
   title: string;
   targetValue?: number;
@@ -142,6 +153,7 @@ interface NewGoal {
   startDate: Date;
   targetDate?: Date;
   initialValue: number;
+  type: GoalType;
 }
 
 function GoalEditForm({ goal }: { goal: Database['goal'] }) {
@@ -153,6 +165,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     unit,
     id: goalId,
     updatedAt,
+    type,
   } = goal;
   const { t } = useLingui();
 
@@ -166,6 +179,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
       startDate: new Date(startDate),
       targetDate: new Date(targetDate),
       initialValue: 0,
+      type: type as GoalType,
     },
     validators: {
       onChange({ value }) {

@@ -4,18 +4,15 @@ import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import './tailwind.css';
 
+import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
 import { routeTree } from './routeTree.gen';
-import UserProvider, {
-  authContextInitialState,
-  useAuthContext,
-  useUser,
-} from './states/userContext';
+import UserProvider, { useAuthContext, useUser } from './states/userContext';
 
 export const router = createRouter({
   routeTree,
   context: {
     user: undefined,
-    authStatus: authContextInitialState,
+    authStatus: AUTH_CONTEXT_INITIAL_STATE,
   },
   defaultPreload: 'viewport',
 });

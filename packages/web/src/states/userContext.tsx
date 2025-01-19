@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 
 import useAuthStatus from '~/apis/hooks/useAuthStatus';
-import { LOCALES } from '~/constants/locales';
+import type { LOCALES } from '~/constants/locales';
+import { AUTH_CONTEXT_INITIAL_STATE } from '~/constants/state';
 import db from '~/lib/database';
-import { Database } from '~/lib/powersync/AppSchema';
-import { APIError } from '~/utils/errors';
+import type { Database } from '~/lib/powersync/AppSchema';
+import type { APIError } from '~/utils/errors';
 import { parseUserPreferences } from '~/utils/validation';
 
 interface IUserContext
@@ -57,15 +58,10 @@ export interface IAuthContext {
   isError: boolean;
   error?: APIError;
 }
-export const authContextInitialState = {
-  isSignedIn: false,
-  isSignInVerified: false,
-  expiresAt: 0,
-  isLoading: false,
-  isError: false,
-  error: undefined,
-};
-const AuthContext = React.createContext<IAuthContext>(authContextInitialState);
+
+const AuthContext = React.createContext<IAuthContext>(
+  AUTH_CONTEXT_INITIAL_STATE,
+);
 
 export const useAuthContext = () => React.useContext(AuthContext);
 
@@ -95,7 +91,7 @@ const UserProvider = ({ children }: { children: React.ReactNode }) => {
 
   const preferencesValue = useMemo(
     () => ({ preferences, setPreferences }),
-    [preferences, setPreferences],
+    [preferences],
   );
 
   return (

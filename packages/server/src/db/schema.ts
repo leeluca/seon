@@ -59,6 +59,8 @@ export const user = pgTable(
   },
 );
 
+export const goalType = pgEnum('GoalType', ['COUNT', 'PROGRESS', 'BOOLEAN']);
+
 export const goal = pgTable(
   'goal',
   {
@@ -90,6 +92,7 @@ export const goal = pgTable(
       precision: 3,
       mode: 'string',
     }).notNull(),
+    type: goalType('type').default('COUNT').notNull(),
   },
   (table) => {
     return {

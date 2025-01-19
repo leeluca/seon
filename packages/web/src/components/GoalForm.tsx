@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { InfoCircledIcon } from '@radix-ui/react-icons';
 import type { useForm } from '@tanstack/react-form';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
@@ -13,6 +14,7 @@ import {
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
+import { cn } from '~/utils';
 import {
   blockNonNumberInput,
   maxLengthValidator,
@@ -24,6 +26,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ui/collapsible';
+import { Label } from './ui/label';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 export const GOAL_FORM_ID = 'goal-form';
 
@@ -34,6 +39,7 @@ export interface NewGoal {
   startDate: Date;
   targetDate?: Date;
   initialValue: number;
+  type: GoalType;
 }
 
 interface NewGoalFormProps {
@@ -54,6 +60,12 @@ function NewGoalForm({
     !collapseOptionalFields,
   );
   const { t } = useLingui();
+  const iconRefs = useRef<SVGSVGElement[]>([]);
+  const setIconRef = useCallback((node: SVGSVGElement | null) => {
+    if (node && !iconRefs.current.includes(node)) {
+      iconRefs.current.push(node);
+    }
+  }, []);
   return (
     <form
       id={GOAL_FORM_ID}
@@ -191,6 +203,125 @@ function NewGoalForm({
                     showPresetDates
                   />
                 </div>
+              </FormError.Wrapper>
+            );
+          }}
+        </form.Field>
+      </FormItem>
+      <FormItem
+        label={t`Type`}
+        labelFor="type"
+        required
+        className={cn(formItemClassName, 'h-9')}
+        labelClassName={labelClassName}
+      >
+        <form.Field name="type">
+          {(field) => {
+            const {
+              value,
+              meta: { errors },
+            } = field.state;
+            return (
+              <FormError.Wrapper
+                errors={errors}
+                errorClassName={errorClassName}
+              >
+                <RadioGroup
+                  defaultValue="COUNT"
+                  orientation="horizontal"
+                  className="col-span-3 flex flex-row flex-wrap"
+                  value={value}
+                  // TODO: validate type on runtime?
+                  onValueChange={(value) =>
+                    field.handleChange(value as GoalType)
+                  }
+                >
+                  {/* FIXME: Tooltip doesn't work on touchscreen */}
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="COUNT" id="r1" />
+                      <Label htmlFor="r1">
+                        <Trans>Count</Trans>
+                      </Label>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <InfoCircledIcon
+                          ref={setIconRef}
+                          width={16}
+                          className="mb-2 ml-1"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>
+                          <Trans>
+                            Track how many times you complete something each
+                            day.
+                            <br />
+                            E.g. '30 minutes of exercise' or 'drink 8 glasses of
+                            water'.
+                          </Trans>
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="PROGRESS" id="r2" />
+                      <Label htmlFor="r2">
+                        <Trans>Progress</Trans>
+                      </Label>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <InfoCircledIcon
+                          width={16}
+                          className="mb-2 ml-1"
+                          // ref={triggerRef}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>
+                          <Trans>
+                            Track your overall progress towards a target.
+                            <br />
+                            E.g. reading a book (current page) or saving money
+                            (total amount saved).
+                          </Trans>
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <RadioGroupItem value="BOOLEAN" id="r3" />
+                      <Label htmlFor="r3">
+                        <p className="text-pretty">
+                          <Trans>Yes or no</Trans>
+                        </p>
+                      </Label>
+                    </div>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <InfoCircledIcon
+                          ref={setIconRef}
+                          width={16}
+                          className="mb-2 ml-1"
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        <p>
+                          <Trans>
+                            Track daily completion with a simple yes or no.
+                            <br />
+                            E.g. habits like meditation or taking vitamins.
+                          </Trans>
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                </RadioGroup>
+                {/* </div> */}
               </FormError.Wrapper>
             );
           }}
