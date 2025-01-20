@@ -7,7 +7,6 @@ import {
   Outlet,
   useNavigate,
 } from '@tanstack/react-router';
-import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PlusIcon } from 'lucide-react';
 
 import GoalCard from '~/components/GoalCard';
@@ -79,13 +78,9 @@ function Goals() {
           ) : (
             <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
           ))}
-        <LayoutGroup>
-          <AnimatePresence>
-            {goals.map((goal) => (
-              <GoalCard key={goal.id} {...goal} />
-            ))}
-          </AnimatePresence>
-        </LayoutGroup>
+        {goals.map((goal) => (
+          <GoalCard key={goal.id} {...goal} />
+        ))}
         <Outlet />
       </main>
     </div>
