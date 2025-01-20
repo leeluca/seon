@@ -7,7 +7,7 @@ import { useShallow } from 'zustand/react/shallow';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
-import { usePreferences, type IPreferences } from '~/states/userContext';
+import type { Preferences } from '~/types/user';
 import type { APIError } from '~/utils/errors';
 import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
@@ -29,7 +29,7 @@ export interface PostSignInResponse {
     useSync: true;
     createdAt: string;
     updatedAt: string;
-    preferences?: IPreferences;
+    preferences?: Preferences;
   };
 }
 
@@ -95,14 +95,15 @@ interface usePostSignInProps {
   onError?: (error: APIError) => void;
 }
 const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
-  const [localUserId, setUser, setIsUserInitialized] = useUserStore(
-    useShallow((state) => [
-      state.user.id,
-      state.setUser,
-      state.setIsInitialized,
-    ]),
-  );
-  const { setPreferences } = usePreferences();
+  const [localUserId, setUser, setIsUserInitialized, setPreferences] =
+    useUserStore(
+      useShallow((state) => [
+        state.user.id,
+        state.setUser,
+        state.setIsInitialized,
+        state.setPreferences,
+      ]),
+    );
   const powerSync = usePowerSync();
 
   return useSWRMutation<
@@ -122,11 +123,13 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
         data.result && void mutate(AUTH_STATUS_KEY);
 
         const updateUserState = () => {
+          const stringifiedPreferences = JSON.stringify(data.user.preferences);
           setUser({
             ...data.user,
             useSync: Number(data.user.useSync),
-            preferences: JSON.stringify(data.user.preferences || {}),
+            preferences: stringifiedPreferences,
           });
+          setPreferences(stringifiedPreferences);
           setIsUserInitialized(true);
         };
 
