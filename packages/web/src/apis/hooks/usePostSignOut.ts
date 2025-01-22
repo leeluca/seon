@@ -1,8 +1,9 @@
 import { t } from '@lingui/core/macro';
+import { useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
 
+import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
 import {
   DB_TOKEN_EXP_KEY,
   DB_TOKEN_KEY,
@@ -13,7 +14,6 @@ import { router } from '~/main';
 import { useUserStore } from '~/states/stores/userStore';
 import { useSupabase } from '~/states/syncContext';
 import type { APIError } from '~/utils/errors';
-import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
 
 export const POST_SIGNOUT_KEY = '/api/auth/signout';
@@ -29,6 +29,7 @@ interface usePostSignOutProps {
 const onSignOut = async (
   resetConnector: () => void,
   resetLocalUser: () => void,
+  queryClient: QueryClient,
 ) => {
   const signOutToast = toast('Signing you out...', {
     dismissible: false,
@@ -46,15 +47,20 @@ const onSignOut = async (
   toast.dismiss(signOutToast);
   toast.success(t`See you again!`);
 
-  await mutate(AUTH_STATUS_KEY);
+  await queryClient.invalidateQueries({
+    queryKey: AUTH_STATUS_QUERY_KEY,
+  });
+
   await router.navigate({ to: '/' });
 
   return;
 };
 
+// TODO: migrate to react-query
 const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
   const setUserIsInitialized = useUserStore((state) => state.setIsInitialized);
   const { resetConnector } = useSupabase();
+  const queryClient = useQueryClient();
 
   return useSWRMutation<PostSignOutResponse, APIError, typeof POST_SIGNOUT_KEY>(
     POST_SIGNOUT_KEY,
@@ -66,12 +72,20 @@ const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
       onSuccess: (data) => {
         if (data.result) {
           onSuccess?.(data);
-          void onSignOut(resetConnector, () => setUserIsInitialized(false));
+          void onSignOut(
+            resetConnector,
+            () => setUserIsInitialized(false),
+            queryClient,
+          );
         }
       },
       onError: (err) => {
         onError?.(err);
-        void onSignOut(resetConnector, () => setUserIsInitialized(false));
+        void onSignOut(
+          resetConnector,
+          () => setUserIsInitialized(false),
+          queryClient,
+        );
       },
     },
   );

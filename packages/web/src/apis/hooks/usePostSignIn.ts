@@ -1,15 +1,15 @@
 import { usePowerSync } from '@powersync/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
 import { useShallow } from 'zustand/react/shallow';
 
+import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
 import type { Preferences } from '~/types/user';
 import type { APIError } from '~/utils/errors';
-import { AUTH_STATUS_KEY } from './useAuthStatus';
 import fetcher from '../fetcher';
 
 export const POST_SIGNIN_KEY = '/api/auth/signin';
@@ -90,6 +90,7 @@ const updateLocalDataUserId = async ({
   updateUserState();
 };
 
+// TODO: migrate to react-query
 interface usePostSignInProps {
   onSuccess?: (data: PostSignInResponse) => void;
   onError?: (error: APIError) => void;
@@ -105,6 +106,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
       ]),
     );
   const powerSync = usePowerSync();
+  const queryClient = useQueryClient();
 
   return useSWRMutation<
     PostSignInResponse,
@@ -120,7 +122,10 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
       }),
     {
       onSuccess: async (data) => {
-        data.result && void mutate(AUTH_STATUS_KEY);
+        data.result &&
+          queryClient.invalidateQueries({
+            queryKey: AUTH_STATUS_QUERY_KEY,
+          });
 
         const updateUserState = () => {
           const stringifiedPreferences = JSON.stringify(data.user.preferences);

@@ -5,10 +5,13 @@ import { useShallow } from 'zustand/react/shallow';
 
 import './tailwind.css';
 
+import { QueryClientProvider } from '@tanstack/react-query';
+
+import { useFetchAuthStatus } from './apis/hooks/useFetchAuthStatus';
 import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
+import { queryClient } from './lib/queryClient';
 import { routeTree } from './routeTree.gen';
 import { useUserStore } from './states/stores/userStore';
-import UserProvider, { useAuthContext } from './states/userContext';
 
 export const router = createRouter({
   routeTree,
@@ -26,12 +29,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
-function InnerApp() {
+function App() {
   const [user, isUserInitialized] = useUserStore(
     useShallow((state) => [state.user, state.isInitialized]),
   );
+  const { data: authStatus } = useFetchAuthStatus();
 
-  const authStatus = useAuthContext();
+  useEffect(() => {
+    document.querySelector('#loading-container')?.remove();
+  }, []);
+
   return (
     <RouterProvider
       router={router}
@@ -40,16 +47,6 @@ function InnerApp() {
   );
 }
 
-function App() {
-  useEffect(() => {
-    document.querySelector('#loading-container')?.remove();
-  }, []);
-  return (
-    <UserProvider>
-      <InnerApp />
-    </UserProvider>
-  );
-}
 const rootElement = document.getElementById('root');
 if (!rootElement) {
   throw new Error('no root element');
@@ -59,7 +56,9 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <App />
+      </QueryClientProvider>
     </StrictMode>,
   );
 }

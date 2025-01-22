@@ -1,12 +1,12 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
 
-import { APIError } from '~/utils/errors';
-import { AUTH_STATUS_KEY } from './useAuthStatus';
+import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
+import type { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
 
-export const POST_SIGNIN_KEY = `/api/auth/signup`;
+export const POST_SIGNIN_KEY = '/api/auth/signup';
 
 export interface SignUpParams {
   email: string;
@@ -30,7 +30,9 @@ interface usePostSignUpProps {
   onError?: (error: APIError) => void;
 }
 
+// TODO: migrate to react-query
 const usePostSignUp = ({ onSuccess, onError }: usePostSignUpProps = {}) => {
+  const queryClient = useQueryClient();
   return useSWRMutation<
     PostSignUpResponse,
     APIError,
@@ -46,13 +48,15 @@ const usePostSignUp = ({ onSuccess, onError }: usePostSignUpProps = {}) => {
     {
       onSuccess: (data) => {
         if (data.result) {
-          void mutate(AUTH_STATUS_KEY);
+          void queryClient.invalidateQueries({
+            queryKey: AUTH_STATUS_QUERY_KEY,
+          });
         }
-        onSuccess && onSuccess(data);
+        onSuccess?.(data);
       },
       onError: (err) => {
         toast.error('Failed to sign up, please try again later.');
-        onError && onError(err);
+        onError?.(err);
       },
     },
   );

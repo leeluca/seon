@@ -6,3 +6,8 @@ export interface Preferences {
 }
 
 export type User = Database['user'];
+
+export interface AuthStatus {
+  result: boolean;
+  expiresAt: number;
+}

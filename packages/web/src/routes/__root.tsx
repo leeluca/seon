@@ -9,12 +9,11 @@ import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import SyncProvider from '~/states/syncContext';
-import type { IAuthContext } from '~/states/userContext';
-import type { User } from '~/types/user';
+import type { AuthStatus, User } from '~/types/user';
 
 interface RouterContext {
-  user: User;
-  authStatus: IAuthContext;
+  user?: User;
+  authStatus: AuthStatus;
   isUserInitialized: boolean;
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
