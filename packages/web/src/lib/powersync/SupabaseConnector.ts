@@ -1,20 +1,19 @@
-import type { IPreferences } from '~/states/userContext';
-
 import {
-  AbstractPowerSyncDatabase,
   BaseObserver,
-  CrudEntry,
-  PowerSyncBackendConnector,
   UpdateType,
+  type AbstractPowerSyncDatabase,
+  type CrudEntry,
+  type PowerSyncBackendConnector,
 } from '@powersync/web';
 import {
   createClient,
-  PostgrestSingleResponse,
-  Session,
-  SupabaseClient,
+  type PostgrestSingleResponse,
+  type Session,
+  type SupabaseClient,
 } from '@supabase/supabase-js';
 
 import { fetchSyncCredentials, getDbAccessToken } from '~/apis/credential';
+import type { Preferences } from '~/types/user';
 
 export type SupabaseConfig = {
   supabaseUrl: string;
@@ -26,12 +25,12 @@ export type SupabaseConfig = {
 const FATAL_RESPONSE_CODES = [
   // Class 22 — Data Exception
   // Ex: Data type mismatch.
-  new RegExp('^22...$'),
+  /^22...$/,
   // Class 23 — Integrity Constraint Violation.
   // Ex: NOT NULL, FOREIGN KEY and UNIQUE violations.
-  new RegExp('^23...$'),
+  /^23...$/,
   // INSUFFICIENT PRIVILEGE
-  new RegExp('^42501$'),
+  /^42501$/,
 ];
 
 export type SupabaseConnectorListener = {
@@ -132,7 +131,7 @@ export class SupabaseConnector
                 // TODO: validate the preferences object
                 patchData.preferences = JSON.parse(
                   patchData.preferences,
-                ) as IPreferences;
+                ) as Preferences;
               } catch (err) {
                 console.error('Error parsing JSON for user.preferences', err);
               }

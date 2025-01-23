@@ -41,8 +41,8 @@ const getButtonStyles = ({
   return cn(baseStyles, {
     'bg-emerald-500 hover:bg-emerald-500/80': entryValue && entryValue > 0,
     'bg-emerald-500/70': entryValue && entryValue > 0 && isSelected,
-    'bg-orange-200 hover:bg-orange-200/80': entryValueZero,
-    'bg-orange-200/70': entryValueZero && isSelected,
+    'bg-orange-300 hover:bg-orange-300/80': entryValueZero,
+    'bg-orange-300/70': entryValueZero && isSelected,
     'bg-accent text-accent-foreground': entryUndefined && isSelected,
     'border-2 border-blue-200': isToday,
   });

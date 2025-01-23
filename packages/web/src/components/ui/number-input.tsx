@@ -180,7 +180,7 @@ export function NumberInputField({
       onBlur={handleBlur}
       onKeyDown={(e) => blockNonNumberInput(e)}
       ref={combinedRef}
-      className={buttonStacked ? 'mr-[1px] rounded-r-none' : ''}
+      className={buttonStacked ? 'focus-visible:z-[1] rounded-r-none' : ''}
       {...props}
     />
   );
