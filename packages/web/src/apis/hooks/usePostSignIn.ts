@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import useSWRMutation from 'swr/mutation';
 import { useShallow } from 'zustand/react/shallow';
 
-import { AUTH_STATUS } from '~/constants/queryKeys';
+import { AUTH_STATUS } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';

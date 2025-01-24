@@ -1,7 +1,7 @@
 import { useState, type ReactElement } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useSuspenseQuery } from '@powersync/react';
+import { useSuspenseQuery } from '@powersync/tanstack-react-query';
 import { useForm } from '@tanstack/react-form';
 import { format } from 'date-fns';
 import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
@@ -16,6 +16,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/sheet';
+import { GOALS } from '~/constants/query';
 import { BREAKPOINTS } from '~/constants/style';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
@@ -35,21 +36,35 @@ interface GoalDetailPanelProps {
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
   selectedGoalId: string;
+  isShortId: boolean;
 }
 export function GoalDetailPanel({
   open,
   onOpenChange,
   selectedGoalId,
+  isShortId,
 }: GoalDetailPanelProps) {
-  const {
-    data: [selectedGoal],
-  } = useSuspenseQuery(
-    db
-      .selectFrom('goal')
-      .selectAll()
-      .where('shortId', '=', selectedGoalId)
-      .limit(1),
+  const { data: selectedGoal } = useSuspenseQuery(
+    isShortId
+      ? GOALS.detailShortId(selectedGoalId)
+      : GOALS.detail(selectedGoalId),
   );
+
+  const { width, ref } = useResizeDetector({
+    refreshMode: 'debounce',
+    refreshRate: 200,
+  });
+
+  // FIXME: Move to error boundary
+  if (!selectedGoal) {
+    return (
+      <Sheet open={open} onOpenChange={onOpenChange}>
+        <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+          <div>Goal not found</div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
   const {
     title,
@@ -62,10 +77,6 @@ export function GoalDetailPanel({
     type,
   } = selectedGoal;
 
-  const { width, ref } = useResizeDetector({
-    refreshMode: 'debounce',
-    refreshRate: 200,
-  });
   const isMobile = !!width && width < BREAKPOINTS.sm;
 
   return (

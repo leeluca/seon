@@ -18,7 +18,6 @@
     "@lingui/detect-locale": "^5.1.2",
     "@lingui/macro": "^5.1.2",
     "@lingui/react": "^5.1.2",
-    "@lukemorales/query-key-factory": "^1.3.4",
     "@powersync/common": "^1.22.2",
     "@powersync/kysely-driver": "^1.1.0",
     "@powersync/react": "^1.5.1",

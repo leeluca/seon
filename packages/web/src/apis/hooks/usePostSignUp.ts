@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import useSWRMutation from 'swr/mutation';
 
-import { AUTH_STATUS } from '~/constants/queryKeys';
+import { AUTH_STATUS } from '~/constants/query';
 import type { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
 

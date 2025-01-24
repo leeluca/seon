@@ -8,3 +8,5 @@ export const MAX_GOAL_NAME_LENGTH = 30;
 export const MAX_UNIT_LENGTH = 10;
 
 export const MAX_USER_NAME_LENGTH = 20;
+
+export const UUID_LENGTH = 36;

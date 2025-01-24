@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useQuery } from '@powersync/react';
+import { useQuery } from '@powersync/tanstack-react-query';
 import {
   addDays,
   addWeeks,
@@ -13,7 +13,7 @@ import {
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
-import db from '~/lib/database';
+import { ENTRIES, GOALS } from '~/constants/query';
 import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
@@ -60,19 +60,9 @@ const CalendarHeatmap = ({
   blockedDateFeedback,
   className,
 }: CalendarHeatmapProps) => {
-  const {
-    data: [goal],
-  } = useQuery(
-    db.selectFrom('goal').select('type').where('id', '=', goalId).limit(1),
-  );
+  const { data: goal } = useQuery(GOALS.detail(goalId));
 
-  const { data: entries } = useQuery(
-    db
-      .selectFrom('entry')
-      .selectAll()
-      .where('goalId', '=', goalId)
-      .orderBy('date', 'asc'),
-  );
+  const { data: entries = [] } = useQuery(ENTRIES.goalId(goalId));
 
   const entriesMap = useMemo(
     () =>

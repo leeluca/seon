@@ -6,7 +6,7 @@ import {
   type QueryClient,
 } from '@tanstack/react-query';
 
-import { AUTH_STATUS } from '~/constants/queryKeys';
+import { AUTH_STATUS } from '~/constants/query';
 import { SESSION_EXP_KEY } from '~/constants/storage';
 import { useUserStore } from '~/states/stores/userStore';
 import type { AuthStatus, User } from '~/types/user';

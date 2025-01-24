@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useQuery } from '@powersync/tanstack-react-query';
 import { Link } from '@tanstack/react-router';
 import {
   differenceInCalendarDays,
@@ -18,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import useGoalEntriesSum from '~/hooks/useGoalEntriesSum';
+import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
@@ -147,14 +148,23 @@ export default function GoalCard({
   targetDate,
   initialValue,
   shortId,
+  type,
 }: Database['goal']) {
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef(null);
 
-  // FIXME: use a join query instead?
-  const { value: entriesSum, isLoading: isLoadingEntries } =
-    useGoalEntriesSum(id);
+  const { data: entries = [], isLoading: isLoadingEntries } = useQuery(
+    ENTRIES.goalId(id),
+  );
+
+  const entriesSum = useMemo(
+    () =>
+      type === 'PROGRESS'
+        ? (entries[entries.length - 1]?.value ?? 0) + initialValue
+        : entries.reduce((sum, entry) => sum + entry.value, 0) + initialValue,
+    [entries, type, initialValue],
+  );
 
   const currentValue = entriesSum + initialValue;
 
@@ -283,7 +293,11 @@ export default function GoalCard({
           </Popover>
           <Link
             to="/goals/$id"
-            params={{ id: shortId }}
+            params={{ id }}
+            mask={{
+              to: '/goals/$id',
+              params: { id: shortId },
+            }}
             replace
             aria-label={t`Toggle goal details`}
             className={buttonVariants({
