@@ -7,13 +7,12 @@ import {
   Outlet,
   useNavigate,
 } from '@tanstack/react-router';
-import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import { PlusIcon } from 'lucide-react';
 
 import GoalCard from '~/components/GoalCard';
 import { buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
-import { useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
@@ -49,7 +48,7 @@ function Goals() {
 
   const navigate = useNavigate();
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
-  const user = useUser();
+  const user = useUserStore((state) => state.user);
 
   return (
     <div className="w-full">
@@ -79,13 +78,9 @@ function Goals() {
           ) : (
             <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
           ))}
-        <LayoutGroup>
-          <AnimatePresence>
-            {goals.map((goal) => (
-              <GoalCard key={goal.id} {...goal} />
-            ))}
-          </AnimatePresence>
-        </LayoutGroup>
+        {goals.map((goal) => (
+          <GoalCard key={goal.id} {...goal} />
+        ))}
         <Outlet />
       </main>
     </div>

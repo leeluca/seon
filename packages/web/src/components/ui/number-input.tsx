@@ -167,7 +167,6 @@ export function NumberInputField({
   }, [combinedRef, context]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('e.target.value', e.target.value, typeof e.target.value);
     const newVal =
       e.target.value === '' ? undefined : Number.parseFloat(e.target.value);
     context.setValue(newVal);
@@ -181,7 +180,7 @@ export function NumberInputField({
       onBlur={handleBlur}
       onKeyDown={(e) => blockNonNumberInput(e)}
       ref={combinedRef}
-      className={buttonStacked ? 'mr-[1px] rounded-r-none' : ''}
+      className={buttonStacked ? 'focus-visible:z-[1] rounded-r-none' : ''}
       {...props}
     />
   );

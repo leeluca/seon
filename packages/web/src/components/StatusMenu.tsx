@@ -10,9 +10,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
+import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import { useIsOnline } from '~/states/isOnlineContext';
-import { useAuthContext, useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
@@ -98,8 +99,10 @@ function StatusMenu() {
     hasSynced,
   } = useStatus();
 
-  const user = useUser();
-  const { isSignedIn, isLoading } = useAuthContext();
+  const user = useUserStore((state) => state.user);
+
+  const { data, isLoading } = useFetchAuthStatus();
+  const isSignedIn = data?.result;
   const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;

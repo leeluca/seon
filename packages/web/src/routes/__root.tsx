@@ -1,20 +1,21 @@
-import type { IAuthContext, useUser } from '~/states/userContext';
-
 import React, { Suspense, useEffect } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '~/components/ui/sonner';
 import { TooltipProvider } from '~/components/ui/tooltip';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
+import { useUserStore } from '~/states/stores/userStore';
 import SyncProvider from '~/states/syncContext';
-import { usePreferences } from '~/states/userContext';
+import type { AuthStatus, User } from '~/types/user';
 
 interface RouterContext {
-  user: ReturnType<typeof useUser>;
-  authStatus: IAuthContext;
+  user?: User;
+  authStatus: AuthStatus;
+  isUserInitialized: boolean;
 }
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
@@ -30,7 +31,8 @@ const TanStackRouterDevtools =
     : () => null;
 
 function Root() {
-  const { preferences } = usePreferences();
+  const preferences = useUserStore((state) => state.userPreferences);
+
   useEffect(() => {
     const locale = preferences?.language ?? defaultLocale;
     void dynamicallyImportLocale(locale);
@@ -50,11 +52,12 @@ function Root() {
           <OnlineStatusProvider>
             <Outlet />
           </OnlineStatusProvider>
-          <Suspense>
-            <TanStackRouterDevtools position="bottom-right" />
-          </Suspense>
         </TooltipProvider>
       </I18nProvider>
+      <Suspense>
+        <TanStackRouterDevtools position="bottom-right" />
+      </Suspense>
+      <ReactQueryDevtools position="bottom" buttonPosition="bottom-left" />
     </SyncProvider>
   );
 }

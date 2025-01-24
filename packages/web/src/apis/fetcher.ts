@@ -20,7 +20,7 @@ async function fetcher<T>(path: string, options?: RequestInit): Promise<T> {
     throw error;
   }
 
-  return response.json() as Promise<T>;
+  return response.json();
 }
 
 export default fetcher;

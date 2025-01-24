@@ -6,7 +6,6 @@ import { add, startOfDay } from 'date-fns';
 import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
 import { Button } from '~/components/ui/button';
 import {
@@ -17,9 +16,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
+import useDelayedExecution from '~/hooks/useDelayedExecution';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { cn, generateUUIDs } from '~/utils';
 
 export const Route = createFileRoute('/_main/goals/new')({
@@ -82,7 +82,7 @@ async function handleSave(
 
 function NewGoalDialog() {
   const navigate = useNavigate();
-  const user = useUser();
+  const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
 
   const [isOpen, setIsOpen] = useState(true);
@@ -114,7 +114,7 @@ function NewGoalDialog() {
     },
     onSubmit: async ({ value }) => {
       const { startDate, targetDate, targetValue } = value;
-      if (!targetDate || !user || !targetValue) {
+      if (!targetDate || !targetValue) {
         return;
       }
       const stringStartDate = startDate.toISOString();
@@ -125,7 +125,7 @@ function NewGoalDialog() {
           title: value.title.trim(),
           unit: value.unit.trim(),
           target: targetValue,
-          userId: user.id,
+          userId,
           startDate: stringStartDate,
           targetDate: stringTargetDate,
         },

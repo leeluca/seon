@@ -1,32 +1,35 @@
-import { Suspense, useState } from 'react'
-import { createLazyFileRoute, useNavigate } from '@tanstack/react-router'
+import { Suspense, useState } from 'react';
+import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
-import { GoalDetailPanel } from '~/components/GoalDetailPanel'
+import { GoalDetailPanel } from '~/components/GoalDetailPanel';
+import { UUID_LENGTH } from '~/constants';
 
 export const Route = createLazyFileRoute('/_main/goals/$id')({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const navigate = useNavigate()
-  const [isOpen, setIsOpen] = useState(true)
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
 
   const close = () => {
-    setIsOpen(false)
+    setIsOpen(false);
     setTimeout(() => {
-      void navigate({ to: '/goals', replace: true })
-    }, 350)
-  }
+      void navigate({ to: '/goals', replace: true });
+    }, 350);
+  };
 
-  const { id: goalShortId } = Route.useParams()
+  const { id: goalId } = Route.useParams();
 
+  // FIXME: add error boundary (eg. goal not found)
   return (
     <Suspense>
       <GoalDetailPanel
         open={isOpen}
         onOpenChange={() => close()}
-        selectedGoalId={goalShortId}
+        selectedGoalId={goalId}
+        isShortId={goalId.length < UUID_LENGTH}
       />
     </Suspense>
-  )
+  );
 }

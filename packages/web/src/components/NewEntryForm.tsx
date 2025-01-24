@@ -1,15 +1,17 @@
 import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
+import { useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
+import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { cn, generateUUIDs } from '~/utils';
 import FormError from './FormError';
 import FormItem from './FormItem';
@@ -104,14 +106,23 @@ const NewEntryForm = ({
   value,
   goalType,
   orderedEntries,
-  onSubmitCallback = () => {},
+  onSubmitCallback: onSubmitCallbackProp,
 }: NewEntryFormProps) => {
-  const user = useUser();
+  const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
+  const queryClient = useQueryClient();
+
   const previousValue =
     (goalType === 'PROGRESS' &&
       findPreviousEntry(orderedEntries, date)?.value) ||
     0;
+
+  const onSubmitCallback = () => {
+    queryClient.invalidateQueries({
+      queryKey: ENTRIES.goalId(goalId).queryKey,
+    });
+    onSubmitCallbackProp?.();
+  };
 
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
@@ -128,7 +139,7 @@ const NewEntryForm = ({
     },
     onSubmit: async ({ value }) => {
       const { value: inputtedValue, date } = value;
-      if (inputtedValue === undefined || !user) {
+      if (inputtedValue === undefined) {
         return;
       }
       await handleSubmit(
@@ -136,7 +147,7 @@ const NewEntryForm = ({
           value: inputtedValue,
           date,
           goalId,
-          userId: user.id,
+          userId,
         },
         onSubmitCallback,
       );

@@ -1,21 +1,18 @@
 import { usePowerSync } from '@powersync/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { mutate } from 'swr';
 import useSWRMutation from 'swr/mutation';
+import { useShallow } from 'zustand/react/shallow';
 
+import { AUTH_STATUS } from '~/constants/query';
 import db from '~/lib/database';
-import { Database } from '~/lib/powersync/AppSchema';
-import {
-  IPreferences,
-  usePreferences,
-  useUser,
-  useUserAction,
-} from '~/states/userContext';
-import { APIError } from '~/utils/errors';
-import { AUTH_STATUS_KEY } from './useAuthStatus';
+import type { Database } from '~/lib/powersync/AppSchema';
+import { useUserStore } from '~/states/stores/userStore';
+import type { Preferences } from '~/types/user';
+import type { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
 
-export const POST_SIGNIN_KEY = `/api/auth/signin`;
+export const POST_SIGNIN_KEY = '/api/auth/signin';
 
 export interface SignInParams {
   email: string;
@@ -32,7 +29,7 @@ export interface PostSignInResponse {
     useSync: true;
     createdAt: string;
     updatedAt: string;
-    preferences?: IPreferences;
+    preferences?: Preferences;
   };
 }
 
@@ -93,15 +90,23 @@ const updateLocalDataUserId = async ({
   updateUserState();
 };
 
+// TODO: migrate to react-query
 interface usePostSignInProps {
   onSuccess?: (data: PostSignInResponse) => void;
   onError?: (error: APIError) => void;
 }
 const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
-  const setUser = useUserAction();
-  const localUser = useUser();
-  const { setPreferences } = usePreferences();
+  const [localUserId, setUser, setIsUserInitialized, setPreferences] =
+    useUserStore(
+      useShallow((state) => [
+        state.user.id,
+        state.setUser,
+        state.setIsInitialized,
+        state.setPreferences,
+      ]),
+    );
   const powerSync = usePowerSync();
+  const queryClient = useQueryClient();
 
   return useSWRMutation<
     PostSignInResponse,
@@ -116,22 +121,26 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
         body: JSON.stringify(arg),
       }),
     {
-      onSuccess: (data) => {
-        data.result && void mutate(AUTH_STATUS_KEY);
+      onSuccess: async (data) => {
+        data.result &&
+          queryClient.invalidateQueries({
+            queryKey: AUTH_STATUS.all.queryKey,
+          });
 
-        // FIXME: refactor needed
         const updateUserState = () => {
+          const stringifiedPreferences = JSON.stringify(data.user.preferences);
           setUser({
             ...data.user,
             useSync: Number(data.user.useSync),
-            preferences: JSON.stringify(data.user.preferences || {}),
+            preferences: stringifiedPreferences,
           });
-          setPreferences(data.user.preferences || undefined);
+          setPreferences(stringifiedPreferences);
+          setIsUserInitialized(true);
         };
 
-        if (localUser && localUser.id !== data.user.id) {
-          void updateLocalDataUserId({
-            localUserId: localUser.id,
+        if (localUserId !== data.user.id) {
+          await updateLocalDataUserId({
+            localUserId: localUserId,
             newUserId: data.user.id,
             user: {
               ...data.user,
@@ -145,13 +154,13 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
           updateUserState();
         }
 
-        onSuccess && onSuccess(data);
+        onSuccess?.(data);
       },
       onError: (err) => {
         if (err.status !== 401) {
           toast.error('Failed to sign in, please try again later.');
         }
-        onError && onError(err);
+        onError?.(err);
       },
     },
   );

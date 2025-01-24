@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import type { Updater } from '@tanstack/react-form';
 
 import { MAX_INPUT_NUMBER } from '~/constants';
-import type { IPreferences } from '~/states/userContext';
+import type { Preferences } from '~/types/user';
 
 export const parseInputtedNumber = (
   value: string,
@@ -40,7 +40,21 @@ export const blockNonNumberInput = (
     '8',
     '9',
   ]);
-  if (e.key !== 'Backspace' && !NUMBER_VALUES.has(e.key)) {
+  const ALLOWED_KEYS = new Set([
+    'Backspace',
+    'ArrowUp',
+    'ArrowDown',
+    'ArrowLeft',
+    'ArrowRight',
+    'Tab',
+    'Delete',
+    'Enter',
+    'Escape',
+    'Home',
+    'End',
+  ]);
+
+  if (!ALLOWED_KEYS.has(e.key) && !NUMBER_VALUES.has(e.key)) {
     e.preventDefault();
   }
 };
@@ -66,7 +80,7 @@ export const emailValidator = (value: string) => {
 export const parseUserPreferences = (preferences?: string | null) => {
   try {
     if (!preferences) return undefined;
-    const userPreferences = JSON.parse(preferences) as IPreferences;
+    const userPreferences = JSON.parse(preferences) as Preferences;
     return userPreferences;
   } catch {
     console.error('Invalid user preferences');

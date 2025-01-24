@@ -1,7 +1,7 @@
 import { i18n } from '@lingui/core';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { useSuspenseQuery } from '@powersync/react';
+import { useSuspenseQuery } from '@powersync/tanstack-react-query';
 import {
   closestTo,
   differenceInDays,
@@ -15,7 +15,7 @@ import {
 } from 'date-fns';
 import { ChartLineIcon } from 'lucide-react';
 
-import db from '~/lib/database';
+import { ENTRIES } from '~/constants/query';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { LineGraph, type LineGraphProps } from './charts/LineGraph';
 
@@ -274,13 +274,7 @@ function GoalLineGraph({
   isMobile,
   goalType,
 }: GoalLineGraphProps & { isMobile?: boolean }) {
-  const { data: entries } = useSuspenseQuery(
-    db
-      .selectFrom('entry')
-      .selectAll()
-      .where('goalId', '=', goalId)
-      .orderBy('date', 'asc'),
-  );
+  const { data: entries } = useSuspenseQuery(ENTRIES.goalId(goalId));
 
   if (!entries.length) {
     return (

@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Logger from 'js-logger';
 
+import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
-import { useAuthContext } from '~/states/userContext';
 
 export function usePowerSyncConnector() {
-  const { isSignInVerified } = useAuthContext();
+  const { data, isLoading } = useFetchAuthStatus();
+
+  const isSignInVerified = data?.result && !isLoading;
 
   const [connector, setConnector] = useState(new SupabaseConnector());
   const [powerSync] = useState(powerSyncDb);

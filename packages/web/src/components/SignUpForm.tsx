@@ -3,12 +3,12 @@ import { useForm } from '@tanstack/react-form';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
-import usePostSignUp, { SignUpParams } from '~/apis/hooks/usePostSignUp';
+import usePostSignUp, { type SignUpParams } from '~/apis/hooks/usePostSignUp';
 import { MAX_USER_NAME_LENGTH } from '~/constants';
+import useDelayedExecution from '~/hooks/useDelayedExecution';
 import db from '~/lib/database';
 import { useIsOnline } from '~/states/isOnlineContext';
-import { useUser, useUserAction } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
 import { emailValidator, maxLengthValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
@@ -22,7 +22,8 @@ interface SignInFormProps {
 function SignUpForm({ onSignUpCallback }: SignInFormProps) {
   const { t } = useLingui();
 
-  const user = useUser();
+  const userId = useUserStore((state) => state.user.id);
+  const refetchUser = useUserStore((state) => state.fetch);
   const isOnline = useIsOnline();
 
   const { trigger: postSignUp } = usePostSignUp({
@@ -44,15 +45,13 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
             .where('id', '=', user.id)
             .executeTakeFirstOrThrow();
 
-          setUser(updatedUser);
+          refetchUser();
           toast.success(t`Welcome, ${updatedUser.name}!`);
           onSignUpCallback?.();
         }
       })();
     },
   });
-
-  const setUser = useUserAction();
 
   const form = useForm<Omit<SignUpParams, 'uuid'>>({
     defaultValues: {
@@ -70,10 +69,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
     },
     onSubmit: async ({ value }) => {
       const { name, email, password } = value;
-      if (!user) {
-        return;
-      }
-      await postSignUp({ uuid: user.id, name, email, password });
+      await postSignUp({ uuid: userId, name, email, password });
     },
   });
 
@@ -192,7 +188,7 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
           name="password"
           validators={{
             onChange: ({ value }) => {
-              if (!value.trim()) return `Password is required`;
+              if (!value.trim()) return t`Password is required`;
             },
             // TODO: validate password with minimum length etc
             // onBlur: ({ value }) => {

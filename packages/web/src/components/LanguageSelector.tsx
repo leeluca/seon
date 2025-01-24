@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLingui } from '@lingui/react';
 import { CheckIcon, GlobeIcon } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -16,12 +17,13 @@ import {
 } from '~/components/ui/popover';
 import { LOCALES } from '~/constants/locales';
 import db from '~/lib/database';
-import { IPreferences, usePreferences, useUser } from '~/states/userContext';
+import { useUserStore } from '~/states/stores/userStore';
+import type { Preferences } from '~/types/user';
 import { cn } from '~/utils/';
 
 interface UpdateUserLanguageArgs {
   userId: string;
-  currentPreferences: IPreferences;
+  currentPreferences: Preferences;
   updatedLanguage: keyof typeof LOCALES;
 }
 
@@ -48,15 +50,16 @@ export default function LanguageSelector() {
   } = useLingui() as { i18n: { locale: keyof typeof LOCALES } };
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(locale);
-  const user = useUser();
-  const { preferences, setPreferences } = usePreferences();
+  const [user, preferences, refetchUser] = useUserStore(
+    useShallow((state) => [state.user, state.userPreferences, state.fetch]),
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          role="combobox"
+          // role="combobox"
           aria-expanded={open}
           className="-ml-2 justify-between p-2"
         >
@@ -71,19 +74,16 @@ export default function LanguageSelector() {
               <CommandList key={key}>
                 <CommandItem
                   value={key}
-                  onSelect={() => {
+                  onSelect={async () => {
                     // FIXME: remove type assertion and validate on runtime
                     setValue(key as keyof typeof LOCALES);
                     user &&
-                      void updateUserLanguage({
+                      (await updateUserLanguage({
                         userId: user.id,
                         currentPreferences: preferences || {},
                         updatedLanguage: key as keyof typeof LOCALES,
-                      });
-                    setPreferences((prev) => ({
-                      ...prev,
-                      language: key as keyof typeof LOCALES,
-                    }));
+                      }));
+                    refetchUser();
 
                     setOpen(false);
                   }}
