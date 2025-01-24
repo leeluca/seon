@@ -6,12 +6,14 @@ import {
   type QueryClient,
 } from '@tanstack/react-query';
 
-import { AUTH_STATUS_KEY, AUTH_STATUS_QUERY_KEY } from '~/constants/query';
+import { AUTH_STATUS } from '~/constants/queryKeys';
 import { SESSION_EXP_KEY } from '~/constants/storage';
 import { useUserStore } from '~/states/stores/userStore';
 import type { AuthStatus, User } from '~/types/user';
 import { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
+
+const AUTH_STATUS_API = '/api/auth/status';
 
 // TODO: Consider if saving to localStorage is really necessary
 function getInitialData(): AuthStatus {
@@ -24,8 +26,8 @@ function getInitialData(): AuthStatus {
 
 export function getAuthStatusQueryOptions(user: User) {
   return queryOptions({
-    queryKey: AUTH_STATUS_QUERY_KEY,
-    queryFn: () => fetcher<AuthStatus>(AUTH_STATUS_KEY),
+    queryKey: AUTH_STATUS.all.queryKey,
+    queryFn: () => fetcher<AuthStatus>(AUTH_STATUS_API),
     enabled: !!user?.useSync,
     initialData: getInitialData(),
     gcTime: Number.POSITIVE_INFINITY,
@@ -47,7 +49,7 @@ export function useFetchAuthStatus() {
 
     if (error instanceof APIError && error.status === 401) {
       localStorage.removeItem(SESSION_EXP_KEY);
-      queryClient.setQueryData(AUTH_STATUS_QUERY_KEY, {
+      queryClient.setQueryData(AUTH_STATUS.all.queryKey, {
         result: false,
         expiresAt: 0,
       });

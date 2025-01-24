@@ -6,7 +6,6 @@ import { add, startOfDay } from 'date-fns';
 import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import useDelayedExecution from '~/apis/hooks/useDelayedExecution';
 import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
 import { Button } from '~/components/ui/button';
 import {
@@ -17,6 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
+import useDelayedExecution from '~/hooks/useDelayedExecution';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';

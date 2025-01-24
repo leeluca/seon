@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import useSWRMutation from 'swr/mutation';
 
-import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
+import { AUTH_STATUS } from '~/constants/queryKeys';
 import type { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
 
@@ -49,7 +49,7 @@ const usePostSignUp = ({ onSuccess, onError }: usePostSignUpProps = {}) => {
       onSuccess: (data) => {
         if (data.result) {
           void queryClient.invalidateQueries({
-            queryKey: AUTH_STATUS_QUERY_KEY,
+            queryKey: AUTH_STATUS.all.queryKey,
           });
         }
         onSuccess?.(data);

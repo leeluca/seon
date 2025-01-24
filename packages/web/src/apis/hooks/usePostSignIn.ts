@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import useSWRMutation from 'swr/mutation';
 import { useShallow } from 'zustand/react/shallow';
 
-import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
+import { AUTH_STATUS } from '~/constants/queryKeys';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
@@ -124,7 +124,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
       onSuccess: async (data) => {
         data.result &&
           queryClient.invalidateQueries({
-            queryKey: AUTH_STATUS_QUERY_KEY,
+            queryKey: AUTH_STATUS.all.queryKey,
           });
 
         const updateUserState = () => {

@@ -3,7 +3,7 @@ import { useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import useSWRMutation from 'swr/mutation';
 
-import { AUTH_STATUS_QUERY_KEY } from '~/constants/query';
+import { AUTH_STATUS } from '~/constants/queryKeys';
 import {
   DB_TOKEN_EXP_KEY,
   DB_TOKEN_KEY,
@@ -48,7 +48,7 @@ const onSignOut = async (
   toast.success(t`See you again!`);
 
   await queryClient.invalidateQueries({
-    queryKey: AUTH_STATUS_QUERY_KEY,
+    queryKey: AUTH_STATUS.all.queryKey,
   });
 
   await router.navigate({ to: '/' });

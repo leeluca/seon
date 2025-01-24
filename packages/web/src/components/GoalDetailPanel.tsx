@@ -166,6 +166,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
     id: goalId,
     updatedAt,
     type,
+    initialValue,
   } = goal;
   const { t } = useLingui();
 
@@ -178,7 +179,7 @@ function GoalEditForm({ goal }: { goal: Database['goal'] }) {
       unit: unit,
       startDate: new Date(startDate),
       targetDate: new Date(targetDate),
-      initialValue: 0,
+      initialValue: initialValue,
       type: type as GoalType,
     },
     validators: {

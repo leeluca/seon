@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '~/components/ui/sonner';
@@ -51,11 +52,12 @@ function Root() {
           <OnlineStatusProvider>
             <Outlet />
           </OnlineStatusProvider>
-          <Suspense>
-            <TanStackRouterDevtools position="bottom-right" />
-          </Suspense>
         </TooltipProvider>
       </I18nProvider>
+      <Suspense>
+        <TanStackRouterDevtools position="bottom-right" />
+      </Suspense>
+      <ReactQueryDevtools position="bottom" buttonPosition="bottom-left" />
     </SyncProvider>
   );
 }
