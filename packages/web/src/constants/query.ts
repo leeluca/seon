@@ -1,5 +1,5 @@
 import db from '~/lib/database';
-import type { GoalSort } from '~/types/goal';
+import type { GoalSort, GoalType } from '~/types/goal';
 
 /* api */
 export const AUTH_STATUS = {
@@ -11,7 +11,7 @@ export const GOALS = {
   all: { queryKey: ['goal'] },
   sorted: (sort: GoalSort) => ({
     queryKey: ['goal', { sort }],
-    queryFn: () => db.selectFrom('goal').selectAll().orderBy(sort).execute(),
+    query: db.selectFrom('goal').selectAll().orderBy(sort),
   }),
   detail: (goalId: string) => ({
     queryKey: ['goal', { goalId }],
@@ -44,5 +44,22 @@ export const ENTRIES = {
         .where('goalId', '=', goalId)
         .orderBy('date', 'asc')
         .execute(),
+  }),
+  entriesSum: (goalId: string, type: GoalType) => ({
+    queryKey: ['entry', { goalId }, { type }, 'sum'],
+    queryFn: () =>
+      type === 'PROGRESS'
+        ? db
+            .selectFrom('entry')
+            .select('value as totalValue')
+            .where('goalId', '=', goalId)
+            .orderBy('createdAt', 'desc')
+            .limit(1)
+            .executeTakeFirst()
+        : db
+            .selectFrom('entry')
+            .select(db.fn.sum('value').as('totalValue'))
+            .where('goalId', '=', goalId)
+            .executeTakeFirst(),
   }),
 };
