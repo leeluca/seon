@@ -1,7 +1,6 @@
 import { lazy, Suspense, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useStatus } from '@powersync/react';
-import { useSuspenseQuery } from '@powersync/tanstack-react-query';
+import { useStatus, useSuspenseQuery } from '@powersync/react';
 import {
   createLazyFileRoute,
   Link,
@@ -44,7 +43,7 @@ const SyncingPlaceholder = () => (
 );
 
 function Goals() {
-  const user = useUserStore((state) => state.user.useSync);
+  const useSync = useUserStore((state) => state.user.useSync);
   const defaultGoalSort = useUserStore(
     (state) => state.userPreferences?.defaultGoalSort,
   );
@@ -52,7 +51,9 @@ function Goals() {
     defaultGoalSort ?? 'createdAt desc',
   );
 
-  const { data: goals } = useSuspenseQuery(GOALS.sorted(sort));
+  const { data: goals } = useSuspenseQuery(GOALS.sorted(sort).query);
+
+  // FIXME: causing unnecessary re-renders
   const { hasSynced } = useStatus();
 
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ function Goals() {
       </div>
       <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
         {!goals.length &&
-          (user?.useSync ? (
+          (useSync ? (
             hasSynced ? (
               <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
             ) : (
