@@ -44,14 +44,19 @@ const SyncingPlaceholder = () => (
 );
 
 function Goals() {
-  const [sort, setSort] = useState<GoalSort>('createdAt desc');
+  const user = useUserStore((state) => state.user.useSync);
+  const defaultGoalSort = useUserStore(
+    (state) => state.userPreferences?.defaultGoalSort,
+  );
+  const [sort, setSort] = useState<GoalSort>(
+    defaultGoalSort ?? 'createdAt desc',
+  );
 
   const { data: goals } = useSuspenseQuery(GOALS.sorted(sort));
   const { hasSynced } = useStatus();
 
   const navigate = useNavigate();
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
-  const user = useUserStore((state) => state.user);
 
   return (
     <div className="w-full">

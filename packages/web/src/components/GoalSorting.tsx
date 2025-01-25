@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 import { t } from '@lingui/core/macro';
 import { Check, ChevronDownIcon } from 'lucide-react';
@@ -16,6 +14,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import db from '~/lib/database';
+import { useUserStore } from '~/states/stores/userStore';
 import type { GoalSort } from '~/types/goal';
 import { cn } from '~/utils';
 
@@ -46,6 +46,24 @@ const sortParams = [
   },
 ] as const;
 
+async function updateDefaultSort(updatedSort: GoalSort) {
+  const userId = useUserStore.getState().user.id;
+  const currentPreferences = useUserStore.getState().userPreferences;
+
+  await db
+    .updateTable('user')
+    .set({
+      preferences: JSON.stringify({
+        ...currentPreferences,
+        defaultGoalSort: updatedSort,
+      }),
+    })
+    .where('id', '=', userId)
+    .execute();
+
+  useUserStore.getState().fetch();
+}
+
 interface GoalSortingProps {
   sort: GoalSort;
   setSort: (sort: GoalSort) => void;
@@ -54,6 +72,7 @@ interface GoalSortingProps {
 export function GoalSorting({ sort, setSort }: GoalSortingProps) {
   const [open, setOpen] = React.useState(false);
   const [, startTransition] = React.useTransition();
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -81,6 +100,7 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
                   value={sortParam.value}
                   onSelect={(currentValue) => {
                     startTransition(() => setSort(currentValue as GoalSort));
+                    updateDefaultSort(currentValue as GoalSort);
                     setOpen(false);
                   }}
                 >
