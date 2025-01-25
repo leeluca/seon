@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 
 import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
+import { useDebounceValue } from '~/hooks/useDebounceValue';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import SignInForm from './SignInForm';
@@ -106,6 +107,7 @@ function StatusMenu() {
   const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;
+  const debouncedIsSyncing = useDebounceValue(isSyncing, 200);
 
   const [open, setOpen] = useState(false);
 
@@ -124,7 +126,7 @@ function StatusMenu() {
   return (
     <>
       <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
-        {isSyncing && (
+        {debouncedIsSyncing && (
           <div
             className={buttonVariants({
               variant: 'ghost',
