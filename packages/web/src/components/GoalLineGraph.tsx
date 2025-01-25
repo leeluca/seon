@@ -17,6 +17,7 @@ import { ChartLineIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
 import type { Database } from '~/lib/powersync/AppSchema';
+import type { GoalType } from '~/types/goal';
 import { LineGraph, type LineGraphProps } from './charts/LineGraph';
 
 interface GoalLineGraphProps {

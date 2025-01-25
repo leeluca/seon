@@ -12,6 +12,7 @@ import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
+import type { GoalType } from '~/types/goal';
 import { cn, generateUUIDs } from '~/utils';
 import FormError from './FormError';
 import FormItem from './FormItem';

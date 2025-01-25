@@ -20,6 +20,7 @@ import { GOALS } from '~/constants/query';
 import { BREAKPOINTS } from '~/constants/style';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
+import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import GoalLineGraph from './GoalLineGraph';

@@ -1,6 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useStatus, useSuspenseQuery } from '@powersync/react';
+import { useStatus } from '@powersync/react';
+import { useSuspenseQuery } from '@powersync/tanstack-react-query';
 import {
   createLazyFileRoute,
   Link,
@@ -10,9 +11,11 @@ import {
 import { PlusIcon } from 'lucide-react';
 
 import GoalCard from '~/components/GoalCard';
+import { GoalSorting } from '~/components/GoalSorting';
 import { buttonVariants } from '~/components/ui/button';
-import db from '~/lib/database';
+import { GOALS } from '~/constants/query';
 import { useUserStore } from '~/states/stores/userStore';
+import type { GoalSort } from '~/types/goal';
 import { cn } from '~/utils';
 import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
@@ -41,9 +44,9 @@ const SyncingPlaceholder = () => (
 );
 
 function Goals() {
-  const { data: goals } = useSuspenseQuery(
-    db.selectFrom('goal').selectAll().orderBy('id asc'),
-  );
+  const [sort, setSort] = useState<GoalSort>('createdAt desc');
+
+  const { data: goals } = useSuspenseQuery(GOALS.sorted(sort));
   const { hasSynced } = useStatus();
 
   const navigate = useNavigate();
@@ -52,7 +55,7 @@ function Goals() {
 
   return (
     <div className="w-full">
-      <div className="mb-8 flex justify-between">
+      <div className="mb-8 flex items-center justify-between">
         <Link
           from="/goals"
           to="/goals/new"
@@ -66,6 +69,10 @@ function Goals() {
             <Trans>New Goal</Trans>
           </div>
         </Link>
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-medium">Sort by</p>
+          <GoalSorting sort={sort} setSort={setSort} />
+        </div>
       </div>
       <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
         {!goals.length &&

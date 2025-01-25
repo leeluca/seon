@@ -1,4 +1,5 @@
 import db from '~/lib/database';
+import type { GoalSort } from '~/types/goal';
 
 /* api */
 export const AUTH_STATUS = {
@@ -8,6 +9,10 @@ export const AUTH_STATUS = {
 /* sqlite */
 export const GOALS = {
   all: { queryKey: ['goal'] },
+  sorted: (sort: GoalSort) => ({
+    queryKey: ['goal', { sort }],
+    queryFn: () => db.selectFrom('goal').selectAll().orderBy(sort).execute(),
+  }),
   detail: (goalId: string) => ({
     queryKey: ['goal', { goalId }],
     queryFn: () =>

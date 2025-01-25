@@ -14,6 +14,7 @@ import {
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import { ENTRIES, GOALS } from '~/constants/query';
+import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
