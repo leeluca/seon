@@ -87,6 +87,10 @@ msgstr "Check your internet connection and try again."
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
+#: src/components/GoalStatusSummary.tsx:87
+msgid "Completed!"
+msgstr "Completed!"
+
 #: src/components/StatusMenu.tsx:85
 msgid "Could not connect with the sync service. Try again later."
 msgstr "Could not connect with the sync service. Try again later."

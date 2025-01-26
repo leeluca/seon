@@ -87,6 +87,10 @@ msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 msgid "Choose a name for your goal."
 msgstr "목표의 이름을 정해주세요."
 
+#: src/components/GoalStatusSummary.tsx:87
+msgid "Completed!"
+msgstr "목표 달성!"
+
 #: src/components/StatusMenu.tsx:85
 msgid "Could not connect with the sync service. Try again later."
 msgstr "동기화 서비스에 연결할 수 없습니다. 나중에 다시 시도해주세요."
@@ -415,7 +419,7 @@ msgstr "아직 목표가 없습니다."
 
 #: src/components/GoalStatusSummary.tsx:105
 msgid "Time Left"
-msgstr "남은 시간"
+msgstr "남은 기간"
 
 #: src/components/CalendarHeatmap.tsx:137
 msgid "Today"

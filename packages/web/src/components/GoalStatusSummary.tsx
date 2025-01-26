@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { t } from '@lingui/core/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
 import {
@@ -9,7 +10,6 @@ import {
 } from 'date-fns';
 
 import { ENTRIES, GOALS } from '~/constants/query';
-import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import { Separator } from './ui/separator';
 
@@ -42,15 +42,21 @@ export function GoalStatusSummary({
 }: GoalStatusSummaryProps) {
   const { data: goal } = useQuery(GOALS.detail(goalId));
 
-  const { data: totalValue, isLoading: isLoadingEntries } = useQuery(
-    ENTRIES.entriesSum(goalId, goal?.type as GoalType),
+  const { data: entries = [], isLoading: isLoadingEntries } = useQuery(
+    ENTRIES.goalId(goalId),
   );
-  const { data: entries } = useQuery(ENTRIES.goalId(goalId));
 
-  //   TODO: calculate values for when there are no entries
-  if (!goal || isLoadingEntries || !entries?.length) return null;
+  const entriesSum = useMemo(
+    () =>
+      goal?.type === 'PROGRESS'
+        ? (entries[entries.length - 1]?.value ?? 0) + (goal.initialValue ?? 0)
+        : entries.reduce((sum, entry) => sum + entry.value, 0) +
+          (goal?.initialValue ?? 0),
+    [entries, goal],
+  );
 
-  const entriesSum = Number(totalValue?.totalValue ?? 0);
+  if (!goal || isLoadingEntries) return null;
+
   const isGoalCompleted = entriesSum >= goal.target;
   const isPastTargetDate =
     !checkIsToday(goal.targetDate) && checkIsPast(goal.targetDate);
@@ -65,7 +71,7 @@ export function GoalStatusSummary({
     averagePerDay =
       entriesSum /
       (differenceInCalendarDays(
-        entries[entries?.length - 1].date,
+        entries[entries.length - 1]?.date ?? goal.targetDate,
         goal.startDate,
       ) -
         1);
@@ -81,10 +87,10 @@ export function GoalStatusSummary({
   const remaining = Math.max(goal.target - entriesSum, 0);
 
   const averageNeededPerDay =
-    remaining / differenceInCalendarDays(goal.targetDate, new Date()) + 1;
+    remaining / (differenceInCalendarDays(goal.targetDate, new Date()) + 1);
 
   const estimatedCompletionDate = isGoalCompleted
-    ? 'Completed!'
+    ? t`Completed!`
     : formatDate(
         addDays(new Date(), Math.max(remaining / averagePerDay - 1, 0)),
         'PP',
