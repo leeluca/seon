@@ -14,6 +14,7 @@ import {
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
+import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import {
   blockNonNumberInput,
@@ -44,6 +45,7 @@ export interface NewGoal {
 
 interface NewGoalFormProps {
   form: ReturnType<typeof useForm<NewGoal>>;
+  className?: string;
   formItemClassName?: string;
   labelClassName?: string;
   errorClassName?: string;
@@ -51,6 +53,7 @@ interface NewGoalFormProps {
 }
 function NewGoalForm({
   form,
+  className,
   formItemClassName,
   labelClassName,
   errorClassName,
@@ -74,7 +77,7 @@ function NewGoalForm({
         e.stopPropagation();
         void form.handleSubmit();
       }}
-      className="grid gap-5 py-4"
+      className={cn('grid gap-5 py-4', className)}
     >
       <FormItem
         label={t`Goal name`}

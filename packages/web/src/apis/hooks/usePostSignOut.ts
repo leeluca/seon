@@ -47,7 +47,7 @@ const onSignOut = async (
   toast.dismiss(signOutToast);
   toast.success(t`See you again!`);
 
-  await queryClient.invalidateQueries({
+  queryClient.invalidateQueries({
     queryKey: AUTH_STATUS.all.queryKey,
   });
 

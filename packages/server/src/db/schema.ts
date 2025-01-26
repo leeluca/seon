@@ -39,6 +39,13 @@ export const user = pgTable(
     useSync: boolean('useSync'),
     preferences: jsonb().$type<{
       language?: 'en' | 'ko';
+      defaultGoalSort?:
+        | 'createdAt desc'
+        | 'createdAt asc'
+        | 'targetDate desc'
+        | 'targetDate asc'
+        | 'title asc'
+        | 'title desc';
     }>(),
   },
   (table) => {
