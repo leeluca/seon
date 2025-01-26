@@ -76,7 +76,9 @@ function Goals() {
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <p className="text-xs font-medium">Sort by</p>
+          <p className="text-xs font-medium">
+            <Trans>Sort by</Trans>
+          </p>
           <GoalSorting sort={sort} setSort={setSort} />
         </div>
       </div>

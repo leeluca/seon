@@ -88,8 +88,11 @@ export function GoalDetailPanel({
               goalType={type as GoalType}
             />
           </section>
-          <GoalStatusSummary goalId={id} className="mt-6 mb-2 sm:mt-3 sm:mb-5" />
-          <GoalEditForm goal={selectedGoal} className='my-4 sm:mx-2' />
+          <GoalStatusSummary
+            goalId={id}
+            className="mb-2 mt-6 sm:mb-5 sm:mt-3"
+          />
+          <GoalEditForm goal={selectedGoal} className="my-4 sm:mx-2" />
         </article>
         <SheetFooter>
           <SheetClose asChild />

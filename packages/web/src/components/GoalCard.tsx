@@ -237,7 +237,7 @@ export default function GoalCard({
                   ref={triggerRef}
                   onClick={(e) => e.preventDefault()}
                 >
-                  <div>{progressIcon}</div>
+                  <div className="mt-[2px]">{progressIcon}</div>
                 </Button>
               </TooltipTrigger>
               <TooltipContent

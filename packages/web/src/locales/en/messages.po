@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:96
+#: src/components/GoalStatusSummary.tsx:116
 msgid "{0}/day"
 msgstr "{0}/day"
 
-#: src/components/GoalStatusSummary.tsx:86
+#: src/components/GoalStatusSummary.tsx:105
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining} days"
 
@@ -54,7 +54,7 @@ msgstr "Amount"
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
-#: src/components/GoalStatusSummary.tsx:89
+#: src/components/GoalStatusSummary.tsx:108
 msgid "Average Pace"
 msgstr "Average Pace"
 
@@ -130,11 +130,11 @@ msgstr "Did you achieve it?"
 
 #: src/components/GoalSorting.tsx:36
 msgid "Due later"
-msgstr ""
+msgstr "Due later"
 
 #: src/components/GoalSorting.tsx:32
 msgid "Due soon"
-msgstr ""
+msgstr "Due soon"
 
 #: src/components/GoalForm.tsx:437
 msgid "e.g. words"
@@ -162,7 +162,7 @@ msgstr "Email is required"
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
-#: src/components/GoalStatusSummary.tsx:101
+#: src/components/GoalStatusSummary.tsx:122
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
@@ -251,11 +251,11 @@ msgstr "Name"
 
 #: src/components/GoalSorting.tsx:40
 msgid "Name (A to Z)"
-msgstr ""
+msgstr "Name (A to Z)"
 
 #: src/components/GoalSorting.tsx:44
 msgid "Name (Z to A)"
-msgstr ""
+msgstr "Name (Z to A)"
 
 #: src/components/SignUpForm.tsx:101
 msgid "Name is required"
@@ -267,7 +267,7 @@ msgstr "New Goal"
 
 #: src/components/GoalSorting.tsx:24
 msgid "Newest goals"
-msgstr ""
+msgstr "Newest first"
 
 #: src/components/NewEntryForm.tsx:243
 msgid "No"
@@ -279,7 +279,7 @@ msgstr "Numbers only"
 
 #: src/components/GoalSorting.tsx:28
 msgid "Oldest goals"
-msgstr ""
+msgstr "Oldest first"
 
 #: src/components/SignUpForm.tsx:181
 #: src/components/SignInForm.tsx:113
@@ -296,12 +296,12 @@ msgid "Pick a date"
 msgstr "Pick a date"
 
 #: src/components/NewEntryForm.tsx:90
-#: src/components/GoalStatusSummary.tsx:82
+#: src/components/GoalStatusSummary.tsx:101
 #: src/components/GoalForm.tsx:275
 msgid "Progress"
 msgstr "Progress"
 
-#: src/components/GoalStatusSummary.tsx:94
+#: src/components/GoalStatusSummary.tsx:113
 msgid "Required Pace"
 msgstr "Required Pace"
 
@@ -363,6 +363,10 @@ msgstr "Sign Up"
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
+#: src/routes/_main/goals.lazy.tsx:80
+msgid "Sort by"
+msgstr "Sort by"
+
 #: src/components/GoalForm.tsx:375
 msgid "Start date"
 msgstr "Start date"
@@ -409,7 +413,7 @@ msgstr "Target value"
 msgid "There are no goals."
 msgstr "There are no goals."
 
-#: src/components/GoalStatusSummary.tsx:86
+#: src/components/GoalStatusSummary.tsx:105
 msgid "Time Left"
 msgstr "Time Left"
 

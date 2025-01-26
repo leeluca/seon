@@ -22,7 +22,7 @@ function StatusItem({ label, value }: StatusItemProps) {
   return (
     <div className="flex flex-col items-center">
       <h5 className="text-center font-medium">{label}</h5>
-      <p className="text-sm font-light">{value}</p>
+      <p className="text-sm font-light text-gray-700">{value}</p>
     </div>
   );
 }
@@ -47,7 +47,7 @@ export function GoalStatusSummary({
   );
   const { data: entries } = useQuery(ENTRIES.goalId(goalId));
 
-//   TODO: calculate values for when there are no entries
+  //   TODO: calculate values for when there are no entries
   if (!goal || isLoadingEntries || !entries?.length) return null;
 
   const entriesSum = Number(totalValue?.totalValue ?? 0);

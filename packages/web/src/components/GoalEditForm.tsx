@@ -137,7 +137,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
     <section className={className}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex h-[3.75rem] items-start justify-between">
-          <div className="flex sm:items-center items-start">
+          <div className="flex items-start sm:items-center">
             <CollapsibleTrigger asChild className="mr-4 mt-[2px] sm:mt-0">
               <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
                 <ChevronRightIcon
@@ -226,7 +226,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
           <GoalForm
             form={form}
             formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
-            className='py-3'
+            className="py-3"
           />
         </CollapsibleContent>
       </Collapsible>

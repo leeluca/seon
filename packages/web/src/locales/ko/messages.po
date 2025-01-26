@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:96
+#: src/components/GoalStatusSummary.tsx:116
 msgid "{0}/day"
 msgstr "{0}/일"
 
-#: src/components/GoalStatusSummary.tsx:86
+#: src/components/GoalStatusSummary.tsx:105
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining}일"
 
@@ -54,7 +54,7 @@ msgstr "개수"
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠습니까?"
 
-#: src/components/GoalStatusSummary.tsx:89
+#: src/components/GoalStatusSummary.tsx:108
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
@@ -130,11 +130,11 @@ msgstr "달성하셨나요?"
 
 #: src/components/GoalSorting.tsx:36
 msgid "Due later"
-msgstr ""
+msgstr "목표일 늦은 순"
 
 #: src/components/GoalSorting.tsx:32
 msgid "Due soon"
-msgstr ""
+msgstr "목표일 가까운 순"
 
 #: src/components/GoalForm.tsx:437
 msgid "e.g. words"
@@ -162,7 +162,7 @@ msgstr "이메일을 입력해 주세요"
 msgid "Entries after target date"
 msgstr "목표일 이후의 기록"
 
-#: src/components/GoalStatusSummary.tsx:101
+#: src/components/GoalStatusSummary.tsx:122
 msgid "Expected Completion"
 msgstr "예상 완료일"
 
@@ -251,11 +251,11 @@ msgstr "이름"
 
 #: src/components/GoalSorting.tsx:40
 msgid "Name (A to Z)"
-msgstr ""
+msgstr "이름 (가나다순)"
 
 #: src/components/GoalSorting.tsx:44
 msgid "Name (Z to A)"
-msgstr ""
+msgstr "이름 (역순)"
 
 #: src/components/SignUpForm.tsx:101
 msgid "Name is required"
@@ -267,7 +267,7 @@ msgstr "새로운 목표"
 
 #: src/components/GoalSorting.tsx:24
 msgid "Newest goals"
-msgstr ""
+msgstr "최근 추가순"
 
 #: src/components/NewEntryForm.tsx:243
 msgid "No"
@@ -279,7 +279,7 @@ msgstr "숫자만 입력 가능"
 
 #: src/components/GoalSorting.tsx:28
 msgid "Oldest goals"
-msgstr ""
+msgstr "오래된 순"
 
 #: src/components/SignUpForm.tsx:181
 #: src/components/SignInForm.tsx:113
@@ -296,12 +296,12 @@ msgid "Pick a date"
 msgstr "날짜 선택"
 
 #: src/components/NewEntryForm.tsx:90
-#: src/components/GoalStatusSummary.tsx:82
+#: src/components/GoalStatusSummary.tsx:101
 #: src/components/GoalForm.tsx:275
 msgid "Progress"
 msgstr "진행도"
 
-#: src/components/GoalStatusSummary.tsx:94
+#: src/components/GoalStatusSummary.tsx:113
 msgid "Required Pace"
 msgstr "권장 진행 속도"
 
@@ -363,6 +363,10 @@ msgstr "회원 가입"
 msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
+#: src/routes/_main/goals.lazy.tsx:80
+msgid "Sort by"
+msgstr "정렬 기준"
+
 #: src/components/GoalForm.tsx:375
 msgid "Start date"
 msgstr "시작일"
@@ -409,7 +413,7 @@ msgstr "목표값"
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
 
-#: src/components/GoalStatusSummary.tsx:86
+#: src/components/GoalStatusSummary.tsx:105
 msgid "Time Left"
 msgstr "남은 시간"
 
