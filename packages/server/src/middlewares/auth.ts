@@ -1,14 +1,18 @@
+import { getContext } from 'hono/context-storage';
 import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
+import type { Bindings } from '../index.js';
+import type { Variables } from '../routes/auth.js';
 import {
+  getCookieConfig,
   issueRefreshToken,
-  JWT,
-  JWTTokenPayload,
+  signJWTWithPayload,
   validateAccessToken,
   validateRefreshToken,
   verifyRefreshToken,
+  type JWTTokenPayload,
 } from '../services/auth.js';
 
 export const validateAccess = createMiddleware<{
@@ -18,10 +22,18 @@ export const validateAccess = createMiddleware<{
     jwtRefreshPayload?: JWTTokenPayload;
   };
 }>(async (c, next) => {
+  const jwtConfigs = getContext<{ Bindings: Bindings; Variables: Variables }>()
+    .var.jwtConfigs;
+  const jwtConfig = getContext<{ Bindings: Bindings; Variables: Variables }>()
+    .var.jwtConfig;
+
   // validate access token
-  const { accessPayload, accessToken } = await validateAccessToken(c);
+  const { accessPayload, accessToken } = await validateAccessToken(
+    c,
+    jwtConfigs,
+  );
   if (accessPayload && accessToken) {
-    const { refreshPayload } = await verifyRefreshToken(c);
+    const { refreshPayload } = await verifyRefreshToken(c, jwtConfigs);
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
     refreshPayload && c.set('jwtRefreshPayload', refreshPayload);
@@ -30,27 +42,31 @@ export const validateAccess = createMiddleware<{
   }
 
   // if no access token, check for refresh token
-  const { refreshToken, refreshPayload } = await validateRefreshToken(c);
+  const { refreshToken, refreshPayload } = await validateRefreshToken(
+    c,
+    jwtConfigs,
+  );
 
   if (!refreshToken) {
     throw new HTTPException(401, {
       message: 'Unauthorized',
     });
   }
+
   // if refresh token is valid, issue new access and refresh tokens
   const [
     { token: newAccessToken, payload: newAccessTokenPayload },
     { token: newRefreshToken, payload: newRefreshTokenPayload },
   ] = await Promise.all([
-    JWT.signWithPayload(refreshPayload.sub, 'access'),
-    issueRefreshToken(refreshPayload.sub, refreshToken),
+    signJWTWithPayload(refreshPayload.sub, 'access', jwtConfigs),
+    issueRefreshToken(refreshPayload.sub, jwtConfigs, jwtConfig, refreshToken),
   ]);
 
   // set new tokens in cookies and context
   const { name: accessCookieName, options: accessCookieOptions } =
-    JWT.getCookieOptions('access');
+    getCookieConfig('access', jwtConfigs);
   const { name: refreshCookieName, options: refreshCookieOptions } =
-    JWT.getCookieOptions('refresh');
+    getCookieConfig('refresh', jwtConfigs);
 
   setCookie(c, accessCookieName, newAccessToken, {
     ...accessCookieOptions,
