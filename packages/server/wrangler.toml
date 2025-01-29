@@ -1,0 +1,12 @@
+name = "seon-server"
+main = "src/index.ts"
+compatibility_date = "2025-01-29"
+compatibility_flags = ["nodejs_compat"]
+# [build]
+# command = "npm run build"
+
+# [env.production]
+# name = "seon-server-prod"
+
+# [env.development]
+# name = "seon-server-dev" 
