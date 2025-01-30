@@ -4,32 +4,17 @@ import { env, getRuntimeKey } from 'hono/adapter';
 import { cors } from 'hono/cors';
 
 import auth from './routes/auth.js';
+import type { Env } from './types/context.js';
 
-export interface Bindings {
-  DB_URL: string;
-  JWT_PRIVATE_KEY: string;
-  JWT_PUBLIC_KEY: string;
-  JWT_REFRESH_SECRET: string;
-  JWT_DB_PRIVATE_KEY: string;
-  JWT_ACCESS_EXPIRATION: string;
-  JWT_REFRESH_EXPIRATION: string;
-  JWT_DB_ACCESS_EXPIRATION: string;
-  SYNC_URL: string;
-  // allowed origins for CORS, comma separated string
-  // FIXME: change name to ORIGIN_URLS to denote that many origins are allowed
-  ORIGIN_URL: string;
-}
 if (getRuntimeKey() === 'node') {
   try {
-    // console.log( process.env.ORIGIN_URL?.split(','))
-  
     process.loadEnvFile();
   } catch {
     console.error('No .env file found');
   }
 }
 
-const app = new Hono<{ Bindings: Bindings }>();
+const app = new Hono<{ Bindings: Env }>();
 
 app.use('/api/*', async (c, next) => {
   const corsMiddleware = cors({

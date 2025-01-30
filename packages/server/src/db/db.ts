@@ -4,19 +4,20 @@ import postgres from 'postgres';
 import * as relations from './relations.js';
 import * as schema from './schema.js';
 
-// NOTE: prevent errors when deploying
-try {
-  process.loadEnvFile();
-} catch {
-  console.error('No .env file found');
-}
+let client: ReturnType<typeof postgres>;
+let db: ReturnType<typeof drizzle>;
 
-const connectionString = process.env.DB_URL;
+const initDb = (dbUrl?: string) => {
+  if (db) {
+    return { client, db };
+  }
+  if (!dbUrl) {
+    throw new Error('DB_URL is not set');
+  }
 
-if (!connectionString) {
-  throw new Error('DB_URL is not set');
-}
+  client = postgres(dbUrl, { prepare: false });
+  db = drizzle(client, { schema: { ...schema, ...relations } });
+  return { client, db };
+};
 
-export const client = postgres(connectionString, { prepare: false });
-
-export const db = drizzle(client, { schema: { ...schema, ...relations } });
+export { client, db, initDb };

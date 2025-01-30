@@ -2,17 +2,16 @@ import { tbValidator } from '@hono/typebox-validator';
 import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { env } from 'hono/adapter';
-import { contextStorage, getContext } from 'hono/context-storage';
+import { contextStorage } from 'hono/context-storage';
 import { deleteCookie, getCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import short from 'short-uuid';
 
-import { db } from '../db/db.js';
+import { db, initDb } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
 } from '../db/schema.js';
-import type { Bindings } from '../index.js';
 import { validateAccess } from '../middlewares/auth.js';
 import {
   comparePW,
@@ -24,31 +23,26 @@ import {
   setJWTCookie,
   signJWT,
   validateRefreshToken,
-  type JWTConfig,
-  type JWTTokenPayload,
-  type JWTTypeConfig,
+  type JWTConfigEnv,
 } from '../services/auth.js';
+import type { AuthRouteVariables, Env } from '../types/context.js';
 import { signInSchema, signUpSchema } from '../types/validation.js';
 import { validateUuidV7 } from '../utils/id.js';
 
-//FIXME: move to types folder
-export interface Variables {
-  jwtConfig: JWTConfig;
-  jwtConfigs: Record<string, JWTTypeConfig>;
-  jwtPayload: JWTTokenPayload;
-  jwtAccessToken: string;
-  jwtAccessPayload: JWTTokenPayload;
-  jwtRefreshPayload?: JWTTokenPayload;
-}
+const auth = new Hono<{ Bindings: Env; Variables: AuthRouteVariables }>();
 
-const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+auth.use('*', async (c, next) => {
+  // TODO; only initialize db when needed
+  initDb(env(c).DB_URL);
+  await next();
+});
 
 auth.use('*', contextStorage());
 
 // Initialize JWT configuration
 auth.use('*', async (c, next) => {
-  // FIXME: rename to jwtConfigValues
-  const jwtConfig: JWTConfig = {
+  // FIXME: rename to jwtConfigEnv
+  const jwtConfigEnv: JWTConfigEnv = {
     privateKey: env(c).JWT_PRIVATE_KEY,
     publicKey: env(c).JWT_PUBLIC_KEY,
     refreshSecret: env(c).JWT_REFRESH_SECRET,
@@ -58,17 +52,17 @@ auth.use('*', async (c, next) => {
     dbAccessExpiration: env(c).JWT_DB_ACCESS_EXPIRATION,
   };
 
-  const jwtKeys = await initJWTKeys(jwtConfig);
-  const jwtConfigs = createJWTConfigs(jwtKeys, jwtConfig);
+  const jwtKeys = await initJWTKeys(jwtConfigEnv);
+  const jwtConfigs = createJWTConfigs(jwtKeys, jwtConfigEnv);
 
-  c.set('jwtConfig', jwtConfig);
+  c.set('jwtConfigEnv', jwtConfigEnv);
   c.set('jwtConfigs', jwtConfigs);
   await next();
 });
 
 auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   const { email, password } = c.req.valid('json');
-  const jwtConfig = c.get('jwtConfig');
+  const jwtConfigEnv = c.get('jwtConfigEnv');
   const jwtConfigs = c.get('jwtConfigs');
 
   const user = await db.query.user.findFirst({
@@ -91,7 +85,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   const [accessToken, { token: refreshToken, payload: refreshPayload }] =
     await Promise.all([
       signJWT(user.id, 'access', jwtConfigs),
-      issueRefreshToken(user.id, jwtConfigs, jwtConfig),
+      issueRefreshToken(user.id, jwtConfigs, jwtConfigEnv),
     ]);
 
   setJWTCookie(c, 'access', accessToken, jwtConfigs);
@@ -110,7 +104,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
 
 auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
   const { email, name, password, uuid } = c.req.valid('json');
-  const jwtConfig = c.get('jwtConfig');
+  const jwtConfigEnv = c.get('jwtConfigEnv');
   const jwtConfigs = c.get('jwtConfigs');
 
   if (!validateUuidV7(uuid)) {
@@ -151,7 +145,7 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
   const [accessToken, { token: refreshToken, payload: refreshPayload }] =
     await Promise.all([
       signJWT(id, 'access', jwtConfigs),
-      issueRefreshToken(id, jwtConfigs, jwtConfig),
+      issueRefreshToken(id, jwtConfigs, jwtConfigEnv),
     ]);
 
   setJWTCookie(c, 'access', accessToken, jwtConfigs);
@@ -203,7 +197,7 @@ auth.get('/credentials/db', validateAccess, async (c) => {
 });
 
 auth.get('/refresh', async (c) => {
-  const jwtConfig = c.get('jwtConfig');
+  const jwtConfigEnv = c.get('jwtConfigEnv');
   const jwtConfigs = c.get('jwtConfigs');
   const { refreshToken, refreshPayload } = await validateRefreshToken(
     c,
@@ -219,7 +213,7 @@ auth.get('/refresh', async (c) => {
   const { token: newRefreshToken, payload } = await issueRefreshToken(
     refreshPayload.sub,
     jwtConfigs,
-    jwtConfig,
+    jwtConfigEnv,
     refreshToken,
   );
 

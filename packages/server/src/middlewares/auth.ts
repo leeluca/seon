@@ -3,8 +3,6 @@ import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
-import type { Bindings } from '../index.js';
-import type { Variables } from '../routes/auth.js';
 import {
   getCookieConfig,
   issueRefreshToken,
@@ -14,6 +12,7 @@ import {
   verifyRefreshToken,
   type JWTTokenPayload,
 } from '../services/auth.js';
+import type { AuthRouteTypes } from '../types/context.js';
 
 export const validateAccess = createMiddleware<{
   Variables: {
@@ -22,10 +21,8 @@ export const validateAccess = createMiddleware<{
     jwtRefreshPayload?: JWTTokenPayload;
   };
 }>(async (c, next) => {
-  const jwtConfigs = getContext<{ Bindings: Bindings; Variables: Variables }>()
-    .var.jwtConfigs;
-  const jwtConfig = getContext<{ Bindings: Bindings; Variables: Variables }>()
-    .var.jwtConfig;
+  const jwtConfigs = getContext<AuthRouteTypes>().var.jwtConfigs;
+  const jwtConfigEnv = getContext<AuthRouteTypes>().var.jwtConfigEnv;
 
   // validate access token
   const { accessPayload, accessToken } = await validateAccessToken(
@@ -59,7 +56,12 @@ export const validateAccess = createMiddleware<{
     { token: newRefreshToken, payload: newRefreshTokenPayload },
   ] = await Promise.all([
     signJWTWithPayload(refreshPayload.sub, 'access', jwtConfigs),
-    issueRefreshToken(refreshPayload.sub, jwtConfigs, jwtConfig, refreshToken),
+    issueRefreshToken(
+      refreshPayload.sub,
+      jwtConfigs,
+      jwtConfigEnv,
+      refreshToken,
+    ),
   ]);
 
   // set new tokens in cookies and context

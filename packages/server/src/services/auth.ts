@@ -55,7 +55,7 @@ export interface JWTTokenPayload extends JWTPayload {
   aud: string;
 }
 
-export interface JWTConfig {
+export interface JWTConfigEnv {
   privateKey: string;
   publicKey: string;
   refreshSecret: string;
@@ -74,7 +74,7 @@ export interface JWTKeys {
   publicKeyKid: string;
 }
 
-export async function initJWTKeys(config: JWTConfig): Promise<JWTKeys> {
+export async function initJWTKeys(config: JWTConfigEnv): Promise<JWTKeys> {
   const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
     jose.importPKCS8(config.privateKey, 'RS256'),
     jose.importSPKI(config.publicKey, 'RS256'),
@@ -109,7 +109,7 @@ export interface JWTTypeConfig {
 
 export function createJWTConfigs(
   keys: JWTKeys,
-  config: JWTConfig,
+  config: JWTConfigEnv,
 ): Record<string, JWTTypeConfig> {
   const accessExpiration = Number.parseInt(config.accessExpiration, 10);
   const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
@@ -294,7 +294,7 @@ export const validateRefreshToken = async (
 const saveNewRefreshToken = async (
   userId: string,
   newRefreshToken: string,
-  config: JWTConfig,
+  config: JWTConfigEnv,
   oldRefreshToken?: string,
 ) => {
   const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
@@ -323,7 +323,7 @@ type IssueRefreshTokenReturn<T extends boolean> = T extends true
 export const issueRefreshToken = async <T extends boolean = true>(
   userId: string,
   jwtConfigs: Record<string, JWTTypeConfig>,
-  config: JWTConfig,
+  config: JWTConfigEnv,
   oldRefreshToken?: string,
   shouldReturnPayload: T = true as T,
 ): Promise<IssueRefreshTokenReturn<T>> => {
