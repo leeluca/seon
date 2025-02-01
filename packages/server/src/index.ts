@@ -6,6 +6,7 @@ import auth from './routes/auth.js';
 import type { Env } from './types/context.js';
 
 if (getRuntimeKey() === 'node') {
+  // NOTE: some runtimes inject env variables without .env file
   try {
     process.loadEnvFile();
   } catch {

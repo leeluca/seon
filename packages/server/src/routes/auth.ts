@@ -15,16 +15,18 @@ import {
 import { validateAccess } from '../middlewares/auth.js';
 import {
   comparePW,
-  createJWTConfigs,
   getCookieConfig,
   hashPW,
-  initJWTKeys,
   issueRefreshToken,
   setJWTCookie,
   signJWT,
   validateRefreshToken,
   type JWTConfigEnv,
 } from '../services/auth.js';
+import {
+  getOrInitJwtConfigs,
+  getOrInitJwtKeys,
+} from '../services/jwt-store.js';
 import type { AuthRouteVariables, Env } from '../types/context.js';
 import { signInSchema, signUpSchema } from '../types/validation.js';
 import { validateUuidV7 } from '../utils/id.js';
@@ -33,7 +35,6 @@ const auth = new Hono<{ Bindings: Env; Variables: AuthRouteVariables }>();
 
 auth.use('*', contextStorage());
 
-// FIXME: only initialize once
 auth.use('*', async (c, next) => {
   const jwtConfigEnv: JWTConfigEnv = {
     privateKey: env(c).JWT_PRIVATE_KEY,
@@ -45,8 +46,8 @@ auth.use('*', async (c, next) => {
     dbAccessExpiration: env(c).JWT_DB_ACCESS_EXPIRATION,
   };
 
-  const jwtKeys = await initJWTKeys(jwtConfigEnv);
-  const jwtConfigs = createJWTConfigs(jwtKeys, jwtConfigEnv);
+  const jwtKeys = await getOrInitJwtKeys(c);
+  const jwtConfigs = getOrInitJwtConfigs(c);
 
   c.set('jwtConfigEnv', jwtConfigEnv);
   c.set('jwtKeys', jwtKeys);
