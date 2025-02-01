@@ -4,19 +4,27 @@ import postgres from 'postgres';
 import * as relations from './relations.js';
 import * as schema from './schema.js';
 
-// NOTE: prevent errors when deploying
-try {
-  process.loadEnvFile();
-} catch {
-  console.error('No .env file found');
-}
+type Schema = typeof schema & typeof relations;
+type Database = ReturnType<typeof drizzle<Schema>>;
 
-const connectionString = process.env.DB_URL;
+let client: ReturnType<typeof postgres> | null = null;
+let db: Database | null = null;
 
-if (!connectionString) {
-  throw new Error('DB_URL is not set');
-}
+// TODO: create a proper singleton
+export const getDb = (dbUrl: string) => {
+  if (db) {
+    return db;
+  }
+  if (!dbUrl) {
+    throw new Error('DB_URL is not set');
+  }
 
-export const client = postgres(connectionString, { prepare: false });
+  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  return db;
+};
 
-export const db = drizzle(client, { schema: { ...schema, ...relations } });
+export const getClientAndDb = (dbUrl: string) => {
+  client = postgres(dbUrl, { prepare: false });
+  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  return { client, db };
+};

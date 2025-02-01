@@ -49,16 +49,17 @@ function SignOutButton() {
               <Trans>Unsynced data will be lost</Trans>
             </AlertDialogTitle>
             <AlertDialogDescription>
-              <p>
+              <span>
                 <Trans>
                   Your most recent changes have not been synced yet.
                 </Trans>
-              </p>
-              <p>
+              </span>
+              <br />
+              <span>
                 <Trans>
                   If you sign out now, this data will be permanently lost!
                 </Trans>
-              </p>
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

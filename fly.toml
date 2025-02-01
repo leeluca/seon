@@ -1,0 +1,25 @@
+# fly.toml app configuration file generated for seon-server on 2025-02-01T11:40:43+09:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'seon-server'
+primary_region = 'nrt'
+
+[build]
+  dockerfile = "./server.Dockerfile"
+  ignorefile = "./.dockerignore"
+  build-target = "runner"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpu_kind = 'shared'
+  cpus = 1

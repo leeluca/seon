@@ -20,7 +20,10 @@ const saveToken = (token: string, exp: number) => {
 const getTokenFromStorage = () => {
   const token = sessionStorage.getItem(DB_TOKEN_KEY);
   const expiresAt = sessionStorage.getItem(DB_TOKEN_EXP_KEY);
-  return { token, expiresAt: expiresAt ? parseInt(expiresAt, 10) : null };
+  return {
+    token,
+    expiresAt: expiresAt ? Number.parseInt(expiresAt, 10) : null,
+  };
 };
 
 export const fetchDbCredentials = async () => {
