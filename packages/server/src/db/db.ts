@@ -4,20 +4,27 @@ import postgres from 'postgres';
 import * as relations from './relations.js';
 import * as schema from './schema.js';
 
-let client: ReturnType<typeof postgres>;
-let db: ReturnType<typeof drizzle>;
+type Schema = typeof schema & typeof relations;
+type Database = ReturnType<typeof drizzle<Schema>>;
 
-const initDb = (dbUrl?: string) => {
+let client: ReturnType<typeof postgres> | null = null;
+let db: Database | null = null;
+
+// TODO: create a proper singleton
+export const getDb = (dbUrl: string) => {
   if (db) {
-    return { client, db };
+    return db;
   }
   if (!dbUrl) {
     throw new Error('DB_URL is not set');
   }
 
-  client = postgres(dbUrl, { prepare: false });
-  db = drizzle(client, { schema: { ...schema, ...relations } });
-  return { client, db };
+  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  return db;
 };
 
-export { client, db, initDb };
+export const getClientAndDb = (dbUrl: string) => {
+  client = postgres(dbUrl, { prepare: false });
+  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  return { client, db };
+};

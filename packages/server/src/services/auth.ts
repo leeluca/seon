@@ -7,6 +7,8 @@ import {
 import { promisify } from 'node:util';
 import { and, eq } from 'drizzle-orm';
 import type { Context } from 'hono';
+import { env } from 'hono/adapter';
+import { getContext } from 'hono/context-storage';
 import { getCookie, setCookie } from 'hono/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 import type { JWTPayload } from 'hono/utils/jwt/types';
@@ -14,11 +16,12 @@ import type { JWK, KeyLike } from 'jose';
 import * as jose from 'jose';
 
 import { COOKIE_SECURITY_SETTINGS } from '../constants/config.js';
-import { db } from '../db/db.js';
+import { getDb } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
 } from '../db/schema.js';
+import type { AuthRouteTypes } from '../types/context.js';
 
 const scryptAsync = promisify(scrypt);
 
@@ -74,26 +77,48 @@ export interface JWTKeys {
   publicKeyKid: string;
 }
 
+function processKey(key: string): string {
+  // Decode from base64
+  const decoded = atob(key);
+
+  // Check if it's JSON string and parse it
+  try {
+    const parsed = JSON.parse(decoded);
+    return parsed;
+  } catch {
+    // If not JSON, process as PEM
+    return decoded.replace(/\\n/g, '\n').replace(/^"|"$/g, '').trim();
+  }
+}
+
 export async function initJWTKeys(config: JWTConfigEnv): Promise<JWTKeys> {
-  const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
-    jose.importPKCS8(config.privateKey, 'RS256'),
-    jose.importSPKI(config.publicKey, 'RS256'),
-  ]);
+  try {
+    const privateKeyPem = processKey(config.privateKey);
+    const publicKeyPem = processKey(config.publicKey);
 
-  const publicKeyJWK = await jose.exportJWK(jwtPublicKey);
-  const publicKeyKid = await jose.calculateJwkThumbprintUri(publicKeyJWK);
+    const [jwtPrivateKey, jwtPublicKey] = await Promise.all([
+      jose.importPKCS8(privateKeyPem, 'RS256'),
+      jose.importSPKI(publicKeyPem, 'RS256'),
+    ]);
 
-  const jwtRefreshSecret = createSecretKey(Buffer.from(config.refreshSecret));
-  const jwtDbPrivateKey = createSecretKey(Buffer.from(config.dbPrivateKey));
+    const publicKeyJWK = await jose.exportJWK(jwtPublicKey);
+    const publicKeyKid = await jose.calculateJwkThumbprintUri(publicKeyJWK);
 
-  return {
-    jwtPrivateKey,
-    jwtPublicKey,
-    jwtRefreshSecret,
-    jwtDbPrivateKey,
-    publicKeyJWK,
-    publicKeyKid,
-  };
+    const jwtRefreshSecret = createSecretKey(Buffer.from(config.refreshSecret));
+    const jwtDbPrivateKey = createSecretKey(Buffer.from(config.dbPrivateKey));
+
+    return {
+      jwtPrivateKey,
+      jwtPublicKey,
+      jwtRefreshSecret,
+      jwtDbPrivateKey,
+      publicKeyJWK,
+      publicKeyKid,
+    };
+  } catch (error) {
+    console.error('Failed to initialize JWT keys:', error);
+    throw new Error('Failed to initialize JWT keys');
+  }
 }
 
 export interface JWTTypeConfig {
@@ -269,7 +294,7 @@ export const validateRefreshToken = async (
     return { refreshToken: null, refreshPayload: null };
   }
 
-  const savedRefreshToken = await db
+  const savedRefreshToken = await getDb(env(c).DB_URL)
     .select()
     .from(refreshTokensTable)
     .limit(1)
@@ -298,8 +323,9 @@ const saveNewRefreshToken = async (
   oldRefreshToken?: string,
 ) => {
   const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
+  const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
 
-  await db.transaction(async (tx) => {
+  await getDb(dbUrl).transaction(async (tx) => {
     if (oldRefreshToken) {
       await tx
         .delete(refreshTokensTable)

@@ -7,7 +7,7 @@ import { deleteCookie, getCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import short from 'short-uuid';
 
-import { db, initDb } from '../db/db.js';
+import { getDb } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
   user as usersTable,
@@ -31,17 +31,10 @@ import { validateUuidV7 } from '../utils/id.js';
 
 const auth = new Hono<{ Bindings: Env; Variables: AuthRouteVariables }>();
 
-auth.use('*', async (c, next) => {
-  // TODO; only initialize db when needed
-  initDb(env(c).DB_URL);
-  await next();
-});
-
 auth.use('*', contextStorage());
 
-// Initialize JWT configuration
+// FIXME: only initialize once
 auth.use('*', async (c, next) => {
-  // FIXME: rename to jwtConfigEnv
   const jwtConfigEnv: JWTConfigEnv = {
     privateKey: env(c).JWT_PRIVATE_KEY,
     publicKey: env(c).JWT_PUBLIC_KEY,
@@ -65,7 +58,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   const jwtConfigEnv = c.get('jwtConfigEnv');
   const jwtConfigs = c.get('jwtConfigs');
 
-  const user = await db.query.user.findFirst({
+  const user = await getDb(env(c).DB_URL).query.user.findFirst({
     where: (user, { eq }) => eq(user.email, email),
   });
 
@@ -113,7 +106,7 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     });
   }
 
-  const existingUser = await db.query.user.findFirst({
+  const existingUser = await getDb(env(c).DB_URL).query.user.findFirst({
     where: (user, { eq, or }) => or(eq(user.email, email), eq(user.id, uuid)),
   });
 
@@ -137,7 +130,9 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     useSync: true,
   } satisfies NewUser;
 
-  const [{ name: savedName, email: savedEmail, id, shortId }] = await db
+  const [{ name: savedName, email: savedEmail, id, shortId }] = await getDb(
+    env(c).DB_URL,
+  )
     .insert(usersTable)
     .values(newUser)
     .returning();
@@ -233,7 +228,7 @@ auth.post('/signout', async (c) => {
   const refreshToken = getCookie(c, refreshCookieName);
 
   if (refreshToken) {
-    await db
+    await getDb(env(c).DB_URL)
       .delete(refreshTokensTable)
       .where(eq(refreshTokensTable.token, refreshToken));
   }
