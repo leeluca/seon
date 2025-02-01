@@ -7,7 +7,7 @@ app = 'seon-server'
 primary_region = 'nrt'
 
 [build]
-  dockerfile = "./Dockerfile"
+  dockerfile = "./server.Dockerfile"
   ignorefile = "./.dockerignore"
   build-target = "runner"
 
@@ -20,6 +20,6 @@ primary_region = 'nrt'
   processes = ['app']
 
 [[vm]]
-  memory = '512mb'
+  memory = '256mb'
   cpu_kind = 'shared'
   cpus = 1
