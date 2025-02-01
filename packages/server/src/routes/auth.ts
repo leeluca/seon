@@ -49,6 +49,7 @@ auth.use('*', async (c, next) => {
   const jwtConfigs = createJWTConfigs(jwtKeys, jwtConfigEnv);
 
   c.set('jwtConfigEnv', jwtConfigEnv);
+  c.set('jwtKeys', jwtKeys);
   c.set('jwtConfigs', jwtConfigs);
   await next();
 });
@@ -165,7 +166,7 @@ auth.get('/status', validateAccess, (c) => {
 auth.get('/credentials/sync', validateAccess, (c) => {
   const payload = c.get('jwtAccessPayload');
   const accessToken = c.get('jwtAccessToken');
-  const syncUrl = c.env.SYNC_URL;
+  const syncUrl = env(c).SYNC_URL;
 
   return c.json({
     result: true,
@@ -178,6 +179,7 @@ auth.get('/credentials/sync', validateAccess, (c) => {
 auth.get('/credentials/db', validateAccess, async (c) => {
   const payload = c.get('jwtAccessPayload');
   const jwtConfigs = c.get('jwtConfigs');
+  const { dbAccessExpiration } = c.get('jwtConfigEnv');
 
   const { sub: userId } = payload;
   const dbAccessToken = await signJWT(userId, 'db_access', jwtConfigs);
@@ -186,8 +188,7 @@ auth.get('/credentials/db', validateAccess, async (c) => {
     result: true,
     token: dbAccessToken,
     expiresAt:
-      Math.floor(Date.now() / 1000) +
-      Number.parseInt(c.env.JWT_DB_ACCESS_EXPIRATION, 10),
+      Math.floor(Date.now() / 1000) + Number.parseInt(dbAccessExpiration, 10),
   });
 });
 
@@ -243,10 +244,12 @@ auth.post('/signout', async (c) => {
 
 auth.get('/jwks', async (c) => {
   const jwtConfigs = c.get('jwtConfigs');
+  const { publicKeyJWK } = c.get('jwtKeys');
+
   const jwks = {
     keys: [
       {
-        ...jwtConfigs.access.signingKey,
+        ...publicKeyJWK,
         alg: jwtConfigs.access.algorithm,
         kid: jwtConfigs.access.kid,
       },

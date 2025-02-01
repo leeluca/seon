@@ -1,5 +1,6 @@
 import type {
   JWTConfigEnv,
+  JWTKeys,
   JWTTokenPayload,
   JWTTypeConfig,
 } from '../services/auth';
@@ -21,6 +22,7 @@ export interface Env {
 
 export interface AuthRouteVariables {
   jwtConfigEnv: JWTConfigEnv;
+  jwtKeys: JWTKeys;
   jwtConfigs: Record<string, JWTTypeConfig>;
   jwtPayload: JWTTokenPayload;
   jwtAccessToken: string;
