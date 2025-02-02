@@ -219,7 +219,7 @@ function StatusMenu() {
               sideOffset={5}
             >
               <div className="space-y-2 pb-4">
-                <h3 className="break text-pretty text-center font-medium leading-none">
+                <h3 className="text-pretty text-center font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>
                 </h3>
               </div>
