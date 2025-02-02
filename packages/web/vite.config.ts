@@ -1,11 +1,40 @@
 import { lingui } from '@lingui/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
-import { defineConfig, Plugin } from 'vite';
+import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
+const pwaManifest = {
+  name: 'Seon Goals',
+  short_name: 'Seon',
+  description:
+    'Seon is a local-first web app that helps you track and achieve your goals.',
+  theme_color: '#F7F6FE',
+  background_color: '#FFFFFF',
+  icons: [
+    {
+      src: 'pwa-192x192.png', // <== don't add slash, for testing
+      sizes: '192x192',
+      type: 'image/png',
+      purpose: 'any',
+    },
+    {
+      src: '/pwa-512x512.png', // <== don't remove slash, for testing
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'any',
+    },
+    {
+      src: 'pwa-512x512.png', // <== don't add slash, for testing
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'maskable',
+    },
+  ],
+};
 
 export default defineConfig({
   envDir: '.',
@@ -28,8 +57,8 @@ export default defineConfig({
     topLevelAwait(),
     VitePWA({
       injectRegister: 'script-defer',
-      registerType: 'autoUpdate',
-      manifest: false,
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      manifest: pwaManifest,
       devOptions: {
         enabled: false,
       },
