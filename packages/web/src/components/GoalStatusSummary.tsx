@@ -92,8 +92,9 @@ export function GoalStatusSummary({
 
   const remaining = Math.max(goal.target - entriesSum, 0);
 
-  const averageNeededPerDay =
-    remaining / (differenceInCalendarDays(goal.targetDate, new Date()) + 1);
+  const averageNeededPerDay = isPastTargetDate
+    ? 0
+    : remaining / (differenceInCalendarDays(goal.targetDate, new Date()) + 1);
 
   const estimatedCompletionDate =
     (averagePerDay &&
