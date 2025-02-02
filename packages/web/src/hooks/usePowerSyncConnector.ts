@@ -13,6 +13,7 @@ export function usePowerSyncConnector() {
   const [connector, setConnector] = useState(new SupabaseConnector());
   const [powerSync] = useState(powerSyncDb);
 
+  // FIXME: run powerSync.disconnect() when isSignInVerified is false
   useEffect(() => {
     if (!isSignInVerified) return;
     // eslint-disable-next-line react-hooks/rules-of-hooks

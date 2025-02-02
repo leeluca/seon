@@ -19,6 +19,7 @@ import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import UpdatePrompt from './UpdatePrompt';
 
 interface ConnectionErrorComponentProps {
   isSignedIn: boolean;
@@ -140,6 +141,7 @@ function StatusMenu() {
             />
           </div>
         )}
+        <UpdatePrompt />
         {isOnline && isSyncConnected && hasSynced ? (
           <Popover>
             <PopoverTrigger asChild>
@@ -217,7 +219,7 @@ function StatusMenu() {
               sideOffset={5}
             >
               <div className="space-y-2 pb-4">
-                <h3 className="text-pretty font-medium leading-none">
+                <h3 className="break text-pretty text-center font-medium leading-none">
                   <Trans>Hello, {user?.name}!</Trans>
                 </h3>
               </div>
