@@ -28,7 +28,7 @@ app.use('/api/*', async (c, next) => {
   return corsMiddleware(c, next);
 });
 
-app.get('/', (c) => c.text('Hello world!'));
+app.get('/ping', (c) => c.text('pong'));
 
 app.route('/api/auth', auth);
 

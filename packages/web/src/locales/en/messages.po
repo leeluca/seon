@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:116
+#: src/components/GoalStatusSummary.tsx:122
 msgid "{0}/day"
 msgstr "{0}/day"
 
-#: src/components/GoalStatusSummary.tsx:105
+#: src/components/GoalStatusSummary.tsx:111
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining} days"
 
@@ -54,7 +54,7 @@ msgstr "Amount"
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
-#: src/components/GoalStatusSummary.tsx:108
+#: src/components/GoalStatusSummary.tsx:114
 msgid "Average Pace"
 msgstr "Average Pace"
 
@@ -66,7 +66,7 @@ msgstr "Before goal's start date"
 msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
-#: src/components/SignOutButton.tsx:66
+#: src/components/SignOutButton.tsx:67
 #: src/components/GoalEditForm.tsx:195
 msgid "Cancel"
 msgstr "Cancel"
@@ -75,11 +75,11 @@ msgstr "Cancel"
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
-#: src/components/StatusMenu.tsx:182
+#: src/components/StatusMenu.tsx:184
 msgid "Check sync error or sign in"
 msgstr "Check sync error or sign in"
 
-#: src/components/StatusMenu.tsx:44
+#: src/components/StatusMenu.tsx:45
 msgid "Check your internet connection and try again."
 msgstr "Check your internet connection and try again."
 
@@ -87,11 +87,11 @@ msgstr "Check your internet connection and try again."
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
-#: src/components/GoalStatusSummary.tsx:87
+#: src/components/GoalStatusSummary.tsx:93
 msgid "Completed!"
 msgstr "Completed!"
 
-#: src/components/StatusMenu.tsx:85
+#: src/components/StatusMenu.tsx:86
 msgid "Could not connect with the sync service. Try again later."
 msgstr "Could not connect with the sync service. Try again later."
 
@@ -166,7 +166,7 @@ msgstr "Email is required"
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
-#: src/components/GoalStatusSummary.tsx:122
+#: src/components/GoalStatusSummary.tsx:128
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
@@ -201,7 +201,7 @@ msgid "Goal name"
 msgstr "Goal name"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:221
+#: src/components/StatusMenu.tsx:223
 msgid "Hello, {0}!"
 msgstr "Hello, {0}!"
 
@@ -209,7 +209,7 @@ msgstr "Hello, {0}!"
 msgid "Hide extra options"
 msgstr "Hide extra options"
 
-#: src/components/SignOutButton.tsx:58
+#: src/components/SignOutButton.tsx:59
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "If you sign out now, this data will be permanently lost!"
 
@@ -233,7 +233,7 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
-#: src/components/StatusMenu.tsx:165
+#: src/components/StatusMenu.tsx:167
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -300,12 +300,20 @@ msgid "Pick a date"
 msgstr "Pick a date"
 
 #: src/components/NewEntryForm.tsx:90
-#: src/components/GoalStatusSummary.tsx:101
+#: src/components/GoalStatusSummary.tsx:107
 #: src/components/GoalForm.tsx:275
 msgid "Progress"
 msgstr "Progress"
 
-#: src/components/GoalStatusSummary.tsx:113
+#: src/components/UpdatePrompt.tsx:56
+msgid "Ready to update"
+msgstr "Ready to update"
+
+#: src/components/UpdatePrompt.tsx:59
+msgid "Refresh to get the latest improvements."
+msgstr "A new version is ready to install with improvements and fixes."
+
+#: src/components/GoalStatusSummary.tsx:119
 msgid "Required Pace"
 msgstr "Required Pace"
 
@@ -321,7 +329,7 @@ msgstr "Save"
 
 #: src/apis/hooks/usePostSignOut.ts:48
 msgid "See you again!"
-msgstr ""
+msgstr "See you again!"
 
 #: src/components/GoalForm.tsx:136
 msgid "Set a target value for your goal."
@@ -341,11 +349,11 @@ msgstr "Show extra options"
 msgid "Sign In"
 msgstr "Sign In"
 
-#: src/components/StatusMenu.tsx:63
+#: src/components/StatusMenu.tsx:64
 msgid "Sign in again to sync your data."
 msgstr "Sign in again to sync your data."
 
-#: src/components/StatusMenu.tsx:68
+#: src/components/StatusMenu.tsx:69
 msgid "Sign in to sync your data."
 msgstr "Sign in to sync your data."
 
@@ -354,7 +362,7 @@ msgid "Sign in will not work."
 msgstr "Sign in will not work."
 
 #: src/components/SignOutButton.tsx:43
-#: src/components/SignOutButton.tsx:72
+#: src/components/SignOutButton.tsx:73
 msgid "Sign out"
 msgstr "Sign out"
 
@@ -387,13 +395,13 @@ msgstr "Sucessfully added goal"
 msgid "Sucessfully updated goal"
 msgstr "Sucessfully updated goal"
 
-#: src/components/StatusMenu.tsx:41
-#: src/components/StatusMenu.tsx:55
-#: src/components/StatusMenu.tsx:82
+#: src/components/StatusMenu.tsx:42
+#: src/components/StatusMenu.tsx:56
+#: src/components/StatusMenu.tsx:83
 msgid "Sync is off"
 msgstr "Sync is off"
 
-#: src/components/StatusMenu.tsx:135
+#: src/components/StatusMenu.tsx:136
 msgid "Syncing"
 msgstr "Syncing"
 
@@ -417,11 +425,11 @@ msgstr "Target value"
 msgid "There are no goals."
 msgstr "There are no goals."
 
-#: src/components/GoalStatusSummary.tsx:105
+#: src/components/GoalStatusSummary.tsx:111
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:137
+#: src/components/CalendarHeatmap.tsx:138
 msgid "Today"
 msgstr "Today"
 
@@ -454,6 +462,14 @@ msgstr "Unit"
 msgid "Unsynced data will be lost"
 msgstr "Unsynced data will be lost"
 
+#: src/components/UpdatePrompt.tsx:47
+msgid "Update available"
+msgstr "New update available"
+
+#: src/components/UpdatePrompt.tsx:62
+msgid "Update now"
+msgstr "Install update"
+
 #: src/components/GoalForm.tsx:159
 msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
@@ -463,7 +479,7 @@ msgstr "Value for goal completion (number)"
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:198
+#: src/components/StatusMenu.tsx:200
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -480,7 +496,7 @@ msgstr "Yes"
 msgid "Yes or no"
 msgstr "Yes or no"
 
-#: src/components/StatusMenu.tsx:160
+#: src/components/StatusMenu.tsx:162
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 
@@ -496,6 +512,6 @@ msgstr "Your Progress"
 msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 
-#: src/components/StatusMenu.tsx:60
+#: src/components/StatusMenu.tsx:61
 msgid "Your session has expired."
 msgstr "Your session has expired."

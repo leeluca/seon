@@ -33,6 +33,7 @@ interface GetGraphDataArgs extends Omit<GoalLineGraphProps, 'goalId'> {
   entries: Database['entry'][];
 }
 
+// FIXME: doesn't work for goal type PROGRESS
 function sumEntriesForDate(
   entries: Database['entry'][],
   date: Date,
@@ -118,7 +119,7 @@ function getGraphData({
   const totalDays = differenceInDays(latestDate, startDateObj);
 
   let mode: IntervalMode = 'day';
-  if (totalDays > 30 && totalDays <= 200) mode = 'week';
+  if (totalDays > 45 && totalDays <= 200) mode = 'week';
   if (totalDays > 200) mode = 'month';
 
   const aggregated = buildIntervals({
@@ -145,7 +146,7 @@ function getGraphData({
           : '',
       ];
     }
-    return format(item.date, locale === 'ko' ? 'MMMdo' : 'MMM, do');
+    return format(item.date, locale === 'ko' ? 'MMMdo' : 'MMM d');
   });
 
   let runningTotal = initialValue;
@@ -310,6 +311,7 @@ function GoalLineGraph({
           x: {
             ticks: {
               maxRotation: 0,
+              autoSkipPadding: 8,
             },
           },
         },
