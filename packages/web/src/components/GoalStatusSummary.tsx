@@ -109,7 +109,7 @@ export function GoalStatusSummary({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-around gap-5 rounded-xl bg-gray-100 px-6 py-5',
+        'flex flex-wrap items-center justify-around gap-5 rounded-xl bg-gray-100 p-5',
         className,
       )}
     >
