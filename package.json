@@ -12,12 +12,11 @@
   },
   "dependencies": {
     "short-uuid": "^5.2.0",
-    "uuid": "^11.0.2"
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
-    "autoprefixer": "^10.4.20",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "typescript": "^5.7.2"
