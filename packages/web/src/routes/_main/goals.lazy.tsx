@@ -1,6 +1,6 @@
-import { lazy, Suspense, useState } from 'react';
+import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useStatus, useSuspenseQuery } from '@powersync/react';
+import { useSuspenseQuery } from '@powersync/react';
 import {
   createLazyFileRoute,
   Link,
@@ -9,38 +9,17 @@ import {
 } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 
-import GoalCard from '~/components/GoalCard';
+import { GoalsContent } from '~/components/GoalsContent';
 import { GoalSorting } from '~/components/GoalSorting';
 import { buttonVariants } from '~/components/ui/button';
 import { GOALS } from '~/constants/query';
 import { useUserStore } from '~/states/stores/userStore';
 import type { GoalSort } from '~/types/goal';
 import { cn } from '~/utils';
-import type { NoGoalsPlaceholderProps } from '../../components/NoGoalsPlaceholder';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
 });
-
-const LazyNoGoalsPlaceholder = lazy(
-  () => import('../../components/NoGoalsPlaceholder'),
-);
-const NoGoalsPlaceholder = ({
-  onClick,
-  className,
-}: NoGoalsPlaceholderProps) => (
-  <Suspense fallback={null}>
-    <LazyNoGoalsPlaceholder onClick={onClick} className={className} />
-  </Suspense>
-);
-
-const SyncingPlaceholder = () => (
-  <div className="mx-auto flex flex-col items-center">
-    <h4 className="mb-2 animate-pulse text-3xl">
-      <Trans>Syncing your goals...</Trans>
-    </h4>
-  </div>
-);
 
 function Goals() {
   const useSync = useUserStore((state) => state.user.useSync);
@@ -52,9 +31,6 @@ function Goals() {
   );
 
   const { data: goals } = useSuspenseQuery(GOALS.sorted(sort).query);
-
-  // FIXME: causing unnecessary re-renders
-  const { hasSynced } = useStatus();
 
   const navigate = useNavigate();
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
@@ -82,22 +58,12 @@ function Goals() {
           <GoalSorting sort={sort} setSort={setSort} />
         </div>
       </div>
-      <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
-        {!goals.length &&
-          (useSync ? (
-            hasSynced ? (
-              <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
-            ) : (
-              <SyncingPlaceholder />
-            )
-          ) : (
-            <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
-          ))}
-        {goals.map((goal) => (
-          <GoalCard key={goal.id} {...goal} />
-        ))}
-        <Outlet />
-      </main>
+      <GoalsContent
+        goals={goals}
+        useSync={!!useSync}
+        openNewGoalForm={openNewGoalForm}
+      />
+      <Outlet />
     </div>
   );
 }

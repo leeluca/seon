@@ -1,4 +1,5 @@
 import { Suspense, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { GoalDetailPanel } from '~/components/GoalDetailPanel';
@@ -21,15 +22,23 @@ function RouteComponent() {
 
   const { id: goalId } = Route.useParams();
 
-  // FIXME: add error boundary (eg. goal not found)
   return (
-    <Suspense>
-      <GoalDetailPanel
-        open={isOpen}
-        onOpenChange={() => close()}
-        selectedGoalId={goalId}
-        isShortId={goalId.length < UUID_LENGTH}
-      />
-    </Suspense>
+    <ErrorBoundary
+      fallback={
+        <GoalDetailPanel.ErrorFallback
+          open={isOpen}
+          onOpenChange={() => close()}
+        />
+      }
+    >
+      <Suspense>
+        <GoalDetailPanel
+          open={isOpen}
+          onOpenChange={() => close()}
+          selectedGoalId={goalId}
+          isShortId={goalId.length < UUID_LENGTH}
+        />
+      </Suspense>
+    </ErrorBoundary>
   );
 }

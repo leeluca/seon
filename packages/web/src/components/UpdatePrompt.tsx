@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
-import { BadgePlusIcon } from 'lucide-react';
+import { BadgePlusIcon, Loader2Icon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { Button } from './ui/button';
@@ -8,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 function ReloadPrompt() {
+  const [isUpdating, setIsUpdating] = useState(false);
   const {
     needRefresh: [needRefresh, _setNeedRefresh],
     updateServiceWorker,
@@ -16,6 +18,16 @@ function ReloadPrompt() {
       console.log('SW registration error', error);
     },
   });
+
+  const handleUpdate = async () => {
+    setIsUpdating(true);
+    try {
+      await updateServiceWorker(true);
+    } catch (error) {
+      console.error('Failed to update:', error);
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <>
@@ -55,7 +67,8 @@ function ReloadPrompt() {
             <p className="mb-1 shrink-0 text-balance break-keep text-center text-sm font-light leading-none">
               <Trans>Refresh to get the latest improvements.</Trans>
             </p>
-            <Button onClick={() => updateServiceWorker(true)}>
+            <Button onClick={handleUpdate} disabled={isUpdating}>
+              {isUpdating ? <Loader2Icon className="animate-spin" /> : null}
               <Trans>Update now</Trans>
             </Button>
           </PopoverContent>

@@ -20,7 +20,7 @@ export const GOALS = {
         .selectFrom('goal')
         .selectAll()
         .where('id', '=', goalId)
-        .executeTakeFirst(),
+        .executeTakeFirstOrThrow(),
   }),
   detailShortId: (shortId: string) => ({
     queryKey: ['goal', { shortId }],
@@ -29,7 +29,7 @@ export const GOALS = {
         .selectFrom('goal')
         .selectAll()
         .where('shortId', '=', shortId)
-        .executeTakeFirst(),
+        .executeTakeFirstOrThrow(),
   }),
 };
 
@@ -55,11 +55,11 @@ export const ENTRIES = {
             .where('goalId', '=', goalId)
             .orderBy('createdAt', 'desc')
             .limit(1)
-            .executeTakeFirst()
+            .executeTakeFirstOrThrow()
         : db
             .selectFrom('entry')
             .select(db.fn.sum('value').as('totalValue'))
             .where('goalId', '=', goalId)
-            .executeTakeFirst(),
+            .executeTakeFirstOrThrow(),
   }),
 };

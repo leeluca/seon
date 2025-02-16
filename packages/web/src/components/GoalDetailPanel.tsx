@@ -18,11 +18,25 @@ import { GoalEditForm } from './GoalEditForm';
 import GoalLineGraph from './GoalLineGraph';
 import { GoalStatusSummary } from './GoalStatusSummary';
 
-interface GoalDetailPanelProps {
-  child?: ReactElement;
-  description?: string;
+interface SheetProps {
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
+  return (
+    <Sheet open={open} onOpenChange={onOpenChange}>
+      <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+        <SheetTitle className="text-2xl">
+          <div>Goal not found</div>
+        </SheetTitle>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+interface GoalDetailPanelProps extends SheetProps {
+  child?: ReactElement;
+  description?: string;
   selectedGoalId: string;
   isShortId: boolean;
 }
@@ -42,17 +56,6 @@ export function GoalDetailPanel({
     refreshMode: 'debounce',
     refreshRate: 200,
   });
-
-  // FIXME: Move to error boundary
-  if (!selectedGoal) {
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
-          <div>Goal not found</div>
-        </SheetContent>
-      </Sheet>
-    );
-  }
 
   const {
     title,
@@ -101,3 +104,5 @@ export function GoalDetailPanel({
     </Sheet>
   );
 }
+
+GoalDetailPanel.ErrorFallback = ErrorFallback;
