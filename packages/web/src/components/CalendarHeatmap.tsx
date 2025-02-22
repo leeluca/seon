@@ -14,11 +14,12 @@ import {
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import { ENTRIES, GOALS } from '~/constants/query';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
-import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
+import { ResponsivePopover } from './ui/responsive-popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface GetButtonStylesArgs {
@@ -101,6 +102,8 @@ const CalendarHeatmap = ({
   const popoverAnchorRef = useRef<HTMLElement | null>(null);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const isMobile = useViewportStore((state) => state.isMobile);
+  const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -184,7 +187,7 @@ const CalendarHeatmap = ({
                     </div>
                   </Button>
                 </TooltipTrigger>
-                {!!entryValue && (
+                {!!entryValue && !isTouchScreen && (
                   <TooltipContent
                     onPointerDownOutside={(e) => {
                       e.preventDefault();
@@ -211,23 +214,27 @@ const CalendarHeatmap = ({
           <ArrowBigRightIcon size={18} />
         </Button>
       </div>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverAnchor virtualRef={popoverAnchorRef} />
-        <PopoverContent className="w-fit max-w-72">
-          <NewEntryForm
-            goalId={goalId}
-            entryId={
-              selectedDateValue[0] &&
-              entriesMap.get(selectedDateValue[0].toDateString())?.id
-            }
-            date={selectedDateValue[0]}
-            value={selectedDateValue[1]}
-            orderedEntries={entries}
-            goalType={goal?.type as GoalType}
-            onSubmitCallback={() => setIsPopoverOpen(false)}
-          />
-        </PopoverContent>
-      </Popover>
+      <ResponsivePopover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        virtualRef={popoverAnchorRef}
+        trigger={null}
+        contentClassName={isMobile ? '' : 'w-fit max-w-72'}
+      >
+        <NewEntryForm
+          goalId={goalId}
+          entryId={
+            selectedDateValue[0] &&
+            entriesMap.get(selectedDateValue[0].toDateString())?.id
+          }
+          date={selectedDateValue[0]}
+          value={selectedDateValue[1]}
+          orderedEntries={entries}
+          goalType={goal?.type as GoalType}
+          onSubmitCallback={() => setIsPopoverOpen(false)}
+          className={isMobile ? 'px-6 pt-4' : ''}
+        />
+      </ResponsivePopover>
     </div>
   );
 };

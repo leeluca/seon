@@ -12,6 +12,7 @@ import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn, generateUUIDs } from '~/utils';
 import FormError from './FormError';
@@ -98,6 +99,7 @@ interface NewEntryFormProps {
   orderedEntries: Database['entry'][];
   goalType: GoalType;
   onSubmitCallback?: () => void;
+  className?: string;
 }
 
 const NewEntryForm = ({
@@ -108,11 +110,13 @@ const NewEntryForm = ({
   goalType,
   orderedEntries,
   onSubmitCallback: onSubmitCallbackProp,
+  className,
 }: NewEntryFormProps) => {
   const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
   const queryClient = useQueryClient();
-
+  const isMobile = useViewportStore((state) => state.isMobile);
+  const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
   const previousValue =
     (goalType === 'PROGRESS' &&
       findPreviousEntry(orderedEntries, date)?.value) ||
@@ -163,7 +167,7 @@ const NewEntryForm = ({
         void form.handleSubmit();
       }}
     >
-      <div className="grid gap-4">
+      <div className={cn('grid gap-4', className)}>
         <div className="grid gap-2">
           <FormItem
             label={t`Date`}
@@ -282,25 +286,49 @@ const NewEntryForm = ({
                       errorClassName="col-span-2 col-start-2"
                     >
                       <div className="col-span-2">
-                        <NumberInput.Root
-                          value={value}
-                          onChange={(e) => {
-                            field.handleChange(Number(e.target.value));
-                          }}
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          buttonStacked
-                        >
-                          <NumberInput.Field
-                            id="entry-value"
-                            // FIXME: remove autoFocus for touchscreen
-                            autoFocus
-                          />
-                          <div className="flex flex-col">
-                            <NumberInput.Button direction="inc" />
-                            <NumberInput.Button direction="dec" />
-                          </div>
-                        </NumberInput.Root>
+                        {isMobile ? (
+                          <NumberInput.Root
+                            value={value}
+                            onChange={(e) => {
+                              field.handleChange(Number(e.target.value));
+                            }}
+                            min={0}
+                            max={MAX_INPUT_NUMBER}
+                          >
+                            <NumberInput.Button
+                              direction="dec"
+                              className="rounded-r-none"
+                            />
+                            <NumberInput.Field
+                              id="entry-value"
+                              autoFocus={!isMobile && !isTouchScreen}
+                              className="rounded-none"
+                            />
+                            <NumberInput.Button
+                              direction="inc"
+                              className="rounded-l-none"
+                            />
+                          </NumberInput.Root>
+                        ) : (
+                          <NumberInput.Root
+                            value={value}
+                            onChange={(e) => {
+                              field.handleChange(Number(e.target.value));
+                            }}
+                            min={0}
+                            max={MAX_INPUT_NUMBER}
+                            buttonStacked
+                          >
+                            <NumberInput.Field
+                              id="entry-value"
+                              autoFocus={!isMobile && !isTouchScreen}
+                            />
+                            <div className="flex flex-col">
+                              <NumberInput.Button direction="inc" />
+                              <NumberInput.Button direction="dec" />
+                            </div>
+                          </NumberInput.Root>
+                        )}
                       </div>
                     </FormError.Wrapper>
                   );
@@ -319,6 +347,7 @@ const NewEntryForm = ({
                 <div
                   className={cn('mt-1 grid grid-cols-3 gap-2', {
                     'cursor-not-allowed': isSubmitDisabled,
+                    'mt-2': isMobile,
                   })}
                 >
                   {/* FIXME: apply cursor-not-allowed to delete button individually */}
@@ -330,6 +359,7 @@ const NewEntryForm = ({
                     onClick={() =>
                       entryId && void deleteEntry(entryId, onSubmitCallback)
                     }
+                    size={isMobile ? 'lg' : 'default'}
                   >
                     <Trash2Icon size={18} />
                   </Button>
@@ -337,6 +367,7 @@ const NewEntryForm = ({
                     type="submit"
                     disabled={isSubmitDisabled}
                     className="col-span-2"
+                    size={isMobile ? 'lg' : 'default'}
                   >
                     <Trans>Save</Trans>
                   </Button>
