@@ -67,7 +67,7 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        'noto-emoji': ['"Noto Emoji"', 'serif'],
+        'noto-emoji': ['"Noto Emoji"', 'Apple Color Emoji'],
       },
       keyframes: {
         'accordion-down': {
