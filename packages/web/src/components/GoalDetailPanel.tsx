@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
 import { useSuspenseQuery } from '@powersync/tanstack-react-query';
 
 import {
@@ -12,7 +11,7 @@ import {
   SheetTitle,
 } from '~/components/ui/sheet';
 import { GOALS } from '~/constants/query';
-import { BREAKPOINTS } from '~/constants/style';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { GoalEditForm } from './GoalEditForm';
 import GoalLineGraph from './GoalLineGraph';
@@ -52,10 +51,7 @@ export function GoalDetailPanel({
       : GOALS.detail(selectedGoalId),
   );
 
-  const { width, ref } = useResizeDetector({
-    refreshMode: 'debounce',
-    refreshRate: 200,
-  });
+  const isMobile = useViewportStore((state) => state.isMobile);
 
   const {
     title,
@@ -68,8 +64,6 @@ export function GoalDetailPanel({
     type,
   } = selectedGoal;
 
-  const isMobile = !!width && width < BREAKPOINTS.sm;
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
@@ -78,8 +72,8 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex min-h-full flex-col gap-1" ref={ref}>
-          <section className="@container relative mt-4 flex aspect-video min-h-[min(20%,25opx)] items-center justify-center">
+        <article className="flex min-h-full flex-col gap-1 overflow-x-hidden">
+          <section className="relative mt-4 flex aspect-video min-h-[min(20%,25opx)] items-center justify-center overflow-x-hidden">
             <GoalLineGraph
               key={`${id}-graph-${isMobile}`}
               goalId={id}

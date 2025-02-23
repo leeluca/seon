@@ -14,11 +14,11 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:122
+#: src/components/GoalStatusSummary.tsx:132
 msgid "{0}/day"
 msgstr "{0}/day"
 
-#: src/components/GoalStatusSummary.tsx:111
+#: src/components/GoalStatusSummary.tsx:121
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining} days"
 
@@ -34,7 +34,7 @@ msgstr "🚧 Seon Goals 🚧"
 msgid "Add new goal"
 msgstr "Add new goal"
 
-#: src/components/GoalLineGraph.tsx:290
+#: src/components/GoalLineGraph.tsx:291
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
@@ -46,7 +46,7 @@ msgstr "Ahead of schedule!"
 msgid "Already a user?"
 msgstr "Already a user?"
 
-#: src/components/NewEntryForm.tsx:89
+#: src/components/NewEntryForm.tsx:90
 msgid "Amount"
 msgstr "Amount"
 
@@ -54,7 +54,7 @@ msgstr "Amount"
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
-#: src/components/GoalStatusSummary.tsx:114
+#: src/components/GoalStatusSummary.tsx:124
 msgid "Average Pace"
 msgstr "Average Pace"
 
@@ -87,7 +87,7 @@ msgstr "Check your internet connection and try again."
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
-#: src/components/GoalStatusSummary.tsx:93
+#: src/components/GoalStatusSummary.tsx:102
 msgid "Completed!"
 msgstr "Completed!"
 
@@ -111,7 +111,7 @@ msgstr "Create goal"
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
-#: src/components/NewEntryForm.tsx:169
+#: src/components/NewEntryForm.tsx:173
 msgid "Date"
 msgstr "Date"
 
@@ -128,15 +128,15 @@ msgstr "Delete goal"
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
-#: src/components/NewEntryForm.tsx:91
+#: src/components/NewEntryForm.tsx:92
 msgid "Did you achieve it?"
 msgstr "Did you achieve it?"
 
-#: src/components/GoalSorting.tsx:36
+#: src/components/GoalSorting.tsx:66
 msgid "Due later"
 msgstr "Due later"
 
-#: src/components/GoalSorting.tsx:32
+#: src/components/GoalSorting.tsx:62
 msgid "Due soon"
 msgstr "Due soon"
 
@@ -162,11 +162,11 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/components/GoalLineGraph.tsx:256
+#: src/components/GoalLineGraph.tsx:257
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
-#: src/components/GoalStatusSummary.tsx:128
+#: src/components/GoalStatusSummary.tsx:138
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
@@ -191,7 +191,7 @@ msgstr "Go back"
 msgid "Goal achieved!"
 msgstr "Goal achieved!"
 
-#: src/components/GoalLineGraph.tsx:236
+#: src/components/GoalLineGraph.tsx:237
 msgid "Goal Benchmark"
 msgstr "Goal Benchmark"
 
@@ -253,11 +253,11 @@ msgstr "Missing required fields"
 msgid "Name"
 msgstr "Name"
 
-#: src/components/GoalSorting.tsx:40
+#: src/components/GoalSorting.tsx:70
 msgid "Name (A to Z)"
 msgstr "Name (A to Z)"
 
-#: src/components/GoalSorting.tsx:44
+#: src/components/GoalSorting.tsx:74
 msgid "Name (Z to A)"
 msgstr "Name (Z to A)"
 
@@ -265,15 +265,15 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:75
+#: src/routes/_main/goals.lazy.tsx:51
 msgid "New Goal"
 msgstr "New Goal"
 
-#: src/components/GoalSorting.tsx:24
+#: src/components/GoalSorting.tsx:54
 msgid "Newest goals"
 msgstr "Newest first"
 
-#: src/components/NewEntryForm.tsx:243
+#: src/components/NewEntryForm.tsx:247
 msgid "No"
 msgstr "No"
 
@@ -281,7 +281,7 @@ msgstr "No"
 msgid "Numbers only"
 msgstr "Numbers only"
 
-#: src/components/GoalSorting.tsx:28
+#: src/components/GoalSorting.tsx:58
 msgid "Oldest goals"
 msgstr "Oldest first"
 
@@ -299,21 +299,21 @@ msgstr "Password is required"
 msgid "Pick a date"
 msgstr "Pick a date"
 
-#: src/components/NewEntryForm.tsx:90
-#: src/components/GoalStatusSummary.tsx:107
+#: src/components/NewEntryForm.tsx:91
+#: src/components/GoalStatusSummary.tsx:117
 #: src/components/GoalForm.tsx:275
 msgid "Progress"
 msgstr "Progress"
 
-#: src/components/UpdatePrompt.tsx:56
+#: src/components/UpdatePrompt.tsx:65
 msgid "Ready to update"
 msgstr "Ready to update"
 
-#: src/components/UpdatePrompt.tsx:59
+#: src/components/UpdatePrompt.tsx:68
 msgid "Refresh to get the latest improvements."
 msgstr "A new version is ready to install with improvements and fixes."
 
-#: src/components/GoalStatusSummary.tsx:119
+#: src/components/GoalStatusSummary.tsx:129
 msgid "Required Pace"
 msgstr "Required Pace"
 
@@ -321,7 +321,7 @@ msgstr "Required Pace"
 msgid "Right on track!"
 msgstr "Right on track!"
 
-#: src/components/NewEntryForm.tsx:341
+#: src/components/NewEntryForm.tsx:372
 #: src/components/GoalEditForm.tsx:206
 #: src/components/GoalEditForm.tsx:217
 msgid "Save"
@@ -330,6 +330,10 @@ msgstr "Save"
 #: src/apis/hooks/usePostSignOut.ts:48
 msgid "See you again!"
 msgstr "See you again!"
+
+#: src/components/GoalSorting.tsx:94
+msgid "Select sort..."
+msgstr ""
 
 #: src/components/GoalForm.tsx:136
 msgid "Set a target value for your goal."
@@ -375,7 +379,7 @@ msgstr "Sign Up"
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
-#: src/routes/_main/goals.lazy.tsx:80
+#: src/routes/_main/goals.lazy.tsx:56
 msgid "Sort by"
 msgstr "Sort by"
 
@@ -405,7 +409,7 @@ msgstr "Sync is off"
 msgid "Syncing"
 msgstr "Syncing"
 
-#: src/routes/_main/goals.lazy.tsx:40
+#: src/components/GoalsContent.tsx:25
 msgid "Syncing your goals..."
 msgstr "Syncing your goals..."
 
@@ -425,11 +429,11 @@ msgstr "Target value"
 msgid "There are no goals."
 msgstr "There are no goals."
 
-#: src/components/GoalStatusSummary.tsx:111
+#: src/components/GoalStatusSummary.tsx:121
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:138
+#: src/components/CalendarHeatmap.tsx:140
 msgid "Today"
 msgstr "Today"
 
@@ -462,11 +466,11 @@ msgstr "Unit"
 msgid "Unsynced data will be lost"
 msgstr "Unsynced data will be lost"
 
-#: src/components/UpdatePrompt.tsx:47
+#: src/components/UpdatePrompt.tsx:56
 msgid "Update available"
 msgstr "New update available"
 
-#: src/components/UpdatePrompt.tsx:62
+#: src/components/UpdatePrompt.tsx:72
 msgid "Update now"
 msgstr "Install update"
 
@@ -488,7 +492,7 @@ msgstr "Welcome back, {userName}!"
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
-#: src/components/NewEntryForm.tsx:229
+#: src/components/NewEntryForm.tsx:233
 msgid "Yes"
 msgstr "Yes"
 
@@ -504,11 +508,11 @@ msgstr "Your data is synced!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "Your most recent changes have not been synced yet."
 
-#: src/components/GoalLineGraph.tsx:174
+#: src/components/GoalLineGraph.tsx:175
 msgid "Your Progress"
 msgstr "Your Progress"
 
-#: src/components/GoalLineGraph.tsx:286
+#: src/components/GoalLineGraph.tsx:287
 msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 

@@ -6,6 +6,7 @@ import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 
 import { Toaster } from '~/components/ui/sonner';
 import { TooltipProvider } from '~/components/ui/tooltip';
+import { ViewportHandler } from '~/components/ViewportHandler';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
@@ -50,6 +51,7 @@ function Root() {
             className="mt-6"
           />
           <OnlineStatusProvider>
+            <ViewportHandler />
             <Outlet />
           </OnlineStatusProvider>
         </TooltipProvider>

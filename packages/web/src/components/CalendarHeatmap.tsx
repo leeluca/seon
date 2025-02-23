@@ -14,11 +14,12 @@ import {
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
 import { ENTRIES, GOALS } from '~/constants/query';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
-import { Popover, PopoverAnchor, PopoverContent } from './ui/popover';
+import { ResponsivePopover } from './ui/responsive-popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 interface GetButtonStylesArgs {
@@ -26,12 +27,14 @@ interface GetButtonStylesArgs {
   isSelected: boolean;
   isToday: boolean;
   isPast: boolean;
+  isBlocked: boolean;
 }
 const getButtonStyles = ({
   entryValue,
   isSelected,
   isToday,
   isPast,
+  isBlocked,
 }: GetButtonStylesArgs) => {
   const entryValueZero = (isPast && !entryValue) || entryValue === 0;
   const entryUndefined = entryValue === undefined && !isPast;
@@ -46,6 +49,7 @@ const getButtonStyles = ({
     'bg-orange-300/70': entryValueZero && isSelected,
     'bg-accent text-accent-foreground': entryUndefined && isSelected,
     'border-2 border-blue-200': isToday,
+    'bg-gray-300 cursor-not-allowed border-none hover:bg-gray-300': isBlocked,
   });
 };
 interface CalendarHeatmapProps {
@@ -101,6 +105,8 @@ const CalendarHeatmap = ({
   const popoverAnchorRef = useRef<HTMLElement | null>(null);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
+  const isMobile = useViewportStore((state) => state.isMobile);
+  const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -151,7 +157,7 @@ const CalendarHeatmap = ({
           const savedEntry = entriesMap.get(stringDate);
           const entryValue = savedEntry?.value;
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
-          const isBlocked = checkBlockedDateFn?.(day);
+          const isBlocked = checkBlockedDateFn?.(day) ?? false;
           const isToday = checkIsToday(day);
           const isPast = !isToday && checkIsPast(day);
 
@@ -170,6 +176,7 @@ const CalendarHeatmap = ({
                       isSelected,
                       isToday,
                       isPast: isPast && !isBlocked,
+                      isBlocked,
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
@@ -184,7 +191,7 @@ const CalendarHeatmap = ({
                     </div>
                   </Button>
                 </TooltipTrigger>
-                {!!entryValue && (
+                {!!entryValue && !isTouchScreen && (
                   <TooltipContent
                     onPointerDownOutside={(e) => {
                       e.preventDefault();
@@ -211,23 +218,27 @@ const CalendarHeatmap = ({
           <ArrowBigRightIcon size={18} />
         </Button>
       </div>
-      <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-        <PopoverAnchor virtualRef={popoverAnchorRef} />
-        <PopoverContent className="w-fit max-w-72">
-          <NewEntryForm
-            goalId={goalId}
-            entryId={
-              selectedDateValue[0] &&
-              entriesMap.get(selectedDateValue[0].toDateString())?.id
-            }
-            date={selectedDateValue[0]}
-            value={selectedDateValue[1]}
-            orderedEntries={entries}
-            goalType={goal?.type as GoalType}
-            onSubmitCallback={() => setIsPopoverOpen(false)}
-          />
-        </PopoverContent>
-      </Popover>
+      <ResponsivePopover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        virtualRef={popoverAnchorRef}
+        trigger={null}
+        contentClassName={isMobile ? '' : 'w-fit max-w-72'}
+      >
+        <NewEntryForm
+          goalId={goalId}
+          entryId={
+            selectedDateValue[0] &&
+            entriesMap.get(selectedDateValue[0].toDateString())?.id
+          }
+          date={selectedDateValue[0]}
+          value={selectedDateValue[1]}
+          orderedEntries={entries}
+          goalType={goal?.type as GoalType}
+          onSubmitCallback={() => setIsPopoverOpen(false)}
+          className={isMobile ? 'px-6 pt-4' : ''}
+        />
+      </ResponsivePopover>
     </div>
   );
 };
