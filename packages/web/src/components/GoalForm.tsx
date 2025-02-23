@@ -50,6 +50,7 @@ interface NewGoalFormProps {
   labelClassName?: string;
   errorClassName?: string;
   collapseOptionalFields?: boolean;
+  autoFocus?: boolean;
 }
 function NewGoalForm({
   form,
@@ -58,6 +59,7 @@ function NewGoalForm({
   labelClassName,
   errorClassName,
   collapseOptionalFields = false,
+  autoFocus = false,
 }: NewGoalFormProps) {
   const [showOptionalFields, setShowOptionalFields] = useState(
     !collapseOptionalFields,
@@ -115,6 +117,7 @@ function NewGoalForm({
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder={t`eg. 'Learn 1000 French words'`}
                     maxLength={100}
+                    autoFocus={autoFocus}
                   />
                 </div>
               </FormError.Wrapper>

@@ -36,34 +36,36 @@ function Goals() {
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
 
   return (
-    <div className="w-full">
-      <div className="mb-8 flex items-center justify-between">
-        <Link
-          from="/goals"
-          to="/goals/new"
-          className={cn(
-            buttonVariants({ variant: 'default', size: 'lg' }),
-            'pl-4 pr-5',
-          )}
-        >
-          <div className="flex items-center justify-center text-base">
-            <PlusIcon size={18} className="mr-2" />
-            <Trans>New Goal</Trans>
+    <>
+      <div className="w-full">
+        <div className="mb-8 flex items-center justify-between">
+          <Link
+            from="/goals"
+            to="/goals/new"
+            className={cn(
+              buttonVariants({ variant: 'default', size: 'lg' }),
+              'pl-4 pr-5',
+            )}
+          >
+            <div className="flex items-center justify-center text-base">
+              <PlusIcon size={18} className="mr-2" />
+              <Trans>New Goal</Trans>
+            </div>
+          </Link>
+          <div className="flex items-center gap-2">
+            <p className="text-xs font-medium">
+              <Trans>Sort by</Trans>
+            </p>
+            <GoalSorting sort={sort} setSort={setSort} />
           </div>
-        </Link>
-        <div className="flex items-center gap-2">
-          <p className="text-xs font-medium">
-            <Trans>Sort by</Trans>
-          </p>
-          <GoalSorting sort={sort} setSort={setSort} />
         </div>
+        <GoalsContent
+          goals={goals}
+          useSync={!!useSync}
+          openNewGoalForm={openNewGoalForm}
+        />
       </div>
-      <GoalsContent
-        goals={goals}
-        useSync={!!useSync}
-        openNewGoalForm={openNewGoalForm}
-      />
       <Outlet />
-    </div>
+    </>
   );
 }
