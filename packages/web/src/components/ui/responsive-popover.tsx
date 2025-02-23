@@ -1,8 +1,14 @@
 import type { ComponentProps, ReactNode } from 'react';
-import { Dialog, DialogContent, DialogTrigger } from './dialog';
-import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from './popover';
+
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
+import { Dialog, DialogContent, DialogTrigger } from './dialog';
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+} from './popover';
 
 interface ResponsivePopoverProps {
   trigger: ReactNode;
@@ -10,13 +16,17 @@ interface ResponsivePopoverProps {
   className?: string;
   contentClassName?: string;
   /** Optional props to pass to the Popover/Dialog content */
-  contentProps?: ComponentProps<typeof PopoverContent> & ComponentProps<typeof DialogContent>;
+  contentProps?: ComponentProps<typeof PopoverContent> &
+    ComponentProps<typeof DialogContent>;
   /** Control the open state */
   open?: boolean;
   /** Callback when open state changes */
   onOpenChange?: (open: boolean) => void;
   /** Virtual ref for anchor positioning */
-  virtualRef?: React.RefObject<Element> | { current: { getBoundingClientRect: () => DOMRect } } | null;
+  virtualRef?:
+    | React.RefObject<Element>
+    | { current: { getBoundingClientRect: () => DOMRect } }
+    | null;
 }
 
 export function ResponsivePopover({
@@ -38,10 +48,7 @@ export function ResponsivePopover({
           {trigger}
         </DialogTrigger>
         <DialogContent
-          className={cn(
-            'sm:max-w-[425px]',
-            contentClassName
-          )}
+          className={cn('sm:max-w-[425px]', contentClassName)}
           {...contentProps}
         >
           {children}
@@ -57,14 +64,11 @@ export function ResponsivePopover({
         {trigger}
       </PopoverTrigger>
       <PopoverContent
-        className={cn(
-          'w-auto min-w-[200px]',
-          contentClassName
-        )}
+        className={cn('w-auto min-w-[200px]', contentClassName)}
         {...contentProps}
       >
         {children}
       </PopoverContent>
     </Popover>
   );
-} 
+}
