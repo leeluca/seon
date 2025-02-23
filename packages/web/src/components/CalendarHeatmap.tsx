@@ -27,12 +27,14 @@ interface GetButtonStylesArgs {
   isSelected: boolean;
   isToday: boolean;
   isPast: boolean;
+  isBlocked: boolean;
 }
 const getButtonStyles = ({
   entryValue,
   isSelected,
   isToday,
   isPast,
+  isBlocked,
 }: GetButtonStylesArgs) => {
   const entryValueZero = (isPast && !entryValue) || entryValue === 0;
   const entryUndefined = entryValue === undefined && !isPast;
@@ -47,6 +49,7 @@ const getButtonStyles = ({
     'bg-orange-300/70': entryValueZero && isSelected,
     'bg-accent text-accent-foreground': entryUndefined && isSelected,
     'border-2 border-blue-200': isToday,
+    'bg-gray-300 cursor-not-allowed border-none hover:bg-gray-300': isBlocked,
   });
 };
 interface CalendarHeatmapProps {
@@ -154,7 +157,7 @@ const CalendarHeatmap = ({
           const savedEntry = entriesMap.get(stringDate);
           const entryValue = savedEntry?.value;
           const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
-          const isBlocked = checkBlockedDateFn?.(day);
+          const isBlocked = checkBlockedDateFn?.(day) ?? false;
           const isToday = checkIsToday(day);
           const isPast = !isToday && checkIsPast(day);
 
@@ -173,6 +176,7 @@ const CalendarHeatmap = ({
                       isSelected,
                       isToday,
                       isPast: isPast && !isBlocked,
+                      isBlocked,
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
