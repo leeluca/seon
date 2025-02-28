@@ -48,22 +48,20 @@ export const user = pgTable(
         | 'title desc';
     }>(),
   },
-  (table) => {
-    return {
-      emailKey: uniqueIndex('user_email_key').using(
-        'btree',
-        table.email.asc().nullsLast(),
-      ),
-      nameKey: uniqueIndex('user_name_key').using(
-        'btree',
-        table.name.asc().nullsLast(),
-      ),
-      shortIdKey: uniqueIndex('user_shortId_key').using(
-        'btree',
-        table.shortId.asc().nullsLast(),
-      ),
-    };
-  },
+  (table) => [
+    uniqueIndex('user_email_key').using(
+      'btree',
+      table.email.asc().nullsLast(),
+    ),
+    uniqueIndex('user_name_key').using(
+      'btree',
+      table.name.asc().nullsLast(),
+    ),
+    uniqueIndex('user_shortId_key').using(
+      'btree',
+      table.shortId.asc().nullsLast(),
+    ),
+  ],
 );
 
 export const goalType = pgEnum('GoalType', ['COUNT', 'PROGRESS', 'BOOLEAN']);
@@ -101,21 +99,19 @@ export const goal = pgTable(
     }).notNull(),
     type: goalType('type').default('COUNT').notNull(),
   },
-  (table) => {
-    return {
-      shortIdKey: uniqueIndex('goal_shortId_key').using(
-        'btree',
-        table.shortId.asc().nullsLast(),
-      ),
-      goalUserIdFkey: foreignKey({
-        columns: [table.userId],
-        foreignColumns: [user.id],
-        name: 'goal_userId_fkey',
-      })
-        .onUpdate('cascade')
-        .onDelete('cascade'),
-    };
-  },
+  (table) => [
+    uniqueIndex('goal_shortId_key').using(
+      'btree',
+      table.shortId.asc().nullsLast(),
+    ),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [user.id],
+      name: 'goal_userId_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+  ],
 );
 
 export const entry = pgTable(
@@ -140,28 +136,26 @@ export const entry = pgTable(
       .notNull(),
     userId: uuid('userId').notNull(),
   },
-  (table) => {
-    return {
-      shortIdKey: uniqueIndex('entry_shortId_key').using(
-        'btree',
-        table.shortId.asc().nullsLast(),
-      ),
-      entryGoalIdFkey: foreignKey({
-        columns: [table.goalId],
-        foreignColumns: [goal.id],
-        name: 'entry_goalId_fkey',
-      })
-        .onUpdate('cascade')
-        .onDelete('cascade'),
-      entryUserIdFkey: foreignKey({
-        columns: [table.userId],
-        foreignColumns: [user.id],
-        name: 'entry_userId_fkey',
-      })
-        .onUpdate('cascade')
-        .onDelete('cascade'),
-    };
-  },
+  (table) => [
+    uniqueIndex('entry_shortId_key').using(
+      'btree',
+      table.shortId.asc().nullsLast(),
+    ),
+    foreignKey({
+      columns: [table.goalId],
+      foreignColumns: [goal.id],
+      name: 'entry_goalId_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [user.id],
+      name: 'entry_userId_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+  ],
 );
 
 export const refreshToken = pgTable(
@@ -178,18 +172,14 @@ export const refreshToken = pgTable(
       .defaultNow()
       .notNull(),
   },
-  (table) => {
-    return {
-      refreshTokenUserIdFkey: foreignKey({
-        columns: [table.userId],
-        foreignColumns: [user.id],
-        name: 'refresh_token_userId_fkey',
-      })
-        .onUpdate('cascade')
-        .onDelete('cascade'),
-      refreshTokenTokenUnique: unique('refresh_token_token_unique').on(
-        table.token,
-      ),
-    };
-  },
+  (table) => [
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [user.id],
+      name: 'refresh_token_userId_fkey',
+    })
+      .onUpdate('cascade')
+      .onDelete('cascade'),
+    unique('refresh_token_token_unique').on(table.token),
+  ],
 );
