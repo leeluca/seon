@@ -15,14 +15,14 @@
   "dependencies": {
     "@hono/node-server": "^1.13.8",
     "@hono/typebox-validator": "^0.3.2",
-    "@sinclair/typebox": "^0.33.17",
+    "@sinclair/typebox": "^0.33.22",
     "drizzle-orm": "^0.40.0",
     "hono": "^4.7.2",
     "jose": "^6.0.8",
     "postgres": "^3.4.5"
   },
   "devDependencies": {
-    "@types/node": "^20.16.10",
+    "@types/node": "^20.17.22",
     "drizzle-kit": "^0.30.5",
     "tsx": "^4.19.3"
   },

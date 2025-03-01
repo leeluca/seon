@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "short-uuid": "^5.2.0",
-    "uuid": "^11.0.5"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
-    "prettier": "^3.4.2",
-    "prettier-plugin-tailwindcss": "^0.6.9",
-    "typescript": "^5.7.2"
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
+    "prettier": "^3.5.2",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "typescript": "^5.8.2"
   },
   "engines": {
     "node": ">=20.12.0",

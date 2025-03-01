@@ -12,7 +12,7 @@ import { getContext } from 'hono/context-storage';
 import { getCookie, setCookie } from 'hono/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 import type { JWTPayload } from 'hono/utils/jwt/types';
-import type { JWK, KeyLike } from 'jose';
+import type { CryptoKey, JWK, KeyObject } from 'jose';
 import * as jose from 'jose';
 
 import { COOKIE_SECURITY_SETTINGS } from '../constants/config.js';
@@ -69,10 +69,10 @@ export interface JWTConfigEnv {
 }
 
 export interface JWTKeys {
-  jwtPrivateKey: KeyLike;
-  jwtPublicKey: KeyLike;
-  jwtRefreshSecret: KeyLike;
-  jwtDbPrivateKey: KeyLike;
+  jwtPrivateKey: CryptoKey;
+  jwtPublicKey: CryptoKey;
+  jwtRefreshSecret: KeyObject;
+  jwtDbPrivateKey: KeyObject;
   publicKeyJWK: JWK;
   publicKeyKid: string;
 }
@@ -124,8 +124,8 @@ export async function initJWTKeys(config: JWTConfigEnv): Promise<JWTKeys> {
 export interface JWTTypeConfig {
   expiration: number;
   algorithm: SignatureAlgorithm;
-  signingKey: KeyLike;
-  verificationKey: KeyLike;
+  signingKey: KeyObject;
+  verificationKey: KeyObject;
   aud: string;
   role: string;
   kid: string;
