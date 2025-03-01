@@ -18,7 +18,7 @@
     "@sinclair/typebox": "^0.33.17",
     "drizzle-orm": "^0.40.0",
     "hono": "^4.7.2",
-    "jose": "^5.9.6",
+    "jose": "^6.0.8",
     "postgres": "^3.4.5"
   },
   "devDependencies": {

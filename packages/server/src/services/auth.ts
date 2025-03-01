@@ -291,29 +291,60 @@ export const validateRefreshToken = async (
   );
 
   if (!refreshToken || !refreshPayload?.sub) {
+    console.log('No valid refresh token or payload found');
     return { refreshToken: null, refreshPayload: null };
   }
 
-  const savedRefreshToken = await getDb(env(c).DB_URL)
-    .select()
-    .from(refreshTokensTable)
-    .limit(1)
-    .where(
-      and(
-        eq(refreshTokensTable.token, refreshToken),
-        eq(refreshTokensTable.userId, refreshPayload.sub),
-      ),
-    )
-    .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id));
+  console.log(`Validating refresh token for user: ${refreshPayload.sub}`);
 
-  if (!savedRefreshToken.length) {
-    // TODO: check if user status is banned/inactive (not implemented)
-    //  || savedRefreshToken[0].user.status !== 'ACTIVE'
+  try {
+    // FIXME: temporary for debugging, to be removed
+    // First try a simple query without joins to check if token exists
+    const simpleTokenCheck = await getDb(env(c).DB_URL)
+      .select()
+      .from(refreshTokensTable)
+      .where(eq(refreshTokensTable.token, refreshToken))
+      .limit(1);
 
+    console.log(
+      `Simple token check results: ${simpleTokenCheck.length > 0 ? 'Token found' : 'Token not found'}`,
+    );
+
+    if (simpleTokenCheck.length === 0) {
+      console.log('Refresh token not found in database');
+      return { refreshToken: null, refreshPayload: null };
+    }
+
+    // Get the full user data with a join
+    const savedRefreshToken = await getDb(env(c).DB_URL)
+      .select()
+      .from(refreshTokensTable)
+      .where(
+        and(
+          eq(refreshTokensTable.token, refreshToken),
+          eq(refreshTokensTable.userId, refreshPayload.sub),
+        ),
+      )
+      .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id))
+      .limit(1);
+
+    console.log(
+      `Full token check with user join: ${savedRefreshToken.length > 0 ? 'Token with user found' : 'Token with user not found'}`,
+    );
+
+    if (!savedRefreshToken.length) {
+      // TODO: check if user status is banned/inactive (not implemented)
+      //  || savedRefreshToken[0].user.status !== 'ACTIVE'
+      // Token exists but user doesn't match or user doesn't exist
+      console.log('Token exists but user validation failed');
+      return { refreshToken: null, refreshPayload: null };
+    }
+
+    return { refreshToken, refreshPayload };
+  } catch (error) {
+    console.error('Error validating refresh token:', error);
     return { refreshToken: null, refreshPayload: null };
   }
-
-  return { refreshToken, refreshPayload };
 };
 
 const saveNewRefreshToken = async (
@@ -325,18 +356,25 @@ const saveNewRefreshToken = async (
   const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
   const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
 
-  await getDb(dbUrl).transaction(async (tx) => {
-    if (oldRefreshToken) {
-      await tx
-        .delete(refreshTokensTable)
-        .where(eq(refreshTokensTable.token, oldRefreshToken));
-    }
-    await tx.insert(refreshTokensTable).values({
-      userId: userId,
-      token: newRefreshToken,
-      expiration: new Date(Date.now() + refreshExpiration * 1000),
+  try {
+    await getDb(dbUrl).transaction(async (tx) => {
+      if (oldRefreshToken) {
+        await tx
+          .delete(refreshTokensTable)
+          .where(eq(refreshTokensTable.token, oldRefreshToken));
+      }
+
+      await tx.insert(refreshTokensTable).values({
+        userId: userId,
+        token: newRefreshToken,
+        expiration: new Date(Date.now() + refreshExpiration * 1000),
+      });
     });
-  });
+    console.log(`Refresh token saved successfully for user: ${userId}`);
+  } catch (error) {
+    console.error('Error saving refresh token:', error);
+    throw new Error('Failed to save refresh token');
+  }
 };
 
 type IssueRefreshTokenReturn<T extends boolean> = T extends true
@@ -353,18 +391,29 @@ export const issueRefreshToken = async <T extends boolean = true>(
   oldRefreshToken?: string,
   shouldReturnPayload: T = true as T,
 ): Promise<IssueRefreshTokenReturn<T>> => {
-  const { token: newRefreshToken, payload } = await signJWTWithPayload(
-    userId,
-    'refresh',
-    jwtConfigs,
-  );
+  try {
+    console.log(`Generating new refresh token for user: ${userId}`);
 
-  await saveNewRefreshToken(userId, newRefreshToken, config, oldRefreshToken);
+    const { token: newRefreshToken, payload } = await signJWTWithPayload(
+      userId,
+      'refresh',
+      jwtConfigs,
+    );
 
-  if (shouldReturnPayload) {
-    return { token: newRefreshToken, payload } as IssueRefreshTokenReturn<T>;
+    console.log('Token generated, saving to database...');
+
+    await saveNewRefreshToken(userId, newRefreshToken, config, oldRefreshToken);
+
+    console.log(`Refresh token process completed for user: ${userId}`);
+
+    if (shouldReturnPayload) {
+      return { token: newRefreshToken, payload } as IssueRefreshTokenReturn<T>;
+    }
+    return newRefreshToken as IssueRefreshTokenReturn<T>;
+  } catch (error) {
+    console.error(`Failed to issue refresh token for user ${userId}:`, error);
+    throw new Error('Failed to issue refresh token');
   }
-  return newRefreshToken as IssueRefreshTokenReturn<T>;
 };
 
 export const setJWTCookie = (
