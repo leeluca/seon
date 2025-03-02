@@ -225,7 +225,6 @@ function createAuthService(
       userId: string,
       envConfig: JWTConfigEnv,
       oldRefreshToken?: string,
-      jwtConfs: Record<string, JWTTypeConfig> = jwtConfigs,
       shouldReturnPayload: T = true as T,
     ): Promise<
       T extends true ? { token: string; payload: JWTTokenPayload } : string
