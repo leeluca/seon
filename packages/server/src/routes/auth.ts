@@ -13,18 +13,9 @@ import {
   user as usersTable,
 } from '../db/schema.js';
 import { validateAccess } from '../middlewares/auth.js';
-import { useAuthService } from '../services/auth-service.js';
-import {
-  getCookieConfig,
-  hashPW,
-  setJWTCookie,
-  signJWT,
-  type JWTConfigEnv,
-} from '../services/auth.js';
-import {
-  getOrInitJwtConfigs,
-  getOrInitJwtKeys,
-} from '../services/jwt-store.js';
+import { useAuthService } from '../services/index.js';
+import type { JWTConfigEnv } from '../services/jwt.js';
+import { hashPW } from '../services/password.js';
 import type { AuthRouteVariables, Env } from '../types/context.js';
 import { signInSchema, signUpSchema } from '../types/validation.js';
 import { validateUuidV7 } from '../utils/id.js';
@@ -44,19 +35,13 @@ auth.use('*', async (c, next) => {
     dbAccessExpiration: env(c).JWT_DB_ACCESS_EXPIRATION,
   };
 
-  const jwtKeys = await getOrInitJwtKeys(c);
-  const jwtConfigs = getOrInitJwtConfigs(c);
-
   c.set('jwtConfigEnv', jwtConfigEnv);
-  c.set('jwtKeys', jwtKeys);
-  c.set('jwtConfigs', jwtConfigs);
   await next();
 });
 
 auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   const { email, password } = c.req.valid('json');
   const jwtConfigEnv = c.get('jwtConfigEnv');
-  const jwtConfigs = c.get('jwtConfigs');
 
   const authService = await useAuthService(c);
 
@@ -72,12 +57,12 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
     });
   }
 
-  const accessToken = await signJWT(user.id, 'access', jwtConfigs);
+  const accessToken = await authService.signToken(user.id, 'access');
   const { token: refreshToken, payload: refreshPayload } =
-    await authService.issueRefreshToken(user.id, jwtConfigs, jwtConfigEnv);
+    await authService.issueRefreshToken(user.id, jwtConfigEnv);
 
-  setJWTCookie(c, 'access', accessToken, jwtConfigs);
-  setJWTCookie(c, 'refresh', refreshToken, jwtConfigs);
+  authService.setJWTCookie(c, 'access', accessToken);
+  authService.setJWTCookie(c, 'refresh', refreshToken);
 
   const { password: _password, status, ...returnUser } = user;
   return c.json({
@@ -93,7 +78,6 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
 auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
   const { email, name, password, uuid } = c.req.valid('json');
   const jwtConfigEnv = c.get('jwtConfigEnv');
-  const jwtConfigs = c.get('jwtConfigs');
   const authService = await useAuthService(c);
 
   if (!validateUuidV7(uuid)) {
@@ -135,12 +119,12 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
 
   const [accessToken, { token: refreshToken, payload: refreshPayload }] =
     await Promise.all([
-      signJWT(id, 'access', jwtConfigs),
-      authService.issueRefreshToken(id, jwtConfigs, jwtConfigEnv),
+      authService.signToken(id, 'access'),
+      authService.issueRefreshToken(id, jwtConfigEnv),
     ]);
 
-  setJWTCookie(c, 'access', accessToken, jwtConfigs);
-  setJWTCookie(c, 'refresh', refreshToken, jwtConfigs);
+  authService.setJWTCookie(c, 'access', accessToken);
+  authService.setJWTCookie(c, 'refresh', refreshToken);
 
   return c.json({
     result: true,
@@ -173,11 +157,11 @@ auth.get('/credentials/sync', validateAccess, (c) => {
 
 auth.get('/credentials/db', validateAccess, async (c) => {
   const payload = c.get('jwtAccessPayload');
-  const jwtConfigs = c.get('jwtConfigs');
+  const authService = await useAuthService(c);
   const { dbAccessExpiration } = c.get('jwtConfigEnv');
 
   const { sub: userId } = payload;
-  const dbAccessToken = await signJWT(userId, 'db_access', jwtConfigs);
+  const dbAccessToken = await authService.signToken(userId, 'db_access');
 
   return c.json({
     result: true,
@@ -189,11 +173,10 @@ auth.get('/credentials/db', validateAccess, async (c) => {
 
 auth.get('/refresh', async (c) => {
   const jwtConfigEnv = c.get('jwtConfigEnv');
-  const jwtConfigs = c.get('jwtConfigs');
   const authService = await useAuthService(c);
 
   const { refreshToken, refreshPayload } =
-    await authService.validateRefreshToken(c, jwtConfigs);
+    await authService.validateRefreshToken(c);
 
   if (!refreshToken) {
     throw new HTTPException(401, {
@@ -204,12 +187,11 @@ auth.get('/refresh', async (c) => {
   const { token: newRefreshToken, payload } =
     await authService.issueRefreshToken(
       refreshPayload.sub,
-      jwtConfigs,
       jwtConfigEnv,
       refreshToken,
     );
 
-  setJWTCookie(c, 'refresh', newRefreshToken, jwtConfigs);
+  authService.setJWTCookie(c, 'refresh', newRefreshToken);
 
   return c.json({
     result: true,
@@ -218,9 +200,9 @@ auth.get('/refresh', async (c) => {
 });
 
 auth.post('/signout', async (c) => {
-  const jwtConfigs = c.get('jwtConfigs');
-  const { name: accessCookieName } = getCookieConfig('access', jwtConfigs);
-  const { name: refreshCookieName } = getCookieConfig('refresh', jwtConfigs);
+  const authService = await useAuthService(c);
+  const { name: accessCookieName } = authService.getCookieConfig('access');
+  const { name: refreshCookieName } = authService.getCookieConfig('refresh');
 
   const refreshToken = getCookie(c, refreshCookieName);
 
@@ -239,8 +221,9 @@ auth.post('/signout', async (c) => {
 });
 
 auth.get('/jwks', async (c) => {
-  const jwtConfigs = c.get('jwtConfigs');
-  const { publicKeyJWK } = c.get('jwtKeys');
+  const authService = await useAuthService(c);
+  const jwtConfigs = authService.getJWTConfigs();
+  const { publicKeyJWK } = authService.getJWTKeys();
 
   const jwks = {
     keys: [

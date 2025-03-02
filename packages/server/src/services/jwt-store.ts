@@ -7,7 +7,7 @@ import {
   type JWTConfigEnv,
   type JWTKeys,
   type JWTTypeConfig,
-} from './auth.js';
+} from './jwt.js';
 
 let globalJwtKeys: JWTKeys | null = null;
 let globalJwtConfigs: Record<string, JWTTypeConfig> | null = null;

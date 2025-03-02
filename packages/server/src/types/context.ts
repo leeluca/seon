@@ -1,9 +1,4 @@
-import type {
-  JWTConfigEnv,
-  JWTKeys,
-  JWTTokenPayload,
-  JWTTypeConfig,
-} from '../services/auth';
+import type { JWTConfigEnv } from '../services/jwt';
 
 export interface Env {
   DB_URL: string;
@@ -22,12 +17,6 @@ export interface Env {
 
 export interface AuthRouteVariables {
   jwtConfigEnv: JWTConfigEnv;
-  jwtKeys: JWTKeys;
-  jwtConfigs: Record<string, JWTTypeConfig>;
-  jwtPayload: JWTTokenPayload;
-  jwtAccessToken: string;
-  jwtAccessPayload: JWTTokenPayload;
-  jwtRefreshPayload?: JWTTokenPayload;
 }
 
 export interface AuthRouteTypes {

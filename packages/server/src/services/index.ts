@@ -4,12 +4,12 @@ import { env } from 'hono/adapter';
 import { getContext } from 'hono/context-storage';
 import { getCookie } from 'hono/cookie';
 
+import { getOrInitJwtConfigs, getOrInitJwtKeys } from './jwt-store.js';
 import {
-  comparePW,
   createJWTConfigs,
   getCookieConfig as getJwtCookieConfig,
-  hashPW,
   initJWTKeys,
+  setJWTCookie,
   signJWT,
   signJWTWithPayload,
   verifyJWT,
@@ -17,8 +17,8 @@ import {
   type JWTKeys,
   type JWTTokenPayload,
   type JWTTypeConfig,
-} from './auth.js';
-import { getOrInitJwtConfigs, getOrInitJwtKeys } from './jwt-store.js';
+} from './jwt.js';
+import { comparePW, hashPW } from './password.js';
 import { getDb } from '../db/db.js';
 import {
   refreshToken as refreshTokensTable,
@@ -35,6 +35,7 @@ export type Dependencies = {
     signTokenWithPayload: typeof signJWTWithPayload;
     verifyToken: typeof verifyJWT;
     getCookieConfig: typeof getJwtCookieConfig;
+    setJWTCookie: typeof setJWTCookie;
   };
   passwordUtils: {
     hash: typeof hashPW;
@@ -51,6 +52,7 @@ const defaultDependencies: Dependencies = {
     signTokenWithPayload: signJWTWithPayload,
     verifyToken: verifyJWT,
     getCookieConfig: getJwtCookieConfig,
+    setJWTCookie: setJWTCookie,
   },
   passwordUtils: {
     hash: hashPW,
@@ -59,17 +61,16 @@ const defaultDependencies: Dependencies = {
 };
 
 // Global cached service promise for long-lived servers
-let globalAuthService: Promise<
-  ReturnType<typeof createAuthServiceImplementation>
-> | null = null;
+let globalAuthService: Promise<ReturnType<typeof createAuthService>> | null =
+  null;
 let isInitializing = false;
 
 /**
  * Create the auth service with the provided dependencies
  * @private Internal implementation
  */
-function createAuthServiceImplementation(
-  _jwtKeys: JWTKeys,
+function createAuthService(
+  jwtKeys: JWTKeys,
   jwtConfigs: Record<string, JWTTypeConfig>,
   customDeps: Partial<Dependencies> = {},
 ) {
@@ -107,10 +108,10 @@ function createAuthServiceImplementation(
   const saveNewRefreshToken = async (
     userId: string,
     newRefreshToken: string,
-    config: JWTConfigEnv,
+    envConfig: JWTConfigEnv,
     oldRefreshToken?: string,
   ) => {
-    const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
+    const refreshExpiration = Number.parseInt(envConfig.refreshExpiration, 10);
     const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
 
     try {
@@ -138,10 +139,18 @@ function createAuthServiceImplementation(
     }
   };
 
+  const signTokenWithPayload = async (
+    userId: string,
+    jwtType: string,
+    configs: Record<string, JWTTypeConfig> = jwtConfigs,
+  ) => {
+    return deps.jwtUtils.signTokenWithPayload(userId, jwtType, configs);
+  };
+
   // Now create the complete service object
   return {
     verifyRefreshToken,
-
+    signTokenWithPayload,
     /**
      * Validate a refresh token
      */
@@ -214,9 +223,9 @@ function createAuthServiceImplementation(
 
     issueRefreshToken: async <T extends boolean = true>(
       userId: string,
-      jwtConfs: Record<string, JWTTypeConfig>,
-      config: JWTConfigEnv,
+      envConfig: JWTConfigEnv,
       oldRefreshToken?: string,
+      jwtConfs: Record<string, JWTTypeConfig> = jwtConfigs,
       shouldReturnPayload: T = true as T,
     ): Promise<
       T extends true ? { token: string; payload: JWTTokenPayload } : string
@@ -224,15 +233,17 @@ function createAuthServiceImplementation(
       try {
         console.log(`Generating new refresh token for user: ${userId}`);
 
-        const { token: newRefreshToken, payload } =
-          await deps.jwtUtils.signTokenWithPayload(userId, 'refresh', jwtConfs);
+        const { token: newRefreshToken, payload } = await signTokenWithPayload(
+          userId,
+          'refresh',
+        );
 
         console.log('Token generated, saving to database...');
 
         await saveNewRefreshToken(
           userId,
           newRefreshToken,
-          config,
+          envConfig,
           oldRefreshToken,
         );
 
@@ -304,6 +315,14 @@ function createAuthServiceImplementation(
       return { accessToken, accessPayload };
     },
 
+    signToken: (
+      userId: string,
+      tokenType: string,
+      configs: Record<string, JWTTypeConfig> = jwtConfigs,
+    ) => {
+      return deps.jwtUtils.signToken(userId, tokenType, configs);
+    },
+
     hashPassword: async (password: string) => {
       return deps.passwordUtils.hash(password);
     },
@@ -313,6 +332,20 @@ function createAuthServiceImplementation(
       configs: Record<string, JWTTypeConfig> = jwtConfigs,
     ) => {
       return deps.jwtUtils.getCookieConfig(tokenType, configs);
+    },
+    setJWTCookie: (
+      c: Context,
+      tokenType: string,
+      token: string,
+      configs: Record<string, JWTTypeConfig> = jwtConfigs,
+    ) => {
+      return deps.jwtUtils.setJWTCookie(c, tokenType, token, configs);
+    },
+    getJWTConfigs: () => {
+      return jwtConfigs;
+    },
+    getJWTKeys: () => {
+      return jwtKeys;
     },
   };
 }
@@ -324,19 +357,14 @@ function createAuthServiceImplementation(
 async function initializeAuthService(
   c: Context,
   customDeps: Partial<Dependencies> = {},
-): Promise<ReturnType<typeof createAuthServiceImplementation>> {
+): Promise<ReturnType<typeof createAuthService>> {
   console.log('Initializing auth service...');
 
   try {
-    // Get dependencies from context or JWT store
-    const jwtKeys = c.get('jwtKeys') || (await getOrInitJwtKeys(c));
-    const jwtConfigs = c.get('jwtConfigs') || getOrInitJwtConfigs(c);
+    const jwtKeys = await getOrInitJwtKeys(c);
+    const jwtConfigs = getOrInitJwtConfigs(c);
 
-    const authService = createAuthServiceImplementation(
-      jwtKeys,
-      jwtConfigs,
-      customDeps,
-    );
+    const authService = createAuthService(jwtKeys, jwtConfigs, customDeps);
 
     return authService;
   } catch (error) {
@@ -361,7 +389,6 @@ export async function useAuthService(
 
   // For long-lived servers, use the global instance if available
   if (globalAuthService) {
-    console.log('Using cached auth service');
     return globalAuthService;
   }
 

@@ -3,12 +3,8 @@ import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
-import { useAuthService } from '../services/auth-service.js';
-import {
-  getCookieConfig,
-  signJWTWithPayload,
-  type JWTTokenPayload,
-} from '../services/auth.js';
+import { useAuthService } from '../services/index.js';
+import type { JWTTokenPayload } from '../services/jwt.js';
 import type { AuthRouteTypes } from '../types/context.js';
 
 export const validateAccess = createMiddleware<{
@@ -18,20 +14,14 @@ export const validateAccess = createMiddleware<{
     jwtRefreshPayload?: JWTTokenPayload;
   };
 }>(async (c, next) => {
-  const jwtConfigs = getContext<AuthRouteTypes>().var.jwtConfigs;
   const jwtConfigEnv = getContext<AuthRouteTypes>().var.jwtConfigEnv;
   const authService = await useAuthService(c);
 
   // validate access token
-  const { accessPayload, accessToken } = await authService.validateAccessToken(
-    c,
-    jwtConfigs,
-  );
+  const { accessPayload, accessToken } =
+    await authService.validateAccessToken(c);
   if (accessPayload && accessToken) {
-    const { refreshPayload } = await authService.verifyRefreshToken(
-      c,
-      jwtConfigs,
-    );
+    const { refreshPayload } = await authService.verifyRefreshToken(c);
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
     refreshPayload && c.set('jwtRefreshPayload', refreshPayload);
@@ -41,7 +31,7 @@ export const validateAccess = createMiddleware<{
 
   // if no access token, check for refresh token
   const { refreshToken, refreshPayload } =
-    await authService.validateRefreshToken(c, jwtConfigs);
+    await authService.validateRefreshToken(c);
 
   if (!refreshToken || !refreshPayload) {
     throw new HTTPException(401, {
@@ -54,10 +44,9 @@ export const validateAccess = createMiddleware<{
     { token: newAccessToken, payload: newAccessTokenPayload },
     refreshResult,
   ] = await Promise.all([
-    signJWTWithPayload(refreshPayload.sub, 'access', jwtConfigs),
+    authService.signTokenWithPayload(refreshPayload.sub, 'access'),
     authService.issueRefreshToken(
       refreshPayload.sub,
-      jwtConfigs,
       jwtConfigEnv,
       refreshToken,
     ),
@@ -69,9 +58,9 @@ export const validateAccess = createMiddleware<{
 
   // set new tokens in cookies and context
   const { name: accessCookieName, options: accessCookieOptions } =
-    getCookieConfig('access', jwtConfigs);
+    authService.getCookieConfig('access');
   const { name: refreshCookieName, options: refreshCookieOptions } =
-    getCookieConfig('refresh', jwtConfigs);
+    authService.getCookieConfig('refresh');
 
   setCookie(c, accessCookieName, newAccessToken, {
     ...accessCookieOptions,
