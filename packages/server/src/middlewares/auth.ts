@@ -3,13 +3,10 @@ import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
+import { useAuthService } from '../services/auth-service.js';
 import {
   getCookieConfig,
-  issueRefreshToken,
   signJWTWithPayload,
-  validateAccessToken,
-  validateRefreshToken,
-  verifyRefreshToken,
   type JWTTokenPayload,
 } from '../services/auth.js';
 import type { AuthRouteTypes } from '../types/context.js';
@@ -23,14 +20,18 @@ export const validateAccess = createMiddleware<{
 }>(async (c, next) => {
   const jwtConfigs = getContext<AuthRouteTypes>().var.jwtConfigs;
   const jwtConfigEnv = getContext<AuthRouteTypes>().var.jwtConfigEnv;
+  const authService = await useAuthService(c);
 
   // validate access token
-  const { accessPayload, accessToken } = await validateAccessToken(
+  const { accessPayload, accessToken } = await authService.validateAccessToken(
     c,
     jwtConfigs,
   );
   if (accessPayload && accessToken) {
-    const { refreshPayload } = await verifyRefreshToken(c, jwtConfigs);
+    const { refreshPayload } = await authService.verifyRefreshToken(
+      c,
+      jwtConfigs,
+    );
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
     refreshPayload && c.set('jwtRefreshPayload', refreshPayload);
@@ -39,12 +40,10 @@ export const validateAccess = createMiddleware<{
   }
 
   // if no access token, check for refresh token
-  const { refreshToken, refreshPayload } = await validateRefreshToken(
-    c,
-    jwtConfigs,
-  );
+  const { refreshToken, refreshPayload } =
+    await authService.validateRefreshToken(c, jwtConfigs);
 
-  if (!refreshToken) {
+  if (!refreshToken || !refreshPayload) {
     throw new HTTPException(401, {
       message: 'Unauthorized',
     });
@@ -53,16 +52,20 @@ export const validateAccess = createMiddleware<{
   // if refresh token is valid, issue new access and refresh tokens
   const [
     { token: newAccessToken, payload: newAccessTokenPayload },
-    { token: newRefreshToken, payload: newRefreshTokenPayload },
+    refreshResult,
   ] = await Promise.all([
     signJWTWithPayload(refreshPayload.sub, 'access', jwtConfigs),
-    issueRefreshToken(
+    authService.issueRefreshToken(
       refreshPayload.sub,
       jwtConfigs,
       jwtConfigEnv,
       refreshToken,
     ),
   ]);
+
+  // Extract token and payload from refresh result
+  const newRefreshToken = refreshResult.token;
+  const newRefreshTokenPayload = refreshResult.payload;
 
   // set new tokens in cookies and context
   const { name: accessCookieName, options: accessCookieOptions } =

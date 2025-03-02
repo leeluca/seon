@@ -5,23 +5,14 @@ import {
   timingSafeEqual,
 } from 'node:crypto';
 import { promisify } from 'node:util';
-import { and, eq } from 'drizzle-orm';
 import type { Context } from 'hono';
-import { env } from 'hono/adapter';
-import { getContext } from 'hono/context-storage';
-import { getCookie, setCookie } from 'hono/cookie';
+import { setCookie } from 'hono/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
 import type { JWTPayload } from 'hono/utils/jwt/types';
 import type { CryptoKey, JWK, KeyObject } from 'jose';
 import * as jose from 'jose';
 
 import { COOKIE_SECURITY_SETTINGS } from '../constants/config.js';
-import { getDb } from '../db/db.js';
-import {
-  refreshToken as refreshTokensTable,
-  user as usersTable,
-} from '../db/schema.js';
-import type { AuthRouteTypes } from '../types/context.js';
 
 const scryptAsync = promisify(scrypt);
 
@@ -252,169 +243,6 @@ export function getCookieConfig(
     },
   };
 }
-
-export const validateAccessToken = async (
-  c: Context,
-  jwtConfigs: Record<string, JWTTypeConfig>,
-) => {
-  const { name: accessCookieName } = getCookieConfig('access', jwtConfigs);
-  const accessToken = getCookie(c, accessCookieName);
-
-  const accessPayload = accessToken
-    ? await verifyJWT(accessToken, 'access', jwtConfigs)
-    : null;
-
-  return { accessToken, accessPayload };
-};
-
-export const verifyRefreshToken = async (
-  c: Context,
-  jwtConfigs: Record<string, JWTTypeConfig>,
-) => {
-  const { name: refreshCookieName } = getCookieConfig('refresh', jwtConfigs);
-  const refreshToken = getCookie(c, refreshCookieName);
-
-  const refreshPayload = refreshToken
-    ? await verifyJWT(refreshToken, 'refresh', jwtConfigs)
-    : null;
-
-  return { refreshToken, refreshPayload };
-};
-
-export const validateRefreshToken = async (
-  c: Context,
-  jwtConfigs: Record<string, JWTTypeConfig>,
-) => {
-  const { refreshToken, refreshPayload } = await verifyRefreshToken(
-    c,
-    jwtConfigs,
-  );
-
-  if (!refreshToken || !refreshPayload?.sub) {
-    console.log('No valid refresh token or payload found');
-    return { refreshToken: null, refreshPayload: null };
-  }
-
-  console.log(`Validating refresh token for user: ${refreshPayload.sub}`);
-
-  try {
-    // FIXME: temporary for debugging, to be removed
-    // First try a simple query without joins to check if token exists
-    const simpleTokenCheck = await getDb(env(c).DB_URL)
-      .select()
-      .from(refreshTokensTable)
-      .where(eq(refreshTokensTable.token, refreshToken))
-      .limit(1);
-
-    console.log(
-      `Simple token check results: ${simpleTokenCheck.length > 0 ? 'Token found' : 'Token not found'}`,
-    );
-
-    if (simpleTokenCheck.length === 0) {
-      console.log('Refresh token not found in database');
-      return { refreshToken: null, refreshPayload: null };
-    }
-
-    // Get the full user data with a join
-    const savedRefreshToken = await getDb(env(c).DB_URL)
-      .select()
-      .from(refreshTokensTable)
-      .where(
-        and(
-          eq(refreshTokensTable.token, refreshToken),
-          eq(refreshTokensTable.userId, refreshPayload.sub),
-        ),
-      )
-      .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id))
-      .limit(1);
-
-    console.log(
-      `Full token check with user join: ${savedRefreshToken.length > 0 ? 'Token with user found' : 'Token with user not found'}`,
-    );
-
-    if (!savedRefreshToken.length) {
-      // TODO: check if user status is banned/inactive (not implemented)
-      //  || savedRefreshToken[0].user.status !== 'ACTIVE'
-      // Token exists but user doesn't match or user doesn't exist
-      console.log('Token exists but user validation failed');
-      return { refreshToken: null, refreshPayload: null };
-    }
-
-    return { refreshToken, refreshPayload };
-  } catch (error) {
-    console.error('Error validating refresh token:', error);
-    return { refreshToken: null, refreshPayload: null };
-  }
-};
-
-const saveNewRefreshToken = async (
-  userId: string,
-  newRefreshToken: string,
-  config: JWTConfigEnv,
-  oldRefreshToken?: string,
-) => {
-  const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
-  const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
-
-  try {
-    await getDb(dbUrl).transaction(async (tx) => {
-      if (oldRefreshToken) {
-        await tx
-          .delete(refreshTokensTable)
-          .where(eq(refreshTokensTable.token, oldRefreshToken));
-      }
-
-      await tx.insert(refreshTokensTable).values({
-        userId: userId,
-        token: newRefreshToken,
-        expiration: new Date(Date.now() + refreshExpiration * 1000),
-      });
-    });
-    console.log(`Refresh token saved successfully for user: ${userId}`);
-  } catch (error) {
-    console.error('Error saving refresh token:', error);
-    throw new Error('Failed to save refresh token');
-  }
-};
-
-type IssueRefreshTokenReturn<T extends boolean> = T extends true
-  ? {
-      token: string;
-      payload: JWTTokenPayload;
-    }
-  : string;
-
-export const issueRefreshToken = async <T extends boolean = true>(
-  userId: string,
-  jwtConfigs: Record<string, JWTTypeConfig>,
-  config: JWTConfigEnv,
-  oldRefreshToken?: string,
-  shouldReturnPayload: T = true as T,
-): Promise<IssueRefreshTokenReturn<T>> => {
-  try {
-    console.log(`Generating new refresh token for user: ${userId}`);
-
-    const { token: newRefreshToken, payload } = await signJWTWithPayload(
-      userId,
-      'refresh',
-      jwtConfigs,
-    );
-
-    console.log('Token generated, saving to database...');
-
-    await saveNewRefreshToken(userId, newRefreshToken, config, oldRefreshToken);
-
-    console.log(`Refresh token process completed for user: ${userId}`);
-
-    if (shouldReturnPayload) {
-      return { token: newRefreshToken, payload } as IssueRefreshTokenReturn<T>;
-    }
-    return newRefreshToken as IssueRefreshTokenReturn<T>;
-  } catch (error) {
-    console.error(`Failed to issue refresh token for user ${userId}:`, error);
-    throw new Error('Failed to issue refresh token');
-  }
-};
 
 export const setJWTCookie = (
   c: Context,
