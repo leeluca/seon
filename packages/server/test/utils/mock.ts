@@ -23,7 +23,7 @@ export function createMockContext(
     cookies?: Record<string, string>;
     env?: Record<string, string>;
     body?: unknown;
-  } = {}
+  } = {},
 ): Context {
   const headers = new Headers();
   if (options.headers) {
@@ -67,8 +67,9 @@ export function createMockContext(
   }
 
   // Add getCookie functionality
-  (c.req as unknown as { cookie: (name: string) => string | undefined }).cookie = 
-    (name: string) => getCookie(c, name) || '';
+  (
+    c.req as unknown as { cookie: (name: string) => string | undefined }
+  ).cookie = (name: string) => getCookie(c, name) || '';
 
   return c;
 }
@@ -80,4 +81,4 @@ export const testUser = {
   name: 'Test User',
   password: '$2b$10$abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12', // hashed 'password123'
   status: 'active',
-}; 
+};

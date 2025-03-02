@@ -1,5 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
 
+// Import the mocked functions
+import {
+  createJWTConfigs,
+  getCookieConfig,
+  initJWTKeys,
+  signJWT,
+  signJWTWithPayload,
+  verifyJWT,
+} from '../../../src/services/jwt.js';
+import { mockJwtConfig } from '../../utils/mock.js';
+
 // Mock the entire jwt module
 vi.mock('../../../src/services/jwt.js', () => {
   const mockJwtKeys = {
@@ -71,32 +82,31 @@ vi.mock('../../../src/services/jwt.js', () => {
       }
       return mockTokenPayload;
     }),
-    getCookieConfig: vi.fn().mockImplementation((jwtType: string) => ({
-      name: mockJwtConfigs[jwtType as keyof typeof mockJwtConfigs].cookieName,
-      options: {
-        maxAge: mockJwtConfigs[jwtType as keyof typeof mockJwtConfigs].expiration,
-        expires: new Date(Date.now() + mockJwtConfigs[jwtType as keyof typeof mockJwtConfigs].expiration * 1000),
-      },
-    })),
+    getCookieConfig: vi
+      .fn()
+      .mockImplementation((jwtType: keyof typeof mockJwtConfigs) => ({
+        name: mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
+          .cookieName,
+        options: {
+          maxAge:
+            mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
+              .expiration,
+          expires: new Date(
+            Date.now() +
+              mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
+                .expiration *
+                1000,
+          ),
+        },
+      })),
   };
 });
-
-// Import the mocked functions
-import {
-  createJWTConfigs,
-  getCookieConfig,
-  initJWTKeys,
-  signJWT,
-  signJWTWithPayload,
-  verifyJWT,
-} from '../../../src/services/jwt.js';
-import { mockJwtConfig } from '../../utils/mock.js';
 
 describe('JWT Service', () => {
   describe('initJWTKeys', () => {
     it('should initialize JWT keys from config', async () => {
       const keys = await initJWTKeys(mockJwtConfig);
-      
+
       expect(keys).toHaveProperty('jwtPrivateKey');
       expect(keys).toHaveProperty('jwtPublicKey');
       expect(keys).toHaveProperty('jwtRefreshSecret');
@@ -107,8 +117,10 @@ describe('JWT Service', () => {
 
     it('should throw an error if keys are invalid', async () => {
       const invalidConfig = { ...mockJwtConfig, privateKey: 'invalid-key' };
-      
-      await expect(initJWTKeys(invalidConfig)).rejects.toThrow('Failed to initialize JWT keys');
+
+      await expect(initJWTKeys(invalidConfig)).rejects.toThrow(
+        'Failed to initialize JWT keys',
+      );
     });
   });
 
@@ -116,11 +128,11 @@ describe('JWT Service', () => {
     it('should create JWT configs with correct values', async () => {
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
-      
+
       expect(configs).toHaveProperty('access');
       expect(configs).toHaveProperty('refresh');
       expect(configs).toHaveProperty('db_access');
-      
+
       expect(configs.access.algorithm).toBe('RS256');
       expect(configs.refresh.algorithm).toBe('HS256');
       expect(configs.db_access.algorithm).toBe('HS256');
@@ -132,11 +144,11 @@ describe('JWT Service', () => {
       const userId = '01HQ5GMZN7MMVFHBF6YVPFQJ4R';
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
-      
+
       // Sign a token
       const token = await signJWT(userId, 'access', configs);
       expect(token).toBe('mocked-jwt-token');
-      
+
       // Verify the token
       const payload = await verifyJWT(token, 'access', configs);
       expect(payload).toBeTruthy();
@@ -147,10 +159,10 @@ describe('JWT Service', () => {
     it('should return null for an invalid token', async () => {
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
-      
+
       const invalidToken = 'invalid.token.here';
       const payload = await verifyJWT(invalidToken, 'access', configs);
-      
+
       expect(payload).toBeNull();
     });
   });
@@ -160,9 +172,9 @@ describe('JWT Service', () => {
       const userId = '01HQ5GMZN7MMVFHBF6YVPFQJ4R';
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
-      
+
       const result = await signJWTWithPayload(userId, 'access', configs);
-      
+
       expect(result).toHaveProperty('token');
       expect(result).toHaveProperty('payload');
       expect(result.payload.sub).toBe(userId);
@@ -175,13 +187,13 @@ describe('JWT Service', () => {
     it('should return the correct cookie configuration', async () => {
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
-      
+
       const accessCookieConfig = getCookieConfig('access', configs);
-      
+
       expect(accessCookieConfig).toHaveProperty('name');
       expect(accessCookieConfig).toHaveProperty('options');
       expect(accessCookieConfig.name).toBe('access_token');
       expect(accessCookieConfig.options).toHaveProperty('maxAge');
     });
   });
-}); 
+});

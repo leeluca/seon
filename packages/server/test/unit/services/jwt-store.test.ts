@@ -11,7 +11,7 @@ import { createMockContext, mockJwtConfig } from '../../utils/mock.js';
 // Mock the jwt module
 vi.mock('../../../src/services/jwt.js', () => {
   let callCount = 0;
-  
+
   return {
     initJWTKeys: vi.fn().mockImplementation(() => {
       callCount++;
@@ -82,7 +82,7 @@ describe('JWT Store Service', () => {
       });
 
       const keys = await getOrInitJwtKeys(mockContext);
-      
+
       expect(keys).toHaveProperty('jwtPrivateKey');
       expect(keys).toHaveProperty('jwtPublicKey');
       expect(keys).toHaveProperty('jwtRefreshSecret');
@@ -106,7 +106,7 @@ describe('JWT Store Service', () => {
 
       const keys1 = await getOrInitJwtKeys(mockContext);
       const keys2 = await getOrInitJwtKeys(mockContext);
-      
+
       expect(keys1).toBe(keys2); // Should be the same object reference
     });
   });
@@ -114,9 +114,9 @@ describe('JWT Store Service', () => {
   describe('getOrInitJwtConfigs', () => {
     it('should throw an error if keys are not initialized', () => {
       const mockContext = createMockContext();
-      
+
       expect(() => getOrInitJwtConfigs(mockContext)).toThrow(
-        'JWT keys must be initialized before configs'
+        'JWT keys must be initialized before configs',
       );
     });
 
@@ -135,7 +135,7 @@ describe('JWT Store Service', () => {
 
       await getOrInitJwtKeys(mockContext);
       const configs = getOrInitJwtConfigs(mockContext);
-      
+
       expect(configs).toHaveProperty('access');
       expect(configs).toHaveProperty('refresh');
       expect(configs).toHaveProperty('db_access');
@@ -157,7 +157,7 @@ describe('JWT Store Service', () => {
       await getOrInitJwtKeys(mockContext);
       const configs1 = getOrInitJwtConfigs(mockContext);
       const configs2 = getOrInitJwtConfigs(mockContext);
-      
+
       expect(configs1).toBe(configs2); // Should be the same object reference
     });
   });
@@ -179,21 +179,21 @@ describe('JWT Store Service', () => {
       // Initialize keys and configs
       const keys1 = await getOrInitJwtKeys(mockContext);
       const configs1 = getOrInitJwtConfigs(mockContext);
-      
+
       // Reset the store
       resetJwtStore();
-      
+
       // Get new keys and configs
       const keys2 = await getOrInitJwtKeys(mockContext);
       const configs2 = getOrInitJwtConfigs(mockContext);
-      
+
       // Should be different object references and values
       expect(keys1).not.toBe(keys2);
       expect(configs1).not.toBe(configs2);
-      
+
       // Check that the values are different due to the counter in our mock
       expect(keys1.jwtPrivateKey).not.toBe(keys2.jwtPrivateKey);
       expect(configs1.access.signingKey).not.toBe(configs2.access.signingKey);
     });
   });
-}); 
+});

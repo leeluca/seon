@@ -1,4 +1,4 @@
-import { StaticDecode, TSchema } from '@sinclair/typebox';
+import type { StaticDecode, TSchema } from '@sinclair/typebox';
 import { Errors } from '@sinclair/typebox/errors';
 import { Check, TransformDecode } from '@sinclair/typebox/value';
 
