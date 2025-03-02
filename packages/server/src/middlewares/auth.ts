@@ -3,15 +3,8 @@ import { setCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
-import {
-  getCookieConfig,
-  issueRefreshToken,
-  signJWTWithPayload,
-  validateAccessToken,
-  validateRefreshToken,
-  verifyRefreshToken,
-  type JWTTokenPayload,
-} from '../services/auth.js';
+import { useAuthService } from '../services/index.js';
+import type { JWTTokenPayload } from '../services/jwt.js';
 import type { AuthRouteTypes } from '../types/context.js';
 
 export const validateAccess = createMiddleware<{
@@ -21,16 +14,14 @@ export const validateAccess = createMiddleware<{
     jwtRefreshPayload?: JWTTokenPayload;
   };
 }>(async (c, next) => {
-  const jwtConfigs = getContext<AuthRouteTypes>().var.jwtConfigs;
   const jwtConfigEnv = getContext<AuthRouteTypes>().var.jwtConfigEnv;
+  const authService = await useAuthService(c);
 
   // validate access token
-  const { accessPayload, accessToken } = await validateAccessToken(
-    c,
-    jwtConfigs,
-  );
+  const { accessPayload, accessToken } =
+    await authService.validateAccessToken(c);
   if (accessPayload && accessToken) {
-    const { refreshPayload } = await verifyRefreshToken(c, jwtConfigs);
+    const { refreshPayload } = await authService.verifyRefreshToken(c);
     c.set('jwtAccessToken', accessToken);
     c.set('jwtAccessPayload', accessPayload);
     refreshPayload && c.set('jwtRefreshPayload', refreshPayload);
@@ -39,12 +30,10 @@ export const validateAccess = createMiddleware<{
   }
 
   // if no access token, check for refresh token
-  const { refreshToken, refreshPayload } = await validateRefreshToken(
-    c,
-    jwtConfigs,
-  );
+  const { refreshToken, refreshPayload } =
+    await authService.validateRefreshToken(c);
 
-  if (!refreshToken) {
+  if (!refreshToken || !refreshPayload) {
     throw new HTTPException(401, {
       message: 'Unauthorized',
     });
@@ -53,22 +42,25 @@ export const validateAccess = createMiddleware<{
   // if refresh token is valid, issue new access and refresh tokens
   const [
     { token: newAccessToken, payload: newAccessTokenPayload },
-    { token: newRefreshToken, payload: newRefreshTokenPayload },
+    refreshResult,
   ] = await Promise.all([
-    signJWTWithPayload(refreshPayload.sub, 'access', jwtConfigs),
-    issueRefreshToken(
+    authService.signTokenWithPayload(refreshPayload.sub, 'access'),
+    authService.issueRefreshToken(
       refreshPayload.sub,
-      jwtConfigs,
       jwtConfigEnv,
       refreshToken,
     ),
   ]);
 
+  // Extract token and payload from refresh result
+  const newRefreshToken = refreshResult.token;
+  const newRefreshTokenPayload = refreshResult.payload;
+
   // set new tokens in cookies and context
   const { name: accessCookieName, options: accessCookieOptions } =
-    getCookieConfig('access', jwtConfigs);
+    authService.getCookieConfig('access');
   const { name: refreshCookieName, options: refreshCookieOptions } =
-    getCookieConfig('refresh', jwtConfigs);
+    authService.getCookieConfig('refresh');
 
   setCookie(c, accessCookieName, newAccessToken, {
     ...accessCookieOptions,
