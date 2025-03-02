@@ -2,11 +2,6 @@ import type { Context } from 'hono';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
-  resetAuthService,
-  useAuthService,
-  type Dependencies,
-} from '../../../src/services/index.js';
-import {
   MOCK_JWT_CONFIGS,
   MOCK_JWT_KEYS,
   MOCK_JWT_PAYLOAD,
@@ -41,7 +36,6 @@ vi.mock('../../../src/services/jwt-store.js', () => {
     }),
   };
 });
-
 
 vi.mock('../../../src/services/jwt.js', () => {
   return {
@@ -137,7 +131,6 @@ vi.mock('../../../src/db/db.js', () => ({
   })),
 }));
 
-
 vi.mock('hono/context-storage', () => ({
   getContext: vi.fn().mockReturnValue({
     env: { DB_URL: TEST_DB_URL },
@@ -187,6 +180,13 @@ function createTestMockContext(
     },
   } as unknown as Context;
 }
+
+// prettier-ignore biome-ignore format: <Due to hoisting, this import must be after the createTestMockContext function>
+import {
+  resetAuthService,
+  useAuthService,
+  type Dependencies,
+} from '../../../src/services/index.js';
 
 describe('Auth Service', () => {
   beforeEach(() => {
