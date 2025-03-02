@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
 
-// Import the mocked functions
 import {
   createJWTConfigs,
   getCookieConfig,
@@ -9,93 +8,47 @@ import {
   signJWTWithPayload,
   verifyJWT,
 } from '../../../src/services/jwt.js';
+import {
+  MOCK_JWT_CONFIGS,
+  MOCK_JWT_KEYS,
+  MOCK_JWT_PAYLOAD,
+  MOCK_TOKENS,
+  TEST_USER,
+} from '../../utils/constants.js';
 import { mockJwtConfig } from '../../utils/mock.js';
 
+// FIXME: provide valid keys to test without mocking
 // Mock the entire jwt module
 vi.mock('../../../src/services/jwt.js', () => {
-  const mockJwtKeys = {
-    jwtPrivateKey: 'mocked-private-key',
-    jwtPublicKey: 'mocked-public-key',
-    jwtRefreshSecret: 'mocked-refresh-secret',
-    jwtDbPrivateKey: 'mocked-db-private-key',
-    publicKeyJWK: { kid: 'test-kid' },
-    publicKeyKid: 'test-kid',
-  };
-
-  const mockJwtConfigs = {
-    access: {
-      expiration: 900,
-      algorithm: 'RS256',
-      signingKey: 'mocked-private-key',
-      verificationKey: 'mocked-public-key',
-      aud: 'authenticated',
-      role: 'authenticated',
-      kid: 'test-kid',
-      cookieName: 'access_token',
-    },
-    refresh: {
-      expiration: 604800,
-      algorithm: 'HS256',
-      signingKey: 'mocked-refresh-secret',
-      verificationKey: 'mocked-refresh-secret',
-      aud: '',
-      role: '',
-      kid: '',
-      cookieName: 'refresh_token',
-    },
-    db_access: {
-      expiration: 900,
-      algorithm: 'HS256',
-      signingKey: 'mocked-db-private-key',
-      verificationKey: 'mocked-db-private-key',
-      aud: 'authenticated',
-      role: 'authenticated',
-      kid: '1',
-      cookieName: 'db_access_token',
-    },
-  };
-
-  const mockTokenPayload = {
-    sub: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-    exp: Math.floor(Date.now() / 1000) + 900,
-    iat: Math.floor(Date.now() / 1000),
-    aud: 'authenticated',
-    role: 'authenticated',
-  };
-
   return {
     initJWTKeys: vi.fn().mockImplementation(async (config) => {
       if (config.privateKey === 'invalid-key') {
         throw new Error('Failed to initialize JWT keys');
       }
-      return mockJwtKeys;
+      return { ...MOCK_JWT_KEYS };
     }),
-    createJWTConfigs: vi.fn().mockImplementation(() => mockJwtConfigs),
+    createJWTConfigs: vi
+      .fn()
+      .mockImplementation(() => ({ ...MOCK_JWT_CONFIGS })),
     signJWT: vi.fn().mockImplementation(() => 'mocked-jwt-token'),
     signJWTWithPayload: vi.fn().mockImplementation(() => ({
       token: 'mocked-jwt-token',
-      payload: mockTokenPayload,
+      payload: { ...MOCK_JWT_PAYLOAD },
     })),
     verifyJWT: vi.fn().mockImplementation((token) => {
-      if (token === 'invalid.token.here') {
+      if (token === MOCK_TOKENS.invalid) {
         return null;
       }
-      return mockTokenPayload;
+      return { ...MOCK_JWT_PAYLOAD };
     }),
     getCookieConfig: vi
       .fn()
-      .mockImplementation((jwtType: keyof typeof mockJwtConfigs) => ({
-        name: mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
-          .cookieName,
+      .mockImplementation((jwtType: keyof typeof MOCK_JWT_CONFIGS) => ({
+        name: MOCK_JWT_CONFIGS[jwtType].cookieName,
         options: {
-          maxAge:
-            mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
-              .expiration,
+          maxAge: MOCK_JWT_CONFIGS[jwtType].expiration,
           expires: new Date(
-            Date.now() +
-              mockJwtConfigs[jwtType satisfies keyof typeof mockJwtConfigs]
-                .expiration *
-                1000,
+            Date.now() + MOCK_JWT_CONFIGS[jwtType].expiration * 1000,
           ),
         },
       })),
@@ -141,7 +94,7 @@ describe('JWT Service', () => {
 
   describe('signJWT and verifyJWT', () => {
     it('should sign and verify a JWT token', async () => {
-      const userId = '01HQ5GMZN7MMVFHBF6YVPFQJ4R';
+      const userId = TEST_USER.id;
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
 
@@ -160,7 +113,7 @@ describe('JWT Service', () => {
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
 
-      const invalidToken = 'invalid.token.here';
+      const invalidToken = MOCK_TOKENS.invalid;
       const payload = await verifyJWT(invalidToken, 'access', configs);
 
       expect(payload).toBeNull();
@@ -169,7 +122,7 @@ describe('JWT Service', () => {
 
   describe('signJWTWithPayload', () => {
     it('should sign a JWT and return both token and payload', async () => {
-      const userId = '01HQ5GMZN7MMVFHBF6YVPFQJ4R';
+      const userId = TEST_USER.id;
       const keys = await initJWTKeys(mockJwtConfig);
       const configs = createJWTConfigs(keys, mockJwtConfig);
 
@@ -192,7 +145,7 @@ describe('JWT Service', () => {
 
       expect(accessCookieConfig).toHaveProperty('name');
       expect(accessCookieConfig).toHaveProperty('options');
-      expect(accessCookieConfig.name).toBe('access_token');
+      expect(accessCookieConfig.name).toBe(MOCK_JWT_CONFIGS.access.cookieName);
       expect(accessCookieConfig.options).toHaveProperty('maxAge');
     });
   });

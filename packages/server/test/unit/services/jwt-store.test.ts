@@ -1,14 +1,13 @@
-import { describe, expect, it, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
   getOrInitJwtConfigs,
   getOrInitJwtKeys,
   resetJwtStore,
 } from '../../../src/services/jwt-store.js';
+import { MOCK_JWT_CONFIGS, TEST_DB_URL } from '../../utils/constants.js';
 import { createMockContext, mockJwtConfig } from '../../utils/mock.js';
 
-// FIXME: provide valid keys to test without mocking
-// Mock the jwt module
 vi.mock('../../../src/services/jwt.js', () => {
   let callCount = 0;
 
@@ -27,34 +26,34 @@ vi.mock('../../../src/services/jwt.js', () => {
     createJWTConfigs: vi.fn().mockImplementation((keys) => {
       return {
         access: {
-          expiration: 900,
-          algorithm: 'RS256',
+          expiration: MOCK_JWT_CONFIGS.access.expiration,
+          algorithm: MOCK_JWT_CONFIGS.access.algorithm,
           signingKey: keys.jwtPrivateKey,
           verificationKey: keys.jwtPublicKey,
-          aud: 'authenticated',
-          role: 'authenticated',
+          aud: MOCK_JWT_CONFIGS.access.aud,
+          role: MOCK_JWT_CONFIGS.access.role,
           kid: keys.publicKeyKid,
-          cookieName: 'access_token',
+          cookieName: MOCK_JWT_CONFIGS.access.cookieName,
         },
         refresh: {
-          expiration: 604800,
-          algorithm: 'HS256',
+          expiration: MOCK_JWT_CONFIGS.refresh.expiration,
+          algorithm: MOCK_JWT_CONFIGS.refresh.algorithm,
           signingKey: keys.jwtRefreshSecret,
           verificationKey: keys.jwtRefreshSecret,
-          aud: '',
-          role: '',
-          kid: '',
-          cookieName: 'refresh_token',
+          aud: MOCK_JWT_CONFIGS.refresh.aud,
+          role: MOCK_JWT_CONFIGS.refresh.role,
+          kid: MOCK_JWT_CONFIGS.refresh.kid,
+          cookieName: MOCK_JWT_CONFIGS.refresh.cookieName,
         },
         db_access: {
-          expiration: 900,
-          algorithm: 'HS256',
+          expiration: MOCK_JWT_CONFIGS.db_access.expiration,
+          algorithm: MOCK_JWT_CONFIGS.db_access.algorithm,
           signingKey: keys.jwtDbPrivateKey,
           verificationKey: keys.jwtDbPrivateKey,
-          aud: 'authenticated',
-          role: 'authenticated',
-          kid: '1',
-          cookieName: 'db_access_token',
+          aud: MOCK_JWT_CONFIGS.db_access.aud,
+          role: MOCK_JWT_CONFIGS.db_access.role,
+          kid: MOCK_JWT_CONFIGS.db_access.kid,
+          cookieName: MOCK_JWT_CONFIGS.db_access.cookieName,
         },
       };
     }),
@@ -78,6 +77,7 @@ describe('JWT Store Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
         },
       });
 
@@ -101,6 +101,7 @@ describe('JWT Store Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
         },
       });
 
@@ -130,6 +131,7 @@ describe('JWT Store Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
         },
       });
 
@@ -151,6 +153,7 @@ describe('JWT Store Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
         },
       });
 
@@ -173,6 +176,7 @@ describe('JWT Store Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
         },
       });
 

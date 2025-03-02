@@ -1,29 +1,23 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Context } from 'hono';
-import type { JWK } from 'jose';
-import type { KeyObject } from 'node:crypto';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-interface JWTKeys {
-  jwtPrivateKey: string | CryptoKey;
-  jwtPublicKey: string | CryptoKey;
-  jwtRefreshSecret: string | KeyObject;
-  jwtDbPrivateKey: string | KeyObject;
-  publicKeyJWK: JWK;
-  publicKeyKid: string;
-}
+import {
+  resetAuthService,
+  useAuthService,
+  type Dependencies,
+} from '../../../src/services/index.js';
+import {
+  MOCK_JWT_CONFIGS,
+  MOCK_JWT_KEYS,
+  MOCK_JWT_PAYLOAD,
+  MOCK_TOKENS,
+  TEST_DB_URL,
+  TEST_USER,
+  type JWTConfig,
+  type JWTKeys,
+} from '../../utils/constants.js';
+import { mockJwtConfig } from '../../utils/mock.js';
 
-interface JWTConfig {
-  expiration: number;
-  algorithm: string;
-  signingKey: string | KeyObject;
-  verificationKey: string | KeyObject;
-  aud: string;
-  role: string;
-  kid: string;
-  cookieName: string;
-}
-
-// Mock the jwt-store module
 vi.mock('../../../src/services/jwt-store.js', () => {
   let jwtKeys: JWTKeys | null = null;
   let jwtConfigs: Record<string, JWTConfig> | null = null;
@@ -31,51 +25,13 @@ vi.mock('../../../src/services/jwt-store.js', () => {
   return {
     getOrInitJwtKeys: vi.fn().mockImplementation(() => {
       if (!jwtKeys) {
-        jwtKeys = {
-          jwtPrivateKey: 'mocked-private-key',
-          jwtPublicKey: 'mocked-public-key',
-          jwtRefreshSecret: 'mocked-refresh-secret',
-          jwtDbPrivateKey: 'mocked-db-private-key',
-          publicKeyJWK: { kid: 'test-kid' },
-          publicKeyKid: 'test-kid',
-        };
+        jwtKeys = { ...MOCK_JWT_KEYS };
       }
       return jwtKeys;
     }),
     getOrInitJwtConfigs: vi.fn().mockImplementation(() => {
       if (!jwtConfigs) {
-        jwtConfigs = {
-          access: {
-            expiration: 900,
-            algorithm: 'RS256',
-            signingKey: 'mocked-private-key',
-            verificationKey: 'mocked-public-key',
-            aud: 'authenticated',
-            role: 'authenticated',
-            kid: 'test-kid',
-            cookieName: 'access_token',
-          },
-          refresh: {
-            expiration: 604800,
-            algorithm: 'HS256',
-            signingKey: 'mocked-refresh-secret',
-            verificationKey: 'mocked-refresh-secret',
-            aud: '',
-            role: '',
-            kid: '',
-            cookieName: 'refresh_token',
-          },
-          db_access: {
-            expiration: 900,
-            algorithm: 'HS256',
-            signingKey: 'mocked-db-private-key',
-            verificationKey: 'mocked-db-private-key',
-            aud: 'authenticated',
-            role: 'authenticated',
-            kid: '1',
-            cookieName: 'db_access_token',
-          },
-        };
+        jwtConfigs = { ...MOCK_JWT_CONFIGS };
       }
       return jwtConfigs;
     }),
@@ -86,75 +42,25 @@ vi.mock('../../../src/services/jwt-store.js', () => {
   };
 });
 
-// Mock the jwt module
+
 vi.mock('../../../src/services/jwt.js', () => {
   return {
     initJWTKeys: vi.fn().mockImplementation(() => {
-      return {
-        jwtPrivateKey: 'mocked-private-key',
-        jwtPublicKey: 'mocked-public-key',
-        jwtRefreshSecret: 'mocked-refresh-secret',
-        jwtDbPrivateKey: 'mocked-db-private-key',
-        publicKeyJWK: { kid: 'test-kid' },
-        publicKeyKid: 'test-kid',
-      };
+      return { ...MOCK_JWT_KEYS };
     }),
     createJWTConfigs: vi.fn().mockImplementation(() => {
-      return {
-        access: {
-          expiration: 900,
-          algorithm: 'RS256',
-          signingKey: 'mocked-private-key',
-          verificationKey: 'mocked-public-key',
-          aud: 'authenticated',
-          role: 'authenticated',
-          kid: 'test-kid',
-          cookieName: 'access_token',
-        },
-        refresh: {
-          expiration: 604800,
-          algorithm: 'HS256',
-          signingKey: 'mocked-refresh-secret',
-          verificationKey: 'mocked-refresh-secret',
-          aud: '',
-          role: '',
-          kid: '',
-          cookieName: 'refresh_token',
-        },
-        db_access: {
-          expiration: 900,
-          algorithm: 'HS256',
-          signingKey: 'mocked-db-private-key',
-          verificationKey: 'mocked-db-private-key',
-          aud: 'authenticated',
-          role: 'authenticated',
-          kid: '1',
-          cookieName: 'db_access_token',
-        },
-      };
+      return { ...MOCK_JWT_CONFIGS };
     }),
     signJWT: vi.fn().mockResolvedValue('mocked-jwt-token'),
     signJWTWithPayload: vi.fn().mockResolvedValue({
       token: 'mocked-jwt-token',
-      payload: {
-        sub: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-        exp: Math.floor(Date.now() / 1000) + 900,
-        iat: Math.floor(Date.now() / 1000),
-        aud: 'authenticated',
-        role: 'authenticated',
-      },
+      payload: { ...MOCK_JWT_PAYLOAD },
     }),
     verifyJWT: vi.fn().mockImplementation((token) => {
-      if (token === 'invalid.token.here') {
+      if (token === MOCK_TOKENS.invalid) {
         return null;
       }
-      return {
-        sub: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-        exp: Math.floor(Date.now() / 1000) + 900,
-        iat: Math.floor(Date.now() / 1000),
-        aud: 'authenticated',
-        role: 'authenticated',
-      };
+      return { ...MOCK_JWT_PAYLOAD };
     }),
     getCookieConfig: vi.fn().mockImplementation((jwtType: string) => {
       const configs: Record<
@@ -162,16 +68,16 @@ vi.mock('../../../src/services/jwt.js', () => {
         { cookieName: string; expiration: number }
       > = {
         access: {
-          cookieName: 'access_token',
-          expiration: 900,
+          cookieName: MOCK_JWT_CONFIGS.access.cookieName,
+          expiration: MOCK_JWT_CONFIGS.access.expiration,
         },
         refresh: {
-          cookieName: 'refresh_token',
-          expiration: 604800,
+          cookieName: MOCK_JWT_CONFIGS.refresh.cookieName,
+          expiration: MOCK_JWT_CONFIGS.refresh.expiration,
         },
         db_access: {
-          cookieName: 'db_access_token',
-          expiration: 900,
+          cookieName: MOCK_JWT_CONFIGS.db_access.cookieName,
+          expiration: MOCK_JWT_CONFIGS.db_access.expiration,
         },
       };
 
@@ -207,20 +113,12 @@ vi.mock('../../../src/db/db.js', () => ({
         where: vi.fn().mockReturnValue({
           limit: vi
             .fn()
-            .mockResolvedValue([
-              { token: 'test-token', userId: '01HQ5GMZN7MMVFHBF6YVPFQJ4R' },
-            ]),
+            .mockResolvedValue([{ token: 'test-token', userId: TEST_USER.id }]),
           innerJoin: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue([
               {
-                refresh_token: {
-                  token: 'test-token',
-                  userId: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-                },
-                user: {
-                  id: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-                  email: 'test@example.com',
-                },
+                refresh_token: { token: 'test-token', userId: TEST_USER.id },
+                user: { id: TEST_USER.id, email: TEST_USER.email },
               },
             ]),
           }),
@@ -230,19 +128,19 @@ vi.mock('../../../src/db/db.js', () => ({
     query: {
       user: {
         findFirst: vi.fn().mockResolvedValue({
-          id: '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
-          email: 'test@example.com',
-          password: 'hashed.password',
+          id: TEST_USER.id,
+          email: TEST_USER.email,
+          password: TEST_USER.password,
         }),
       },
     },
   })),
 }));
 
-// Mock the hono/context-storage module
+
 vi.mock('hono/context-storage', () => ({
   getContext: vi.fn().mockReturnValue({
-    env: { DB_URL: 'postgres://test' },
+    env: { DB_URL: TEST_DB_URL },
   }),
 }));
 
@@ -257,13 +155,6 @@ vi.mock('hono/cookie', () => ({
     return mockCookies.get(name);
   }),
 }));
-
-import {
-  resetAuthService,
-  useAuthService,
-  type Dependencies,
-} from '../../../src/services/index.js';
-import { mockJwtConfig } from '../../utils/mock.js';
 
 function createTestMockContext(
   options: {
@@ -444,10 +335,10 @@ describe('Auth Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: 'postgres://test',
+          DB_URL: TEST_DB_URL,
         },
         cookies: {
-          refresh_token: 'valid-refresh-token',
+          refresh_token: MOCK_TOKENS.valid.refresh,
         },
       });
 
@@ -455,7 +346,7 @@ describe('Auth Service', () => {
       const { refreshToken, refreshPayload } =
         await authService.verifyRefreshToken(mockContext);
 
-      expect(refreshToken).toBe('valid-refresh-token');
+      expect(refreshToken).toBe(MOCK_TOKENS.valid.refresh);
       expect(refreshPayload).toBeTruthy();
     });
 
@@ -471,7 +362,7 @@ describe('Auth Service', () => {
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
         },
         cookies: {
-          access_token: 'valid-access-token',
+          access_token: MOCK_TOKENS.valid.access,
         },
       });
 
@@ -479,7 +370,7 @@ describe('Auth Service', () => {
       const { accessToken, accessPayload } =
         await authService.validateAccessToken(mockContext);
 
-      expect(accessToken).toBe('valid-access-token');
+      expect(accessToken).toBe(MOCK_TOKENS.valid.access);
       expect(accessPayload).toBeTruthy();
     });
 
@@ -495,7 +386,7 @@ describe('Auth Service', () => {
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
         },
         cookies: {
-          access_token: 'invalid.token.here',
+          access_token: MOCK_TOKENS.invalid,
         },
       });
 
@@ -528,14 +419,14 @@ describe('Auth Service', () => {
 
       const authService = await useAuthService(mockContext, customDeps);
       const { isValid, user } = await authService.validateCredentials(
-        'test@example.com',
+        TEST_USER.email,
         'password123',
-        'postgres://test',
+        TEST_DB_URL,
       );
 
       expect(isValid).toBe(true);
       expect(user).toBeTruthy();
-      expect(user?.email).toBe('test@example.com');
+      expect(user?.email).toBe(TEST_USER.email);
     });
 
     it('should fail credential validation with incorrect password', async () => {
@@ -560,9 +451,9 @@ describe('Auth Service', () => {
 
       const authService = await useAuthService(mockContext, customDeps);
       const { isValid, user } = await authService.validateCredentials(
-        'test@example.com',
+        TEST_USER.email,
         'wrong-password',
-        'postgres://test',
+        TEST_DB_URL,
       );
 
       expect(isValid).toBe(false);
@@ -579,12 +470,12 @@ describe('Auth Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: 'postgres://test',
+          DB_URL: TEST_DB_URL,
         },
       });
 
       const authService = await useAuthService(mockContext);
-      const userId = '01HQ5GMZN7MMVFHBF6YVPFQJ4R';
+      const userId = TEST_USER.id;
 
       const result = await authService.issueRefreshToken(userId, mockJwtConfig);
 
@@ -605,17 +496,17 @@ describe('Auth Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: 'postgres://test',
+          DB_URL: TEST_DB_URL,
         },
         cookies: {
-          refresh_token: 'valid-refresh-token',
+          refresh_token: MOCK_TOKENS.valid.refresh,
         },
       });
 
       const authService = await useAuthService(mockContext);
       const result = await authService.validateRefreshToken(mockContext);
 
-      expect(result.refreshToken).toBe('valid-refresh-token');
+      expect(result.refreshToken).toBe(MOCK_TOKENS.valid.refresh);
       expect(result.refreshPayload).toBeTruthy();
     });
 
@@ -629,7 +520,7 @@ describe('Auth Service', () => {
           JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
           JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
           JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: 'postgres://test',
+          DB_URL: TEST_DB_URL,
         },
       });
 
@@ -638,7 +529,7 @@ describe('Auth Service', () => {
       // This shouldn't throw an error if the mocks are correctly set up
       await expect(
         authService.saveNewRefreshToken(
-          '01HQ5GMZN7MMVFHBF6YVPFQJ4R',
+          TEST_USER.id,
           'new-refresh-token',
           mockJwtConfig,
         ),
@@ -664,8 +555,8 @@ describe('Auth Service', () => {
       const accessConfig = authService.getCookieConfig('access');
       const refreshConfig = authService.getCookieConfig('refresh');
 
-      expect(accessConfig.name).toBe('access_token');
-      expect(refreshConfig.name).toBe('refresh_token');
+      expect(accessConfig.name).toBe(MOCK_JWT_CONFIGS.access.cookieName);
+      expect(refreshConfig.name).toBe(MOCK_JWT_CONFIGS.refresh.cookieName);
       expect(accessConfig.options).toHaveProperty('maxAge');
       expect(refreshConfig.options).toHaveProperty('maxAge');
     });
@@ -692,55 +583,17 @@ describe('Auth Service', () => {
       // Create custom auth service with mocked dependencies
       const authService = await useAuthService(mockContext, {
         jwtUtils: {
-          initKeys: vi.fn().mockResolvedValue({
-            jwtPrivateKey: 'mocked-private-key',
-            jwtPublicKey: 'mocked-public-key',
-            jwtRefreshSecret: 'mocked-refresh-secret',
-            jwtDbPrivateKey: 'mocked-db-private-key',
-            publicKeyJWK: { kid: 'test-kid' },
-            publicKeyKid: 'test-kid',
-          }),
-          createConfigs: vi.fn().mockReturnValue({
-            access: {
-              expiration: 900,
-              algorithm: 'RS256',
-              signingKey: 'mocked-private-key',
-              verificationKey: 'mocked-public-key',
-              aud: 'authenticated',
-              role: 'authenticated',
-              kid: 'test-kid',
-              cookieName: 'access_token',
-            },
-            refresh: {
-              expiration: 604800,
-              algorithm: 'HS256',
-              signingKey: 'mocked-refresh-secret',
-              verificationKey: 'mocked-refresh-secret',
-              aud: '',
-              role: '',
-              kid: '',
-              cookieName: 'refresh_token',
-            },
-            db_access: {
-              expiration: 900,
-              algorithm: 'HS256',
-              signingKey: 'mocked-db-private-key',
-              verificationKey: 'mocked-db-private-key',
-              aud: 'authenticated',
-              role: 'authenticated',
-              kid: '1',
-              cookieName: 'db_access_token',
-            },
-          }),
+          initKeys: vi.fn().mockResolvedValue({ ...MOCK_JWT_KEYS }),
+          createConfigs: vi.fn().mockReturnValue({ ...MOCK_JWT_CONFIGS }),
           signToken: vi.fn().mockResolvedValue('mocked-token'),
           signTokenWithPayload: vi.fn().mockResolvedValue({
             token: 'mocked-token',
-            payload: { sub: 'test-user-id' },
+            payload: { sub: TEST_USER.id },
           }),
-          verifyToken: vi.fn().mockResolvedValue({ sub: 'test-user-id' }),
+          verifyToken: vi.fn().mockResolvedValue({ sub: TEST_USER.id }),
           getCookieConfig: vi.fn().mockReturnValue({
-            name: 'access_token',
-            options: { maxAge: 900 },
+            name: MOCK_JWT_CONFIGS.access.cookieName,
+            options: { maxAge: MOCK_JWT_CONFIGS.access.expiration },
           }),
           setJWTCookie: setJWTCookieSpy,
         },
