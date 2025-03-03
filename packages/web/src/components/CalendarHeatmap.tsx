@@ -20,7 +20,7 @@ import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface GetButtonStylesArgs {
   entryValue: number | undefined;
@@ -39,8 +39,8 @@ const getButtonStyles = ({
   const entryValueZero = (isPast && !entryValue) || entryValue === 0;
   const entryUndefined = entryValue === undefined && !isPast;
   const baseStyles = entryUndefined
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded sm:h-9 hover:bg-accent hover:text-accent-foreground'
-    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded sm:h-9';
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9';
 
   return cn(baseStyles, {
     'bg-emerald-500 hover:bg-emerald-500/80': entryValue && entryValue > 0,
@@ -164,10 +164,18 @@ const CalendarHeatmap = ({
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
-              <Tooltip>
-                <TooltipTrigger
-                  asChild
-                  className="disabled:pointer-events-auto"
+
+              {(!!entryValue && !isTouchScreen) ||
+              (isBlocked && !!blockedDateFeedback) ? (
+                <ResponsiveTooltip
+                  content={
+                    isBlocked && blockedDateFeedback ? (
+                      <p>{blockedDateFeedback}</p>
+                    ) : (
+                      <p>{entryValue}</p>
+                    )
+                  }
+                  side="top"
                 >
                   <Button
                     variant={savedEntry ? null : 'outline'}
@@ -180,7 +188,7 @@ const CalendarHeatmap = ({
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       popoverAnchorRef.current = e.currentTarget;
                       setSelectedDateValue(() => [day, entryValue ?? 0]);
                       setIsPopoverOpen(true);
@@ -190,22 +198,28 @@ const CalendarHeatmap = ({
                       {format(day, 'd')}
                     </div>
                   </Button>
-                </TooltipTrigger>
-                {!!entryValue && !isTouchScreen && (
-                  <TooltipContent
-                    onPointerDownOutside={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <p>{entryValue}</p>
-                  </TooltipContent>
-                )}
-                {isBlocked && blockedDateFeedback && (
-                  <TooltipContent>
-                    <p>{blockedDateFeedback}</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
+                </ResponsiveTooltip>
+              ) : (
+                <Button
+                  variant={savedEntry ? null : 'outline'}
+                  className={getButtonStyles({
+                    entryValue,
+                    isSelected,
+                    isToday,
+                    isPast: isPast && !isBlocked,
+                    isBlocked,
+                  })}
+                  disabled={isBlocked}
+                  aria-label={`Add entry for ${format(day, 'd')}`}
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    popoverAnchorRef.current = e.currentTarget;
+                    setSelectedDateValue(() => [day, entryValue ?? 0]);
+                    setIsPopoverOpen(true);
+                  }}
+                >
+                  <div className="text-center text-xs">{format(day, 'd')}</div>
+                </Button>
+              )}
             </div>
           );
         })}

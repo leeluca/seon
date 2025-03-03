@@ -13,14 +13,21 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: averagePerDay.toFixed(1)
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
+#: src/components/GoalStatusSummary.tsx:125
 #: src/components/GoalStatusSummary.tsx:132
 msgid "{0}/day"
-msgstr "{0}/일"
+msgstr "{0}개/일"
 
 #: src/components/GoalStatusSummary.tsx:121
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining}일"
+
+#. placeholder {0}: goal.target
+#: src/components/GoalStatusSummary.tsx:118
+msgid "{entriesSum} / {0}"
+msgstr "{entriesSum} / {0}개"
 
 #: src/utils/validation.ts:68
 msgid "{fieldName} should be no longer than {max} characters."
@@ -30,7 +37,7 @@ msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
-#: src/routes/_main/goals.new.tsx:152
+#: src/routes/_main/goals.new.tsx:158
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
@@ -52,7 +59,7 @@ msgstr "개수"
 
 #: src/components/GoalCard.tsx:273
 msgid "Are you sure you want to delete <0>{title}</0>?"
-msgstr "정말로 <0>{title}</0>를 삭제하시겠습니까?"
+msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
 #: src/components/GoalStatusSummary.tsx:124
 msgid "Average Pace"
@@ -83,7 +90,7 @@ msgstr "동기화 오류를 확인하거나 로그인하세요"
 msgid "Check your internet connection and try again."
 msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 
-#: src/components/GoalForm.tsx:93
+#: src/components/GoalForm.tsx:95
 msgid "Choose a name for your goal."
 msgstr "목표의 이름을 정해주세요."
 
@@ -95,7 +102,7 @@ msgstr "목표 달성!"
 msgid "Could not connect with the sync service. Try again later."
 msgstr "동기화 서비스에 연결할 수 없습니다. 나중에 다시 시도해주세요."
 
-#: src/components/GoalForm.tsx:247
+#: src/components/GoalForm.tsx:250
 msgid "Count"
 msgstr "횟수"
 
@@ -103,7 +110,7 @@ msgstr "횟수"
 msgid "Create account"
 msgstr "계정 만들기"
 
-#: src/routes/_main/goals.new.tsx:188
+#: src/routes/_main/goals.new.tsx:195
 msgid "Create goal"
 msgstr "목표 만들기"
 
@@ -140,7 +147,7 @@ msgstr "목표일 늦은 순"
 msgid "Due soon"
 msgstr "목표일 가까운 순"
 
-#: src/components/GoalForm.tsx:437
+#: src/components/GoalForm.tsx:440
 msgid "e.g. words"
 msgstr "예: 단어"
 
@@ -148,7 +155,7 @@ msgstr "예: 단어"
 msgid "Edit goal"
 msgstr "목표 수정"
 
-#: src/components/GoalForm.tsx:116
+#: src/components/GoalForm.tsx:118
 msgid "eg. 'Learn 1000 French words'"
 msgstr "예: '프랑스어 단어 1000개 익히기'"
 
@@ -170,7 +177,7 @@ msgstr "목표일 이후의 기록"
 msgid "Expected Completion"
 msgstr "예상 완료일"
 
-#: src/routes/_main/goals.new.tsx:79
+#: src/routes/_main/goals.new.tsx:80
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
@@ -195,8 +202,8 @@ msgstr "목표 달성!"
 msgid "Goal Benchmark"
 msgstr "목표 기준선"
 
-#: src/components/GoalForm.tsx:83
-#: src/components/GoalForm.tsx:95
+#: src/components/GoalForm.tsx:85
+#: src/components/GoalForm.tsx:97
 msgid "Goal name"
 msgstr "목표 이름"
 
@@ -205,7 +212,7 @@ msgstr "목표 이름"
 msgid "Hello, {0}!"
 msgstr "안녕하세요, {0}님!"
 
-#: src/components/GoalForm.tsx:359
+#: src/components/GoalForm.tsx:362
 msgid "Hide extra options"
 msgstr "추가 옵션 숨기기"
 
@@ -213,7 +220,7 @@ msgstr "추가 옵션 숨기기"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니다!"
 
-#: src/components/GoalForm.tsx:447
+#: src/components/GoalForm.tsx:450
 msgid "Initial value"
 msgstr "초기값"
 
@@ -242,7 +249,7 @@ msgstr "마지막 동기화:"
 msgid "Last updated at: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/routes/_main/goals.new.tsx:111
+#: src/routes/_main/goals.new.tsx:114
 #: src/components/SignUpForm.tsx:66
 #: src/components/GoalEditForm.tsx:113
 msgid "Missing required fields"
@@ -265,7 +272,7 @@ msgstr "이름 (역순)"
 msgid "Name is required"
 msgstr "이름을 입력해주세요"
 
-#: src/routes/_main/goals.lazy.tsx:51
+#: src/routes/_main/goals.lazy.tsx:52
 msgid "New Goal"
 msgstr "새로운 목표"
 
@@ -277,7 +284,7 @@ msgstr "최근 추가순"
 msgid "No"
 msgstr "아니요"
 
-#: src/components/GoalForm.tsx:480
+#: src/components/GoalForm.tsx:483
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
 
@@ -301,7 +308,7 @@ msgstr "날짜 선택"
 
 #: src/components/NewEntryForm.tsx:91
 #: src/components/GoalStatusSummary.tsx:117
-#: src/components/GoalForm.tsx:275
+#: src/components/GoalForm.tsx:278
 msgid "Progress"
 msgstr "진행도"
 
@@ -329,21 +336,21 @@ msgstr "저장"
 
 #: src/apis/hooks/usePostSignOut.ts:48
 msgid "See you again!"
-msgstr "다음에 또 만나요!"
+msgstr "다음에 또 뵈어요!"
 
 #: src/components/GoalSorting.tsx:94
 msgid "Select sort..."
-msgstr ""
+msgstr "정렬 기준 선택..."
 
-#: src/components/GoalForm.tsx:136
+#: src/components/GoalForm.tsx:139
 msgid "Set a target value for your goal."
 msgstr "목표 달성 값을 설정해 주세요."
 
-#: src/routes/_main/goals.new.tsx:155
+#: src/routes/_main/goals.new.tsx:161
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
-#: src/components/GoalForm.tsx:366
+#: src/components/GoalForm.tsx:369
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
@@ -379,11 +386,11 @@ msgstr "회원 가입"
 msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
-#: src/routes/_main/goals.lazy.tsx:56
+#: src/routes/_main/goals.lazy.tsx:57
 msgid "Sort by"
 msgstr "정렬 기준"
 
-#: src/components/GoalForm.tsx:375
+#: src/components/GoalForm.tsx:378
 msgid "Start date"
 msgstr "시작일"
 
@@ -391,7 +398,7 @@ msgstr "시작일"
 msgid "Start New"
 msgstr "새로 시작하기"
 
-#: src/routes/_main/goals.new.tsx:75
+#: src/routes/_main/goals.new.tsx:76
 msgid "Sucessfully added goal"
 msgstr "목표가 추가되었습니다"
 
@@ -413,15 +420,15 @@ msgstr "동기화 중"
 msgid "Syncing your goals..."
 msgstr "목표 동기화 중..."
 
-#: src/components/GoalForm.tsx:170
+#: src/components/GoalForm.tsx:173
 msgid "Target date"
 msgstr "목표일"
 
-#: src/components/GoalForm.tsx:186
+#: src/components/GoalForm.tsx:189
 msgid "Target date must be after start date"
 msgstr "목표일은 시작일 이후여야 합니다"
 
-#: src/components/GoalForm.tsx:126
+#: src/components/GoalForm.tsx:129
 msgid "Target value"
 msgstr "목표값"
 
@@ -433,7 +440,7 @@ msgstr "아직 목표가 없습니다."
 msgid "Time Left"
 msgstr "남은 기간"
 
-#: src/components/CalendarHeatmap.tsx:140
+#: src/components/CalendarHeatmap.tsx:143
 msgid "Today"
 msgstr "오늘"
 
@@ -441,24 +448,24 @@ msgstr "오늘"
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 
-#: src/components/GoalForm.tsx:317
+#: src/components/GoalForm.tsx:320
 msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
 msgstr "간단한 예/아니오로 매일 완료 여부를 기록하세요.<0/>예: 명상이나 비타민 복용과 같은 습관"
 
-#: src/components/GoalForm.tsx:260
+#: src/components/GoalForm.tsx:263
 msgid "Track how many times you complete something each day.<0/>E.g. '30 minutes of exercise' or 'drink 8 glasses of water'."
 msgstr "매일 완료한 횟수를 기록하세요.<0/>예: '30분 운동하기' 또는 '물 8잔 마시기'"
 
-#: src/components/GoalForm.tsx:288
+#: src/components/GoalForm.tsx:291
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 읽기(현재 페이지) 또는 저축(총 저축액)"
 
-#: src/components/GoalForm.tsx:215
+#: src/components/GoalForm.tsx:218
 msgid "Type"
 msgstr "유형"
 
-#: src/components/GoalForm.tsx:406
-#: src/components/GoalForm.tsx:416
+#: src/components/GoalForm.tsx:409
+#: src/components/GoalForm.tsx:419
 msgid "Unit"
 msgstr "단위"
 
@@ -474,7 +481,7 @@ msgstr "업데이트 있음"
 msgid "Update now"
 msgstr "지금 업데이트"
 
-#: src/components/GoalForm.tsx:159
+#: src/components/GoalForm.tsx:162
 msgid "Value for goal completion (number)"
 msgstr "목표 달성 값 (숫자)"
 
@@ -496,7 +503,7 @@ msgstr "환영합니다, {0}님!"
 msgid "Yes"
 msgstr "예"
 
-#: src/components/GoalForm.tsx:303
+#: src/components/GoalForm.tsx:306
 msgid "Yes or no"
 msgstr "예/아니오"
 

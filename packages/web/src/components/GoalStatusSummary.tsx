@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { t } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react';
 import { useQuery } from '@powersync/tanstack-react-query';
 import {
   addDays,
@@ -9,6 +10,7 @@ import {
   formatDate,
 } from 'date-fns';
 
+import type { LOCALES } from '~/constants/locales';
 import { ENTRIES, GOALS } from '~/constants/query';
 import { cn } from '~/utils';
 import { Separator } from './ui/separator';
@@ -19,13 +21,24 @@ interface StatusItemProps {
 }
 
 function StatusItem({ label, value }: StatusItemProps) {
+  const {
+    i18n: { locale },
+  } = useLingui() as { i18n: { locale: keyof typeof LOCALES } };
+
   return (
     <div className="flex flex-col items-center">
       <h5 className="text-center font-medium">{label}</h5>
-      <p className="text-sm font-light text-gray-700">{value}</p>
+      <p
+        className={cn('text-sm text-gray-700', {
+          'font-light': locale === 'en',
+        })}
+      >
+        {value}
+      </p>
     </div>
   );
 }
+
 const StatusSeparator = () => (
   <Separator
     orientation="vertical"
@@ -115,14 +128,14 @@ export function GoalStatusSummary({
     >
       <StatusItem
         label={t`Progress`}
-        value={`${entriesSum} / ${goal.target}`}
+        value={t`${entriesSum} / ${goal.target}`}
       />
       <StatusSeparator />
       <StatusItem label={t`Time Left`} value={t`${daysRemaining} days`} />
       <StatusSeparator />
       <StatusItem
         label={t`Average Pace`}
-        value={`${averagePerDay.toFixed(1)}/day`}
+        value={t`${averagePerDay.toFixed(1)}/day`}
       />
       <StatusSeparator />
       <StatusItem

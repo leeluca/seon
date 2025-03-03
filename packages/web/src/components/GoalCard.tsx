@@ -269,7 +269,6 @@ export default function GoalCard({
                   <Trans>Delete goal</Trans>
                 </h3>
                 <p className="text-muted-foreground text-pretty text-sm">
-                  {/* FIXME: Korean translation has wrong word order */}
                   <Trans>
                     Are you sure you want to delete{' '}
                     <span className="font-bold">{title}</span>?
