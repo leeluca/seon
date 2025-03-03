@@ -17,6 +17,7 @@ import { ChartLineIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { LineGraph, type LineGraphProps } from './charts/LineGraph';
 
@@ -131,6 +132,7 @@ function getGraphData({
     target,
   });
   const { locale } = i18n;
+  const isMobile = useViewportStore.getState().isMobile;
 
   const labels = aggregated.map((item) => {
     if (mode === 'month') {
@@ -197,11 +199,8 @@ function getGraphData({
             const isTargetAchieved = value >= target;
             return isTargetAchieved ? 'star' : 'circle';
           },
-          pointRadius: 5,
-          pointHoverRadius: 7,
-          // TODO: if touch device, make points bigger
-          // pointRadius: 10,
-          // pointHoverRadius: 15,
+          pointRadius: isMobile ? 6 : 5,
+          pointHoverRadius: isMobile ? 8 : 7,
 
           // TODO: refactor into separate functions
           // Show points after targetDate in a different color
@@ -239,8 +238,8 @@ function getGraphData({
           fill: false,
           borderColor: 'rgba(255, 99, 132, 0.8)',
           borderDash: [5, 5],
-          pointRadius: 5,
-          pointHoverRadius: 7,
+          pointRadius: isMobile ? 6 : 5,
+          pointHoverRadius: isMobile ? 8 : 7,
           pointStyle: (ctx) => {
             const value = ctx.raw as number;
             const isOverTargetValue = value >= target;
