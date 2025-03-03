@@ -15,6 +15,7 @@ import FormItem from './FormItem';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { isDemo, getDemoModeMessage } from '~/utils/demo';
 
 interface SignInFormProps {
   onSignInCallback: (user: PostSignInResponse['user']) => void;
@@ -54,6 +55,17 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
     startTimeout: delayedValidation,
     clearExistingTimeout: clearTimeout,
   } = useDelayedExecution(() => void form.validateAllFields('change'));
+
+  // If in demo mode, show a notice instead of the sign-in form
+  if (isDemo()) {
+    return (
+      <Alert className="my-4">
+        <AlertDescription>
+          <Trans>Authentication is disabled in demo mode. All data remains local.</Trans>
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <form

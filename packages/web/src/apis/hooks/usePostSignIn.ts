@@ -11,6 +11,7 @@ import { useUserStore } from '~/states/stores/userStore';
 import type { Preferences } from '~/types/user';
 import type { APIError } from '~/utils/errors';
 import fetcher from '../fetcher';
+import { useDemoMode } from '~/hooks/useDemoMode';
 
 export const POST_SIGNIN_KEY = '/api/auth/signin';
 
@@ -106,6 +107,7 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
       ]),
     );
   const powerSync = usePowerSync();
+  const { isDemo, mockAuthOperation } = useDemoMode();
   const queryClient = useQueryClient();
 
   return useSWRMutation<
@@ -115,11 +117,54 @@ const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
     SignInParams
   >(
     POST_SIGNIN_KEY,
-    (url: string, { arg }: { arg: SignInParams }) =>
-      fetcher<PostSignInResponse>(url, {
+    async (url: string, { arg }: { arg: SignInParams }) => {
+      // Handle demo mode
+      if (isDemo) {
+        const result = await mockAuthOperation(() => {
+          // Simulate a successful sign-in by updating the user state
+          const userData = {
+            name: "Demo User",
+            email: arg.email,
+            id: localUserId,
+            shortId: "demo-user",
+            useSync: true,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            preferences: {}
+          };
+          
+          // Call onSuccess with the simulated data
+          onSuccess?.({
+            result: true,
+            expiresAt: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+            user: userData
+          });
+        });
+        
+        if (result) {
+          return {
+            result: true,
+            expiresAt: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+            user: {
+              name: "Demo User",
+              email: arg.email,
+              id: localUserId,
+              shortId: "demo-user",
+              useSync: true,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+              preferences: {}
+            }
+          };
+        }
+      }
+      
+      // If not in demo mode or if demo mode handling didn't complete, proceed with normal fetch
+      return fetcher<PostSignInResponse>(url, {
         method: 'POST',
         body: JSON.stringify(arg),
-      }),
+      });
+    },
     {
       onSuccess: async (data) => {
         data.result &&

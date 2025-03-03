@@ -11,6 +11,7 @@ import { SESSION_EXP_KEY } from '~/constants/storage';
 import { useUserStore } from '~/states/stores/userStore';
 import type { AuthStatus, User } from '~/types/user';
 import { APIError } from '~/utils/errors';
+import { isDemo } from '~/utils/demo';
 import fetcher from '../fetcher';
 
 const AUTH_STATUS_API = '/api/auth/status';
@@ -37,7 +38,11 @@ export function getAuthStatusQueryOptions(user: User) {
 export function useFetchAuthStatus() {
   const user = useUserStore((state) => state.user);
 
-  const queryResult = useQuery(getAuthStatusQueryOptions(user));
+  // Skip the auth status query entirely in demo mode
+  const queryResult = useQuery({
+    ...getAuthStatusQueryOptions(user),
+    enabled: !isDemo() && !!user?.useSync,
+  });
 
   const { data, error } = queryResult;
   const queryClient = useQueryClient();
@@ -56,9 +61,28 @@ export function useFetchAuthStatus() {
     }
   }, [error, data, queryClient]);
 
+  // In demo mode, return a fixed result
+  if (isDemo()) {
+    return {
+      data: {
+        result: true,
+        expiresAt: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+      },
+      isLoading: false,
+      error: null,
+    };
+  }
+
   return queryResult;
 }
 
 export function fetchAuthStatus(queryClient: QueryClient, user: User) {
+  if (isDemo()) {
+    // In demo mode, just return a fixed result
+    return Promise.resolve({
+      result: true,
+      expiresAt: Math.floor(Date.now() / 1000) + 86400, // 24 hours
+    });
+  }
   return queryClient.ensureQueryData(getAuthStatusQueryOptions(user));
 }

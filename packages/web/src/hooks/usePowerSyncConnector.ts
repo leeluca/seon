@@ -1,61 +1,107 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Logger from 'js-logger';
+import { PowerSyncFetchImpl } from '@powersync/web';
+import { PowerSyncBackendConnector } from '@powersync/web';
+import { isDemo } from '~/utils/demo';
+import { useUserStore } from '~/states/stores/userStore';
+import { getDbAccessToken } from '~/apis/credential';
 
 import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import { powerSyncDb } from '~/lib/database';
 import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
 
+// Add this dummy connector for demo mode
+class DemoSyncConnector {
+  connected = false;
+  status = 'disconnected';
+  
+  connect() {
+    console.log('Demo mode: sync connection disabled');
+    return Promise.resolve();
+  }
+  
+  disconnect() {
+    return Promise.resolve();
+  }
+}
+
 export function usePowerSyncConnector() {
   const { data, isLoading } = useFetchAuthStatus();
+  const user = useUserStore(state => state.user);
 
   const isSignInVerified = data?.result && !isLoading;
 
-  const [connector, setConnector] = useState(new SupabaseConnector());
+  const [connector, setConnector] = useState<PowerSyncBackendConnector | null>(null);
+  const [status, setStatus] = useState('disconnected');
+  const [error, setError] = useState<Error | null>(null);
   const [powerSync] = useState(powerSyncDb);
 
+  // In demo mode, return a dummy connector that doesn't try to connect
+  if (isDemo()) {
+    return {
+      connector: new DemoSyncConnector(),
+      status: 'disconnected',
+      error: null,
+      resetConnector: () => {},
+    };
+  }
+
   const resetConnector = useCallback(() => {
-    setConnector(new SupabaseConnector());
+    setConnector(null);
+    setStatus('disconnected');
+    setError(null);
   }, []);
 
   useEffect(() => {
-    if (!isSignInVerified) {
-      powerSync.disconnect();
-      resetConnector();
-      return;
-    }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    Logger.useDefaults();
-    Logger.setLevel(Logger.DEBUG);
-    // For console testing, to be removed
-    window._powersync = powerSync;
+    if (!user?.useSync) return;
+    
+    const createConnector = async () => {
+      try {
+        // Token fetch function
+        const getToken = async () => {
+          return getDbAccessToken();
+        };
 
-    const initializePowerSync = async () => {
-      await powerSync.init();
+        // Create the connector
+        const syncUrl = import.meta.env.VITE_POWERSYNC_URL;
+        const syncConnector = new PowerSyncBackendConnector({
+          endpoint: syncUrl,
+          fetchImpl: PowerSyncFetchImpl.fetch,
+          tokenProvider: getToken,
+        });
+
+        setConnector(syncConnector);
+        
+        // Set up listeners
+        syncConnector.on('statusChange', (newStatus) => {
+          setStatus(newStatus);
+        });
+        
+        syncConnector.on('error', (err) => {
+          setError(err);
+        });
+        
+        // Connect
+        await syncConnector.connect();
+      } catch (err) {
+        setError(err instanceof Error ? err : new Error(String(err)));
+      }
     };
-    const initializeConnector = () => {
-      connector.init();
+    
+    void createConnector();
+    
+    return () => {
+      connector?.disconnect();
     };
-
-    void initializePowerSync();
-
-    const listener = connector.registerListener({
-      initialized: () => {
-        void powerSync.connect(connector);
-      },
-      sessionStarted: () => {},
-    });
-    initializeConnector();
-    return () => listener();
-  }, [isSignInVerified, connector, powerSync, resetConnector]);
-
-
+  }, [user?.useSync]);
 
   return useMemo(
     () => ({
       connector,
-      powerSync,
+      status,
+      error,
       resetConnector,
     }),
-    [connector, powerSync, resetConnector],
+    [connector, status, error, resetConnector],
   );
 }

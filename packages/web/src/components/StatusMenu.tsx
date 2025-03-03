@@ -7,6 +7,7 @@ import {
   CloudIcon,
   CloudOffIcon,
   RefreshCcwIcon,
+  BeakerIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -20,6 +21,7 @@ import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import UpdatePrompt from './UpdatePrompt';
+import { isDemo, getDemoModeMessage } from '~/utils/demo';
 
 interface ConnectionErrorComponentProps {
   isSignedIn: boolean;
@@ -120,6 +122,43 @@ function StatusMenu() {
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]" />
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]" />
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
+      </div>
+    );
+  }
+
+  if (isDemo()) {
+    return (
+      <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100 px-4 py-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label={t`Demo Mode`}
+            >
+              <BeakerIcon size={18} className="text-amber-600" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="mr-3 min-w-[200px] max-w-fit sm:mr-8"
+            sideOffset={5}
+          >
+            <div className="space-y-2">
+              <h3 className="text-pretty font-medium leading-none">
+                <Trans>Demo Mode</Trans>
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                {getDemoModeMessage()}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                <Trans>Sample data has been created for you to explore the app's functionality.</Trans>
+              </p>
+            </div>
+          </PopoverContent>
+        </Popover>
+        <span className="text-xs font-medium text-amber-800">
+          <Trans>Demo Mode</Trans>
+        </span>
       </div>
     );
   }

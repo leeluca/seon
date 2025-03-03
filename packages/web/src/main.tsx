@@ -12,6 +12,7 @@ import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
 import { queryClient } from './lib/queryClient';
 import { routeTree } from './routeTree.gen';
 import { useUserStore } from './states/stores/userStore';
+import { useInitializeDemo } from '~/hooks/useInitializeDemo';
 
 export const router = createRouter({
   routeTree,
@@ -34,6 +35,9 @@ function App() {
     useShallow((state) => [state.user, state.isInitialized]),
   );
   const { data: authStatus } = useFetchAuthStatus();
+
+  // Initialize demo mode if needed
+  useInitializeDemo();
 
   useEffect(() => {
     document.querySelector('#loading-container')?.remove();
