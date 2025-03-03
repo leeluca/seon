@@ -28,7 +28,7 @@ export const useViewportStore = create<ViewportState>()((set) => ({
   breakpoint:
     typeof window !== 'undefined' ? getBreakpoint(window.innerWidth) : null,
   isMobile:
-    typeof window !== 'undefined' ? window.innerWidth < BREAKPOINTS.md : false,
+    typeof window !== 'undefined' ? window.innerWidth < BREAKPOINTS.sm : false,
   isTouchScreen:
     typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0,
   // TODO: consider using window.matchMedia('(pointer: coarse)').matches

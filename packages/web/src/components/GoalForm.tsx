@@ -14,6 +14,7 @@ import {
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import {
@@ -71,6 +72,8 @@ function NewGoalForm({
       iconRefs.current.push(node);
     }
   }, []);
+  const isMobile = useViewportStore((state) => state.isMobile);
+
   return (
     <form
       id={GOAL_FORM_ID}
@@ -235,7 +238,7 @@ function NewGoalForm({
                 <RadioGroup
                   defaultValue="COUNT"
                   orientation="horizontal"
-                  className="col-span-3 flex flex-row flex-wrap"
+                  className="col-span-3 flex flex-row flex-wrap gap-4 sm:gap-2"
                   value={value}
                   // TODO: validate type on runtime?
                   onValueChange={(value) =>
@@ -265,8 +268,9 @@ function NewGoalForm({
                     >
                       <InfoCircledIcon
                         ref={setIconRef}
-                        width={16}
-                        className="mb-2 ml-1 cursor-pointer"
+                        height={isMobile ? 18 : 16}
+                        width={isMobile ? 18 : 16}
+                        className="ml-1 sm:mb-2"
                       />
                     </ResponsiveTooltip>
                   </div>
@@ -291,8 +295,9 @@ function NewGoalForm({
                       side="bottom"
                     >
                       <InfoCircledIcon
-                        width={16}
-                        className="mb-2 ml-1 cursor-pointer"
+                        width={isMobile ? 18 : 16}
+                        height={isMobile ? 18 : 16}
+                        className="ml-1 sm:mb-2"
                       />
                     </ResponsiveTooltip>
                   </div>
@@ -319,8 +324,9 @@ function NewGoalForm({
                     >
                       <InfoCircledIcon
                         ref={setIconRef}
-                        width={16}
-                        className="mb-2 ml-1 cursor-pointer"
+                        width={isMobile ? 20 : 16}
+                        height={isMobile ? 20 : 16}
+                        className="ml-1 sm:mb-2"
                       />
                     </ResponsiveTooltip>
                   </div>

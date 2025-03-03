@@ -39,8 +39,8 @@ const getButtonStyles = ({
   const entryValueZero = (isPast && !entryValue) || entryValue === 0;
   const entryUndefined = entryValue === undefined && !isPast;
   const baseStyles = entryUndefined
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded sm:h-9 hover:bg-accent hover:text-accent-foreground'
-    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded sm:h-9';
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9';
 
   return cn(baseStyles, {
     'bg-emerald-500 hover:bg-emerald-500/80': entryValue && entryValue > 0,
