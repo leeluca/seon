@@ -29,7 +29,7 @@ import {
 } from './ui/collapsible';
 import { Label } from './ui/label';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 export const GOAL_FORM_ID = 'goal-form';
 
@@ -242,7 +242,6 @@ function NewGoalForm({
                     field.handleChange(value as GoalType)
                   }
                 >
-                  {/* FIXME: Tooltip doesn't work on touchscreen */}
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
                       <RadioGroupItem value="COUNT" id="r1" />
@@ -250,15 +249,8 @@ function NewGoalForm({
                         <Trans>Count</Trans>
                       </Label>
                     </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <InfoCircledIcon
-                          ref={setIconRef}
-                          width={16}
-                          className="mb-2 ml-1"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
+                    <ResponsiveTooltip
+                      content={
                         <p>
                           <Trans>
                             Track how many times you complete something each
@@ -268,8 +260,15 @@ function NewGoalForm({
                             water'.
                           </Trans>
                         </p>
-                      </TooltipContent>
-                    </Tooltip>
+                      }
+                      side="bottom"
+                    >
+                      <InfoCircledIcon
+                        ref={setIconRef}
+                        width={16}
+                        className="mb-2 ml-1 cursor-pointer"
+                      />
+                    </ResponsiveTooltip>
                   </div>
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
@@ -278,15 +277,8 @@ function NewGoalForm({
                         <Trans>Progress</Trans>
                       </Label>
                     </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <InfoCircledIcon
-                          width={16}
-                          className="mb-2 ml-1"
-                          // ref={triggerRef}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
+                    <ResponsiveTooltip
+                      content={
                         <p>
                           <Trans>
                             Track your overall progress towards a target.
@@ -295,8 +287,14 @@ function NewGoalForm({
                             (total amount saved).
                           </Trans>
                         </p>
-                      </TooltipContent>
-                    </Tooltip>
+                      }
+                      side="bottom"
+                    >
+                      <InfoCircledIcon
+                        width={16}
+                        className="mb-2 ml-1 cursor-pointer"
+                      />
+                    </ResponsiveTooltip>
                   </div>
                   <div className="flex items-center">
                     <div className="flex items-center gap-2">
@@ -307,15 +305,8 @@ function NewGoalForm({
                         </p>
                       </Label>
                     </div>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <InfoCircledIcon
-                          ref={setIconRef}
-                          width={16}
-                          className="mb-2 ml-1"
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom">
+                    <ResponsiveTooltip
+                      content={
                         <p>
                           <Trans>
                             Track daily completion with a simple yes or no.
@@ -323,8 +314,15 @@ function NewGoalForm({
                             E.g. habits like meditation or taking vitamins.
                           </Trans>
                         </p>
-                      </TooltipContent>
-                    </Tooltip>
+                      }
+                      side="bottom"
+                    >
+                      <InfoCircledIcon
+                        ref={setIconRef}
+                        width={16}
+                        className="mb-2 ml-1 cursor-pointer"
+                      />
+                    </ResponsiveTooltip>
                   </div>
                 </RadioGroup>
                 {/* </div> */}

@@ -20,7 +20,7 @@ import { cn } from '~/utils';
 import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface GetButtonStylesArgs {
   entryValue: number | undefined;
@@ -164,10 +164,18 @@ const CalendarHeatmap = ({
           return (
             <div key={stringDate} className="flex flex-col">
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
-              <Tooltip>
-                <TooltipTrigger
-                  asChild
-                  className="disabled:pointer-events-auto"
+
+              {(!!entryValue && !isTouchScreen) ||
+              (isBlocked && !!blockedDateFeedback) ? (
+                <ResponsiveTooltip
+                  content={
+                    isBlocked && blockedDateFeedback ? (
+                      <p>{blockedDateFeedback}</p>
+                    ) : (
+                      <p>{entryValue}</p>
+                    )
+                  }
+                  side="top"
                 >
                   <Button
                     variant={savedEntry ? null : 'outline'}
@@ -180,7 +188,7 @@ const CalendarHeatmap = ({
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
-                    onClick={(e) => {
+                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                       popoverAnchorRef.current = e.currentTarget;
                       setSelectedDateValue(() => [day, entryValue ?? 0]);
                       setIsPopoverOpen(true);
@@ -190,22 +198,28 @@ const CalendarHeatmap = ({
                       {format(day, 'd')}
                     </div>
                   </Button>
-                </TooltipTrigger>
-                {!!entryValue && !isTouchScreen && (
-                  <TooltipContent
-                    onPointerDownOutside={(e) => {
-                      e.preventDefault();
-                    }}
-                  >
-                    <p>{entryValue}</p>
-                  </TooltipContent>
-                )}
-                {isBlocked && blockedDateFeedback && (
-                  <TooltipContent>
-                    <p>{blockedDateFeedback}</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
+                </ResponsiveTooltip>
+              ) : (
+                <Button
+                  variant={savedEntry ? null : 'outline'}
+                  className={getButtonStyles({
+                    entryValue,
+                    isSelected,
+                    isToday,
+                    isPast: isPast && !isBlocked,
+                    isBlocked,
+                  })}
+                  disabled={isBlocked}
+                  aria-label={`Add entry for ${format(day, 'd')}`}
+                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                    popoverAnchorRef.current = e.currentTarget;
+                    setSelectedDateValue(() => [day, entryValue ?? 0]);
+                    setIsPopoverOpen(true);
+                  }}
+                >
+                  <div className="text-center text-xs">{format(day, 'd')}</div>
+                </Button>
+              )}
             </div>
           );
         })}
