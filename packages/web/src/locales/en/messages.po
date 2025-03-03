@@ -13,7 +13,9 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: averagePerDay.toFixed(1)
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
+#: src/components/GoalStatusSummary.tsx:125
 #: src/components/GoalStatusSummary.tsx:132
 msgid "{0}/day"
 msgstr "{0}/day"
@@ -21,6 +23,11 @@ msgstr "{0}/day"
 #: src/components/GoalStatusSummary.tsx:121
 msgid "{daysRemaining} days"
 msgstr "{daysRemaining} days"
+
+#. placeholder {0}: goal.target
+#: src/components/GoalStatusSummary.tsx:118
+msgid "{entriesSum} / {0}"
+msgstr "{entriesSum} / {0}"
 
 #: src/utils/validation.ts:68
 msgid "{fieldName} should be no longer than {max} characters."
@@ -30,7 +37,7 @@ msgstr "{fieldName} should be no longer than {max} characters."
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
-#: src/routes/_main/goals.new.tsx:152
+#: src/routes/_main/goals.new.tsx:158
 msgid "Add new goal"
 msgstr "Add new goal"
 
@@ -83,7 +90,7 @@ msgstr "Check sync error or sign in"
 msgid "Check your internet connection and try again."
 msgstr "Check your internet connection and try again."
 
-#: src/components/GoalForm.tsx:93
+#: src/components/GoalForm.tsx:95
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
@@ -95,7 +102,7 @@ msgstr "Completed!"
 msgid "Could not connect with the sync service. Try again later."
 msgstr "Could not connect with the sync service. Try again later."
 
-#: src/components/GoalForm.tsx:247
+#: src/components/GoalForm.tsx:250
 msgid "Count"
 msgstr "Count"
 
@@ -103,7 +110,7 @@ msgstr "Count"
 msgid "Create account"
 msgstr "Create account"
 
-#: src/routes/_main/goals.new.tsx:188
+#: src/routes/_main/goals.new.tsx:195
 msgid "Create goal"
 msgstr "Create goal"
 
@@ -140,7 +147,7 @@ msgstr "Due later"
 msgid "Due soon"
 msgstr "Due soon"
 
-#: src/components/GoalForm.tsx:437
+#: src/components/GoalForm.tsx:440
 msgid "e.g. words"
 msgstr "e.g. words"
 
@@ -148,7 +155,7 @@ msgstr "e.g. words"
 msgid "Edit goal"
 msgstr "Edit goal"
 
-#: src/components/GoalForm.tsx:116
+#: src/components/GoalForm.tsx:118
 msgid "eg. 'Learn 1000 French words'"
 msgstr "eg. 'Learn 1000 French words'"
 
@@ -170,7 +177,7 @@ msgstr "Entries after target date"
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
-#: src/routes/_main/goals.new.tsx:79
+#: src/routes/_main/goals.new.tsx:80
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
@@ -195,8 +202,8 @@ msgstr "Goal achieved!"
 msgid "Goal Benchmark"
 msgstr "Goal Benchmark"
 
-#: src/components/GoalForm.tsx:83
-#: src/components/GoalForm.tsx:95
+#: src/components/GoalForm.tsx:85
+#: src/components/GoalForm.tsx:97
 msgid "Goal name"
 msgstr "Goal name"
 
@@ -205,7 +212,7 @@ msgstr "Goal name"
 msgid "Hello, {0}!"
 msgstr "Hello, {0}!"
 
-#: src/components/GoalForm.tsx:359
+#: src/components/GoalForm.tsx:362
 msgid "Hide extra options"
 msgstr "Hide extra options"
 
@@ -213,7 +220,7 @@ msgstr "Hide extra options"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "If you sign out now, this data will be permanently lost!"
 
-#: src/components/GoalForm.tsx:447
+#: src/components/GoalForm.tsx:450
 msgid "Initial value"
 msgstr "Initial value"
 
@@ -242,7 +249,7 @@ msgstr "Last synced:"
 msgid "Last updated at: {0}"
 msgstr "Last updated at: {0}"
 
-#: src/routes/_main/goals.new.tsx:111
+#: src/routes/_main/goals.new.tsx:114
 #: src/components/SignUpForm.tsx:66
 #: src/components/GoalEditForm.tsx:113
 msgid "Missing required fields"
@@ -265,7 +272,7 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:51
+#: src/routes/_main/goals.lazy.tsx:52
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -277,7 +284,7 @@ msgstr "Newest first"
 msgid "No"
 msgstr "No"
 
-#: src/components/GoalForm.tsx:480
+#: src/components/GoalForm.tsx:483
 msgid "Numbers only"
 msgstr "Numbers only"
 
@@ -301,7 +308,7 @@ msgstr "Pick a date"
 
 #: src/components/NewEntryForm.tsx:91
 #: src/components/GoalStatusSummary.tsx:117
-#: src/components/GoalForm.tsx:275
+#: src/components/GoalForm.tsx:278
 msgid "Progress"
 msgstr "Progress"
 
@@ -333,17 +340,17 @@ msgstr "See you again!"
 
 #: src/components/GoalSorting.tsx:94
 msgid "Select sort..."
-msgstr ""
+msgstr "Select sort..."
 
-#: src/components/GoalForm.tsx:136
+#: src/components/GoalForm.tsx:139
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
-#: src/routes/_main/goals.new.tsx:155
+#: src/routes/_main/goals.new.tsx:161
 msgid "Set up your new goal. You can always edit it later."
 msgstr "Set up your new goal. You can always edit it later."
 
-#: src/components/GoalForm.tsx:366
+#: src/components/GoalForm.tsx:369
 msgid "Show extra options"
 msgstr "Show extra options"
 
@@ -379,11 +386,11 @@ msgstr "Sign Up"
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
-#: src/routes/_main/goals.lazy.tsx:56
+#: src/routes/_main/goals.lazy.tsx:57
 msgid "Sort by"
 msgstr "Sort by"
 
-#: src/components/GoalForm.tsx:375
+#: src/components/GoalForm.tsx:378
 msgid "Start date"
 msgstr "Start date"
 
@@ -391,7 +398,7 @@ msgstr "Start date"
 msgid "Start New"
 msgstr "Start New"
 
-#: src/routes/_main/goals.new.tsx:75
+#: src/routes/_main/goals.new.tsx:76
 msgid "Sucessfully added goal"
 msgstr "Sucessfully added goal"
 
@@ -413,15 +420,15 @@ msgstr "Syncing"
 msgid "Syncing your goals..."
 msgstr "Syncing your goals..."
 
-#: src/components/GoalForm.tsx:170
+#: src/components/GoalForm.tsx:173
 msgid "Target date"
 msgstr "Target date"
 
-#: src/components/GoalForm.tsx:186
+#: src/components/GoalForm.tsx:189
 msgid "Target date must be after start date"
 msgstr "Target date must be after start date"
 
-#: src/components/GoalForm.tsx:126
+#: src/components/GoalForm.tsx:129
 msgid "Target value"
 msgstr "Target value"
 
@@ -433,7 +440,7 @@ msgstr "There are no goals."
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:140
+#: src/components/CalendarHeatmap.tsx:143
 msgid "Today"
 msgstr "Today"
 
@@ -441,24 +448,24 @@ msgstr "Today"
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 
-#: src/components/GoalForm.tsx:317
+#: src/components/GoalForm.tsx:320
 msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
 msgstr "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
 
-#: src/components/GoalForm.tsx:260
+#: src/components/GoalForm.tsx:263
 msgid "Track how many times you complete something each day.<0/>E.g. '30 minutes of exercise' or 'drink 8 glasses of water'."
 msgstr "Track how many times you complete something each day.<0/>E.g. '30 minutes of exercise' or 'drink 8 glasses of water'."
 
-#: src/components/GoalForm.tsx:288
+#: src/components/GoalForm.tsx:291
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 
-#: src/components/GoalForm.tsx:215
+#: src/components/GoalForm.tsx:218
 msgid "Type"
 msgstr "Type"
 
-#: src/components/GoalForm.tsx:406
-#: src/components/GoalForm.tsx:416
+#: src/components/GoalForm.tsx:409
+#: src/components/GoalForm.tsx:419
 msgid "Unit"
 msgstr "Unit"
 
@@ -474,7 +481,7 @@ msgstr "New update available"
 msgid "Update now"
 msgstr "Install update"
 
-#: src/components/GoalForm.tsx:159
+#: src/components/GoalForm.tsx:162
 msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
 
@@ -496,7 +503,7 @@ msgstr "Welcome, {0}!"
 msgid "Yes"
 msgstr "Yes"
 
-#: src/components/GoalForm.tsx:303
+#: src/components/GoalForm.tsx:306
 msgid "Yes or no"
 msgstr "Yes or no"
 
