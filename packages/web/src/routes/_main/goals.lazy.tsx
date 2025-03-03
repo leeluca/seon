@@ -19,6 +19,7 @@ import { cn } from '~/utils';
 
 export const Route = createLazyFileRoute('/_main/goals')({
   component: Goals,
+  pendingComponent: () => <div>Loading...</div>,
 });
 
 function Goals() {

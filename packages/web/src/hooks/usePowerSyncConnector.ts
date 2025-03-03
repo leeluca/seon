@@ -13,9 +13,16 @@ export function usePowerSyncConnector() {
   const [connector, setConnector] = useState(new SupabaseConnector());
   const [powerSync] = useState(powerSyncDb);
 
-  // FIXME: run powerSync.disconnect() when isSignInVerified is false
+  const resetConnector = useCallback(() => {
+    setConnector(new SupabaseConnector());
+  }, []);
+
   useEffect(() => {
-    if (!isSignInVerified) return;
+    if (!isSignInVerified) {
+      powerSync.disconnect();
+      resetConnector();
+      return;
+    }
     // eslint-disable-next-line react-hooks/rules-of-hooks
     Logger.useDefaults();
     Logger.setLevel(Logger.DEBUG);
@@ -39,11 +46,9 @@ export function usePowerSyncConnector() {
     });
     initializeConnector();
     return () => listener();
-  }, [isSignInVerified, connector, powerSync]);
+  }, [isSignInVerified, connector, powerSync, resetConnector]);
 
-  const resetConnector = useCallback(() => {
-    setConnector(new SupabaseConnector());
-  }, []);
+
 
   return useMemo(
     () => ({
