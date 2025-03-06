@@ -10,3 +10,4 @@ dev.db*
 dist
 .DS_Store
 dev-dist
+coverage

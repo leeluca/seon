@@ -1,64 +1,58 @@
-import { describe, expect, it, vi } from 'vitest';
+import type { Context } from 'hono';
+import { beforeAll, describe, expect, it, vi } from 'vitest';
 
 import {
   createJWTConfigs,
   getCookieConfig,
   initJWTKeys,
+  setJWTCookie,
   signJWT,
   signJWTWithPayload,
   verifyJWT,
+  type JWTTypeConfig,
 } from '../../../src/services/jwt.js';
+import { TEST_USER } from '../../utils/constants.js';
 import {
-  MOCK_JWT_CONFIGS,
-  MOCK_JWT_KEYS,
-  MOCK_JWT_PAYLOAD,
-  MOCK_TOKENS,
-  TEST_USER,
-} from '../../utils/constants.js';
-import { mockJwtConfig } from '../../utils/mock.js';
+  createInvalidJWTConfig,
+  createJWTTestData,
+  type TestJWTData,
+} from '../../utils/jwt-test-utils.js';
 
-// FIXME: provide valid keys to test without mocking
-// Mock the entire jwt module
-vi.mock('../../../src/services/jwt.js', () => {
+function createCookieMockContext(): Context {
+  const headers = new Headers();
+
   return {
-    initJWTKeys: vi.fn().mockImplementation(async (config) => {
-      if (config.privateKey === 'invalid-key') {
-        throw new Error('Failed to initialize JWT keys');
-      }
-      return { ...MOCK_JWT_KEYS };
-    }),
-    createJWTConfigs: vi
-      .fn()
-      .mockImplementation(() => ({ ...MOCK_JWT_CONFIGS })),
-    signJWT: vi.fn().mockImplementation(() => 'mocked-jwt-token'),
-    signJWTWithPayload: vi.fn().mockImplementation(() => ({
-      token: 'mocked-jwt-token',
-      payload: { ...MOCK_JWT_PAYLOAD },
-    })),
-    verifyJWT: vi.fn().mockImplementation((token) => {
-      if (token === MOCK_TOKENS.invalid) {
-        return null;
-      }
-      return { ...MOCK_JWT_PAYLOAD };
-    }),
-    getCookieConfig: vi
-      .fn()
-      .mockImplementation((jwtType: keyof typeof MOCK_JWT_CONFIGS) => ({
-        name: MOCK_JWT_CONFIGS[jwtType].cookieName,
-        options: {
-          maxAge: MOCK_JWT_CONFIGS[jwtType].expiration,
-          expires: new Date(
-            Date.now() + MOCK_JWT_CONFIGS[jwtType].expiration * 1000,
-          ),
-        },
-      })),
-  };
-});
+    req: {
+      raw: new Request('https://example.com'),
+      header: (name: string) => headers.get(name),
+      headers,
+    },
+    env: () => '',
+    get: (key: string) => undefined,
+    set: () => {},
+    var: {},
+    res: {
+      headers: new Headers(),
+      header: (name: string, value: string) => {
+        headers.set(name, value);
+        return;
+      },
+    },
+  } as unknown as Context;
+}
 
 describe('JWT Service', () => {
+  let jwtTestData: TestJWTData;
+  let jwtConfigs: Record<string, JWTTypeConfig>;
+
+  beforeAll(async () => {
+    jwtTestData = await createJWTTestData();
+    jwtConfigs = createJWTConfigs(jwtTestData.keys, jwtTestData.config);
+  });
+
   describe('initJWTKeys', () => {
-    it('should initialize JWT keys from config', async () => {
-      const keys = await initJWTKeys(mockJwtConfig);
+    it('should initialize JWT keys from properly encoded config strings', async () => {
+      const keys = await initJWTKeys(jwtTestData.config);
 
       expect(keys).toHaveProperty('jwtPrivateKey');
       expect(keys).toHaveProperty('jwtPublicKey');
@@ -69,7 +63,7 @@ describe('JWT Service', () => {
     });
 
     it('should throw an error if keys are invalid', async () => {
-      const invalidConfig = { ...mockJwtConfig, privateKey: 'invalid-key' };
+      const invalidConfig = createInvalidJWTConfig();
 
       await expect(initJWTKeys(invalidConfig)).rejects.toThrow(
         'Failed to initialize JWT keys',
@@ -79,42 +73,45 @@ describe('JWT Service', () => {
 
   describe('createJWTConfigs', () => {
     it('should create JWT configs with correct values', async () => {
-      const keys = await initJWTKeys(mockJwtConfig);
-      const configs = createJWTConfigs(keys, mockJwtConfig);
+      expect(jwtConfigs).toHaveProperty('access');
+      expect(jwtConfigs).toHaveProperty('refresh');
+      expect(jwtConfigs).toHaveProperty('db_access');
 
-      expect(configs).toHaveProperty('access');
-      expect(configs).toHaveProperty('refresh');
-      expect(configs).toHaveProperty('db_access');
+      expect(jwtConfigs.access.algorithm).toBe('RS256');
+      expect(jwtConfigs.refresh.algorithm).toBe('HS256');
+      expect(jwtConfigs.db_access.algorithm).toBe('HS256');
 
-      expect(configs.access.algorithm).toBe('RS256');
-      expect(configs.refresh.algorithm).toBe('HS256');
-      expect(configs.db_access.algorithm).toBe('HS256');
+      // Check that the keys were properly assigned
+      expect(jwtConfigs.access.signingKey).toBe(jwtTestData.keys.jwtPrivateKey);
+      expect(jwtConfigs.access.verificationKey).toBe(
+        jwtTestData.keys.jwtPublicKey,
+      );
+      expect(jwtConfigs.refresh.signingKey).toBe(
+        jwtTestData.keys.jwtRefreshSecret,
+      );
+      expect(jwtConfigs.db_access.signingKey).toBe(
+        jwtTestData.keys.jwtDbPrivateKey,
+      );
     });
   });
 
   describe('signJWT and verifyJWT', () => {
     it('should sign and verify a JWT token', async () => {
       const userId = TEST_USER.id;
-      const keys = await initJWTKeys(mockJwtConfig);
-      const configs = createJWTConfigs(keys, mockJwtConfig);
 
-      // Sign a token
-      const token = await signJWT(userId, 'access', configs);
-      expect(token).toBe('mocked-jwt-token');
+      const token = await signJWT(userId, 'access', jwtConfigs);
+      expect(token).toBeTypeOf('string');
+      expect(token.split('.').length).toBe(3); // JWT format: header.payload.signature
 
-      // Verify the token
-      const payload = await verifyJWT(token, 'access', configs);
+      const payload = await verifyJWT(token, 'access', jwtConfigs);
       expect(payload).toBeTruthy();
       expect(payload?.sub).toBe(userId);
       expect(payload?.aud).toBe('authenticated');
     });
 
     it('should return null for an invalid token', async () => {
-      const keys = await initJWTKeys(mockJwtConfig);
-      const configs = createJWTConfigs(keys, mockJwtConfig);
-
-      const invalidToken = MOCK_TOKENS.invalid;
-      const payload = await verifyJWT(invalidToken, 'access', configs);
+      const invalidToken = 'invalid.token.format';
+      const payload = await verifyJWT(invalidToken, 'access', jwtConfigs);
 
       expect(payload).toBeNull();
     });
@@ -123,30 +120,55 @@ describe('JWT Service', () => {
   describe('signJWTWithPayload', () => {
     it('should sign a JWT and return both token and payload', async () => {
       const userId = TEST_USER.id;
-      const keys = await initJWTKeys(mockJwtConfig);
-      const configs = createJWTConfigs(keys, mockJwtConfig);
 
-      const result = await signJWTWithPayload(userId, 'access', configs);
+      const result = await signJWTWithPayload(userId, 'access', jwtConfigs);
 
       expect(result).toHaveProperty('token');
       expect(result).toHaveProperty('payload');
       expect(result.payload.sub).toBe(userId);
       expect(result.payload.aud).toBe('authenticated');
       expect(result.payload.exp).toBeGreaterThan(Math.floor(Date.now() / 1000));
+
+      const verifiedPayload = await verifyJWT(
+        result.token,
+        'access',
+        jwtConfigs,
+      );
+      expect(verifiedPayload).toMatchObject(result.payload);
     });
   });
 
   describe('getCookieConfig', () => {
     it('should return the correct cookie configuration', async () => {
-      const keys = await initJWTKeys(mockJwtConfig);
-      const configs = createJWTConfigs(keys, mockJwtConfig);
-
-      const accessCookieConfig = getCookieConfig('access', configs);
+      const accessCookieConfig = getCookieConfig('access', jwtConfigs);
 
       expect(accessCookieConfig).toHaveProperty('name');
       expect(accessCookieConfig).toHaveProperty('options');
-      expect(accessCookieConfig.name).toBe(MOCK_JWT_CONFIGS.access.cookieName);
+      expect(accessCookieConfig.name).toBe('access_token');
       expect(accessCookieConfig.options).toHaveProperty('maxAge');
+      expect(accessCookieConfig.options.maxAge).toBe(900);
+    });
+  });
+
+  describe('setJWTCookie', () => {
+    it('should set a cookie with the correct name and options', async () => {
+      const token = await signJWT(TEST_USER.id, 'access', jwtConfigs);
+
+      const c = createCookieMockContext();
+
+      vi.mock('hono/cookie', () => ({
+        setCookie: vi.fn().mockImplementation((ctx, name, value, options) => {
+          const cookieValue = `${name}=${value}; Max-Age=${options.maxAge}`;
+          ctx.res.headers.set('Set-Cookie', cookieValue);
+        }),
+      }));
+
+      setJWTCookie(c, 'access', token, jwtConfigs);
+
+      const setCookie = c.res.headers.get('Set-Cookie');
+      expect(setCookie).toBeTruthy();
+      expect(setCookie).toContain('access_token=');
+      expect(setCookie).toContain('Max-Age=900');
     });
   });
 });
