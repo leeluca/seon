@@ -6,24 +6,19 @@ if (process.loadEnvFile) {
   console.warn('process.loadEnvFile not available, skipping .env loading');
 }
 
-// TODO: improve db reset logic to enable concurrent tests
 export default defineConfig({
   test: {
-    environment: 'node',
     include: ['test/integration/**/*.test.ts'],
+    environment: 'node',
     globals: true,
-    // Higher timeout for integration tests
-    testTimeout: 10000,
-    // Prevent concurrent test execution
-    fileParallelism: false,
-    // Isolate test environments
-    isolate: true,
-
-    pool: 'forks',
+    testTimeout: 30000,
+    hookTimeout: 30000,
+    sequence: {
+      hooks: 'list',
+    },
     poolOptions: {
-      forks: {
-        // Only use a single fork
-        singleFork: true,
+      threads: {
+        singleThread: true, // Run tests in single thread to avoid DB conflicts
       },
     },
   },
