@@ -49,14 +49,7 @@ export const user = pgTable(
     }>(),
   },
   (table) => [
-    uniqueIndex('user_email_key').using(
-      'btree',
-      table.email.asc().nullsLast(),
-    ),
-    uniqueIndex('user_name_key').using(
-      'btree',
-      table.name.asc().nullsLast(),
-    ),
+    uniqueIndex('user_email_key').using('btree', table.email.asc().nullsLast()),
     uniqueIndex('user_shortId_key').using(
       'btree',
       table.shortId.asc().nullsLast(),
@@ -162,7 +155,7 @@ export const refreshToken = pgTable(
   'refresh_token',
   {
     id: serial('id').primaryKey().notNull(),
-    token: text('token').unique().notNull(),
+    token: text('token').notNull(),
     userId: uuid('userId').notNull(),
     expiration: timestamp('expiration', {
       precision: 3,

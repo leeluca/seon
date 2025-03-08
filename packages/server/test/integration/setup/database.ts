@@ -18,17 +18,21 @@ export async function setupTestDatabase() {
     throw new Error('TEST_DB_URL environment variable is not set');
   }
 
+  // Save original DB_URL to restore it later
+  process.env.ORIGINAL_DB_URL = process.env.DB_URL;
+  
+  // Override DB_URL to prevent tests from writing to production DB
+  process.env.DB_URL = dbUrl;
+
   const client = postgres(dbUrl, { prepare: false });
   const db = drizzle(client, { schema });
 
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  const migrationsFolder = path.join(__dirname, '../../../src/db/migrations');
+  const migrationsFolder = path.join(__dirname, './migrations');
 
-  // Apply migrations to ensure the database schema is up to date
   await migrate(db, { migrationsFolder });
 
   const cleanupData = async () => {
-    // Delete all data from tables in reverse order to avoid foreign key constraints
     try {
       // Disable triggers temporarily to avoid foreign key constraint issues
       await client.unsafe('SET session_replication_role = replica;');
@@ -52,6 +56,11 @@ export async function setupTestDatabase() {
     try {
       await cleanupData();
     } finally {
+      // Restore original DB_URL if it was saved
+      if (process.env.ORIGINAL_DB_URL) {
+        process.env.DB_URL = process.env.ORIGINAL_DB_URL;
+        console.log('Restored original DB_URL');
+      }
       await client.end();
     }
   };
