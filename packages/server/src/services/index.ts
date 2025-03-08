@@ -107,35 +107,62 @@ function createAuthService(
 
   const saveNewRefreshToken = async (
     userId: string,
-    newRefreshToken: string,
+    initialRefreshToken: string,
     envConfig: JWTConfigEnv,
     oldRefreshToken?: string,
   ) => {
     const refreshExpiration = Number.parseInt(envConfig.refreshExpiration, 10);
     const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
+    const maxAttempts = 3;
+    let currentAttempt = 1;
+    let currentToken = initialRefreshToken;
 
-    try {
-      const dbClient = deps.getDatabase(dbUrl);
+    while (currentAttempt <= maxAttempts) {
+      try {
+        const dbClient = deps.getDatabase(dbUrl);
 
-      await dbClient.transaction(async (tx) => {
-        // Only delete the specific old token if provided
-        if (oldRefreshToken) {
-          await tx
-            .delete(refreshTokensTable)
-            .where(eq(refreshTokensTable.token, oldRefreshToken));
+        await dbClient.transaction(async (tx) => {
+          if (oldRefreshToken) {
+            await tx
+              .delete(refreshTokensTable)
+              .where(eq(refreshTokensTable.token, oldRefreshToken));
+          }
+
+          await tx.insert(refreshTokensTable).values({
+            userId: userId,
+            token: currentToken,
+            expiration: new Date(Date.now() + refreshExpiration * 1000),
+          });
+        });
+        console.log(`Refresh token saved successfully for user: ${userId}`);
+        return;
+      } catch (error: unknown) {
+        const errorObj = error as { message?: string; code?: string };
+        const isUniqueViolation =
+          errorObj.message?.includes('refresh_token_token_unique') ||
+          errorObj.code === '23505'; // PostgreSQL unique violation code
+
+        if (isUniqueViolation && currentAttempt < maxAttempts) {
+          console.log(
+            `Token collision detected, regenerating (attempt ${currentAttempt}/${maxAttempts})...`,
+          );
+          currentAttempt++;
+
+          const result = await signTokenWithPayload(userId, 'refresh');
+          currentToken = result.token;
+          continue;
         }
 
-        // Insert the new token
-        await tx.insert(refreshTokensTable).values({
-          userId: userId,
-          token: newRefreshToken,
-          expiration: new Date(Date.now() + refreshExpiration * 1000),
-        });
-      });
-      console.log(`Refresh token saved successfully for user: ${userId}`);
-    } catch (error) {
-      console.error('Error saving refresh token:', error);
-      throw new Error('Failed to save refresh token');
+        console.error('Error saving refresh token:', error);
+
+        if (isUniqueViolation) {
+          throw new Error(
+            `Failed to generate unique refresh token after ${maxAttempts} attempts`,
+          );
+        }
+
+        throw new Error('Failed to save refresh token');
+      }
     }
   };
 
@@ -147,7 +174,6 @@ function createAuthService(
     return deps.jwtUtils.signTokenWithPayload(userId, jwtType, configs);
   };
 
-  // Now create the complete service object
   return {
     verifyRefreshToken,
     signTokenWithPayload,
@@ -158,7 +184,6 @@ function createAuthService(
       c: Context,
       configs: Record<string, JWTTypeConfig> = jwtConfigs,
     ) => {
-      // Use the locally defined function directly
       const { refreshToken, refreshPayload } = await verifyRefreshToken(
         c,
         configs,
@@ -174,23 +199,6 @@ function createAuthService(
       try {
         const dbClient = deps.getDatabase(env(c).DB_URL);
 
-        // First try a simple query without joins to check if token exists
-        const simpleTokenCheck = await dbClient
-          .select()
-          .from(refreshTokensTable)
-          .where(eq(refreshTokensTable.token, refreshToken))
-          .limit(1);
-
-        console.log(
-          `Simple token check results: ${simpleTokenCheck.length > 0 ? 'Token found' : 'Token not found'}`,
-        );
-
-        if (simpleTokenCheck.length === 0) {
-          console.log('Refresh token not found in database');
-          return { refreshToken: null, refreshPayload: null };
-        }
-
-        // Now get the full user data with a join
         const savedRefreshToken = await dbClient
           .select()
           .from(refreshTokensTable)
@@ -230,14 +238,10 @@ function createAuthService(
       T extends true ? { token: string; payload: JWTTokenPayload } : string
     > => {
       try {
-        console.log(`Generating new refresh token for user: ${userId}`);
-
         const { token: newRefreshToken, payload } = await signTokenWithPayload(
           userId,
           'refresh',
         );
-
-        console.log('Token generated, saving to database...');
 
         await saveNewRefreshToken(
           userId,
@@ -245,8 +249,6 @@ function createAuthService(
           envConfig,
           oldRefreshToken,
         );
-
-        console.log(`Refresh token process completed for user: ${userId}`);
 
         if (shouldReturnPayload) {
           return { token: newRefreshToken, payload } as T extends true

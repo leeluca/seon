@@ -184,18 +184,21 @@ auth.get('/refresh', async (c) => {
     });
   }
 
-  const { token: newRefreshToken, payload } =
-    await authService.issueRefreshToken(
+  const [newRefreshToken, newAccessToken] = await Promise.all([
+    authService.issueRefreshToken(
       refreshPayload.sub,
       jwtConfigEnv,
       refreshToken,
-    );
+    ),
+    authService.signToken(refreshPayload.sub, 'access'),
+  ]);
 
-  authService.setJWTCookie(c, 'refresh', newRefreshToken);
+  authService.setJWTCookie(c, 'refresh', newRefreshToken.token);
+  authService.setJWTCookie(c, 'access', newAccessToken);
 
   return c.json({
     result: true,
-    expiresAt: payload.exp,
+    expiresAt: newRefreshToken.payload.exp,
   });
 });
 
