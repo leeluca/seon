@@ -238,7 +238,6 @@ function createAuthService(
       T extends true ? { token: string; payload: JWTTokenPayload } : string
     > => {
       try {
-
         const { token: newRefreshToken, payload } = await signTokenWithPayload(
           userId,
           'refresh',
