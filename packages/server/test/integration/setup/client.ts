@@ -25,26 +25,38 @@ export class TestClient {
       credentials: 'include',
     });
 
-    const setCookieHeader = response.headers.get('Set-Cookie');
-    if (setCookieHeader) {
-      const [cookiePart] = setCookieHeader.split(';');
+    this.processSetCookieHeaders(response);
+
+    return response;
+  }
+
+  private processSetCookieHeaders(response: Response) {
+    const cookieHeaders: string[] = [];
+
+    response.headers.forEach((value, key) => {
+      if (key.toLowerCase() === 'set-cookie') {
+        cookieHeaders.push(value);
+      }
+    });
+
+    for (const cookieStr of cookieHeaders) {
+      const [cookiePart] = cookieStr.split(';');
       const [name, value] = cookiePart.split('=');
       if (name && value) {
         this.cookies.set(name, value);
       }
-    } else {
-      response.headers.forEach((value, key) => {
-        if (key.toLowerCase() === 'set-cookie') {
-          const [cookiePart] = value.split(';');
-          const [name, cookieValue] = cookiePart.split('=');
-          if (name && cookieValue) {
-            this.cookies.set(name, cookieValue);
-          }
-        }
-      });
     }
 
-    return response;
+    if (cookieHeaders.length === 0) {
+      const setCookieHeader = response.headers.get('Set-Cookie');
+      if (setCookieHeader) {
+        const [cookiePart] = setCookieHeader.split(';');
+        const [name, value] = cookiePart.split('=');
+        if (name && value) {
+          this.cookies.set(name, value);
+        }
+      }
+    }
   }
 
   async get(path: string, options: RequestInit = {}) {
@@ -69,6 +81,10 @@ export class TestClient {
 
   clearCookies() {
     this.cookies.clear();
+  }
+
+  deleteCookie(name: string) {
+    this.cookies.delete(name);
   }
 
   getCookies() {

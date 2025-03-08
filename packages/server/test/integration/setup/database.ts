@@ -20,7 +20,7 @@ export async function setupTestDatabase() {
 
   // Save original DB_URL to restore it later
   process.env.ORIGINAL_DB_URL = process.env.DB_URL;
-  
+
   // Override DB_URL to prevent tests from writing to production DB
   process.env.DB_URL = dbUrl;
 
@@ -56,10 +56,8 @@ export async function setupTestDatabase() {
     try {
       await cleanupData();
     } finally {
-      // Restore original DB_URL if it was saved
       if (process.env.ORIGINAL_DB_URL) {
         process.env.DB_URL = process.env.ORIGINAL_DB_URL;
-        console.log('Restored original DB_URL');
       }
       await client.end();
     }
