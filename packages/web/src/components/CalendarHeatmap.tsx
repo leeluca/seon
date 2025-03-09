@@ -245,6 +245,7 @@ const CalendarHeatmap = ({
         virtualRef={popoverAnchorRef}
         trigger={null}
         contentClassName={isMobile ? '' : 'w-fit max-w-72'}
+        dialogTitle={`Add entry for ${goal?.title}`}
       >
         <NewEntryForm
           goalId={goalId}

@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
-import { Dialog, DialogContent, DialogTrigger } from './dialog';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './dialog';
 import {
   Popover,
   PopoverAnchor,
@@ -27,6 +27,7 @@ interface ResponsivePopoverProps {
     | React.RefObject<Element>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
+  dialogTitle?: string;
 }
 
 export function ResponsivePopover({
@@ -38,6 +39,7 @@ export function ResponsivePopover({
   open,
   onOpenChange,
   virtualRef,
+  dialogTitle,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
 
@@ -51,6 +53,7 @@ export function ResponsivePopover({
           className={cn('sm:max-w-[425px]', contentClassName)}
           {...contentProps}
         >
+          <DialogTitle>{dialogTitle}</DialogTitle>
           {children}
         </DialogContent>
       </Dialog>
