@@ -124,7 +124,6 @@ function SignUpForm({ onSignUpCallback }: SignInFormProps) {
                     value={value}
                     onChange={(e) => field.handleChange(e.target.value)}
                     maxLength={100}
-                    autoFocus
                   />
                 </div>
               </FormError.Wrapper>

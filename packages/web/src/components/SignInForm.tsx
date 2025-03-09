@@ -9,11 +9,12 @@ import usePostSignIn, {
 } from '~/apis/hooks/usePostSignIn';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { useIsOnline } from '~/states/isOnlineContext';
+import { cn } from '~/utils';
 import { emailValidator } from '~/utils/validation';
 import FormError from './FormError';
 import FormItem from './FormItem';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Button } from './ui/button';
+import { Button, buttonVariants } from './ui/button';
 import { Input } from './ui/input';
 
 interface SignInFormProps {
@@ -102,7 +103,6 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                     onBlur={field.handleBlur}
                     maxLength={100}
                     autoComplete="username"
-                    autoFocus
                   />
                 </div>
               </FormError.Wrapper>
@@ -175,7 +175,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         ]}
       >
         {([isSubmitting, isSubmitDisabled, isTouched]) => (
-          <div className="mt-4 flex w-full flex-col items-center gap-4">
+          <div className="mt-4 flex w-full flex-col items-center gap-2">
             <div
               onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}
@@ -192,16 +192,21 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 <Trans>Sign In</Trans>
               </Button>
             </div>
-            <Link
-              to="/signup"
-              className="text-muted-foreground text-sm"
-              preload="intent"
-            >
-              <Trans>Create account</Trans>
-            </Link>
           </div>
         )}
       </form.Subscribe>
+      <Link
+        to="/signup"
+        className={cn(
+          'text-muted-foreground w-64 justify-self-center text-sm',
+          buttonVariants({
+            variant: 'ghost',
+          }),
+        )}
+        preload="intent"
+      >
+        <Trans>Create account</Trans>
+      </Link>
     </form>
   );
 }
