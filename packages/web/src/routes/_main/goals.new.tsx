@@ -3,7 +3,6 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { add, startOfDay } from 'date-fns';
-import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
