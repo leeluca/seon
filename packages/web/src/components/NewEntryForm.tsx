@@ -288,6 +288,8 @@ const NewEntryForm = ({
                     value,
                     meta: { errors },
                   } = field.state;
+                  const showPreviousValueHelper =
+                    !entryId && value === previousValue && !!previousValue;
                   return (
                     <FormError.Wrapper
                       errors={errors}
@@ -295,47 +297,67 @@ const NewEntryForm = ({
                     >
                       <div className="col-span-2">
                         {isMobile ? (
-                          <NumberInput.Root
-                            value={value}
-                            onChange={(e) => {
-                              field.handleChange(Number(e.target.value));
-                            }}
-                            min={0}
-                            max={MAX_INPUT_NUMBER}
-                          >
-                            <NumberInput.Button
-                              direction="dec"
-                              className="rounded-r-none"
-                            />
-                            <NumberInput.Field
-                              id="entry-value"
-                              autoFocus={!isMobile && !isTouchScreen}
-                              className="rounded-none"
-                            />
-                            <NumberInput.Button
-                              direction="inc"
-                              className="rounded-l-none"
-                            />
-                          </NumberInput.Root>
+                          <div className="relative">
+                            {showPreviousValueHelper && (
+                              <span className="text-muted-foreground pointer-events-none absolute left-14 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                                {t`Last:`}&nbsp;
+                              </span>
+                            )}
+                            <NumberInput.Root
+                              value={value}
+                              onChange={(e) => {
+                                field.handleChange(Number(e.target.value));
+                              }}
+                              min={0}
+                              max={MAX_INPUT_NUMBER}
+                            >
+                              <NumberInput.Button
+                                direction="dec"
+                                className="rounded-r-none"
+                              />
+                              <NumberInput.Field
+                                id="entry-value"
+                                autoFocus={!isMobile && !isTouchScreen}
+                                className={cn(
+                                  'rounded-none',
+                                  showPreviousValueHelper && 'pl-[39px]',
+                                )}
+                              />
+                              <NumberInput.Button
+                                direction="inc"
+                                className="rounded-l-none"
+                              />
+                            </NumberInput.Root>
+                          </div>
                         ) : (
-                          <NumberInput.Root
-                            value={value}
-                            onChange={(e) => {
-                              field.handleChange(Number(e.target.value));
-                            }}
-                            min={0}
-                            max={MAX_INPUT_NUMBER}
-                            buttonStacked
-                          >
-                            <NumberInput.Field
-                              id="entry-value"
-                              autoFocus={!isMobile && !isTouchScreen}
-                            />
-                            <div className="flex flex-col">
-                              <NumberInput.Button direction="inc" />
-                              <NumberInput.Button direction="dec" />
-                            </div>
-                          </NumberInput.Root>
+                          <div className="relative">
+                            {showPreviousValueHelper && (
+                              <span className="text-muted-foreground pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                                {t`Last:`}&nbsp;
+                              </span>
+                            )}
+                            <NumberInput.Root
+                              value={value}
+                              onChange={(e) => {
+                                field.handleChange(Number(e.target.value));
+                              }}
+                              min={0}
+                              max={MAX_INPUT_NUMBER}
+                              buttonStacked
+                            >
+                              <NumberInput.Field
+                                id="entry-value"
+                                autoFocus={!isMobile && !isTouchScreen}
+                                className={cn(
+                                  showPreviousValueHelper && 'pl-[39px]',
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <NumberInput.Button direction="inc" />
+                                <NumberInput.Button direction="dec" />
+                              </div>
+                            </NumberInput.Root>
+                          </div>
                         )}
                       </div>
                     </FormError.Wrapper>
