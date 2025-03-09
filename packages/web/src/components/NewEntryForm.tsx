@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
@@ -86,11 +87,6 @@ async function handleSubmit(
   }
 }
 
-const goalTypeTitle = {
-  COUNT: t`Amount`,
-  PROGRESS: t`Progress`,
-  BOOLEAN: t`Did you achieve it?`,
-};
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
@@ -121,6 +117,15 @@ const NewEntryForm = ({
     (goalType === 'PROGRESS' &&
       findPreviousEntry(orderedEntries, date)?.value) ||
     0;
+
+  const goalTypeTitle = useMemo(
+    () => ({
+      COUNT: t`Amount`,
+      PROGRESS: t`Progress`,
+      BOOLEAN: t`Did you achieve it?`,
+    }),
+    [t],
+  );
 
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
