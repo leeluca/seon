@@ -102,6 +102,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                     onBlur={field.handleBlur}
                     maxLength={100}
                     autoComplete="username"
+                    autoFocus
                   />
                 </div>
               </FormError.Wrapper>
@@ -174,7 +175,7 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         ]}
       >
         {([isSubmitting, isSubmitDisabled, isTouched]) => (
-          <div className="mt-4 flex w-full flex-col items-center gap-2">
+          <div className="mt-4 flex w-full flex-col items-center gap-4">
             <div
               onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}

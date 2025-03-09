@@ -180,7 +180,7 @@ function NewGoalDialog() {
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}
                 className={cn('col-start-4', {
-                  'cursor-not-allowed': isSubmitDisabled,
+                  'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                 })}
               >
                 <Button
@@ -189,9 +189,6 @@ function NewGoalDialog() {
                   form={GOAL_FORM_ID}
                   size="lg"
                 >
-                  {isSubmitting && (
-                    <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
-                  )}
                   <Trans>Create goal</Trans>
                 </Button>
               </div>
