@@ -99,9 +99,10 @@ const CalendarHeatmap = ({
   const isSameWeek = checkIsSameWeek(new Date(), currentWeekStart);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
-  const [selectedDateValue, setSelectedDateValue] = useState<
-    [Date | undefined, number]
-  >([new Date(), 0]);
+  const [selectedDateValue, setSelectedDateValue] = useState<[Date?, number?]>([
+    new Date(),
+    undefined,
+  ]);
   const popoverAnchorRef = useRef<HTMLElement | null>(null);
 
   const timeoutRef = useRef<NodeJS.Timeout>();
@@ -115,7 +116,7 @@ const CalendarHeatmap = ({
 
     if (!isPopoverOpen && selectedDateValue[0]) {
       timeoutRef.current = setTimeout(
-        () => setSelectedDateValue([undefined, 0]),
+        () => setSelectedDateValue([undefined, undefined]),
         150,
       );
     }
@@ -162,7 +163,15 @@ const CalendarHeatmap = ({
           const isPast = !isToday && checkIsPast(day);
 
           return (
-            <div key={stringDate} className="flex flex-col">
+            <div
+              key={stringDate}
+              className="flex flex-col"
+              ref={(el) => {
+                if (day.getTime() === selectedDateValue[0]?.getTime()) {
+                  popoverAnchorRef.current = el;
+                }
+              }}
+            >
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
 
               {(!!entryValue && !isTouchScreen) ||
@@ -188,9 +197,8 @@ const CalendarHeatmap = ({
                     })}
                     disabled={isBlocked}
                     aria-label={`Add entry for ${format(day, 'd')}`}
-                    onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                      popoverAnchorRef.current = e.currentTarget;
-                      setSelectedDateValue(() => [day, entryValue ?? 0]);
+                    onClick={() => {
+                      setSelectedDateValue(() => [day, entryValue]);
                       setIsPopoverOpen(true);
                     }}
                   >
@@ -211,9 +219,8 @@ const CalendarHeatmap = ({
                   })}
                   disabled={isBlocked}
                   aria-label={`Add entry for ${format(day, 'd')}`}
-                  onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                    popoverAnchorRef.current = e.currentTarget;
-                    setSelectedDateValue(() => [day, entryValue ?? 0]);
+                  onClick={() => {
+                    setSelectedDateValue(() => [day, entryValue]);
                     setIsPopoverOpen(true);
                   }}
                 >

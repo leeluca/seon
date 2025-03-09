@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { t } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,7 +20,7 @@ import FormItem from './FormItem';
 import { NumberInput } from './ui/number-input';
 
 async function deleteEntry(id: string, callback?: () => void) {
-  await db.deleteFrom('entry').where('id', '=', id).execute();
+  void db.deleteFrom('entry').where('id', '=', id).execute();
   callback?.();
 }
 
@@ -113,10 +112,14 @@ const NewEntryForm = ({
   const queryClient = useQueryClient();
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
-  const previousValue =
-    (goalType === 'PROGRESS' &&
-      findPreviousEntry(orderedEntries, date)?.value) ||
-    0;
+
+  const previousValue = useMemo(() => {
+    return (
+      (goalType === 'PROGRESS' &&
+        findPreviousEntry(orderedEntries, date)?.value) ||
+      0
+    );
+  }, [goalType, orderedEntries, date]);
 
   const goalTypeTitle = useMemo(
     () => ({
@@ -137,7 +140,7 @@ const NewEntryForm = ({
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
-      value: value || previousValue,
+      value: value ?? previousValue,
     },
     validators: {
       onChange({ value }) {
@@ -345,29 +348,34 @@ const NewEntryForm = ({
             <form.Subscribe
               selector={(state) => [
                 state.isSubmitting,
-                !state.isTouched || !state.canSubmit || state.isSubmitting,
+                !state.canSubmit || state.isSubmitting,
               ]}
             >
               {([isSubmitting, isSubmitDisabled]) => (
                 <div
                   className={cn('mt-1 grid grid-cols-3 gap-2', {
-                    'cursor-not-allowed': isSubmitDisabled,
+                    'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                     'mt-2': isMobile,
                   })}
                 >
-                  {/* FIXME: apply cursor-not-allowed to delete button individually */}
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="col-span-1"
-                    disabled={!entryId}
-                    onClick={() =>
-                      entryId && void deleteEntry(entryId, onSubmitCallback)
-                    }
-                    size={isMobile ? 'lg' : 'default'}
+                  <div
+                    className={cn('col-span-1', {
+                      'cursor-not-allowed': !entryId,
+                    })}
                   >
-                    <Trash2Icon size={18} />
-                  </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="w-full"
+                      disabled={!entryId}
+                      onClick={() =>
+                        entryId && void deleteEntry(entryId, onSubmitCallback)
+                      }
+                      size={isMobile ? 'lg' : 'default'}
+                    >
+                      <Trash2Icon size={18} />
+                    </Button>
+                  </div>
                   <Button
                     type="submit"
                     disabled={isSubmitDisabled}
