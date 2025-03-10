@@ -3,7 +3,7 @@ import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import LanguageSelector from '~/components/LanguageSelector';
+// import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
@@ -72,9 +72,10 @@ function Index() {
           </div>
         </div>
       </div>
-      <div className="absolute bottom-0 mb-1 px-6 py-4 xl:p-8">
-        <LanguageSelector />
-      </div>
+      {/* FIXME: does not work if the user is not initialized */}
+      {/* <div className="absolute bottom-0 mb-1 px-6 py-4 xl:p-8"> */}
+      {/* <LanguageSelector /> */}
+      {/* </div> */}
     </div>
   );
 }

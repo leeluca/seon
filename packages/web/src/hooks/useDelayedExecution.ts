@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const DEFAULT_TIMEOUT = 400;
+const DEFAULT_TIMEOUT = 700;
 
 type timeout = ReturnType<typeof setTimeout>;
 const useDelayedExecution = (

@@ -147,10 +147,12 @@ export function NumberInputRoot({ children, ...props }: NumberInputRootProps) {
 export interface NumberInputFieldProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   inputRef?: React.Ref<HTMLInputElement>;
+  className?: string;
 }
 
 export function NumberInputField({
   inputRef,
+  className,
   ...props
 }: NumberInputFieldProps) {
   const context = useContext(NumberInputContext);
@@ -180,7 +182,10 @@ export function NumberInputField({
       onBlur={handleBlur}
       onKeyDown={(e) => blockNonNumberInput(e)}
       ref={combinedRef}
-      className={buttonStacked ? 'focus-visible:z-[1] rounded-r-none' : ''}
+      className={cn(
+        buttonStacked ? 'rounded-r-none focus-visible:z-[1]' : '',
+        className,
+      )}
       {...props}
     />
   );

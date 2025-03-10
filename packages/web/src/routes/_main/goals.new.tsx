@@ -3,7 +3,6 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { add, startOfDay } from 'date-fns';
-import { LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
@@ -180,7 +179,7 @@ function NewGoalDialog() {
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}
                 className={cn('col-start-4', {
-                  'cursor-not-allowed': isSubmitDisabled,
+                  'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                 })}
               >
                 <Button
@@ -189,9 +188,6 @@ function NewGoalDialog() {
                   form={GOAL_FORM_ID}
                   size="lg"
                 >
-                  {isSubmitting && (
-                    <LoaderCircleIcon size={18} className="mr-2 animate-spin" />
-                  )}
                   <Trans>Create goal</Trans>
                 </Button>
               </div>

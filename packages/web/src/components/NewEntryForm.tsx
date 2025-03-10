@@ -1,4 +1,4 @@
-import { t } from '@lingui/core/macro';
+import { useMemo } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,7 +20,7 @@ import FormItem from './FormItem';
 import { NumberInput } from './ui/number-input';
 
 async function deleteEntry(id: string, callback?: () => void) {
-  await db.deleteFrom('entry').where('id', '=', id).execute();
+  void db.deleteFrom('entry').where('id', '=', id).execute();
   callback?.();
 }
 
@@ -86,11 +86,6 @@ async function handleSubmit(
   }
 }
 
-const goalTypeTitle = {
-  COUNT: t`Amount`,
-  PROGRESS: t`Progress`,
-  BOOLEAN: t`Did you achieve it?`,
-};
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
@@ -117,10 +112,23 @@ const NewEntryForm = ({
   const queryClient = useQueryClient();
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
-  const previousValue =
-    (goalType === 'PROGRESS' &&
-      findPreviousEntry(orderedEntries, date)?.value) ||
-    0;
+
+  const previousValue = useMemo(() => {
+    return (
+      (goalType === 'PROGRESS' &&
+        findPreviousEntry(orderedEntries, date)?.value) ||
+      0
+    );
+  }, [goalType, orderedEntries, date]);
+
+  const goalTypeTitle = useMemo(
+    () => ({
+      COUNT: t`Amount`,
+      PROGRESS: t`Progress`,
+      BOOLEAN: t`Did you achieve it?`,
+    }),
+    [t],
+  );
 
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
@@ -132,7 +140,7 @@ const NewEntryForm = ({
   const form = useForm<{ value?: number; date: Date }>({
     defaultValues: {
       date,
-      value: value || previousValue,
+      value: value ?? previousValue,
     },
     validators: {
       onChange({ value }) {
@@ -280,6 +288,8 @@ const NewEntryForm = ({
                     value,
                     meta: { errors },
                   } = field.state;
+                  const showPreviousValueHelper =
+                    !entryId && value === previousValue && !!previousValue;
                   return (
                     <FormError.Wrapper
                       errors={errors}
@@ -287,47 +297,67 @@ const NewEntryForm = ({
                     >
                       <div className="col-span-2">
                         {isMobile ? (
-                          <NumberInput.Root
-                            value={value}
-                            onChange={(e) => {
-                              field.handleChange(Number(e.target.value));
-                            }}
-                            min={0}
-                            max={MAX_INPUT_NUMBER}
-                          >
-                            <NumberInput.Button
-                              direction="dec"
-                              className="rounded-r-none"
-                            />
-                            <NumberInput.Field
-                              id="entry-value"
-                              autoFocus={!isMobile && !isTouchScreen}
-                              className="rounded-none"
-                            />
-                            <NumberInput.Button
-                              direction="inc"
-                              className="rounded-l-none"
-                            />
-                          </NumberInput.Root>
+                          <div className="relative">
+                            {showPreviousValueHelper && (
+                              <span className="text-muted-foreground pointer-events-none absolute left-14 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                                {t`Last:`}&nbsp;
+                              </span>
+                            )}
+                            <NumberInput.Root
+                              value={value}
+                              onChange={(e) => {
+                                field.handleChange(Number(e.target.value));
+                              }}
+                              min={0}
+                              max={MAX_INPUT_NUMBER}
+                            >
+                              <NumberInput.Button
+                                direction="dec"
+                                className="rounded-r-none"
+                              />
+                              <NumberInput.Field
+                                id="entry-value"
+                                autoFocus={!isMobile && !isTouchScreen}
+                                className={cn(
+                                  'rounded-none',
+                                  showPreviousValueHelper && 'pl-[39px]',
+                                )}
+                              />
+                              <NumberInput.Button
+                                direction="inc"
+                                className="rounded-l-none"
+                              />
+                            </NumberInput.Root>
+                          </div>
                         ) : (
-                          <NumberInput.Root
-                            value={value}
-                            onChange={(e) => {
-                              field.handleChange(Number(e.target.value));
-                            }}
-                            min={0}
-                            max={MAX_INPUT_NUMBER}
-                            buttonStacked
-                          >
-                            <NumberInput.Field
-                              id="entry-value"
-                              autoFocus={!isMobile && !isTouchScreen}
-                            />
-                            <div className="flex flex-col">
-                              <NumberInput.Button direction="inc" />
-                              <NumberInput.Button direction="dec" />
-                            </div>
-                          </NumberInput.Root>
+                          <div className="relative">
+                            {showPreviousValueHelper && (
+                              <span className="text-muted-foreground pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                                {t`Last:`}&nbsp;
+                              </span>
+                            )}
+                            <NumberInput.Root
+                              value={value}
+                              onChange={(e) => {
+                                field.handleChange(Number(e.target.value));
+                              }}
+                              min={0}
+                              max={MAX_INPUT_NUMBER}
+                              buttonStacked
+                            >
+                              <NumberInput.Field
+                                id="entry-value"
+                                autoFocus={!isMobile && !isTouchScreen}
+                                className={cn(
+                                  showPreviousValueHelper && 'pl-[39px]',
+                                )}
+                              />
+                              <div className="flex flex-col">
+                                <NumberInput.Button direction="inc" />
+                                <NumberInput.Button direction="dec" />
+                              </div>
+                            </NumberInput.Root>
+                          </div>
                         )}
                       </div>
                     </FormError.Wrapper>
@@ -340,29 +370,34 @@ const NewEntryForm = ({
             <form.Subscribe
               selector={(state) => [
                 state.isSubmitting,
-                !state.isTouched || !state.canSubmit || state.isSubmitting,
+                !state.canSubmit || state.isSubmitting,
               ]}
             >
               {([isSubmitting, isSubmitDisabled]) => (
                 <div
                   className={cn('mt-1 grid grid-cols-3 gap-2', {
-                    'cursor-not-allowed': isSubmitDisabled,
+                    'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                     'mt-2': isMobile,
                   })}
                 >
-                  {/* FIXME: apply cursor-not-allowed to delete button individually */}
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="col-span-1"
-                    disabled={!entryId}
-                    onClick={() =>
-                      entryId && void deleteEntry(entryId, onSubmitCallback)
-                    }
-                    size={isMobile ? 'lg' : 'default'}
+                  <div
+                    className={cn('col-span-1', {
+                      'cursor-not-allowed': !entryId,
+                    })}
                   >
-                    <Trash2Icon size={18} />
-                  </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      className="w-full"
+                      disabled={!entryId}
+                      onClick={() =>
+                        entryId && void deleteEntry(entryId, onSubmitCallback)
+                      }
+                      size={isMobile ? 'lg' : 'default'}
+                    >
+                      <Trash2Icon size={18} />
+                    </Button>
+                  </div>
                   <Button
                     type="submit"
                     disabled={isSubmitDisabled}
