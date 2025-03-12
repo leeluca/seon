@@ -1,13 +1,24 @@
 import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
-import { PowerSyncDatabase } from '@powersync/web';
+import {
+  PowerSyncDatabase,
+  WASQLiteOpenFactory,
+  WASQLiteVFS,
+} from '@powersync/web';
 
 import { AppSchema, type Database } from '~/lib/powersync/AppSchema';
 
 // NOTE: should be accessed through PowerSyncContext
 export const powerSyncDb = new PowerSyncDatabase({
   schema: AppSchema,
-  database: {
+  database: new WASQLiteOpenFactory({
     dbFilename: 'seon-goals.db',
+    vfs: WASQLiteVFS.OPFSCoopSyncVFS,
+    flags: {
+      enableMultiTabs: typeof SharedWorker !== 'undefined',
+    },
+  }),
+  flags: {
+    enableMultiTabs: typeof SharedWorker !== 'undefined',
   },
 });
 

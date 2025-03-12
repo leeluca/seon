@@ -8,10 +8,13 @@ import './tailwind.css';
 import { QueryClientProvider } from '@tanstack/react-query';
 
 import { useFetchAuthStatus } from './apis/hooks/useFetchAuthStatus';
+import { COMPATIBILITY_MESSAGE } from './constants/errors';
 import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
 import { queryClient } from './lib/queryClient';
+import { defaultLocale } from './locales/i18n';
 import { routeTree } from './routeTree.gen';
 import { useUserStore } from './states/stores/userStore';
+import { isOpfsAvailable } from './utils/storage';
 
 export const router = createRouter({
   routeTree,
@@ -36,7 +39,20 @@ function App() {
   const { data: authStatus } = useFetchAuthStatus();
 
   useEffect(() => {
-    document.querySelector('#loading-container')?.remove();
+    async function checkCompatibility() {
+      const isSupported = await isOpfsAvailable();
+
+      const loadingContainer = document.querySelector('#loading-container');
+      if (!loadingContainer) return;
+
+      if (isSupported) {
+        loadingContainer.remove();
+      } else {
+        loadingContainer.innerHTML = COMPATIBILITY_MESSAGE[defaultLocale];
+      }
+    }
+
+    checkCompatibility();
   }, []);
 
   return (
