@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import db from '~/lib/database';
 import type { Preferences, User } from '~/types/user';
 import { generateOfflineUser } from '~/utils';
+import { isOpfsAvailable } from '~/utils/storage';
 import { parseUserPreferences } from '~/utils/validation';
 
 type UserState = {
@@ -17,9 +18,19 @@ type UserActions = {
   setPreferences: (preferences: string | null) => void;
 };
 
-function getUserFromDb() {
-  return db.selectFrom('user').selectAll().executeTakeFirst();
+async function getUserFromDb() {
+  try {
+    if (!(await isOpfsAvailable())) {
+      return undefined;
+    }
+
+    return await db.selectFrom('user').selectAll().executeTakeFirst();
+  } catch (error) {
+    console.error('Failed to fetch user from database', error);
+    return undefined;
+  }
 }
+
 const prefetchedUser = await getUserFromDb();
 
 export const useUserStore = create<UserState & UserActions>()((set, get) => ({
