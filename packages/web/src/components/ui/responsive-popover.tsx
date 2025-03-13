@@ -27,7 +27,7 @@ interface ResponsivePopoverProps {
     | React.RefObject<Element>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
-  dialogTitle?: string;
+  dialogTitle: string;
 }
 
 export function ResponsivePopover({
@@ -51,6 +51,7 @@ export function ResponsivePopover({
         </DialogTrigger>
         <DialogContent
           className={cn('sm:max-w-[425px]', contentClassName)}
+          aria-describedby={undefined}
           {...contentProps}
         >
           <DialogTitle>{dialogTitle}</DialogTitle>
