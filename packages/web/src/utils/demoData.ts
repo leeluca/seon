@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { addDays, subDays } from 'date-fns';
 
 import db from '~/lib/database';
@@ -27,8 +28,8 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
   return [
     // PROGRESS type
     createGoal({
-      title: 'Read "The Hobbit"',
-      description: 'Finish reading the 300-page book',
+      title: t`Read "The Hobbit"`,
+      description: t`Finish reading the 300-page book`,
       target: 300,
       initialValue: 0,
       startDate: subDays(today, 10),
@@ -40,8 +41,8 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
 
     // COUNT type
     createGoal({
-      title: 'Learn 1000 French words',
-      description: 'Improve French vocabulary',
+      title: t`Learn 1000 French words`,
+      description: t`Improve French vocabulary`,
       target: 1000,
       initialValue: 0,
       startDate: subDays(today, 14),
@@ -53,8 +54,8 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
 
     // BOOLEAN type
     createGoal({
-      title: 'Daily Meditation',
-      description: 'Practice mindfulness each day',
+      title: t`Wake up at 7 AM`,
+      description: t`Wake up early every day`,
       target: 30,
       initialValue: 0,
       startDate: subDays(today, 5),

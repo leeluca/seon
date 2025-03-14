@@ -7,7 +7,7 @@ import { setDefaultOptions } from 'date-fns';
 import { LOCALES } from '~/constants/locales';
 
 const DEFAULT_FALLBACK = 'en';
-export const defaultLocale = multipleDetect(fromNavigator(), DEFAULT_FALLBACK)
+export const defaultLocale = 'ko' || multipleDetect(fromNavigator(), DEFAULT_FALLBACK)
   .map((locale) => locale.split('-')[0])
   .find((locale) => locale in LOCALES) as keyof typeof LOCALES;
 

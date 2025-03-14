@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
 import {
@@ -196,7 +197,7 @@ const CalendarHeatmap = ({
                       isBlocked,
                     })}
                     disabled={isBlocked}
-                    aria-label={`Add entry for ${format(day, 'd')}`}
+                    aria-label={t`Add entry for ${format(day, 'd')}`}
                     onClick={() => {
                       setSelectedDateValue(() => [day, entryValue]);
                       setIsPopoverOpen(true);
@@ -218,7 +219,7 @@ const CalendarHeatmap = ({
                     isBlocked,
                   })}
                   disabled={isBlocked}
-                  aria-label={`Add entry for ${format(day, 'd')}`}
+                  aria-label={t`Add entry for ${format(day, 'd')}`}
                   onClick={() => {
                     setSelectedDateValue(() => [day, entryValue]);
                     setIsPopoverOpen(true);
@@ -245,7 +246,14 @@ const CalendarHeatmap = ({
         virtualRef={popoverAnchorRef}
         trigger={null}
         contentClassName={isMobile ? '' : 'w-fit max-w-72'}
-        dialogTitle={`Add entry for ${goal?.title}`}
+        dialogTitle={
+          <span>
+            <Trans>
+              Add entry for{' '}
+              <span className="text-gray-600">{goal?.title}</span>
+            </Trans>
+          </span>
+        }
       >
         <NewEntryForm
           goalId={goalId}

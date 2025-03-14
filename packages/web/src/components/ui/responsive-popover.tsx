@@ -27,7 +27,7 @@ interface ResponsivePopoverProps {
     | React.RefObject<Element>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
-  dialogTitle: string;
+  dialogTitle: ReactNode;
 }
 
 export function ResponsivePopover({
