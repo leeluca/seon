@@ -127,7 +127,12 @@ function StatusMenu() {
   }
 
   if (isDemo) {
-    return <DemoIndicator />;
+    return (
+      <div className="ml-auto flex items-center gap-2">
+        <UpdatePrompt />
+        <DemoIndicator />
+      </div>
+    );
   }
 
   return (
