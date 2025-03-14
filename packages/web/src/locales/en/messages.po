@@ -33,7 +33,7 @@ msgstr "{entriesSum} / {0}"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName} should be no longer than {max} characters."
 
-#: src/routes/index.lazy.tsx:55
+#: src/routes/index.lazy.tsx:60
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
@@ -60,7 +60,7 @@ msgstr "Add your first entry to start"
 msgid "Ahead of schedule!"
 msgstr "Ahead of schedule!"
 
-#: src/routes/index.lazy.tsx:72
+#: src/routes/index.lazy.tsx:77
 msgid "Already a user?"
 msgstr "Already a user?"
 
@@ -93,7 +93,7 @@ msgstr "Cancel"
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
-#: src/components/StatusMenu.tsx:190
+#: src/components/StatusMenu.tsx:195
 msgid "Check sync error or sign in"
 msgstr "Check sync error or sign in"
 
@@ -121,6 +121,10 @@ msgstr "Count"
 msgid "Create account"
 msgstr "Create account"
 
+#: src/components/DemoStart.tsx:49
+msgid "Create and track personal goals"
+msgstr "Create and track personal goals"
+
 #: src/routes/_main/goals.new.tsx:191
 msgid "Create goal"
 msgstr "Create goal"
@@ -146,15 +150,12 @@ msgstr "Delete goal"
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
+#: src/components/DemoStart.tsx:30
 #: src/components/DemoIndicator.tsx:13
 #: src/components/DemoIndicator.tsx:16
 #: src/components/DemoIndicator.tsx:27
 msgid "Demo Mode"
 msgstr "Demo Mode"
-
-#: src/components/DemoIndicator.tsx:30
-msgid "Demo Mode: Syncing features are disabled. All data is stored locally."
-msgstr "Demo Mode: Syncing features are disabled. All data is stored locally."
 
 #: src/components/NewEntryForm.tsx:128
 msgid "Did you achieve it?"
@@ -198,6 +199,10 @@ msgstr "Entries after target date"
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
+#: src/components/DemoStart.tsx:33
+msgid "Experience Seon Goals without creating an account"
+msgstr "Experience Seon Goals without creating an account"
+
 #: src/routes/_main/goals.new.tsx:79
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
@@ -210,7 +215,7 @@ msgstr "Failed to update goal"
 msgid "Finish reading the 300-page book"
 msgstr "Finish reading the 300-page book"
 
-#: src/routes/index.lazy.tsx:60
+#: src/routes/index.lazy.tsx:65
 msgid "First time?"
 msgstr "First time?"
 
@@ -233,7 +238,7 @@ msgid "Goal name"
 msgstr "Goal name"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:229
+#: src/components/StatusMenu.tsx:234
 msgid "Hello, {0}!"
 msgstr "Hello, {0}!"
 
@@ -269,7 +274,7 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
-#: src/components/StatusMenu.tsx:173
+#: src/components/StatusMenu.tsx:178
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -322,6 +327,10 @@ msgstr "Newest first"
 msgid "No"
 msgstr "No"
 
+#: src/components/DemoStart.tsx:64
+msgid "Note: Seon Goals is still in early development. Many additional features are planned for future updates."
+msgstr "Note: Seon Goals is still in early development. Many additional features are planned for future updates."
+
 #: src/components/GoalForm.tsx:487
 msgid "Numbers only"
 msgstr "Numbers only"
@@ -357,6 +366,10 @@ msgstr "Read \"The Hobbit\""
 #: src/components/UpdatePrompt.tsx:65
 msgid "Ready to update"
 msgstr "Ready to update"
+
+#: src/components/DemoStart.tsx:52
+msgid "Record daily progress"
+msgstr "Record daily progress"
 
 #: src/components/UpdatePrompt.tsx:68
 msgid "Refresh to get the latest improvements."
@@ -400,7 +413,7 @@ msgstr "Set up your new goal. You can always edit it later."
 msgid "Show extra options"
 msgstr "Show extra options"
 
-#: src/routes/index.lazy.tsx:79
+#: src/routes/index.lazy.tsx:84
 #: src/routes/signin/index.lazy.tsx:28
 #: src/components/SignInForm.tsx:192
 msgid "Sign In"
@@ -440,7 +453,11 @@ msgstr "Sort by"
 msgid "Start date"
 msgstr "Start date"
 
-#: src/routes/index.lazy.tsx:67
+#: src/components/DemoStart.tsx:78
+msgid "Start Demo"
+msgstr "Start Demo"
+
+#: src/routes/index.lazy.tsx:72
 msgid "Start New"
 msgstr "Start New"
 
@@ -458,9 +475,13 @@ msgstr "Sucessfully updated goal"
 msgid "Sync is off"
 msgstr "Sync is off"
 
-#: src/components/StatusMenu.tsx:142
+#: src/components/StatusMenu.tsx:147
 msgid "Syncing"
 msgstr "Syncing"
+
+#: src/components/DemoIndicator.tsx:30
+msgid "Syncing features are disabled.<0/>All data is stored locally."
+msgstr "Syncing features are disabled.<0/>All data is stored locally."
 
 #: src/components/GoalsContent.tsx:25
 msgid "Syncing your goals..."
@@ -478,9 +499,17 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
+#: src/components/DemoStart.tsx:58
+msgid "Test all app features"
+msgstr "Test all app features"
+
 #: src/components/NoGoalsPlaceholder.tsx:36
 msgid "There are no goals."
 msgstr "There are no goals."
+
+#: src/components/DemoStart.tsx:38
+msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
+msgstr "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 
 #: src/components/GoalStatusSummary.tsx:134
 msgid "Time Left"
@@ -531,6 +560,10 @@ msgstr "Install update"
 msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
 
+#: src/components/DemoStart.tsx:55
+msgid "View statistics and visualizations"
+msgstr "View statistics and visualizations"
+
 #: src/utils/demoData.ts:57
 msgid "Wake up at 7 AM"
 msgstr "Wake up at 7 AM"
@@ -544,7 +577,7 @@ msgstr "Wake up early every day"
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:206
+#: src/components/StatusMenu.tsx:211
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -552,6 +585,10 @@ msgstr "Welcome back, {userName}!"
 #: src/components/SignUpForm.tsx:49
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
+
+#: src/components/DemoStart.tsx:45
+msgid "What you can do in demo mode:"
+msgstr "What you can do in demo mode:"
 
 #: src/components/NewEntryForm.tsx:241
 msgid "Yes"
@@ -561,7 +598,7 @@ msgstr "Yes"
 msgid "Yes or no"
 msgstr "Yes or no"
 
-#: src/components/StatusMenu.tsx:168
+#: src/components/StatusMenu.tsx:173
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 

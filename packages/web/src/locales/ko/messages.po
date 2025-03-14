@@ -33,7 +33,7 @@ msgstr "{entriesSum} / {0}개"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 
-#: src/routes/index.lazy.tsx:55
+#: src/routes/index.lazy.tsx:60
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
@@ -60,7 +60,7 @@ msgstr "아직 목표를 진행하지 않았습니다."
 msgid "Ahead of schedule!"
 msgstr "예정보다 빠름"
 
-#: src/routes/index.lazy.tsx:72
+#: src/routes/index.lazy.tsx:77
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
@@ -93,7 +93,7 @@ msgstr "취소"
 msgid "Cancel editing"
 msgstr "수정 취소"
 
-#: src/components/StatusMenu.tsx:190
+#: src/components/StatusMenu.tsx:195
 msgid "Check sync error or sign in"
 msgstr "동기화 오류를 확인하거나 로그인하세요"
 
@@ -121,6 +121,10 @@ msgstr "횟수"
 msgid "Create account"
 msgstr "계정 만들기"
 
+#: src/components/DemoStart.tsx:49
+msgid "Create and track personal goals"
+msgstr "개인 목표 생성 및 추적"
+
 #: src/routes/_main/goals.new.tsx:191
 msgid "Create goal"
 msgstr "목표 만들기"
@@ -146,15 +150,12 @@ msgstr "목표 삭제"
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
+#: src/components/DemoStart.tsx:30
 #: src/components/DemoIndicator.tsx:13
 #: src/components/DemoIndicator.tsx:16
 #: src/components/DemoIndicator.tsx:27
 msgid "Demo Mode"
 msgstr "데모 모드"
-
-#: src/components/DemoIndicator.tsx:30
-msgid "Demo Mode: Syncing features are disabled. All data is stored locally."
-msgstr "데모 모드: 동기화 기능이 비활성화되었습니다. 모든 데이터는 로컬에 저장됩니다."
 
 #: src/components/NewEntryForm.tsx:128
 msgid "Did you achieve it?"
@@ -198,6 +199,10 @@ msgstr "목표일 이후의 기록"
 msgid "Expected Completion"
 msgstr "예상 완료일"
 
+#: src/components/DemoStart.tsx:33
+msgid "Experience Seon Goals without creating an account"
+msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
+
 #: src/routes/_main/goals.new.tsx:79
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
@@ -210,7 +215,7 @@ msgstr "목표 업데이트 실패"
 msgid "Finish reading the 300-page book"
 msgstr "300페이지 책 완독하기"
 
-#: src/routes/index.lazy.tsx:60
+#: src/routes/index.lazy.tsx:65
 msgid "First time?"
 msgstr "처음이신가요?"
 
@@ -233,7 +238,7 @@ msgid "Goal name"
 msgstr "목표 이름"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:229
+#: src/components/StatusMenu.tsx:234
 msgid "Hello, {0}!"
 msgstr "안녕하세요, {0}님!"
 
@@ -269,7 +274,7 @@ msgstr "오프라인 상태인 것 같습니다!"
 msgid "It seems like you are not connected!"
 msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 
-#: src/components/StatusMenu.tsx:173
+#: src/components/StatusMenu.tsx:178
 msgid "Last synced:"
 msgstr "마지막 동기화:"
 
@@ -322,6 +327,10 @@ msgstr "최근 추가순"
 msgid "No"
 msgstr "아니요"
 
+#: src/components/DemoStart.tsx:64
+msgid "Note: Seon Goals is still in early development. Many additional features are planned for future updates."
+msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다. 향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
+
 #: src/components/GoalForm.tsx:487
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
@@ -357,6 +366,10 @@ msgstr "\"호빗\" 읽기"
 #: src/components/UpdatePrompt.tsx:65
 msgid "Ready to update"
 msgstr "업데이트 준비 완료"
+
+#: src/components/DemoStart.tsx:52
+msgid "Record daily progress"
+msgstr "일일 진행 상황 기록"
 
 #: src/components/UpdatePrompt.tsx:68
 msgid "Refresh to get the latest improvements."
@@ -400,7 +413,7 @@ msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 �
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
-#: src/routes/index.lazy.tsx:79
+#: src/routes/index.lazy.tsx:84
 #: src/routes/signin/index.lazy.tsx:28
 #: src/components/SignInForm.tsx:192
 msgid "Sign In"
@@ -440,7 +453,11 @@ msgstr "정렬 기준"
 msgid "Start date"
 msgstr "시작일"
 
-#: src/routes/index.lazy.tsx:67
+#: src/components/DemoStart.tsx:78
+msgid "Start Demo"
+msgstr "데모 시작하기"
+
+#: src/routes/index.lazy.tsx:72
 msgid "Start New"
 msgstr "새로 시작하기"
 
@@ -458,9 +475,13 @@ msgstr "목표가 업데이트되었습니다"
 msgid "Sync is off"
 msgstr "동기화가 꺼져 있습니다"
 
-#: src/components/StatusMenu.tsx:142
+#: src/components/StatusMenu.tsx:147
 msgid "Syncing"
 msgstr "동기화 중"
+
+#: src/components/DemoIndicator.tsx:30
+msgid "Syncing features are disabled.<0/>All data is stored locally."
+msgstr "동기화 기능이 비활성화되었습니다.<0/>모든 데이터는 로컬에 저장됩니다."
 
 #: src/components/GoalsContent.tsx:25
 msgid "Syncing your goals..."
@@ -478,9 +499,17 @@ msgstr "목표일은 시작일 이후여야 합니다"
 msgid "Target value"
 msgstr "목표값"
 
+#: src/components/DemoStart.tsx:58
+msgid "Test all app features"
+msgstr "모든 앱 기능 테스트"
+
 #: src/components/NoGoalsPlaceholder.tsx:36
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
+
+#: src/components/DemoStart.tsx:38
+msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
+msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있습니다. 데이터는 사용자의 기기에 로컬로 저장됩니다."
 
 #: src/components/GoalStatusSummary.tsx:134
 msgid "Time Left"
@@ -531,6 +560,10 @@ msgstr "지금 업데이트"
 msgid "Value for goal completion (number)"
 msgstr "목표 달성 값 (숫자)"
 
+#: src/components/DemoStart.tsx:55
+msgid "View statistics and visualizations"
+msgstr "통계 및 시각화 보기"
+
 #: src/utils/demoData.ts:57
 msgid "Wake up at 7 AM"
 msgstr "아침 7시에 일어나기"
@@ -544,7 +577,7 @@ msgstr "매일 일찍 일어나기"
 msgid "Welcome back, {0}!"
 msgstr "다시 오신 것을 환영합니다, {0}님!"
 
-#: src/components/StatusMenu.tsx:206
+#: src/components/StatusMenu.tsx:211
 msgid "Welcome back, {userName}!"
 msgstr "다시 오신 것을 환영합니다, {userName}님!"
 
@@ -552,6 +585,10 @@ msgstr "다시 오신 것을 환영합니다, {userName}님!"
 #: src/components/SignUpForm.tsx:49
 msgid "Welcome, {0}!"
 msgstr "환영합니다, {0}님!"
+
+#: src/components/DemoStart.tsx:45
+msgid "What you can do in demo mode:"
+msgstr "데모 모드에서 할 수 있는 것:"
 
 #: src/components/NewEntryForm.tsx:241
 msgid "Yes"
@@ -561,7 +598,7 @@ msgstr "예"
 msgid "Yes or no"
 msgstr "예/아니오"
 
-#: src/components/StatusMenu.tsx:168
+#: src/components/StatusMenu.tsx:173
 msgid "Your data is synced!"
 msgstr "데이터가 동기화되었습니다!"
 

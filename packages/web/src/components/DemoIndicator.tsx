@@ -10,9 +10,9 @@ export function DemoIndicator() {
     <Popover>
       <PopoverTrigger asChild>
         <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100 p-1">
-          <Button variant="ghost" aria-label={t`Demo Mode`} className="h-8">
+          <Button variant="ghost" aria-label={t`Demo Mode`} className="h-8 hover:bg-amber-200/50">
             <BeakerIcon size={18} className="text-amber-600" />
-            <span className="text-xs font-medium text-amber-800">
+            <span className="text-sm font-medium text-amber-800">
               <Trans>Demo Mode</Trans>
             </span>
           </Button>
@@ -26,13 +26,13 @@ export function DemoIndicator() {
           <h3 className="text-pretty font-medium leading-none">
             <Trans>Demo Mode</Trans>
           </h3>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm break-keep">
             <Trans>
-              Demo Mode: Syncing features are disabled. All data is stored
+              Syncing features are disabled.<br/>All data is stored
               locally.
             </Trans>
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm break-keep">
             <Trans>
               Sample data has been created for you to explore the app's
               functionality.

@@ -3,6 +3,7 @@ import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 
+import DemoStart from '~/components/DemoStart';
 // import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
@@ -46,6 +47,12 @@ function Index() {
       void navigate({ to: '/goals' });
     }
   }, [isUserInitialized, navigate]);
+
+  if (isDemo) {
+    return (
+      <DemoStart onStart={() => void initializeUser()} isLoading={isLoading} />
+    );
+  }
 
   return (
     <div>
