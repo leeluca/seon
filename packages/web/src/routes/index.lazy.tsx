@@ -7,6 +7,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
+import { isDemo } from '~/utils/demo';
+import { generateDemoData } from '~/utils/demoData';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -29,6 +31,14 @@ function Index() {
       .returningAll()
       .executeTakeFirstOrThrow();
     fetchUser();
+
+    if (isDemo) {
+      const existingGoals = await db.selectFrom('goal').selectAll().execute();
+
+      if (existingGoals.length === 0) {
+        await generateDemoData(user.id);
+      }
+    }
   };
 
   useEffect(() => {

@@ -15,6 +15,8 @@ import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import { useDebounceValue } from '~/hooks/useDebounceValue';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
+import { isDemo } from '~/utils/demo';
+import { DemoIndicator } from './DemoIndicator';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
@@ -122,6 +124,10 @@ function StatusMenu() {
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
       </div>
     );
+  }
+
+  if (isDemo) {
+    return <DemoIndicator />;
   }
 
   return (
