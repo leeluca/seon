@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { t } from '@lingui/core/macro';
+import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
 import { Link } from '@tanstack/react-router';
@@ -61,28 +61,35 @@ function ProgressBar({
 }
 
 type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
-function getProgressIconAndMessage(status: ProgressStatus) {
+function getProgressIconAndMessage(
+  status: ProgressStatus,
+  t: (descriptor: MacroMessageDescriptor) => string,
+) {
   switch (status) {
     case 'behind':
       return {
         icon: '😟',
-        message: t`Behind schedule!`,
+        message: t(msg`Behind schedule!`),
         progressStatus: status,
       };
     case 'onTrack':
       return {
         icon: '🙂',
-        message: t`Right on track!`,
+        message: t(msg`Right on track!`),
         progressStatus: status,
       };
     case 'ahead':
       return {
         icon: '😎',
-        message: t`Ahead of schedule!`,
+        message: t(msg`Ahead of schedule!`),
         progressStatus: status,
       };
     case 'complete':
-      return { icon: '🥳', message: t`Goal achieved!`, progressStatus: status };
+      return {
+        icon: '🥳',
+        message: t(msg`Goal achieved!`),
+        progressStatus: status,
+      };
     default:
       return { icon: '', message: '' };
   }
@@ -189,8 +196,9 @@ export default function GoalCard({
           targetDate,
           isCompleted,
         }),
+        t,
       ),
-    [currentValue, initialValue, target, startDate, targetDate, isCompleted],
+    [currentValue, initialValue, target, startDate, targetDate, isCompleted, t],
   );
 
   return (
