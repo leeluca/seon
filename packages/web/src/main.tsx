@@ -1,4 +1,4 @@
-import { StrictMode, useEffect } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
@@ -33,6 +33,8 @@ declare module '@tanstack/react-router' {
 }
 
 function App() {
+  const [isCompatible, setIsCompatible] = useState(true);
+
   const [user, isUserInitialized] = useUserStore(
     useShallow((state) => [state.user, state.isInitialized]),
   );
@@ -41,19 +43,24 @@ function App() {
   useEffect(() => {
     async function checkCompatibility() {
       const isSupported = await isOpfsAvailable();
+      setIsCompatible(isSupported);
 
       const loadingContainer = document.querySelector('#loading-container');
       if (!loadingContainer) return;
 
-      if (isSupported) {
-        loadingContainer.remove();
-      } else {
+      if (!isSupported) {
         loadingContainer.innerHTML = COMPATIBILITY_MESSAGE[defaultLocale];
+      } else {
+        loadingContainer.remove();
       }
     }
 
     checkCompatibility();
   }, []);
+
+  if (!isCompatible) {
+    return null;
+  }
 
   return (
     <RouterProvider
