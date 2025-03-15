@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { BeakerIcon, RotateCcwIcon } from 'lucide-react';
+import { FlaskConicalIcon, RotateCcwIcon } from 'lucide-react';
 
 import { purgeStorage } from '~/utils/storage';
 import { Button } from './ui/button';
@@ -60,7 +60,7 @@ export function DemoIndicator() {
               aria-label={t`Demo Mode`}
               className="h-8 hover:bg-amber-200/50"
             >
-              <BeakerIcon size={18} className="text-amber-600" />
+              <FlaskConicalIcon size={18} className="text-amber-600" />
               <span className="text-sm font-medium text-amber-800">
                 <Trans>Demo Mode</Trans>
               </span>

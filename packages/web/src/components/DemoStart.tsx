@@ -1,5 +1,4 @@
 import { Trans } from '@lingui/react/macro';
-import { LightbulbIcon } from 'lucide-react';
 
 import { Button } from '~/components/ui/button';
 import {
@@ -22,8 +21,8 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <div className="mb-2 flex items-center justify-center">
-            <div className="bg-primary/10 rounded-full p-2">
-              <LightbulbIcon className="text-primary h-8 w-8" />
+            <div className="-p-2 overflow-clip rounded-full bg-gray-400/10">
+              <img src="/favicon.svg" alt="Seon Logo" className="h-11 w-11" />
             </div>
           </div>
           <CardTitle className="text-center text-2xl">
