@@ -249,8 +249,7 @@ const CalendarHeatmap = ({
         dialogTitle={
           <span>
             <Trans>
-              Add entry for{' '}
-              <span className="text-gray-600">{goal?.title}</span>
+              Add entry for <span className="text-gray-600">{goal?.title}</span>
             </Trans>
           </span>
         }

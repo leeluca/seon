@@ -254,7 +254,7 @@ function NewGoalForm({
                     </div>
                     <ResponsiveTooltip
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track how many times you complete something each
                             day.
@@ -283,7 +283,7 @@ function NewGoalForm({
                     </div>
                     <ResponsiveTooltip
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track your overall progress towards a target.
                             <br />
@@ -312,7 +312,7 @@ function NewGoalForm({
                     </div>
                     <ResponsiveTooltip
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track daily completion with a simple yes or no.
                             <br />

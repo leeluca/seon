@@ -75,7 +75,7 @@ export const ResponsiveTooltip = ({
         <TooltipTrigger asChild onTooltipOpenChange={toggleOpen}>
           <span className={className}>{children}</span>
         </TooltipTrigger>
-        <TooltipContent side={side} align={align}>
+        <TooltipContent side={side} align={align} className="max-w-[90%]">
           <span className="inline-block">{content}</span>
         </TooltipContent>
       </Tooltip>

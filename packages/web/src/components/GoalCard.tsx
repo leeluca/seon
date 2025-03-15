@@ -26,7 +26,7 @@ import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -230,34 +230,33 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon-responsive"
-                  variant="ghost"
-                  className={cn(
-                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
-                    {
-                      'text-[26px] sm:text-[22px]':
-                        progressStatus === 'complete',
-                    },
-                  )}
-                  ref={triggerRef}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <div>{progressIcon}</div>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                onPointerDownOutside={(event) => {
-                  if (event.target === triggerRef.current)
-                    event.preventDefault();
-                }}
+            <ResponsiveTooltip
+              side="bottom"
+              content={
+                <p>
+                  <Trans>
+                    Track how many times you complete something each day.
+                    <br />
+                    E.g. '30 minutes of exercise' or 'drink 8 glasses of water'.
+                  </Trans>
+                </p>
+              }
+            >
+              <Button
+                size="icon-responsive"
+                variant="ghost"
+                className={cn(
+                  'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
+                  {
+                    'text-[26px] sm:text-[22px]': progressStatus === 'complete',
+                  },
+                )}
+                ref={triggerRef}
+                onClick={(e) => e.preventDefault()}
               >
-                <p>{progressMessage}</p>
-              </TooltipContent>
-            </Tooltip>
+                <div>{progressIcon}</div>
+              </Button>
+            </ResponsiveTooltip>
           )}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
