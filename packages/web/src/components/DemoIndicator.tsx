@@ -54,11 +54,11 @@ export function DemoIndicator() {
     <>
       <Popover>
         <PopoverTrigger asChild>
-          <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100 p-1">
+          <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100">
             <Button
               variant="ghost"
               aria-label={t`Demo Mode`}
-              className="h-8 hover:bg-amber-200/50"
+              className="hover:bg-amber-200/50"
             >
               <FlaskConicalIcon size={18} className="text-amber-600" />
               <span className="text-sm font-medium text-amber-800">

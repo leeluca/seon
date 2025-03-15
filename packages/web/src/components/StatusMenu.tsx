@@ -128,7 +128,7 @@ function StatusMenu() {
 
   if (isDemo) {
     return (
-      <div className="ml-auto flex items-center gap-2">
+      <div className="mb-1 ml-auto flex items-center gap-2">
         <UpdatePrompt />
         <DemoIndicator />
       </div>

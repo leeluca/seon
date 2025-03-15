@@ -230,18 +230,7 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
-            <ResponsiveTooltip
-              side="bottom"
-              content={
-                <p>
-                  <Trans>
-                    Track how many times you complete something each day.
-                    <br />
-                    E.g. '30 minutes of exercise' or 'drink 8 glasses of water'.
-                  </Trans>
-                </p>
-              }
-            >
+            <ResponsiveTooltip side="bottom" content={<p>{progressMessage}</p>}>
               <Button
                 size="icon-responsive"
                 variant="ghost"

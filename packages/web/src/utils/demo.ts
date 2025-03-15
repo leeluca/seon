@@ -128,7 +128,6 @@ const createSampleEntries = (
           userId,
         }),
       );
-      console.log('entries', entries);
     });
   } else if (goalType === 'COUNT') {
     // For count goals, show some days with activity

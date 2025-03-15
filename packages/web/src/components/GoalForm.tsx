@@ -253,6 +253,7 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
                         <p className="break-keep">
                           <Trans>
@@ -282,6 +283,7 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
                         <p className="break-keep">
                           <Trans>
@@ -311,6 +313,7 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
                         <p className="break-keep">
                           <Trans>

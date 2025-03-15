@@ -55,12 +55,14 @@ interface ResponsiveTipProps {
   className?: string;
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
+  contentClassName?: string;
 }
 
 export const ResponsiveTooltip = ({
   content,
   children,
   className,
+  contentClassName,
   side = 'top',
   align = 'center',
 }: ResponsiveTipProps) => {
@@ -75,7 +77,7 @@ export const ResponsiveTooltip = ({
         <TooltipTrigger asChild onTooltipOpenChange={toggleOpen}>
           <span className={className}>{children}</span>
         </TooltipTrigger>
-        <TooltipContent side={side} align={align} className="max-w-[90%]">
+        <TooltipContent side={side} align={align} className={contentClassName}>
           <span className="inline-block">{content}</span>
         </TooltipContent>
       </Tooltip>
