@@ -33,7 +33,7 @@ msgstr "{entriesSum} / {0}"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName} should be no longer than {max} characters."
 
-#: src/routes/index.lazy.tsx:60
+#: src/routes/index.lazy.tsx:61
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
@@ -56,11 +56,11 @@ msgstr "Add new goal"
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
-#: src/components/GoalCard.tsx:81
+#: src/components/GoalCard.tsx:84
 msgid "Ahead of schedule!"
 msgstr "Ahead of schedule!"
 
-#: src/routes/index.lazy.tsx:77
+#: src/routes/index.lazy.tsx:78
 msgid "Already a user?"
 msgstr "Already a user?"
 
@@ -68,7 +68,7 @@ msgstr "Already a user?"
 msgid "Amount"
 msgstr "Amount"
 
-#: src/components/GoalCard.tsx:272
+#: src/components/GoalCard.tsx:280
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
@@ -76,11 +76,11 @@ msgstr "Are you sure you want to delete <0>{title}</0>?"
 msgid "Average Pace"
 msgstr "Average Pace"
 
-#: src/components/GoalCard.tsx:211
+#: src/components/GoalCard.tsx:219
 msgid "Before goal's start date"
 msgstr "Before goal's start date"
 
-#: src/components/GoalCard.tsx:69
+#: src/components/GoalCard.tsx:72
 msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
@@ -137,23 +137,23 @@ msgstr "Create your first goal!"
 msgid "Date"
 msgstr "Date"
 
-#: src/components/GoalCard.tsx:287
+#: src/components/GoalCard.tsx:295
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/GoalCard.tsx:261
 #: src/components/GoalCard.tsx:269
+#: src/components/GoalCard.tsx:277
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:283
+#: src/components/GoalCard.tsx:291
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
 #: src/components/DemoStart.tsx:30
-#: src/components/DemoIndicator.tsx:13
-#: src/components/DemoIndicator.tsx:16
-#: src/components/DemoIndicator.tsx:27
+#: src/components/DemoIndicator.tsx:60
+#: src/components/DemoIndicator.tsx:65
+#: src/components/DemoIndicator.tsx:76
 msgid "Demo Mode"
 msgstr "Demo Mode"
 
@@ -211,11 +211,11 @@ msgstr "Failed to add goal"
 msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
-#: src/utils/demoData.ts:32
-msgid "Finish reading the 300-page book"
-msgstr "Finish reading the 300-page book"
+#: src/utils/demo.ts:34
+msgid "Finish reading the 288-page book"
+msgstr "Finish reading the 288-page book"
 
-#: src/routes/index.lazy.tsx:65
+#: src/routes/index.lazy.tsx:66
 msgid "First time?"
 msgstr "First time?"
 
@@ -224,7 +224,7 @@ msgstr "First time?"
 msgid "Go back"
 msgstr "Go back"
 
-#: src/components/GoalCard.tsx:85
+#: src/components/GoalCard.tsx:90
 msgid "Goal achieved!"
 msgstr "Goal achieved!"
 
@@ -250,13 +250,17 @@ msgstr "Hide extra options"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "If you sign out now, this data will be permanently lost!"
 
-#: src/utils/demoData.ts:45
+#: src/utils/demo.ts:47
 msgid "Improve French vocabulary"
 msgstr "Improve French vocabulary"
 
 #: src/components/GoalForm.tsx:454
 msgid "Initial value"
 msgstr "Initial value"
+
+#: src/components/DemoStart.tsx:58
+msgid "Install as a PWA and use offline"
+msgstr "Install as a PWA and use offline"
 
 #: src/components/SignInForm.tsx:137
 msgid "Invalid credentials"
@@ -288,7 +292,7 @@ msgstr "Last updated at: {0}"
 msgid "Last:"
 msgstr "Last:"
 
-#: src/utils/demoData.ts:44
+#: src/utils/demo.ts:46
 msgid "Learn 1000 French words"
 msgstr "Learn 1000 French words"
 
@@ -359,9 +363,9 @@ msgstr "Pick a date"
 msgid "Progress"
 msgstr "Progress"
 
-#: src/utils/demoData.ts:31
-msgid "Read \"The Hobbit\""
-msgstr "Read \"The Hobbit\""
+#: src/utils/demo.ts:33
+msgid "Read \"Brave New World\""
+msgstr "Read \"Brave New World\""
 
 #: src/components/UpdatePrompt.tsx:65
 msgid "Ready to update"
@@ -379,11 +383,19 @@ msgstr "A new version is ready to install with improvements and fixes."
 msgid "Required Pace"
 msgstr "Required Pace"
 
-#: src/components/GoalCard.tsx:75
+#: src/components/DemoIndicator.tsx:45
+msgid "Reset"
+msgstr "Reset"
+
+#: src/components/DemoIndicator.tsx:35
+msgid "Reset Demo"
+msgstr "Reset Demo"
+
+#: src/components/GoalCard.tsx:78
 msgid "Right on track!"
 msgstr "Right on track!"
 
-#: src/components/DemoIndicator.tsx:36
+#: src/components/DemoIndicator.tsx:86
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
@@ -413,7 +425,7 @@ msgstr "Set up your new goal. You can always edit it later."
 msgid "Show extra options"
 msgstr "Show extra options"
 
-#: src/routes/index.lazy.tsx:84
+#: src/routes/index.lazy.tsx:85
 #: src/routes/signin/index.lazy.tsx:28
 #: src/components/SignInForm.tsx:192
 msgid "Sign In"
@@ -457,9 +469,13 @@ msgstr "Start date"
 msgid "Start Demo"
 msgstr "Start Demo"
 
-#: src/routes/index.lazy.tsx:72
+#: src/routes/index.lazy.tsx:73
 msgid "Start New"
 msgstr "Start New"
+
+#: src/components/DemoIndicator.tsx:30
+msgid "Start Over"
+msgstr "Start Over"
 
 #: src/routes/_main/goals.new.tsx:75
 msgid "Sucessfully added goal"
@@ -479,7 +495,7 @@ msgstr "Sync is off"
 msgid "Syncing"
 msgstr "Syncing"
 
-#: src/components/DemoIndicator.tsx:30
+#: src/components/DemoIndicator.tsx:79
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "Syncing features are disabled.<0/>All data is stored locally."
 
@@ -499,10 +515,6 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
-#: src/components/DemoStart.tsx:58
-msgid "Test all app features"
-msgstr "Test all app features"
-
 #: src/components/NoGoalsPlaceholder.tsx:36
 msgid "There are no goals."
 msgstr "There are no goals."
@@ -510,6 +522,10 @@ msgstr "There are no goals."
 #: src/components/DemoStart.tsx:38
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
+
+#: src/components/DemoIndicator.tsx:38
+msgid "This will delete all your data and reset the demo."
+msgstr "This will delete all your data and reset the demo."
 
 #: src/components/GoalStatusSummary.tsx:134
 msgid "Time Left"
@@ -519,7 +535,7 @@ msgstr "Time Left"
 msgid "Today"
 msgstr "Today"
 
-#: src/components/GoalCard.tsx:300
+#: src/components/GoalCard.tsx:308
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 
@@ -564,11 +580,11 @@ msgstr "Value for goal completion (number)"
 msgid "View statistics and visualizations"
 msgstr "View statistics and visualizations"
 
-#: src/utils/demoData.ts:57
+#: src/utils/demo.ts:59
 msgid "Wake up at 7 AM"
 msgstr "Wake up at 7 AM"
 
-#: src/utils/demoData.ts:58
+#: src/utils/demo.ts:60
 msgid "Wake up early every day"
 msgstr "Wake up early every day"
 

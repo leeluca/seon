@@ -33,7 +33,7 @@ msgstr "{entriesSum} / {0}개"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 
-#: src/routes/index.lazy.tsx:60
+#: src/routes/index.lazy.tsx:61
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
@@ -56,11 +56,11 @@ msgstr "새로운 목표 추가"
 msgid "Add your first entry to start"
 msgstr "아직 목표를 진행하지 않았습니다."
 
-#: src/components/GoalCard.tsx:81
+#: src/components/GoalCard.tsx:84
 msgid "Ahead of schedule!"
 msgstr "예정보다 빠름"
 
-#: src/routes/index.lazy.tsx:77
+#: src/routes/index.lazy.tsx:78
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
@@ -68,7 +68,7 @@ msgstr "이미 계정이 있으신가요?"
 msgid "Amount"
 msgstr "개수"
 
-#: src/components/GoalCard.tsx:272
+#: src/components/GoalCard.tsx:280
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
@@ -76,11 +76,11 @@ msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
-#: src/components/GoalCard.tsx:211
+#: src/components/GoalCard.tsx:219
 msgid "Before goal's start date"
 msgstr "목표 시작 날짜 전"
 
-#: src/components/GoalCard.tsx:69
+#: src/components/GoalCard.tsx:72
 msgid "Behind schedule!"
 msgstr "일정 지연"
 
@@ -137,23 +137,23 @@ msgstr "첫 번째 목표를 만들어 보세요!"
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/GoalCard.tsx:287
+#: src/components/GoalCard.tsx:295
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/GoalCard.tsx:261
 #: src/components/GoalCard.tsx:269
+#: src/components/GoalCard.tsx:277
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:283
+#: src/components/GoalCard.tsx:291
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
 #: src/components/DemoStart.tsx:30
-#: src/components/DemoIndicator.tsx:13
-#: src/components/DemoIndicator.tsx:16
-#: src/components/DemoIndicator.tsx:27
+#: src/components/DemoIndicator.tsx:60
+#: src/components/DemoIndicator.tsx:65
+#: src/components/DemoIndicator.tsx:76
 msgid "Demo Mode"
 msgstr "데모 모드"
 
@@ -211,11 +211,11 @@ msgstr "목표 추가 실패"
 msgid "Failed to update goal"
 msgstr "목표 업데이트 실패"
 
-#: src/utils/demoData.ts:32
-msgid "Finish reading the 300-page book"
-msgstr "300페이지 책 완독하기"
+#: src/utils/demo.ts:34
+msgid "Finish reading the 288-page book"
+msgstr "288페이지 책 완독하기"
 
-#: src/routes/index.lazy.tsx:65
+#: src/routes/index.lazy.tsx:66
 msgid "First time?"
 msgstr "처음이신가요?"
 
@@ -224,7 +224,7 @@ msgstr "처음이신가요?"
 msgid "Go back"
 msgstr "뒤로 가기"
 
-#: src/components/GoalCard.tsx:85
+#: src/components/GoalCard.tsx:90
 msgid "Goal achieved!"
 msgstr "목표 달성!"
 
@@ -250,13 +250,17 @@ msgstr "추가 옵션 숨기기"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니다!"
 
-#: src/utils/demoData.ts:45
+#: src/utils/demo.ts:47
 msgid "Improve French vocabulary"
 msgstr "프랑스어 어휘력 향상하기"
 
 #: src/components/GoalForm.tsx:454
 msgid "Initial value"
 msgstr "초기값"
+
+#: src/components/DemoStart.tsx:58
+msgid "Install as a PWA and use offline"
+msgstr "PWA로 설치하여 오프라인에서 사용하기"
 
 #: src/components/SignInForm.tsx:137
 msgid "Invalid credentials"
@@ -288,7 +292,7 @@ msgstr "마지막 업데이트: {0}"
 msgid "Last:"
 msgstr "이전:"
 
-#: src/utils/demoData.ts:44
+#: src/utils/demo.ts:46
 msgid "Learn 1000 French words"
 msgstr "프랑스어 단어 1000개 익히기"
 
@@ -359,9 +363,9 @@ msgstr "날짜 선택"
 msgid "Progress"
 msgstr "진행도"
 
-#: src/utils/demoData.ts:31
-msgid "Read \"The Hobbit\""
-msgstr "\"호빗\" 읽기"
+#: src/utils/demo.ts:33
+msgid "Read \"Brave New World\""
+msgstr "멋진 신세계 책 읽기"
 
 #: src/components/UpdatePrompt.tsx:65
 msgid "Ready to update"
@@ -379,11 +383,19 @@ msgstr "업데이트하여 개선 사항을 확인해 보세요."
 msgid "Required Pace"
 msgstr "권장 진행 속도"
 
-#: src/components/GoalCard.tsx:75
+#: src/components/DemoIndicator.tsx:45
+msgid "Reset"
+msgstr "초기화"
+
+#: src/components/DemoIndicator.tsx:35
+msgid "Reset Demo"
+msgstr "데모 초기화"
+
+#: src/components/GoalCard.tsx:78
 msgid "Right on track!"
 msgstr "진행 상황 원활"
 
-#: src/components/DemoIndicator.tsx:36
+#: src/components/DemoIndicator.tsx:86
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
@@ -413,7 +425,7 @@ msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 �
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
-#: src/routes/index.lazy.tsx:84
+#: src/routes/index.lazy.tsx:85
 #: src/routes/signin/index.lazy.tsx:28
 #: src/components/SignInForm.tsx:192
 msgid "Sign In"
@@ -457,9 +469,13 @@ msgstr "시작일"
 msgid "Start Demo"
 msgstr "데모 시작하기"
 
-#: src/routes/index.lazy.tsx:72
+#: src/routes/index.lazy.tsx:73
 msgid "Start New"
 msgstr "새로 시작하기"
+
+#: src/components/DemoIndicator.tsx:30
+msgid "Start Over"
+msgstr "다시 시작"
 
 #: src/routes/_main/goals.new.tsx:75
 msgid "Sucessfully added goal"
@@ -479,7 +495,7 @@ msgstr "동기화가 꺼져 있습니다"
 msgid "Syncing"
 msgstr "동기화 중"
 
-#: src/components/DemoIndicator.tsx:30
+#: src/components/DemoIndicator.tsx:79
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "동기화 기능이 비활성화되었습니다.<0/>모든 데이터는 로컬에 저장됩니다."
 
@@ -499,10 +515,6 @@ msgstr "목표일은 시작일 이후여야 합니다"
 msgid "Target value"
 msgstr "목표값"
 
-#: src/components/DemoStart.tsx:58
-msgid "Test all app features"
-msgstr "모든 앱 기능 테스트"
-
 #: src/components/NoGoalsPlaceholder.tsx:36
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
@@ -510,6 +522,10 @@ msgstr "아직 목표가 없습니다."
 #: src/components/DemoStart.tsx:38
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있습니다. 데이터는 사용자의 기기에 로컬로 저장됩니다."
+
+#: src/components/DemoIndicator.tsx:38
+msgid "This will delete all your data and reset the demo."
+msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 
 #: src/components/GoalStatusSummary.tsx:134
 msgid "Time Left"
@@ -519,7 +535,7 @@ msgstr "남은 기간"
 msgid "Today"
 msgstr "오늘"
 
-#: src/components/GoalCard.tsx:300
+#: src/components/GoalCard.tsx:308
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 
@@ -564,11 +580,11 @@ msgstr "목표 달성 값 (숫자)"
 msgid "View statistics and visualizations"
 msgstr "통계 및 시각화 보기"
 
-#: src/utils/demoData.ts:57
+#: src/utils/demo.ts:59
 msgid "Wake up at 7 AM"
 msgstr "아침 7시에 일어나기"
 
-#: src/utils/demoData.ts:58
+#: src/utils/demo.ts:60
 msgid "Wake up early every day"
 msgstr "매일 일찍 일어나기"
 

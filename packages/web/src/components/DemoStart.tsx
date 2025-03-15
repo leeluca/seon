@@ -18,7 +18,7 @@ interface DemoStartProps {
 
 const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-2 sm:p-4">
+    <div className="flex min-h-dvh flex-col items-center justify-center p-2 sm:p-4">
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <div className="mb-2 flex items-center justify-center">
@@ -34,7 +34,7 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
-          <p className="break-keep text-pretty">
+          <p className="text-pretty break-keep">
             <Trans>
               This demo allows you to try all features without signing up. Your
               data will be stored locally on your device.
@@ -55,7 +55,7 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
                 <Trans>View statistics and visualizations</Trans>
               </li>
               <li>
-                <Trans>Test all app features</Trans>
+                <Trans>Install as a PWA and use offline</Trans>
               </li>
             </ul>
           </div>

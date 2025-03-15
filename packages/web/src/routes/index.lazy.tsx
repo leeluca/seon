@@ -8,8 +8,7 @@ import DemoStart from '~/components/DemoStart';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
-import { isDemo } from '~/utils/demo';
-import { generateDemoData } from '~/utils/demoData';
+import { generateDemoData, isDemo } from '~/utils/demo';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
