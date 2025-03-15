@@ -16,7 +16,7 @@ import { routeTree } from './routeTree.gen';
 import { useUserStore } from './states/stores/userStore';
 import { isOpfsAvailable } from './utils/storage';
 
-export const router = createRouter({
+const router = createRouter({
   routeTree,
   context: {
     user: undefined,

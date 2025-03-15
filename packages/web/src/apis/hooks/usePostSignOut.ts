@@ -10,7 +10,6 @@ import {
   SESSION_EXP_KEY,
 } from '~/constants/storage';
 import { powerSyncDb } from '~/lib/database';
-import { router } from '~/main';
 import { useUserStore } from '~/states/stores/userStore';
 import { useSupabase } from '~/states/syncContext';
 import type { APIError } from '~/utils/errors';
@@ -51,7 +50,7 @@ const onSignOut = async (
     queryKey: AUTH_STATUS.all.queryKey,
   });
 
-  await router.navigate({ to: '/' });
+  location.reload();
 
   return;
 };
