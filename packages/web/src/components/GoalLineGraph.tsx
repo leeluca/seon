@@ -279,7 +279,7 @@ function GoalLineGraph({
 
   if (!entries.length) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-2">
+      <div className="flex flex-col items-center justify-center gap-2">
         <div className="flex items-center gap-2">
           <ChartLineIcon size={28} />
           <p className="text-lg">

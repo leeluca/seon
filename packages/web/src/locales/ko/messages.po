@@ -68,7 +68,7 @@ msgstr "이미 계정이 있으신가요?"
 msgid "Amount"
 msgstr "개수"
 
-#: src/components/GoalCard.tsx:280
+#: src/components/GoalCard.tsx:268
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
@@ -121,7 +121,7 @@ msgstr "횟수"
 msgid "Create account"
 msgstr "계정 만들기"
 
-#: src/components/DemoStart.tsx:49
+#: src/components/DemoStart.tsx:48
 msgid "Create and track personal goals"
 msgstr "개인 목표 생성 및 추적"
 
@@ -137,20 +137,20 @@ msgstr "첫 번째 목표를 만들어 보세요!"
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/GoalCard.tsx:295
+#: src/components/GoalCard.tsx:283
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/GoalCard.tsx:269
-#: src/components/GoalCard.tsx:277
+#: src/components/GoalCard.tsx:257
+#: src/components/GoalCard.tsx:265
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:291
+#: src/components/GoalCard.tsx:279
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
-#: src/components/DemoStart.tsx:30
+#: src/components/DemoStart.tsx:29
 #: src/components/DemoIndicator.tsx:60
 #: src/components/DemoIndicator.tsx:65
 #: src/components/DemoIndicator.tsx:76
@@ -169,7 +169,7 @@ msgstr "목표일 늦은 순"
 msgid "Due soon"
 msgstr "목표일 가까운 순"
 
-#: src/components/GoalForm.tsx:444
+#: src/components/GoalForm.tsx:447
 msgid "e.g. words"
 msgstr "예: 단어"
 
@@ -199,7 +199,7 @@ msgstr "목표일 이후의 기록"
 msgid "Expected Completion"
 msgstr "예상 완료일"
 
-#: src/components/DemoStart.tsx:33
+#: src/components/DemoStart.tsx:32
 msgid "Experience Seon Goals without creating an account"
 msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
 
@@ -242,7 +242,7 @@ msgstr "목표 이름"
 msgid "Hello, {0}!"
 msgstr "안녕하세요, {0}님!"
 
-#: src/components/GoalForm.tsx:366
+#: src/components/GoalForm.tsx:369
 msgid "Hide extra options"
 msgstr "추가 옵션 숨기기"
 
@@ -254,11 +254,11 @@ msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니�
 msgid "Improve French vocabulary"
 msgstr "프랑스어 어휘력 향상하기"
 
-#: src/components/GoalForm.tsx:454
+#: src/components/GoalForm.tsx:457
 msgid "Initial value"
 msgstr "초기값"
 
-#: src/components/DemoStart.tsx:58
+#: src/components/DemoStart.tsx:57
 msgid "Install as a PWA and use offline"
 msgstr "PWA로 설치하여 오프라인에서 사용하기"
 
@@ -284,7 +284,7 @@ msgstr "마지막 동기화:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
 #: src/components/GoalEditForm.tsx:159
-msgid "Last updated at: {0}"
+msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
 #: src/components/NewEntryForm.tsx:303
@@ -331,11 +331,11 @@ msgstr "최근 추가순"
 msgid "No"
 msgstr "아니요"
 
-#: src/components/DemoStart.tsx:64
+#: src/components/DemoStart.tsx:63
 msgid "Note: Seon Goals is still in early development. Many additional features are planned for future updates."
 msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다. 향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
 
-#: src/components/GoalForm.tsx:487
+#: src/components/GoalForm.tsx:490
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
 
@@ -359,7 +359,7 @@ msgstr "날짜 선택"
 
 #: src/components/NewEntryForm.tsx:127
 #: src/components/GoalStatusSummary.tsx:130
-#: src/components/GoalForm.tsx:281
+#: src/components/GoalForm.tsx:282
 msgid "Progress"
 msgstr "진행도"
 
@@ -371,7 +371,7 @@ msgstr "멋진 신세계 책 읽기"
 msgid "Ready to update"
 msgstr "업데이트 준비 완료"
 
-#: src/components/DemoStart.tsx:52
+#: src/components/DemoStart.tsx:51
 msgid "Record daily progress"
 msgstr "일일 진행 상황 기록"
 
@@ -405,7 +405,7 @@ msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되�
 msgid "Save"
 msgstr "저장"
 
-#: src/apis/hooks/usePostSignOut.ts:48
+#: src/apis/hooks/usePostSignOut.ts:47
 msgid "See you again!"
 msgstr "다음에 또 뵈어요!"
 
@@ -421,7 +421,7 @@ msgstr "목표 달성 값을 설정해 주세요."
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
-#: src/components/GoalForm.tsx:373
+#: src/components/GoalForm.tsx:376
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
@@ -461,11 +461,11 @@ msgstr "회원 가입을 할 수 없습니다."
 msgid "Sort by"
 msgstr "정렬 기준"
 
-#: src/components/GoalForm.tsx:382
+#: src/components/GoalForm.tsx:385
 msgid "Start date"
 msgstr "시작일"
 
-#: src/components/DemoStart.tsx:78
+#: src/components/DemoStart.tsx:77
 msgid "Start Demo"
 msgstr "데모 시작하기"
 
@@ -519,7 +519,7 @@ msgstr "목표값"
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
 
-#: src/components/DemoStart.tsx:38
+#: src/components/DemoStart.tsx:37
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있습니다. 데이터는 사용자의 기기에 로컬로 저장됩니다."
 
@@ -535,19 +535,19 @@ msgstr "남은 기간"
 msgid "Today"
 msgstr "오늘"
 
-#: src/components/GoalCard.tsx:308
+#: src/components/GoalCard.tsx:296
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 
-#: src/components/GoalForm.tsx:316
+#: src/components/GoalForm.tsx:319
 msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
 msgstr "간단한 예/아니오로 매일 완료 여부를 기록하세요.<0/>예: 명상이나 비타민 복용과 같은 습관"
 
-#: src/components/GoalForm.tsx:258
+#: src/components/GoalForm.tsx:259
 msgid "Track how many times you complete something each day.<0/>E.g. '30 minutes of exercise' or 'drink 8 glasses of water'."
 msgstr "매일 완료한 횟수를 기록하세요.<0/>예: '30분 운동하기' 또는 '물 8잔 마시기'"
 
-#: src/components/GoalForm.tsx:287
+#: src/components/GoalForm.tsx:289
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 읽기(현재 페이지) 또는 저축(총 저축액)"
 
@@ -555,8 +555,8 @@ msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 �
 msgid "Type"
 msgstr "유형"
 
-#: src/components/GoalForm.tsx:413
-#: src/components/GoalForm.tsx:423
+#: src/components/GoalForm.tsx:416
+#: src/components/GoalForm.tsx:426
 msgid "Unit"
 msgstr "단위"
 
@@ -576,7 +576,7 @@ msgstr "지금 업데이트"
 msgid "Value for goal completion (number)"
 msgstr "목표 달성 값 (숫자)"
 
-#: src/components/DemoStart.tsx:55
+#: src/components/DemoStart.tsx:54
 msgid "View statistics and visualizations"
 msgstr "통계 및 시각화 보기"
 
@@ -602,7 +602,7 @@ msgstr "다시 오신 것을 환영합니다, {userName}님!"
 msgid "Welcome, {0}!"
 msgstr "환영합니다, {0}님!"
 
-#: src/components/DemoStart.tsx:45
+#: src/components/DemoStart.tsx:44
 msgid "What you can do in demo mode:"
 msgstr "데모 모드에서 할 수 있는 것:"
 
@@ -610,7 +610,7 @@ msgstr "데모 모드에서 할 수 있는 것:"
 msgid "Yes"
 msgstr "예"
 
-#: src/components/GoalForm.tsx:309
+#: src/components/GoalForm.tsx:311
 msgid "Yes or no"
 msgstr "예/아니오"
 

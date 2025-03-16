@@ -73,7 +73,7 @@ export function GoalDetailPanel({
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <article className="flex min-h-full flex-col gap-1 overflow-x-hidden">
-          <section className="relative mt-4 flex aspect-video min-h-[250px] items-center justify-center overflow-x-hidden">
+          <section className="relative mt-4 flex min-h-[250px] items-center justify-center overflow-x-hidden">
             <GoalLineGraph
               key={`${id}-graph-${isMobile}`}
               goalId={id}
@@ -89,7 +89,7 @@ export function GoalDetailPanel({
             goalId={id}
             className="mb-2 mt-6 sm:mb-5 sm:mt-3"
           />
-          <GoalEditForm goal={selectedGoal} className="my-4 sm:mx-2" />
+          <GoalEditForm goal={selectedGoal} className="my-5 sm:mx-2 sm:my-4" />
         </article>
         <SheetFooter>
           <SheetClose asChild />

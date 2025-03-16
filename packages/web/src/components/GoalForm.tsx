@@ -221,7 +221,7 @@ function NewGoalForm({
         label={t`Type`}
         labelFor="type"
         required
-        className={cn(formItemClassName, 'h-9')}
+        className={cn(formItemClassName, 'min-h-9')}
         labelClassName={labelClassName}
       >
         <form.Field name="type">
@@ -334,7 +334,6 @@ function NewGoalForm({
                     </ResponsiveTooltip>
                   </div>
                 </RadioGroup>
-                {/* </div> */}
               </FormError.Wrapper>
             );
           }}
