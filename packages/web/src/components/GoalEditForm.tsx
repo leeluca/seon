@@ -156,7 +156,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
                 <Trans>Edit goal</Trans>
               </label>
               <p className="text-muted-foreground mt-1 text-xs">
-                <Trans>Last updated at: {format(updatedAt, 'PPp')}</Trans>
+                <Trans>Last update: {format(updatedAt, 'PPp')}</Trans>
               </p>
             </header>
           </div>

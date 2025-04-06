@@ -221,7 +221,7 @@ function NewGoalForm({
         label={t`Type`}
         labelFor="type"
         required
-        className={cn(formItemClassName, 'h-9')}
+        className={cn(formItemClassName, 'min-h-9')}
         labelClassName={labelClassName}
       >
         <form.Field name="type">
@@ -253,8 +253,9 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track how many times you complete something each
                             day.
@@ -282,8 +283,9 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track your overall progress towards a target.
                             <br />
@@ -311,8 +313,9 @@ function NewGoalForm({
                       </Label>
                     </div>
                     <ResponsiveTooltip
+                      contentClassName="max-w-[90%]"
                       content={
-                        <p>
+                        <p className="break-keep">
                           <Trans>
                             Track daily completion with a simple yes or no.
                             <br />
@@ -331,7 +334,6 @@ function NewGoalForm({
                     </ResponsiveTooltip>
                   </div>
                 </RadioGroup>
-                {/* </div> */}
               </FormError.Wrapper>
             );
           }}

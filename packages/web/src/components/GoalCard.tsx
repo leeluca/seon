@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react';
-import { t } from '@lingui/core/macro';
+import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
 import { Link } from '@tanstack/react-router';
@@ -26,7 +26,7 @@ import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -61,28 +61,35 @@ function ProgressBar({
 }
 
 type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
-function getProgressIconAndMessage(status: ProgressStatus) {
+function getProgressIconAndMessage(
+  status: ProgressStatus,
+  t: (descriptor: MacroMessageDescriptor) => string,
+) {
   switch (status) {
     case 'behind':
       return {
         icon: '😟',
-        message: t`Behind schedule!`,
+        message: t(msg`Behind schedule!`),
         progressStatus: status,
       };
     case 'onTrack':
       return {
         icon: '🙂',
-        message: t`Right on track!`,
+        message: t(msg`Right on track!`),
         progressStatus: status,
       };
     case 'ahead':
       return {
         icon: '😎',
-        message: t`Ahead of schedule!`,
+        message: t(msg`Ahead of schedule!`),
         progressStatus: status,
       };
     case 'complete':
-      return { icon: '🥳', message: t`Goal achieved!`, progressStatus: status };
+      return {
+        icon: '🥳',
+        message: t(msg`Goal achieved!`),
+        progressStatus: status,
+      };
     default:
       return { icon: '', message: '' };
   }
@@ -189,8 +196,9 @@ export default function GoalCard({
           targetDate,
           isCompleted,
         }),
+        t,
       ),
-    [currentValue, initialValue, target, startDate, targetDate, isCompleted],
+    [currentValue, initialValue, target, startDate, targetDate, isCompleted, t],
   );
 
   return (
@@ -222,34 +230,22 @@ export default function GoalCard({
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
           {!isLoadingEntries && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon-responsive"
-                  variant="ghost"
-                  className={cn(
-                    'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
-                    {
-                      'text-[26px] sm:text-[22px]':
-                        progressStatus === 'complete',
-                    },
-                  )}
-                  ref={triggerRef}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <div>{progressIcon}</div>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent
-                side="bottom"
-                onPointerDownOutside={(event) => {
-                  if (event.target === triggerRef.current)
-                    event.preventDefault();
-                }}
+            <ResponsiveTooltip side="bottom" content={<p>{progressMessage}</p>}>
+              <Button
+                size="icon-responsive"
+                variant="ghost"
+                className={cn(
+                  'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
+                  {
+                    'text-[26px] sm:text-[22px]': progressStatus === 'complete',
+                  },
+                )}
+                ref={triggerRef}
+                onClick={(e) => e.preventDefault()}
               >
-                <p>{progressMessage}</p>
-              </TooltipContent>
-            </Tooltip>
+                <div>{progressIcon}</div>
+              </Button>
+            </ResponsiveTooltip>
           )}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
