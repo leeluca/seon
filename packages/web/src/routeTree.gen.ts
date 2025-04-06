@@ -17,6 +17,7 @@ import { Route as MainRouteImport } from './routes/_main/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as SignupIndexImport } from './routes/signup/index'
 import { Route as SigninIndexImport } from './routes/signin/index'
+import { Route as DemoIndexImport } from './routes/demo/index'
 import { Route as MainGoalsNewImport } from './routes/_main/goals.new'
 
 // Create Virtual Routes
@@ -48,6 +49,12 @@ const SigninIndexRoute = SigninIndexImport.update({
   path: '/signin/',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/signin/index.lazy').then((d) => d.Route))
+
+const DemoIndexRoute = DemoIndexImport.update({
+  id: '/demo/',
+  path: '/demo/',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/demo/index.lazy').then((d) => d.Route))
 
 const MainGoalsLazyRoute = MainGoalsLazyImport.update({
   id: '/goals',
@@ -93,6 +100,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/goals'
       preLoaderRoute: typeof MainGoalsLazyImport
       parentRoute: typeof MainRouteImport
+    }
+    '/demo/': {
+      id: '/demo/'
+      path: '/demo'
+      fullPath: '/demo'
+      preLoaderRoute: typeof DemoIndexImport
+      parentRoute: typeof rootRoute
     }
     '/signin/': {
       id: '/signin/'
@@ -157,6 +171,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof MainRouteRouteWithChildren
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/demo': typeof DemoIndexRoute
   '/signin': typeof SigninIndexRoute
   '/signup': typeof SignupIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
@@ -167,6 +182,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof MainRouteRouteWithChildren
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/demo': typeof DemoIndexRoute
   '/signin': typeof SigninIndexRoute
   '/signup': typeof SignupIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
@@ -178,6 +194,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_main': typeof MainRouteRouteWithChildren
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
+  '/demo/': typeof DemoIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/signup/': typeof SignupIndexRoute
   '/_main/goals/new': typeof MainGoalsNewRoute
@@ -190,17 +207,27 @@ export interface FileRouteTypes {
     | '/'
     | ''
     | '/goals'
+    | '/demo'
     | '/signin'
     | '/signup'
     | '/goals/new'
     | '/goals/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/goals' | '/signin' | '/signup' | '/goals/new' | '/goals/$id'
+  to:
+    | '/'
+    | ''
+    | '/goals'
+    | '/demo'
+    | '/signin'
+    | '/signup'
+    | '/goals/new'
+    | '/goals/$id'
   id:
     | '__root__'
     | '/'
     | '/_main'
     | '/_main/goals'
+    | '/demo/'
     | '/signin/'
     | '/signup/'
     | '/_main/goals/new'
@@ -211,6 +238,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainRouteRoute: typeof MainRouteRouteWithChildren
+  DemoIndexRoute: typeof DemoIndexRoute
   SigninIndexRoute: typeof SigninIndexRoute
   SignupIndexRoute: typeof SignupIndexRoute
 }
@@ -218,6 +246,7 @@ export interface RootRouteChildren {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRouteRoute: MainRouteRouteWithChildren,
+  DemoIndexRoute: DemoIndexRoute,
   SigninIndexRoute: SigninIndexRoute,
   SignupIndexRoute: SignupIndexRoute,
 }
@@ -234,6 +263,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_main",
+        "/demo/",
         "/signin/",
         "/signup/"
       ]
@@ -254,6 +284,9 @@ export const routeTree = rootRoute
         "/_main/goals/new",
         "/_main/goals/$id"
       ]
+    },
+    "/demo/": {
+      "filePath": "demo/index.tsx"
     },
     "/signin/": {
       "filePath": "signin/index.tsx"

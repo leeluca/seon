@@ -33,7 +33,7 @@ msgstr "{entriesSum} / {0}개"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 
-#: src/routes/index.lazy.tsx:61
+#: src/routes/index.lazy.tsx:45
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
@@ -60,7 +60,7 @@ msgstr "아직 목표를 진행하지 않았습니다."
 msgid "Ahead of schedule!"
 msgstr "예정보다 빠름"
 
-#: src/routes/index.lazy.tsx:78
+#: src/routes/index.lazy.tsx:62
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
@@ -93,7 +93,7 @@ msgstr "취소"
 msgid "Cancel editing"
 msgstr "수정 취소"
 
-#: src/components/StatusMenu.tsx:195
+#: src/components/StatusMenu.tsx:198
 msgid "Check sync error or sign in"
 msgstr "동기화 오류를 확인하거나 로그인하세요"
 
@@ -169,7 +169,7 @@ msgstr "목표일 늦은 순"
 msgid "Due soon"
 msgstr "목표일 가까운 순"
 
-#: src/components/GoalForm.tsx:447
+#: src/components/GoalForm.tsx:446
 msgid "e.g. words"
 msgstr "예: 단어"
 
@@ -215,7 +215,7 @@ msgstr "목표 업데이트 실패"
 msgid "Finish reading the 288-page book"
 msgstr "288페이지 책 완독하기"
 
-#: src/routes/index.lazy.tsx:66
+#: src/routes/index.lazy.tsx:50
 msgid "First time?"
 msgstr "처음이신가요?"
 
@@ -238,11 +238,11 @@ msgid "Goal name"
 msgstr "목표 이름"
 
 #. placeholder {0}: user?.name
-#: src/components/StatusMenu.tsx:234
+#: src/components/StatusMenu.tsx:237
 msgid "Hello, {0}!"
 msgstr "안녕하세요, {0}님!"
 
-#: src/components/GoalForm.tsx:369
+#: src/components/GoalForm.tsx:368
 msgid "Hide extra options"
 msgstr "추가 옵션 숨기기"
 
@@ -254,7 +254,7 @@ msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니�
 msgid "Improve French vocabulary"
 msgstr "프랑스어 어휘력 향상하기"
 
-#: src/components/GoalForm.tsx:457
+#: src/components/GoalForm.tsx:456
 msgid "Initial value"
 msgstr "초기값"
 
@@ -278,7 +278,7 @@ msgstr "오프라인 상태인 것 같습니다!"
 msgid "It seems like you are not connected!"
 msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 
-#: src/components/StatusMenu.tsx:178
+#: src/components/StatusMenu.tsx:181
 msgid "Last synced:"
 msgstr "마지막 동기화:"
 
@@ -332,10 +332,10 @@ msgid "No"
 msgstr "아니요"
 
 #: src/components/DemoStart.tsx:63
-msgid "Note: Seon Goals is still in early development. Many additional features are planned for future updates."
-msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다. 향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
+msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
+msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다.<0/>향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
 
-#: src/components/GoalForm.tsx:490
+#: src/components/GoalForm.tsx:489
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
 
@@ -421,11 +421,11 @@ msgstr "목표 달성 값을 설정해 주세요."
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
-#: src/components/GoalForm.tsx:376
+#: src/components/GoalForm.tsx:375
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
-#: src/routes/index.lazy.tsx:85
+#: src/routes/index.lazy.tsx:69
 #: src/routes/signin/index.lazy.tsx:28
 #: src/components/SignInForm.tsx:192
 msgid "Sign In"
@@ -461,15 +461,15 @@ msgstr "회원 가입을 할 수 없습니다."
 msgid "Sort by"
 msgstr "정렬 기준"
 
-#: src/components/GoalForm.tsx:385
+#: src/components/GoalForm.tsx:384
 msgid "Start date"
 msgstr "시작일"
 
-#: src/components/DemoStart.tsx:77
+#: src/components/DemoStart.tsx:78
 msgid "Start Demo"
 msgstr "데모 시작하기"
 
-#: src/routes/index.lazy.tsx:73
+#: src/routes/index.lazy.tsx:57
 msgid "Start New"
 msgstr "새로 시작하기"
 
@@ -491,7 +491,7 @@ msgstr "목표가 업데이트되었습니다"
 msgid "Sync is off"
 msgstr "동기화가 꺼져 있습니다"
 
-#: src/components/StatusMenu.tsx:147
+#: src/components/StatusMenu.tsx:150
 msgid "Syncing"
 msgstr "동기화 중"
 
@@ -555,8 +555,8 @@ msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 �
 msgid "Type"
 msgstr "유형"
 
-#: src/components/GoalForm.tsx:416
-#: src/components/GoalForm.tsx:426
+#: src/components/GoalForm.tsx:415
+#: src/components/GoalForm.tsx:425
 msgid "Unit"
 msgstr "단위"
 
@@ -593,7 +593,7 @@ msgstr "매일 일찍 일어나기"
 msgid "Welcome back, {0}!"
 msgstr "다시 오신 것을 환영합니다, {0}님!"
 
-#: src/components/StatusMenu.tsx:211
+#: src/components/StatusMenu.tsx:214
 msgid "Welcome back, {userName}!"
 msgstr "다시 오신 것을 환영합니다, {userName}님!"
 
@@ -614,7 +614,7 @@ msgstr "예"
 msgid "Yes or no"
 msgstr "예/아니오"
 
-#: src/components/StatusMenu.tsx:173
+#: src/components/StatusMenu.tsx:176
 msgid "Your data is synced!"
 msgstr "데이터가 동기화되었습니다!"
 

@@ -1,6 +1,4 @@
-import type { Messages } from '@lingui/core';
-
-import { i18n } from '@lingui/core';
+import { i18n, type Messages } from '@lingui/core';
 import { fromNavigator, multipleDetect } from '@lingui/detect-locale';
 import { setDefaultOptions } from 'date-fns';
 

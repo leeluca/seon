@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useStatus } from '@powersync/react';
 import { format, isToday } from 'date-fns';
@@ -16,7 +16,7 @@ import { useDebounceValue } from '~/hooks/useDebounceValue';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
-import { DemoIndicator } from './DemoIndicator';
+// import { DemoIndicator } from './DemoIndicator';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
@@ -127,10 +127,13 @@ function StatusMenu() {
   }
 
   if (isDemo) {
+    const LazyDemoIndicator = lazy(() => import('./DemoIndicator'));
     return (
-      <div className="mb-1 ml-auto flex items-center gap-2">
+      <div className="mb-1 ml-auto flex min-h-[40px] items-center gap-2">
         <UpdatePrompt />
-        <DemoIndicator />
+        <Suspense fallback={null}>
+          <LazyDemoIndicator />
+        </Suspense>
       </div>
     );
   }

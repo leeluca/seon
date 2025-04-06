@@ -3,12 +3,10 @@ import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 
-import DemoStart from '~/components/DemoStart';
 // import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
-import { generateDemoData, isDemo } from '~/utils/demo';
 
 export const Route = createLazyFileRoute('/')({
   component: Index,
@@ -31,14 +29,6 @@ function Index() {
       .returningAll()
       .executeTakeFirstOrThrow();
     fetchUser();
-
-    if (isDemo) {
-      const existingGoals = await db.selectFrom('goal').selectAll().execute();
-
-      if (existingGoals.length === 0) {
-        await generateDemoData(user.id);
-      }
-    }
   };
 
   useEffect(() => {
@@ -46,12 +36,6 @@ function Index() {
       void navigate({ to: '/goals' });
     }
   }, [isUserInitialized, navigate]);
-
-  if (isDemo) {
-    return (
-      <DemoStart onStart={() => void initializeUser()} isLoading={isLoading} />
-    );
-  }
 
   return (
     <div>

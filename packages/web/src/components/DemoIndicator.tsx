@@ -49,7 +49,7 @@ function ResetDemo() {
   );
 }
 
-export function DemoIndicator() {
+export default function DemoIndicator() {
   return (
     <>
       <Popover>

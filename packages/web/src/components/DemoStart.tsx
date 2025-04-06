@@ -61,8 +61,9 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
           <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400">
             <p className="text-balance break-keep">
               <Trans>
-                Note: Seon Goals is still in early development. Many additional
-                features are planned for future updates.
+                Note: Seon Goals is still in early development.
+                <br />
+                Many additional features are planned for future updates.
               </Trans>
             </p>
           </div>
