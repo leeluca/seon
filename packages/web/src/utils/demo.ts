@@ -2,6 +2,7 @@ import { t } from '@lingui/core/macro';
 import { addDays, subDays } from 'date-fns';
 
 import db from '~/lib/database';
+import { updateGoalProgress } from '~/lib/goalUtils';
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { GoalType } from '~/types/goal';
 import { generateUUIDs } from '~/utils';
@@ -9,19 +10,25 @@ import { generateUUIDs } from '~/utils';
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';
 
 export const generateDemoData = async (userId: string) => {
-  const goals = createSampleGoals(userId);
+  const goalsData = createSampleGoals(userId);
 
   await Promise.all(
-    goals.map((goal) => db.insertInto('goal').values(goal).execute()),
+    goalsData.map((goal) => {
+      return db.insertInto('goal').values(goal).execute();
+    }),
   );
 
-  const allEntries = goals.flatMap((goal) =>
+  const allEntries = goalsData.flatMap((goal) =>
     createSampleEntries(goal.id, userId, goal.type as GoalType),
   );
 
   await Promise.all(
     allEntries.map((entry) => db.insertInto('entry').values(entry).execute()),
   );
+
+  await db.transaction().execute(async (tx) => {
+    await Promise.all(goalsData.map((goal) => updateGoalProgress(goal.id, tx)));
+  });
 };
 
 const createSampleGoals = (userId: string): Database['goal'][] => {
@@ -90,6 +97,7 @@ const createGoal = (data: {
     description: data.description,
     target: data.target,
     initialValue: data.initialValue,
+    currentValue: data.initialValue,
     startDate: data.startDate.toISOString(),
     targetDate: data.targetDate.toISOString(),
     unit: data.unit,

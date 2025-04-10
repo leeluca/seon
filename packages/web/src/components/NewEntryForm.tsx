@@ -10,6 +10,7 @@ import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
+import { updateGoalProgress } from '~/lib/goalUtils';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
@@ -19,9 +20,17 @@ import FormError from './FormError';
 import FormItem from './FormItem';
 import { NumberInput } from './ui/number-input';
 
-async function deleteEntry(id: string, callback?: () => void) {
-  void db.deleteFrom('entry').where('id', '=', id).execute();
-  callback?.();
+async function deleteEntry(id: string, goalId: string, callback?: () => void) {
+  try {
+    await db.transaction().execute(async (tx) => {
+      await tx.deleteFrom('entry').where('id', '=', id).execute();
+      await updateGoalProgress(goalId, tx);
+    });
+    callback?.();
+  } catch (error) {
+    console.error('Failed to delete entry:', error);
+    toast.error('Failed to delete entry');
+  }
 }
 
 const findPreviousEntry = (
@@ -46,23 +55,30 @@ async function handleSubmit(
   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
 
   try {
-    const sameDayEntry = await db
-      .selectFrom('entry')
-      .selectAll()
-      .where((eb) =>
-        eb.and([
-          eb('goalId', '=', goalId),
-          eb('date', '>=', startOfDay.toISOString()),
-          eb('date', '<=', endOfDay.toISOString()),
-        ]),
-      )
-      .executeTakeFirst();
+    await db.transaction().execute(async (tx) => {
+      const sameDayEntry = await tx
+        .selectFrom('entry')
+        .selectAll()
+        .where((eb) =>
+          eb.and([
+            eb('goalId', '=', goalId),
+            eb('date', '>=', startOfDay.toISOString()),
+            eb('date', '<=', endOfDay.toISOString()),
+          ]),
+        )
+        .executeTakeFirst();
 
-    const entryOperation = sameDayEntry
-      ? db.updateTable('entry').set({ value }).where('id', '=', sameDayEntry.id)
-      : (() => {
-          const { uuid, shortUuid } = generateUUIDs();
-          return db.insertInto('entry').values({
+      if (sameDayEntry) {
+        await tx
+          .updateTable('entry')
+          .set({ value, updatedAt: new Date().toISOString() })
+          .where('id', '=', sameDayEntry.id)
+          .execute();
+      } else {
+        const { uuid, shortUuid } = generateUUIDs();
+        await tx
+          .insertInto('entry')
+          .values({
             id: uuid,
             shortId: shortUuid,
             goalId: goalId,
@@ -71,10 +87,12 @@ async function handleSubmit(
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
             userId,
-          });
-        })();
+          })
+          .execute();
+      }
 
-    await db.executeQuery(entryOperation);
+      await updateGoalProgress(goalId, tx);
+    });
 
     onSubmitCallback();
     return true;
@@ -263,7 +281,7 @@ const NewEntryForm = ({
                           disabled={!entryId}
                           onClick={() =>
                             entryId &&
-                            void deleteEntry(entryId, onSubmitCallback)
+                            void deleteEntry(entryId, goalId, onSubmitCallback)
                           }
                         >
                           <Trash2Icon size={18} />
@@ -391,7 +409,8 @@ const NewEntryForm = ({
                       className="w-full"
                       disabled={!entryId}
                       onClick={() =>
-                        entryId && void deleteEntry(entryId, onSubmitCallback)
+                        entryId &&
+                        void deleteEntry(entryId, goalId, onSubmitCallback)
                       }
                       size={isMobile ? 'lg' : 'default'}
                     >
