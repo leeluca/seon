@@ -1,7 +1,8 @@
 import type { Kysely } from '@powersync/kysely-driver';
 
-import type { Database } from './powersync/AppSchema';
+import type { Database } from '~/lib/powersync/AppSchema';
 
+// FIXME: add migration logic to update goal currentValue for existing goals
 // TODO: move to services folder?
 export async function updateGoalProgress(goalId: string, tx: Kysely<Database>) {
   const goal = await tx

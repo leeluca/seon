@@ -1,7 +1,8 @@
 import * as React from 'react';
+import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Check, ChevronDownIcon } from 'lucide-react';
-import { msg } from '@lingui/core/macro';
+
 import { Button } from '~/components/ui/button';
 import {
   Command,
@@ -22,19 +23,19 @@ import { cn } from '~/utils';
 async function updateDefaultSort(updatedSort: GoalSort) {
   const userId = useUserStore.getState().user.id;
   const currentPreferences = useUserStore.getState().userPreferences;
+  const updatedPreferences = JSON.stringify({
+    ...currentPreferences,
+    defaultGoalSort: updatedSort,
+  });
 
   await db
     .updateTable('user')
     .set({
-      preferences: JSON.stringify({
-        ...currentPreferences,
-        defaultGoalSort: updatedSort,
-      }),
+      preferences: updatedPreferences,
     })
     .where('id', '=', userId)
     .execute();
-
-  useUserStore.getState().fetch();
+  useUserStore.getState().setPreferences(updatedPreferences);
 }
 
 interface GoalSortingProps {
@@ -95,7 +96,7 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
           <ChevronDownIcon className="ml-2 opacity-50" size={16} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit max-w-[200px] p-0">
+      <PopoverContent className="w-fit min-w-[132px] max-w-[200px] p-0">
         <Command>
           <CommandList>
             <CommandGroup>

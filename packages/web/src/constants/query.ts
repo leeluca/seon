@@ -1,6 +1,5 @@
 import db from '~/lib/database';
-import type { GoalCompletionFilter } from '~/components/GoalCompletionFilterControl';
-import type { GoalSort, GoalType } from '~/types/goal';
+import type { GoalFilter, GoalSort, GoalType } from '~/types/goal';
 
 /* api */
 export const AUTH_STATUS = {
@@ -10,16 +9,18 @@ export const AUTH_STATUS = {
 /* sqlite */
 export const GOALS = {
   all: { queryKey: ['goal'] },
-  list: (sort: GoalSort, filter: GoalCompletionFilter) => {
+  list: (sort: GoalSort, filter: GoalFilter) => {
     const queryKey = ['goal', { sort }, { filter }];
     let query = db.selectFrom('goal').selectAll();
 
     if (filter === 'completed') {
-      query = query.where((eb) => eb('currentValue', '>=', eb.ref('target')))
-                   .where('target', '>', 0);
+      query = query
+        .where((eb) => eb('currentValue', '>=', eb.ref('target')))
+        .where('target', '>', 0);
     } else if (filter === 'incomplete') {
-      query = query.where((eb) => eb('currentValue', '<', eb.ref('target')))
-                   .where('target', '>', 0);
+      query = query
+        .where((eb) => eb('currentValue', '<', eb.ref('target')))
+        .where('target', '>', 0);
     }
 
     query = query.orderBy(sort);

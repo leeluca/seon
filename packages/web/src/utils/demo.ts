@@ -2,7 +2,7 @@ import { t } from '@lingui/core/macro';
 import { addDays, subDays } from 'date-fns';
 
 import db from '~/lib/database';
-import { updateGoalProgress } from '~/lib/goalUtils';
+import { updateGoalProgress } from '~/utils/progress';
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { GoalType } from '~/types/goal';
 import { generateUUIDs } from '~/utils';

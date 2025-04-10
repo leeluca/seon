@@ -9,6 +9,7 @@ import {
   RefreshCcwIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useShallow } from 'zustand/react/shallow';
 
 import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
@@ -103,7 +104,9 @@ function StatusMenu() {
     hasSynced,
   } = useStatus();
 
-  const user = useUserStore((state) => state.user);
+  const [userName, useSync] = useUserStore(
+    useShallow((state) => [state.user.name, state.user.useSync]),
+  );
 
   const { data, isLoading } = useFetchAuthStatus();
   const isSignedIn = data?.result;
@@ -208,7 +211,7 @@ function StatusMenu() {
                 isSignedIn={isSignedIn}
                 isOnline={isOnline}
                 isSyncConnected={isSyncConnected}
-                isSyncEnabledUser={Boolean(user?.useSync)}
+                isSyncEnabledUser={Boolean(useSync)}
                 onSignInCallback={({ name: userName }) => {
                   setOpen(false);
                   userName && toast.success(t`Welcome back, ${userName}!`);
@@ -217,7 +220,7 @@ function StatusMenu() {
             </PopoverContent>
           </Popover>
         )}
-        {(isSignedIn || Boolean(user?.useSync)) && (
+        {(isSignedIn || Boolean(useSync)) && (
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -234,7 +237,7 @@ function StatusMenu() {
             >
               <div className="space-y-2 pb-4">
                 <h3 className="text-pretty text-center font-medium leading-none">
-                  <Trans>Hello, {user?.name}!</Trans>
+                  <Trans>Hello, {userName}!</Trans>
                 </h3>
               </div>
               <SignOutButton />

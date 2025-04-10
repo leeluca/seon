@@ -15,19 +15,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import type { GoalFilter as GoalFilterType } from '~/types/goal';
 import { cn } from '~/utils';
 
-export type GoalCompletionFilter = 'all' | 'completed' | 'incomplete';
-
-interface GoalCompletionFilterControlProps {
-  filter: GoalCompletionFilter;
-  setFilter: (filter: GoalCompletionFilter) => void;
+interface GoalFilterProps {
+  filter: GoalFilterType;
+  setFilter: (filter: GoalFilterType) => void;
 }
 
-export function GoalCompletionFilterControl({
-  filter,
-  setFilter,
-}: GoalCompletionFilterControlProps) {
+export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
   const [open, setOpen] = useState(false);
   const { t } = useLingui();
 
@@ -55,8 +51,8 @@ export function GoalCompletionFilterControl({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          // biome-ignore lint/a11y/useSemanticElements: Using Popover/Command for custom select appearance
-          role="combobox"
+          // biome-ignore lint/a11y/useSemanticElements: cannot use svg icon inside <select> element
+          role="listbox"
           aria-expanded={open}
           className="w-[132px] max-w-[200px] justify-between"
           size="sm"
@@ -67,7 +63,7 @@ export function GoalCompletionFilterControl({
           <ChevronDownIcon className="ml-2 opacity-50" size={16} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit max-w-[200px] p-0">
+      <PopoverContent className="w-fit min-w-[132px] max-w-[200px] p-0">
         <Command>
           <CommandList>
             <CommandGroup>
@@ -76,7 +72,7 @@ export function GoalCompletionFilterControl({
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setFilter(currentValue as GoalCompletionFilter);
+                    setFilter(currentValue as GoalFilterType);
                     setOpen(false);
                   }}
                 >

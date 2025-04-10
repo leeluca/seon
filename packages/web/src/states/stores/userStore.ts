@@ -9,7 +9,7 @@ import { parseUserPreferences } from '~/utils/validation';
 type UserState = {
   user: User;
   isInitialized: boolean;
-  userPreferences?: Preferences;
+  userPreferences: Preferences;
 };
 type UserActions = {
   setUser: (user: User) => void;

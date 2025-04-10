@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
-import { updateGoalProgress } from '~/lib/goalUtils';
+import { updateGoalProgress } from '~/utils/progress';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
