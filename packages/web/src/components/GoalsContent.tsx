@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useStatus, useSuspenseQuery } from '@powersync/react';
 import { useNavigate } from '@tanstack/react-router';
@@ -6,8 +6,10 @@ import { useNavigate } from '@tanstack/react-router';
 import GoalCard from '~/components/GoalCard';
 import type { NoGoalsPlaceholderProps } from '~/components/NoGoalsPlaceholder';
 import { GOALS } from '~/constants/query';
+import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
 import type { GoalFilter, GoalSort } from '~/types/goal';
+import { updateGoalProgress } from '~/utils/progress';
 
 const LazyNoGoalsPlaceholder = lazy(
   () => import('~/components/NoGoalsPlaceholder'),
@@ -43,6 +45,18 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const openNewGoalForm = () => void navigate({ to: '/goals/new' });
 
   const { hasSynced } = useStatus();
+
+  // FIXME: to be removed
+  // biome-ignore lint/correctness/useExhaustiveDependencies: should only run once
+  useEffect(() => {
+    const isNotMigrated = goals.some((goal) => !goal.currentValue);
+
+    if (isNotMigrated) {
+      void db.transaction().execute(async (tx) => {
+        await Promise.all(goals.map((goal) => updateGoalProgress(goal.id, tx)));
+      });
+    }
+  }, []);
 
   const showNoGoals = !goals.length;
   const isSyncing = useSync && !hasSynced;
