@@ -11,10 +11,9 @@ import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import SyncProvider from '~/states/syncContext';
-import type { AuthStatus, User } from '~/types/user';
+import type { AuthStatus } from '~/types/user';
 
 interface RouterContext {
-  user?: User;
   authStatus: AuthStatus;
   isUserInitialized: boolean;
 }
@@ -32,13 +31,15 @@ const TanStackRouterDevtools =
     : () => null;
 
 function Root() {
-  const preferences = useUserStore((state) => state.userPreferences);
+  const languagePreference = useUserStore(
+    (state) => state.userPreferences?.language,
+  );
 
   useEffect(() => {
-    const locale = preferences?.language ?? defaultLocale;
+    const locale = languagePreference ?? defaultLocale;
     void dynamicallyImportLocale(locale);
     document.documentElement.lang = locale;
-  }, [preferences]);
+  }, [languagePreference]);
 
   return (
     <SyncProvider>

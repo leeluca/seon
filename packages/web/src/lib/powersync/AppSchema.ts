@@ -62,6 +62,7 @@ const goal = new Table(
     updatedAt: column.timestamp,
     initialValue: column.integer,
     type: column.text,
+    currentValue: column.real,
   },
   { indexes: {} },
 );

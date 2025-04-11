@@ -1,7 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useQuery } from '@powersync/tanstack-react-query';
 import { Link } from '@tanstack/react-router';
 import {
   differenceInCalendarDays,
@@ -19,7 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import { ENTRIES } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
@@ -33,6 +31,7 @@ interface ProgressBarProps {
   target: number;
   currentValue: number;
 }
+
 function ProgressBar({
   progressPercent,
   target,
@@ -41,7 +40,9 @@ function ProgressBar({
   return (
     <div className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3">
       <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
-        {progressPercent <= 100 ? `${currentValue}/${target}` : target}
+        {progressPercent <= 100
+          ? `${currentValue.toFixed(0)}/${target}`
+          : target}
       </p>
       <div
         className="relative h-3 rounded border bg-blue-200 transition-all group-hover:border-blue-300 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
@@ -101,7 +102,6 @@ interface getProgressStatusArgs {
   target: number;
   startDate: string;
   targetDate: string;
-  isCompleted: boolean;
 }
 function getProgressStatus({
   currentValue,
@@ -109,7 +109,6 @@ function getProgressStatus({
   target,
   startDate,
   targetDate,
-  isCompleted,
 }: getProgressStatusArgs): ProgressStatus {
   const daysUntilTarget = eachDayOfInterval({
     start: new Date(startDate),
@@ -122,15 +121,15 @@ function getProgressStatus({
     differenceInCalendarDays(new Date(), new Date(startDate)) + 1;
 
   const expectedGoalValueToday = Math.min(
-    daysSince * averageItemsPerDay,
+    daysSince * averageItemsPerDay + initialValue,
     target,
   );
 
   const differenceFromTarget = currentValue - expectedGoalValueToday;
   const percentageDifference =
-    Math.abs((currentValue - expectedGoalValueToday) / target) * 100;
+    Math.abs(differenceFromTarget / (target - initialValue || 1)) * 100;
 
-  if (isCompleted) {
+  if (currentValue >= target) {
     return 'complete';
   }
   if (percentageDifference <= 5) {
@@ -155,31 +154,17 @@ export default function GoalCard({
   targetDate,
   initialValue,
   shortId,
-  type,
+  currentValue: baseCurrentValue,
 }: Database['goal']) {
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef(null);
-  const { data: entries = [], isLoading: isLoadingEntries } = useQuery(
-    ENTRIES.goalId(id),
-  );
-
-  const entriesSum = useMemo(
-    () =>
-      type === 'PROGRESS'
-        ? (entries[entries.length - 1]?.value ?? 0) + initialValue
-        : entries.reduce((sum, entry) => sum + entry.value, 0) + initialValue,
-    [entries, type, initialValue],
-  );
-
-  const currentValue = entriesSum + initialValue;
+  const currentValue = baseCurrentValue ?? initialValue;
 
   const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
   );
-
-  const isCompleted = currentValue >= target;
 
   const {
     icon: progressIcon,
@@ -189,16 +174,15 @@ export default function GoalCard({
     () =>
       getProgressIconAndMessage(
         getProgressStatus({
-          currentValue,
+          currentValue: currentValue,
           initialValue,
           target,
           startDate,
           targetDate,
-          isCompleted,
         }),
         t,
       ),
-    [currentValue, initialValue, target, startDate, targetDate, isCompleted, t],
+    [currentValue, initialValue, target, startDate, targetDate, t],
   );
 
   return (
@@ -229,7 +213,7 @@ export default function GoalCard({
       </CardContent>
       <CardFooter className="px-3 pb-3">
         <div className="flex w-full justify-start">
-          {!isLoadingEntries && (
+          {currentValue ? (
             <ResponsiveTooltip side="bottom" content={<p>{progressMessage}</p>}>
               <Button
                 size="icon-responsive"
@@ -246,7 +230,7 @@ export default function GoalCard({
                 <div>{progressIcon}</div>
               </Button>
             </ResponsiveTooltip>
-          )}
+          ) : null}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
           <Popover>

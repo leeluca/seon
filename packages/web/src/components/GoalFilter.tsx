@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { startTransition, useMemo, useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Check, ChevronDownIcon } from 'lucide-react';
@@ -17,15 +17,15 @@ import {
 } from '~/components/ui/popover';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalSort } from '~/types/goal';
+import type { GoalFilter as GoalFilterType } from '~/types/goal';
 import { cn } from '~/utils';
 
-async function updateDefaultSort(updatedSort: GoalSort) {
+async function updateDefaultFilter(updatedFilter: GoalFilterType) {
   const userId = useUserStore.getState().user.id;
   const currentPreferences = useUserStore.getState().userPreferences;
   const updatedPreferences = JSON.stringify({
     ...currentPreferences,
-    defaultGoalSort: updatedSort,
+    defaultGoalFilter: updatedFilter,
   });
 
   await db
@@ -38,42 +38,29 @@ async function updateDefaultSort(updatedSort: GoalSort) {
   useUserStore.getState().setPreferences(updatedPreferences);
 }
 
-interface GoalSortingProps {
-  sort: GoalSort;
-  setSort: (sort: GoalSort) => void;
+interface GoalFilterProps {
+  filter: GoalFilterType;
+  setFilter: (filter: GoalFilterType) => void;
 }
 
-export function GoalSorting({ sort, setSort }: GoalSortingProps) {
-  const [open, setOpen] = React.useState(false);
-  const [, startTransition] = React.useTransition();
+export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
+  const [open, setOpen] = useState(false);
   const { t } = useLingui();
 
-  const sortParams = React.useMemo(
+  const filterOptions = useMemo(
     () =>
       [
         {
-          label: t(msg`Newest goals`),
-          value: 'createdAt desc',
+          label: t(msg`All Goals`),
+          value: 'all',
         },
         {
-          label: t(msg`Oldest goals`),
-          value: 'createdAt asc',
+          label: t(msg`Completed`),
+          value: 'completed',
         },
         {
-          label: t(msg`Due soon`),
-          value: 'targetDate desc',
-        },
-        {
-          label: t(msg`Due later`),
-          value: 'targetDate asc',
-        },
-        {
-          label: t(msg`Name (A to Z)`),
-          value: 'title asc',
-        },
-        {
-          label: t(msg`Name (Z to A)`),
-          value: 'title desc',
+          label: t(msg`Incomplete`),
+          value: 'incomplete',
         },
       ] as const,
     [t],
@@ -90,9 +77,9 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
           className="w-[132px] max-w-[200px] justify-between"
           size="sm"
         >
-          {sort
-            ? sortParams.find((framework) => framework.value === sort)?.label
-            : t(msg`Select sort...`)}
+          {filter
+            ? filterOptions.find((option) => option.value === filter)?.label
+            : t(msg`Filter goals...`)}
           <ChevronDownIcon className="ml-2 opacity-50" size={16} />
         </Button>
       </PopoverTrigger>
@@ -100,21 +87,23 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
         <Command>
           <CommandList>
             <CommandGroup>
-              {sortParams.map((sortParam) => (
+              {filterOptions.map((option) => (
                 <CommandItem
-                  key={sortParam.value}
-                  value={sortParam.value}
+                  key={option.value}
+                  value={option.value}
                   onSelect={(currentValue) => {
-                    startTransition(() => setSort(currentValue as GoalSort));
-                    updateDefaultSort(currentValue as GoalSort);
+                    startTransition(() => {
+                      setFilter(currentValue as GoalFilterType);
+                    });
+                    updateDefaultFilter(currentValue as GoalFilterType);
                     setOpen(false);
                   }}
                 >
-                  {sortParam.label}
+                  {option.label}
                   <Check
                     className={cn(
                       'ml-auto',
-                      sort === sortParam.value ? 'opacity-100' : 'opacity-0',
+                      filter === option.value ? 'opacity-100' : 'opacity-0',
                     )}
                   />
                 </CommandItem>

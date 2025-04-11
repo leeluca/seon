@@ -79,11 +79,11 @@ export const emailValidator = (value: string) => {
 // FIXME: validate type on runtime
 export const parseUserPreferences = (preferences?: string | null) => {
   try {
-    if (!preferences) return undefined;
+    if (!preferences) return {};
     const userPreferences = JSON.parse(preferences) as Preferences;
     return userPreferences;
   } catch {
     console.error('Invalid user preferences');
-    return undefined;
+    return {};
   }
 };
