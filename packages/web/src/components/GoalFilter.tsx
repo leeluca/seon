@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { startTransition, useMemo, useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Check, ChevronDownIcon } from 'lucide-react';
@@ -15,8 +15,28 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
+import db from '~/lib/database';
+import { useUserStore } from '~/states/stores/userStore';
 import type { GoalFilter as GoalFilterType } from '~/types/goal';
 import { cn } from '~/utils';
+
+async function updateDefaultFilter(updatedFilter: GoalFilterType) {
+  const userId = useUserStore.getState().user.id;
+  const currentPreferences = useUserStore.getState().userPreferences;
+  const updatedPreferences = JSON.stringify({
+    ...currentPreferences,
+    defaultGoalFilter: updatedFilter,
+  });
+
+  await db
+    .updateTable('user')
+    .set({
+      preferences: updatedPreferences,
+    })
+    .where('id', '=', userId)
+    .execute();
+  useUserStore.getState().setPreferences(updatedPreferences);
+}
 
 interface GoalFilterProps {
   filter: GoalFilterType;
@@ -72,7 +92,10 @@ export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
                   key={option.value}
                   value={option.value}
                   onSelect={(currentValue) => {
-                    setFilter(currentValue as GoalFilterType);
+                    startTransition(() => {
+                      setFilter(currentValue as GoalFilterType);
+                    });
+                    updateDefaultFilter(currentValue as GoalFilterType);
                     setOpen(false);
                   }}
                 >

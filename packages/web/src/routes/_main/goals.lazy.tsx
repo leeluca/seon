@@ -16,13 +16,14 @@ export const Route = createLazyFileRoute('/_main/goals')({
 });
 
 function Layout() {
-  const defaultGoalSort = useUserStore(
-    (state) => state.userPreferences?.defaultGoalSort,
-  );
   const [sort, setSort] = useState<GoalSort>(
-    defaultGoalSort ?? 'createdAt desc',
+    () =>
+      useUserStore.getState().userPreferences?.defaultGoalSort ??
+      'createdAt desc',
   );
-  const [filter, setFilter] = useState<GoalFilterType>('all');
+  const [filter, setFilter] = useState<GoalFilterType>(
+    () => useUserStore.getState().userPreferences?.defaultGoalFilter ?? 'all',
+  );
 
   return (
     <>
