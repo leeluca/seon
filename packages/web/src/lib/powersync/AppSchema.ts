@@ -63,6 +63,7 @@ const goal = new Table(
     initialValue: column.integer,
     type: column.text,
     currentValue: column.real,
+    completionDate: column.optionalTimestamp,
   },
   { indexes: {} },
 );

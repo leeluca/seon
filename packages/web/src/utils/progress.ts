@@ -2,12 +2,11 @@ import type { Kysely } from '@powersync/kysely-driver';
 
 import type { Database } from '~/lib/powersync/AppSchema';
 
-// FIXME: add migration logic to update goal currentValue for existing goals
 // TODO: move to services folder?
 export async function updateGoalProgress(goalId: string, tx: Kysely<Database>) {
   const goal = await tx
     .selectFrom('goal')
-    .select(['id', 'initialValue', 'target', 'type'])
+    .select(['id', 'initialValue', 'target', 'type', 'completionDate'])
     .where('id', '=', goalId)
     .executeTakeFirst();
 
@@ -38,9 +37,21 @@ export async function updateGoalProgress(goalId: string, tx: Kysely<Database>) {
     currentValue = (Number(sumResult?.totalValue) || 0) + goal.initialValue;
   }
 
+  const isCompleted = currentValue >= goal.target;
+
+  let newCompletionDate: string | null = goal.completionDate;
+  if (isCompleted && !goal.completionDate) {
+    newCompletionDate = new Date().toISOString();
+  } else if (!isCompleted && goal.completionDate) {
+    newCompletionDate = null;
+  }
+
   await tx
     .updateTable('goal')
-    .set({ currentValue })
+    .set({
+      currentValue,
+      completionDate: newCompletionDate,
+    })
     .where('id', '=', goalId)
     .execute();
 }

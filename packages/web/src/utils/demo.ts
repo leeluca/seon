@@ -105,6 +105,7 @@ const createGoal = (data: {
     updatedAt: now,
     userId: data.userId,
     type: data.type,
+    completionDate: null,
   };
 };
 

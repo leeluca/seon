@@ -92,6 +92,10 @@ export const goal = pgTable(
       precision: 3,
       mode: 'string',
     }).notNull(),
+    completionDate: timestamp('completionDate', {
+      precision: 3,
+      mode: 'string',
+    }),
     type: goalType('type').default('COUNT').notNull(),
   },
   (table) => [
