@@ -41,20 +41,9 @@ function Layout() {
               <Trans>New Goal</Trans>
             </div>
           </Link>
-          {/* TODO: Filter component mobile view */}
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <p className="text-xs font-medium">
-                <Trans>Filter by</Trans>
-              </p>
-              <GoalFilter filter={filter} setFilter={setFilter} />
-            </div>
-            <div className="flex items-center gap-2">
-              <p className="text-xs font-medium">
-                <Trans>Sort by</Trans>
-              </p>
-              <GoalSorting sort={sort} setSort={setSort} />
-            </div>
+            <GoalFilter filter={filter} setFilter={setFilter} />
+            <GoalSorting sort={sort} setSort={setSort} />
           </div>
         </div>
         <Suspense>
