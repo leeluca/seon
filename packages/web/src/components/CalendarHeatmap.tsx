@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
@@ -10,9 +10,9 @@ import {
   isToday as checkIsToday,
   format,
   isAfter,
+  isSameDay,
   startOfWeek,
   subWeeks,
-  isSameDay,
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
@@ -24,7 +24,6 @@ import NewEntryForm from './NewEntryForm';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
 import { ResponsiveTooltip } from './ui/responsive-tooltip';
-import { memo } from 'react';
 
 interface GetButtonStylesArgs {
   entryValue: number | undefined;
@@ -51,7 +50,7 @@ const getButtonStyles = ({
   const isNeutralDay = isEmpty && !isEmptyPastDay;
 
   const baseStyles = isNeutralDay
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground'
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground relative'
     : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9 relative';
 
   return cn(baseStyles, {
@@ -184,8 +183,8 @@ const CalendarHeatmap = ({
           const isBlocked = checkBlockedDateFn?.(day) ?? false;
           const isToday = checkIsToday(day);
           const isPast = !isToday && checkIsPast(day);
-          const isCompletionDay = 
-            !!goal?.completionDate && 
+          const isCompletionDay =
+            !!goal?.completionDate &&
             isSameDay(day, new Date(goal.completionDate));
           const showTooltip =
             (!!entryValue && !isTouchScreen) ||

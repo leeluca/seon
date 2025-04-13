@@ -60,7 +60,9 @@ function NoGoalsPlaceholder({
         width="200"
         height="200"
         loading="lazy"
-        fetchPriority="high"
+        // FIXME: change spelling to `fetchPriority` after upgrading to React 19
+        //@ts-ignore
+        fetchpriority="high"
       />
       <h4 className="mb-2 text-3xl">{title}</h4>
       <p className="text-muted-foreground text-center">{description}</p>
