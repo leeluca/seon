@@ -47,6 +47,7 @@ const entry = new Table(
   { indexes: {} },
 );
 
+// TODO: test how timezone is handled
 const goal = new Table(
   {
     // id column (text) is automatically included

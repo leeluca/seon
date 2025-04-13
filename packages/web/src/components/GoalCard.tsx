@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
@@ -184,6 +184,10 @@ export default function GoalCard({
       ),
     [currentValue, initialValue, target, startDate, targetDate, t],
   );
+  const checkBlockedDateFn = useCallback(
+    (date: Date) => isBefore(startOfDay(date), startOfDay(startDate)),
+    [startDate],
+  );
 
   return (
     <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
@@ -197,9 +201,7 @@ export default function GoalCard({
       <CardContent className="flex flex-col gap-8 px-4 pb-4 sm:gap-9 sm:px-6 sm:pb-6">
         <CalendarHeatmap
           goalId={id}
-          checkBlockedDateFn={(date) =>
-            isBefore(startOfDay(date), startOfDay(startDate))
-          }
+          checkBlockedDateFn={checkBlockedDateFn}
           blockedDateFeedback={t`Before goal's start date`}
           className="-mx-2 sm:mx-0"
         />

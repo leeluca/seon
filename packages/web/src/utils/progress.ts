@@ -3,7 +3,11 @@ import type { Kysely } from '@powersync/kysely-driver';
 import type { Database } from '~/lib/powersync/AppSchema';
 
 // TODO: move to services folder?
-export async function updateGoalProgress(goalId: string, tx: Kysely<Database>) {
+export async function updateGoalProgress(
+  goalId: string,
+  tx: Kysely<Database>,
+  completionDate?: Date,
+) {
   const goal = await tx
     .selectFrom('goal')
     .select(['id', 'initialValue', 'target', 'type', 'completionDate'])
@@ -41,7 +45,8 @@ export async function updateGoalProgress(goalId: string, tx: Kysely<Database>) {
 
   let newCompletionDate: string | null = goal.completionDate;
   if (isCompleted && !goal.completionDate) {
-    newCompletionDate = new Date().toISOString();
+    newCompletionDate =
+      completionDate?.toISOString() ?? new Date().toISOString();
   } else if (!isCompleted && goal.completionDate) {
     newCompletionDate = null;
   }
