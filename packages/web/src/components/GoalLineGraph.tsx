@@ -1,7 +1,7 @@
 import { i18n } from '@lingui/core';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { useSuspenseQuery } from '@powersync/tanstack-react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import {
   closestTo,
   differenceInDays,

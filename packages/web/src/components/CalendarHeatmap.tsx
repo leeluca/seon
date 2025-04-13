@@ -1,7 +1,7 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { useQuery } from '@powersync/tanstack-react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   addDays,
   addWeeks,
@@ -42,11 +42,9 @@ const getButtonStyles = ({
   isAfterCompletion,
 }: GetButtonStylesArgs) => {
   const hasValue = entryValue !== undefined && entryValue > 0;
-  const isZeroValue = entryValue === 0;
-  const isEmpty = entryValue === undefined;
+  const isEmpty = !entryValue;
 
   const isEmptyPastDay = isPast && isEmpty && !isAfterCompletion;
-  const isSkippedDay = isPast && isZeroValue && !isAfterCompletion;
   const isNeutralDay = isEmpty && !isEmptyPastDay;
 
   const baseStyles = isNeutralDay
@@ -59,8 +57,8 @@ const getButtonStyles = ({
     'bg-emerald-500/70': hasValue && isSelected,
 
     // Skipped states
-    'bg-orange-300 hover:bg-orange-300/80': isSkippedDay || isEmptyPastDay,
-    'bg-orange-300/70': (isSkippedDay || isEmptyPastDay) && isSelected,
+    'bg-orange-300 hover:bg-orange-300/80': isEmptyPastDay,
+    'bg-orange-300/70': isEmptyPastDay && isSelected,
 
     // Neutral states
     'bg-accent text-accent-foreground': isNeutralDay && isSelected,

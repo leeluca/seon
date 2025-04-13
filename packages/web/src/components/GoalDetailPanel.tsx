@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useSuspenseQuery } from '@powersync/tanstack-react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 import {
   Sheet,

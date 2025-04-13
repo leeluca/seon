@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { t } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
-import { useQuery } from '@powersync/tanstack-react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   addDays,
   isPast as checkIsPast,

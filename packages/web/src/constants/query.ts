@@ -28,7 +28,7 @@ export const GOALS = {
     return { queryKey, query };
   },
   detail: (goalId: string) => ({
-    queryKey: ['goal', { goalId }],
+    queryKey: ['goal', 'detail', { id: goalId, isShortId: false }],
     queryFn: () =>
       db
         .selectFrom('goal')
@@ -37,7 +37,7 @@ export const GOALS = {
         .executeTakeFirstOrThrow(),
   }),
   detailShortId: (shortId: string) => ({
-    queryKey: ['goal', { shortId }],
+    queryKey: ['goal', 'detail', { id: shortId, isShortId: true }],
     queryFn: () =>
       db
         .selectFrom('goal')
