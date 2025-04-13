@@ -38,13 +38,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
 #. placeholder {0}: format(day, 'd')
-#: src/components/CalendarHeatmap.tsx:206
-#: src/components/CalendarHeatmap.tsx:229
+#: src/components/CalendarHeatmap.tsx:230
+#: src/components/CalendarHeatmap.tsx:256
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:258
+#: src/components/CalendarHeatmap.tsx:286
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
@@ -72,7 +72,7 @@ msgstr "이미 계정이 있으신가요?"
 msgid "Amount"
 msgstr "개수"
 
-#: src/components/GoalCard.tsx:252
+#: src/components/GoalCard.tsx:254
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
@@ -80,7 +80,7 @@ msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
-#: src/components/GoalCard.tsx:203
+#: src/components/GoalCard.tsx:205
 msgid "Before goal's start date"
 msgstr "목표 시작 날짜 전"
 
@@ -125,6 +125,10 @@ msgstr "동기화 서비스에 연결할 수 없습니다. 나중에 다시 시�
 msgid "Count"
 msgstr "횟수"
 
+#: src/components/NoGoalsPlaceholder.tsx:16
+msgid "Create a new goal or change the filter!"
+msgstr "새 목표를 만들거나 필터를 변경해 보세요!"
+
 #: src/components/SignInForm.tsx:208
 msgid "Create account"
 msgstr "계정 만들기"
@@ -137,7 +141,7 @@ msgstr "개인 목표 생성 및 추적"
 msgid "Create goal"
 msgstr "목표 만들기"
 
-#: src/components/NoGoalsPlaceholder.tsx:39
+#: src/components/NoGoalsPlaceholder.tsx:11
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
 
@@ -145,16 +149,16 @@ msgstr "첫 번째 목표를 만들어 보세요!"
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/GoalCard.tsx:267
+#: src/components/GoalCard.tsx:269
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/GoalCard.tsx:241
-#: src/components/GoalCard.tsx:249
+#: src/components/GoalCard.tsx:243
+#: src/components/GoalCard.tsx:251
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:263
+#: src/components/GoalCard.tsx:265
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
@@ -169,11 +173,11 @@ msgstr "데모 모드"
 msgid "Did you achieve it?"
 msgstr "달성하셨나요?"
 
-#: src/components/GoalSorting.tsx:67
+#: src/components/GoalSorting.tsx:76
 msgid "Due later"
 msgstr "목표일 늦은 순"
 
-#: src/components/GoalSorting.tsx:63
+#: src/components/GoalSorting.tsx:71
 msgid "Due soon"
 msgstr "목표일 가까운 순"
 
@@ -220,10 +224,10 @@ msgid "Failed to update goal"
 msgstr "목표 업데이트 실패"
 
 #: src/routes/_main/goals.lazy.tsx:48
-msgid "Filter by"
-msgstr "필터 기준"
+#~ msgid "Filter by"
+#~ msgstr "필터 기준"
 
-#: src/components/GoalFilter.tsx:82
+#: src/components/GoalFilter.tsx:83
 msgid "Filter goals..."
 msgstr "목표 필터링..."
 
@@ -259,7 +263,7 @@ msgstr "목표 이름"
 
 #: src/components/StatusMenu.tsx:240
 msgid "Hello, {userName}!"
-msgstr ""
+msgstr "안녕하세요, {userName}님!"
 
 #: src/components/GoalForm.tsx:368
 msgid "Hide extra options"
@@ -301,6 +305,10 @@ msgstr "오프라인 상태인 것 같습니다!"
 msgid "It seems like you are not connected!"
 msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 
+#: src/components/NoGoalsPlaceholder.tsx:22
+msgid "Keep working on your goals!<0/>Change the filter to see all goals."
+msgstr "목표를 위해 계속 노력하세요!<0/>필터를 변경하여 모든 목표를 확인할 수 있습니다."
+
 #: src/components/StatusMenu.tsx:184
 msgid "Last synced:"
 msgstr "마지막 동기화:"
@@ -330,11 +338,11 @@ msgstr "필수 항목을 입력해 주세요"
 msgid "Name"
 msgstr "이름"
 
-#: src/components/GoalSorting.tsx:71
+#: src/components/GoalSorting.tsx:81
 msgid "Name (A to Z)"
 msgstr "이름 (가나다순)"
 
-#: src/components/GoalSorting.tsx:75
+#: src/components/GoalSorting.tsx:86
 msgid "Name (Z to A)"
 msgstr "이름 (역순)"
 
@@ -346,13 +354,21 @@ msgstr "이름을 입력해주세요"
 msgid "New Goal"
 msgstr "새로운 목표"
 
-#: src/components/GoalSorting.tsx:55
+#: src/components/GoalSorting.tsx:61
 msgid "Newest goals"
 msgstr "최근 추가순"
 
 #: src/components/NewEntryForm.tsx:273
 msgid "No"
 msgstr "아니요"
+
+#: src/components/NoGoalsPlaceholder.tsx:20
+msgid "No completed goals yet."
+msgstr "아직 완료된 목표가 없습니다."
+
+#: src/components/NoGoalsPlaceholder.tsx:15
+msgid "No goals in progress."
+msgstr "진행 중인 목표가 없습니다."
 
 #: src/components/DemoStart.tsx:63
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
@@ -362,7 +378,7 @@ msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다.<0/>�
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
 
-#: src/components/GoalSorting.tsx:59
+#: src/components/GoalSorting.tsx:66
 msgid "Oldest goals"
 msgstr "오래된 순"
 
@@ -432,7 +448,7 @@ msgstr "저장"
 msgid "See you again!"
 msgstr "다음에 또 뵈어요!"
 
-#: src/components/GoalSorting.tsx:95
+#: src/components/GoalSorting.tsx:111
 msgid "Select sort..."
 msgstr "정렬 기준 선택..."
 
@@ -481,8 +497,8 @@ msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
 #: src/routes/_main/goals.lazy.tsx:54
-msgid "Sort by"
-msgstr "정렬 기준"
+#~ msgid "Sort by"
+#~ msgstr "정렬 기준"
 
 #: src/components/GoalForm.tsx:384
 msgid "Start date"
@@ -522,7 +538,7 @@ msgstr "동기화 중"
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "동기화 기능이 비활성화되었습니다.<0/>모든 데이터는 로컬에 저장됩니다."
 
-#: src/components/GoalsContent.tsx:30
+#: src/components/GoalsContent.tsx:35
 msgid "Syncing your goals..."
 msgstr "목표 동기화 중..."
 
@@ -538,7 +554,7 @@ msgstr "목표일은 시작일 이후여야 합니다"
 msgid "Target value"
 msgstr "목표값"
 
-#: src/components/NoGoalsPlaceholder.tsx:36
+#: src/components/NoGoalsPlaceholder.tsx:10
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
 
@@ -554,11 +570,11 @@ msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 msgid "Time Left"
 msgstr "남은 기간"
 
-#: src/components/CalendarHeatmap.tsx:150
+#: src/components/CalendarHeatmap.tsx:167
 msgid "Today"
 msgstr "오늘"
 
-#: src/components/GoalCard.tsx:280
+#: src/components/GoalCard.tsx:282
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 

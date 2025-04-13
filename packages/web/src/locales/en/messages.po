@@ -38,13 +38,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
 #. placeholder {0}: format(day, 'd')
-#: src/components/CalendarHeatmap.tsx:206
-#: src/components/CalendarHeatmap.tsx:229
+#: src/components/CalendarHeatmap.tsx:230
+#: src/components/CalendarHeatmap.tsx:256
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:258
+#: src/components/CalendarHeatmap.tsx:286
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
@@ -72,7 +72,7 @@ msgstr "Already a user?"
 msgid "Amount"
 msgstr "Amount"
 
-#: src/components/GoalCard.tsx:252
+#: src/components/GoalCard.tsx:254
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
@@ -80,7 +80,7 @@ msgstr "Are you sure you want to delete <0>{title}</0>?"
 msgid "Average Pace"
 msgstr "Average Pace"
 
-#: src/components/GoalCard.tsx:203
+#: src/components/GoalCard.tsx:205
 msgid "Before goal's start date"
 msgstr "Before goal's start date"
 
@@ -125,6 +125,10 @@ msgstr "Could not connect with the sync service. Try again later."
 msgid "Count"
 msgstr "Count"
 
+#: src/components/NoGoalsPlaceholder.tsx:16
+msgid "Create a new goal or change the filter!"
+msgstr "Create a new goal or change the filter!"
+
 #: src/components/SignInForm.tsx:208
 msgid "Create account"
 msgstr "Create account"
@@ -137,7 +141,7 @@ msgstr "Create and track personal goals"
 msgid "Create goal"
 msgstr "Create goal"
 
-#: src/components/NoGoalsPlaceholder.tsx:39
+#: src/components/NoGoalsPlaceholder.tsx:11
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
@@ -145,16 +149,16 @@ msgstr "Create your first goal!"
 msgid "Date"
 msgstr "Date"
 
-#: src/components/GoalCard.tsx:267
+#: src/components/GoalCard.tsx:269
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/GoalCard.tsx:241
-#: src/components/GoalCard.tsx:249
+#: src/components/GoalCard.tsx:243
+#: src/components/GoalCard.tsx:251
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:263
+#: src/components/GoalCard.tsx:265
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
@@ -169,11 +173,11 @@ msgstr "Demo Mode"
 msgid "Did you achieve it?"
 msgstr "Did you achieve it?"
 
-#: src/components/GoalSorting.tsx:67
+#: src/components/GoalSorting.tsx:76
 msgid "Due later"
 msgstr "Due later"
 
-#: src/components/GoalSorting.tsx:63
+#: src/components/GoalSorting.tsx:71
 msgid "Due soon"
 msgstr "Due soon"
 
@@ -220,10 +224,10 @@ msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
 #: src/routes/_main/goals.lazy.tsx:48
-msgid "Filter by"
-msgstr "Filter by"
+#~ msgid "Filter by"
+#~ msgstr "Filter by"
 
-#: src/components/GoalFilter.tsx:82
+#: src/components/GoalFilter.tsx:83
 msgid "Filter goals..."
 msgstr "Filter goals..."
 
@@ -301,6 +305,10 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
+#: src/components/NoGoalsPlaceholder.tsx:22
+msgid "Keep working on your goals!<0/>Change the filter to see all goals."
+msgstr "Keep working on your goals!<0/>Change the filter to see all goals."
+
 #: src/components/StatusMenu.tsx:184
 msgid "Last synced:"
 msgstr "Last synced:"
@@ -330,11 +338,11 @@ msgstr "Missing required fields"
 msgid "Name"
 msgstr "Name"
 
-#: src/components/GoalSorting.tsx:71
+#: src/components/GoalSorting.tsx:81
 msgid "Name (A to Z)"
 msgstr "Name (A to Z)"
 
-#: src/components/GoalSorting.tsx:75
+#: src/components/GoalSorting.tsx:86
 msgid "Name (Z to A)"
 msgstr "Name (Z to A)"
 
@@ -346,13 +354,21 @@ msgstr "Name is required"
 msgid "New Goal"
 msgstr "New Goal"
 
-#: src/components/GoalSorting.tsx:55
+#: src/components/GoalSorting.tsx:61
 msgid "Newest goals"
 msgstr "Newest first"
 
 #: src/components/NewEntryForm.tsx:273
 msgid "No"
 msgstr "No"
+
+#: src/components/NoGoalsPlaceholder.tsx:20
+msgid "No completed goals yet."
+msgstr "No completed goals yet."
+
+#: src/components/NoGoalsPlaceholder.tsx:15
+msgid "No goals in progress."
+msgstr "No goals in progress."
 
 #: src/components/DemoStart.tsx:63
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
@@ -362,7 +378,7 @@ msgstr "Note: Seon Goals is still in early development.<0/>Many additional featu
 msgid "Numbers only"
 msgstr "Numbers only"
 
-#: src/components/GoalSorting.tsx:59
+#: src/components/GoalSorting.tsx:66
 msgid "Oldest goals"
 msgstr "Oldest first"
 
@@ -432,7 +448,7 @@ msgstr "Save"
 msgid "See you again!"
 msgstr "See you again!"
 
-#: src/components/GoalSorting.tsx:95
+#: src/components/GoalSorting.tsx:111
 msgid "Select sort..."
 msgstr "Select sort..."
 
@@ -481,8 +497,8 @@ msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
 #: src/routes/_main/goals.lazy.tsx:54
-msgid "Sort by"
-msgstr "Sort by"
+#~ msgid "Sort by"
+#~ msgstr "Sort by"
 
 #: src/components/GoalForm.tsx:384
 msgid "Start date"
@@ -522,7 +538,7 @@ msgstr "Syncing"
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "Syncing features are disabled.<0/>All data is stored locally."
 
-#: src/components/GoalsContent.tsx:30
+#: src/components/GoalsContent.tsx:35
 msgid "Syncing your goals..."
 msgstr "Syncing your goals..."
 
@@ -538,7 +554,7 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
-#: src/components/NoGoalsPlaceholder.tsx:36
+#: src/components/NoGoalsPlaceholder.tsx:10
 msgid "There are no goals."
 msgstr "There are no goals."
 
@@ -554,11 +570,11 @@ msgstr "This will delete all your data and reset the demo."
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:150
+#: src/components/CalendarHeatmap.tsx:167
 msgid "Today"
 msgstr "Today"
 
-#: src/components/GoalCard.tsx:280
+#: src/components/GoalCard.tsx:282
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 

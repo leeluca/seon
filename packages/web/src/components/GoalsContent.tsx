@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useCallback, useEffect } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useStatus, useSuspenseQuery } from '@powersync/react';
 import { useNavigate } from '@tanstack/react-router';
@@ -18,9 +18,14 @@ const LazyNoGoalsPlaceholder = lazy(
 const NoGoalsPlaceholder = ({
   onClick,
   className,
+  filter,
 }: NoGoalsPlaceholderProps) => (
   <Suspense fallback={null}>
-    <LazyNoGoalsPlaceholder onClick={onClick} className={className} />
+    <LazyNoGoalsPlaceholder
+      onClick={onClick}
+      className={className}
+      filter={filter}
+    />
   </Suspense>
 );
 
@@ -42,7 +47,10 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
 
   const { data: goals } = useSuspenseQuery(GOALS.list(sort, filter).query);
   const navigate = useNavigate();
-  const openNewGoalForm = () => void navigate({ to: '/goals/new' });
+  const openNewGoalForm = useCallback(
+    () => void navigate({ to: '/goals/new' }),
+    [navigate],
+  );
 
   const { hasSynced } = useStatus();
 
@@ -67,7 +75,11 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
         (isSyncing ? (
           <SyncingPlaceholder />
         ) : (
-          <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
+          <NoGoalsPlaceholder
+            onClick={openNewGoalForm}
+            className="mt-5"
+            filter={filter}
+          />
         ))}
       {goals.map((goal) => (
         <GoalCard key={goal.id} {...goal} />
