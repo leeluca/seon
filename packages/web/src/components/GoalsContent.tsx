@@ -1,10 +1,15 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useCallback, useEffect } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useStatus } from '@powersync/react';
+import { useStatus, useSuspenseQuery } from '@powersync/react';
+import { useNavigate } from '@tanstack/react-router';
 
 import GoalCard from '~/components/GoalCard';
 import type { NoGoalsPlaceholderProps } from '~/components/NoGoalsPlaceholder';
-import type { Database } from '~/lib/powersync/AppSchema';
+import { GOALS } from '~/constants/query';
+import db from '~/lib/database';
+import { useUserStore } from '~/states/stores/userStore';
+import type { GoalFilter, GoalSort } from '~/types/goal';
+import { updateGoalProgress } from '~/utils/progress';
 
 const LazyNoGoalsPlaceholder = lazy(
   () => import('~/components/NoGoalsPlaceholder'),
@@ -13,9 +18,14 @@ const LazyNoGoalsPlaceholder = lazy(
 const NoGoalsPlaceholder = ({
   onClick,
   className,
+  filter,
 }: NoGoalsPlaceholderProps) => (
   <Suspense fallback={null}>
-    <LazyNoGoalsPlaceholder onClick={onClick} className={className} />
+    <LazyNoGoalsPlaceholder
+      onClick={onClick}
+      className={className}
+      filter={filter}
+    />
   </Suspense>
 );
 
@@ -28,17 +38,33 @@ const SyncingPlaceholder = () => (
 );
 
 export interface GoalsContentProps {
-  goals: Database['goal'][];
-  openNewGoalForm: () => void;
-  useSync: boolean;
+  sort: GoalSort;
+  filter: GoalFilter;
 }
 
-export function GoalsContent({
-  goals,
-  openNewGoalForm,
-  useSync,
-}: GoalsContentProps) {
+export function GoalsContent({ sort, filter }: GoalsContentProps) {
+  const useSync = useUserStore((state) => state.user.useSync);
+
+  const { data: goals } = useSuspenseQuery(GOALS.list(sort, filter).query);
+  const navigate = useNavigate();
+  const openNewGoalForm = useCallback(
+    () => void navigate({ to: '/goals/new' }),
+    [navigate],
+  );
+
   const { hasSynced } = useStatus();
+
+  // FIXME: to be removed
+  // biome-ignore lint/correctness/useExhaustiveDependencies: should only run once
+  useEffect(() => {
+    const isNotMigrated = goals.some((goal) => !goal.currentValue);
+
+    if (isNotMigrated) {
+      void db.transaction().execute(async (tx) => {
+        await Promise.all(goals.map((goal) => updateGoalProgress(goal.id, tx)));
+      });
+    }
+  }, []);
 
   const showNoGoals = !goals.length;
   const isSyncing = useSync && !hasSynced;
@@ -49,7 +75,11 @@ export function GoalsContent({
         (isSyncing ? (
           <SyncingPlaceholder />
         ) : (
-          <NoGoalsPlaceholder onClick={openNewGoalForm} className="mt-5" />
+          <NoGoalsPlaceholder
+            onClick={openNewGoalForm}
+            className="mt-5"
+            filter={filter}
+          />
         ))}
       {goals.map((goal) => (
         <GoalCard key={goal.id} {...goal} />

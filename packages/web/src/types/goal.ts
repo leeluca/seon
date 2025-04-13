@@ -7,3 +7,5 @@ export type GoalSort =
   | 'targetDate asc'
   | 'title asc'
   | 'title desc';
+
+export type GoalFilter = 'all' | 'completed' | 'incomplete';

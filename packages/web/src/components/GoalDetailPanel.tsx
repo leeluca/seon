@@ -67,7 +67,7 @@ export function GoalDetailPanel({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
-        {/* FIXME: header should be sticky and always visible regardgless of scroll position */}
+        {/* FIXME: header should be sticky and always visible regardless of scroll position */}
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>

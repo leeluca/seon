@@ -1,7 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
-import { useShallow } from 'zustand/react/shallow';
 
 import './tailwind.css';
 
@@ -19,7 +18,6 @@ import { isOpfsAvailable } from './utils/storage';
 const router = createRouter({
   routeTree,
   context: {
-    user: undefined,
     authStatus: AUTH_CONTEXT_INITIAL_STATE,
     isUserInitialized: false,
   },
@@ -35,9 +33,7 @@ declare module '@tanstack/react-router' {
 function App() {
   const [isCompatible, setIsCompatible] = useState(true);
 
-  const [user, isUserInitialized] = useUserStore(
-    useShallow((state) => [state.user, state.isInitialized]),
-  );
+  const isUserInitialized = useUserStore((state) => state.isInitialized);
   const { data: authStatus } = useFetchAuthStatus();
 
   useEffect(() => {
@@ -65,7 +61,7 @@ function App() {
   return (
     <RouterProvider
       router={router}
-      context={{ user, authStatus, isUserInitialized }}
+      context={{ authStatus, isUserInitialized }}
     />
   );
 }

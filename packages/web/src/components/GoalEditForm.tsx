@@ -11,6 +11,7 @@ import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
+import { updateGoalProgress } from '~/utils/progress';
 import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import { Button } from './ui/button';
 import {
@@ -40,22 +41,40 @@ async function handleUpdate(
     | 'type'
   >,
   callback?: () => void,
+  completionCriteriaChanged?: boolean,
 ) {
   try {
-    await db
-      .updateTable('goal')
-      .set({
-        title,
-        initialValue,
-        target: target,
-        unit,
-        startDate: startDate,
-        targetDate: targetDate,
-        updatedAt: new Date().toISOString(),
-        type,
-      })
-      .where('id', '=', goalId)
-      .executeTakeFirstOrThrow();
+    await db.transaction().execute(async (tx) => {
+      const [, latestEntry] = await Promise.all([
+        tx
+          .updateTable('goal')
+          .set({
+            title,
+            initialValue,
+            target: target,
+            unit,
+            startDate: startDate,
+            targetDate: targetDate,
+            updatedAt: new Date().toISOString(),
+            type,
+          })
+          .where('id', '=', goalId)
+          .executeTakeFirstOrThrow(),
+        completionCriteriaChanged &&
+          tx
+            .selectFrom('entry')
+            .select('date')
+            .where('goalId', '=', goalId)
+            .orderBy('date', 'desc')
+            .limit(1)
+            .executeTakeFirst(),
+      ]);
+      await updateGoalProgress(
+        goalId,
+        tx,
+        latestEntry ? new Date(latestEntry.date) : undefined,
+      );
+    });
 
     toast.success(<Trans>Sucessfully updated goal</Trans>);
     callback?.();
@@ -114,22 +133,49 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
         }
       },
     },
-    onSubmit: async ({ value }) => {
-      const { startDate, targetDate, targetValue } = value;
+    onSubmit: async ({ value, formApi }) => {
+      const { startDate, targetDate, targetValue, initialValue, title } = value;
       if (!targetDate || !targetValue) {
         return;
       }
       const stringStartDate = startDate.toISOString();
       const stringTargetDate = targetDate.toISOString();
+      const completionCriteriaChanged =
+        targetValue !== formApi.options.defaultValues?.targetValue ||
+        initialValue !== formApi.options.defaultValues?.initialValue;
 
-      await handleUpdate(goalId, {
-        ...value,
-        target: targetValue,
-        startDate: stringStartDate,
-        targetDate: stringTargetDate,
-      });
-      await queryClient.invalidateQueries({ queryKey: GOALS.all.queryKey });
-      form.reset();
+      await handleUpdate(
+        goalId,
+        {
+          ...value,
+          target: targetValue,
+          startDate: stringStartDate,
+          targetDate: stringTargetDate,
+        },
+        undefined,
+        completionCriteriaChanged,
+      );
+
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: GOALS.detailShortId(goal.shortId).queryKey,
+        }),
+        queryClient.invalidateQueries({
+          queryKey: GOALS.detail(goalId).queryKey,
+        }),
+      ]);
+      if (
+        completionCriteriaChanged ||
+        title !== formApi.options.defaultValues?.title
+      ) {
+        await queryClient.invalidateQueries({
+          queryKey: GOALS.all.queryKey,
+        });
+      }
+
+      setTimeout(() => {
+        form.reset(value);
+      }, 150);
     },
   });
 

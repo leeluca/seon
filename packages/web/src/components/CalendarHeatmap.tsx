@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@powersync/tanstack-react-query';
@@ -9,6 +9,8 @@ import {
   isSameWeek as checkIsSameWeek,
   isToday as checkIsToday,
   format,
+  isAfter,
+  isSameDay,
   startOfWeek,
   subWeeks,
 } from 'date-fns';
@@ -29,6 +31,7 @@ interface GetButtonStylesArgs {
   isToday: boolean;
   isPast: boolean;
   isBlocked: boolean;
+  isAfterCompletion: boolean;
 }
 const getButtonStyles = ({
   entryValue,
@@ -36,23 +39,42 @@ const getButtonStyles = ({
   isToday,
   isPast,
   isBlocked,
+  isAfterCompletion,
 }: GetButtonStylesArgs) => {
-  const entryValueZero = (isPast && !entryValue) || entryValue === 0;
-  const entryUndefined = entryValue === undefined && !isPast;
-  const baseStyles = entryUndefined
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground'
-    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9';
+  const hasValue = entryValue !== undefined && entryValue > 0;
+  const isZeroValue = entryValue === 0;
+  const isEmpty = entryValue === undefined;
+
+  const isEmptyPastDay = isPast && isEmpty && !isAfterCompletion;
+  const isSkippedDay = isPast && isZeroValue && !isAfterCompletion;
+  const isNeutralDay = isEmpty && !isEmptyPastDay;
+
+  const baseStyles = isNeutralDay
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground relative'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9 relative';
 
   return cn(baseStyles, {
-    'bg-emerald-500 hover:bg-emerald-500/80': entryValue && entryValue > 0,
-    'bg-emerald-500/70': entryValue && entryValue > 0 && isSelected,
-    'bg-orange-300 hover:bg-orange-300/80': entryValueZero,
-    'bg-orange-300/70': entryValueZero && isSelected,
-    'bg-accent text-accent-foreground': entryUndefined && isSelected,
+    // Success states
+    'bg-emerald-500 hover:bg-emerald-500/80': hasValue,
+    'bg-emerald-500/70': hasValue && isSelected,
+
+    // Skipped states
+    'bg-orange-300 hover:bg-orange-300/80': isSkippedDay || isEmptyPastDay,
+    'bg-orange-300/70': (isSkippedDay || isEmptyPastDay) && isSelected,
+
+    // Neutral states
+    'bg-accent text-accent-foreground': isNeutralDay && isSelected,
     'border-2 border-blue-200': isToday,
     'bg-gray-300 cursor-not-allowed border-none hover:bg-gray-300': isBlocked,
   });
 };
+
+const CompletionBadge = () => (
+  <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-bold text-white ring-2 ring-white">
+    ✓
+  </div>
+);
+
 interface CalendarHeatmapProps {
   goalId: string;
   checkBlockedDateFn?: (date: Date) => boolean;
@@ -67,7 +89,6 @@ const CalendarHeatmap = ({
   className,
 }: CalendarHeatmapProps) => {
   const { data: goal } = useQuery(GOALS.detail(goalId));
-
   const { data: entries = [] } = useQuery(ENTRIES.goalId(goalId));
 
   const entriesMap = useMemo(
@@ -162,6 +183,12 @@ const CalendarHeatmap = ({
           const isBlocked = checkBlockedDateFn?.(day) ?? false;
           const isToday = checkIsToday(day);
           const isPast = !isToday && checkIsPast(day);
+          const isCompletionDay =
+            !!goal?.completionDate &&
+            isSameDay(day, new Date(goal.completionDate));
+          const showTooltip =
+            (!!entryValue && !isTouchScreen) ||
+            (isBlocked && !!blockedDateFeedback);
 
           return (
             <div
@@ -175,8 +202,7 @@ const CalendarHeatmap = ({
             >
               <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
 
-              {(!!entryValue && !isTouchScreen) ||
-              (isBlocked && !!blockedDateFeedback) ? (
+              {showTooltip ? (
                 <ResponsiveTooltip
                   content={
                     isBlocked && blockedDateFeedback ? (
@@ -195,6 +221,9 @@ const CalendarHeatmap = ({
                       isToday,
                       isPast: isPast && !isBlocked,
                       isBlocked,
+                      isAfterCompletion:
+                        !!goal?.completionDate &&
+                        isAfter(day, new Date(goal?.completionDate)),
                     })}
                     disabled={isBlocked}
                     aria-label={t`Add entry for ${format(day, 'd')}`}
@@ -206,6 +235,7 @@ const CalendarHeatmap = ({
                     <div className="text-center text-xs">
                       {format(day, 'd')}
                     </div>
+                    {isCompletionDay && <CompletionBadge />}
                   </Button>
                 </ResponsiveTooltip>
               ) : (
@@ -217,6 +247,9 @@ const CalendarHeatmap = ({
                     isToday,
                     isPast: isPast && !isBlocked,
                     isBlocked,
+                    isAfterCompletion:
+                      !!goal?.completionDate &&
+                      isAfter(day, new Date(goal?.completionDate)),
                   })}
                   disabled={isBlocked}
                   aria-label={t`Add entry for ${format(day, 'd')}`}
@@ -226,6 +259,7 @@ const CalendarHeatmap = ({
                   }}
                 >
                   <div className="text-center text-xs">{format(day, 'd')}</div>
+                  {isCompletionDay && <CompletionBadge />}
                 </Button>
               )}
             </div>
@@ -272,4 +306,4 @@ const CalendarHeatmap = ({
   );
 };
 
-export default CalendarHeatmap;
+export default memo(CalendarHeatmap);

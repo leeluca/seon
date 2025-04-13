@@ -1,7 +1,14 @@
 import * as React from 'react';
-import { useLingui } from '@lingui/react/macro';
-import { Check, ChevronDownIcon } from 'lucide-react';
 import { msg } from '@lingui/core/macro';
+import { useLingui } from '@lingui/react/macro';
+import {
+  ArrowDown01Icon,
+  ArrowDown10Icon,
+  ArrowDownAZIcon,
+  ArrowDownZAIcon,
+  Check,
+} from 'lucide-react';
+
 import { Button } from '~/components/ui/button';
 import {
   Command,
@@ -22,19 +29,19 @@ import { cn } from '~/utils';
 async function updateDefaultSort(updatedSort: GoalSort) {
   const userId = useUserStore.getState().user.id;
   const currentPreferences = useUserStore.getState().userPreferences;
+  const updatedPreferences = JSON.stringify({
+    ...currentPreferences,
+    defaultGoalSort: updatedSort,
+  });
 
   await db
     .updateTable('user')
     .set({
-      preferences: JSON.stringify({
-        ...currentPreferences,
-        defaultGoalSort: updatedSort,
-      }),
+      preferences: updatedPreferences,
     })
     .where('id', '=', userId)
     .execute();
-
-  useUserStore.getState().fetch();
+  useUserStore.getState().setPreferences(updatedPreferences);
 }
 
 interface GoalSortingProps {
@@ -53,31 +60,43 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
         {
           label: t(msg`Newest goals`),
           value: 'createdAt desc',
+          icon: <ArrowDown10Icon size={16} className="opacity-80" />,
         },
         {
           label: t(msg`Oldest goals`),
           value: 'createdAt asc',
+          icon: <ArrowDown01Icon size={16} className="opacity-80" />,
         },
         {
           label: t(msg`Due soon`),
           value: 'targetDate desc',
+          icon: <ArrowDown01Icon size={16} className="opacity-80" />,
         },
         {
           label: t(msg`Due later`),
           value: 'targetDate asc',
+          icon: <ArrowDown10Icon size={16} className="opacity870" />,
         },
         {
           label: t(msg`Name (A to Z)`),
           value: 'title asc',
+          icon: <ArrowDownAZIcon size={16} className="opacity-80" />,
         },
         {
           label: t(msg`Name (Z to A)`),
           value: 'title desc',
+          icon: <ArrowDownZAIcon size={16} className="opacity-80" />,
         },
       ] as const,
     [t],
   );
 
+  const selectedSort = React.useMemo(
+    () => sortParams.find((param) => param.value === sort),
+    [sortParams, sort],
+  );
+
+  // FIXME: change to dropdown component for accessibility
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -86,16 +105,13 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
           // biome-ignore lint/a11y/useSemanticElements: cannot use svg icon inside <select> element
           role="listbox"
           aria-expanded={open}
-          className="w-[132px] max-w-[200px] justify-between"
-          size="sm"
+          className="max-w-[200px] justify-normal"
         >
-          {sort
-            ? sortParams.find((framework) => framework.value === sort)?.label
-            : t(msg`Select sort...`)}
-          <ChevronDownIcon className="ml-2 opacity-50" size={16} />
+          {selectedSort?.icon}
+          {selectedSort?.label || t(msg`Select sort...`)}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit max-w-[200px] p-0">
+      <PopoverContent className="w-fit p-0">
         <Command>
           <CommandList>
             <CommandGroup>
