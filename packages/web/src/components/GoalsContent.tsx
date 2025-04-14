@@ -45,7 +45,9 @@ export interface GoalsContentProps {
 export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const useSync = useUserStore((state) => state.user.useSync);
 
-  const { data: goals } = useSuspenseQuery(GOALS.list(sort, filter).query);
+  const { data: goals, refresh } = useSuspenseQuery(
+    GOALS.list(sort, filter).query,
+  );
   const navigate = useNavigate();
   const openNewGoalForm = useCallback(
     () => void navigate({ to: '/goals/new' }),
@@ -69,6 +71,11 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const showNoGoals = !goals.length;
   const isSyncing = useSync && !hasSynced;
 
+  // FIXME: temporary workaround to refresh the goals list after deleting a goal
+  const handleDeleteSuccess = useCallback(() => {
+    refresh?.();
+  }, [refresh]);
+
   return (
     <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
       {showNoGoals &&
@@ -82,7 +89,11 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
           />
         ))}
       {goals.map((goal) => (
-        <GoalCard key={goal.id} {...goal} />
+        <GoalCard
+          key={goal.id}
+          {...goal}
+          onDeleteSuccess={handleDeleteSuccess}
+        />
       ))}
     </main>
   );

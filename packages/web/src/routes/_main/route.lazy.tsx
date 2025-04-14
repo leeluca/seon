@@ -1,5 +1,7 @@
+import { ErrorBoundary } from 'react-error-boundary';
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
+import ErrorFallback from '~/components/ErrorFallback';
 import LanguageSelector from '~/components/LanguageSelector';
 import AppStatusMenu from '~/components/StatusMenu';
 
@@ -18,7 +20,9 @@ function Dashboard() {
 
       <div className="px-3 py-2 sm:px-6 sm:py-4 xl:p-8">
         <div className="m-auto mb-[90px] max-w-screen-2xl">
-          <Outlet />
+          <ErrorBoundary fallback={<ErrorFallback />}>
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </div>
       {/* TODO: add common footer to all pages at __root.tsx? */}

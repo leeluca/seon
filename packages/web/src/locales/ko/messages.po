@@ -38,13 +38,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
 #. placeholder {0}: format(day, 'd')
-#: src/components/CalendarHeatmap.tsx:230
-#: src/components/CalendarHeatmap.tsx:256
+#: src/components/CalendarHeatmap.tsx:227
+#: src/components/CalendarHeatmap.tsx:253
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:286
+#: src/components/CalendarHeatmap.tsx:283
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
@@ -52,7 +52,7 @@ msgstr "<0>{0}</0>에 기록 추가"
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
-#: src/components/GoalLineGraph.tsx:314
+#: src/components/GoalLineGraph.tsx:290
 msgid "Add your first entry to start"
 msgstr "아직 목표를 진행하지 않았습니다."
 
@@ -72,6 +72,10 @@ msgstr "이미 계정이 있으신가요?"
 msgid "Amount"
 msgstr "개수"
 
+#: src/components/ErrorFallback.tsx:112
+msgid "An unexpected error occurred."
+msgstr "예상치 못한 오류가 발생했습니다."
+
 #: src/components/GoalCard.tsx:254
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
@@ -89,11 +93,11 @@ msgid "Behind schedule!"
 msgstr "일정 지연"
 
 #: src/components/SignOutButton.tsx:67
-#: src/components/GoalEditForm.tsx:195
+#: src/components/GoalEditForm.tsx:241
 msgid "Cancel"
 msgstr "취소"
 
-#: src/components/GoalEditForm.tsx:185
+#: src/components/GoalEditForm.tsx:231
 msgid "Cancel editing"
 msgstr "수정 취소"
 
@@ -185,7 +189,7 @@ msgstr "목표일 가까운 순"
 msgid "e.g. words"
 msgstr "예: 단어"
 
-#: src/components/GoalEditForm.tsx:156
+#: src/components/GoalEditForm.tsx:202
 msgid "Edit goal"
 msgstr "목표 수정"
 
@@ -203,7 +207,7 @@ msgstr "이메일"
 msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
 
-#: src/components/GoalLineGraph.tsx:280
+#: src/components/GoalLineGraph.tsx:256
 msgid "Entries after target date"
 msgstr "목표일 이후의 기록"
 
@@ -219,7 +223,7 @@ msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
-#: src/components/GoalEditForm.tsx:64
+#: src/components/GoalEditForm.tsx:83
 msgid "Failed to update goal"
 msgstr "목표 업데이트 실패"
 
@@ -248,7 +252,7 @@ msgstr "뒤로 가기"
 msgid "Goal achieved!"
 msgstr "목표 달성!"
 
-#: src/components/GoalLineGraph.tsx:261
+#: src/components/GoalLineGraph.tsx:236
 msgid "Goal Benchmark"
 msgstr "목표 기준선"
 
@@ -314,7 +318,7 @@ msgid "Last synced:"
 msgstr "마지막 동기화:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/components/GoalEditForm.tsx:159
+#: src/components/GoalEditForm.tsx:205
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
@@ -329,7 +333,7 @@ msgstr "프랑스어 단어 1000개 익히기"
 
 #: src/routes/_main/goals.new.tsx:113
 #: src/components/SignUpForm.tsx:66
-#: src/components/GoalEditForm.tsx:113
+#: src/components/GoalEditForm.tsx:132
 msgid "Missing required fields"
 msgstr "필수 항목을 입력해 주세요"
 
@@ -350,7 +354,7 @@ msgstr "이름 (역순)"
 msgid "Name is required"
 msgstr "이름을 입력해주세요"
 
-#: src/routes/_main/goals.lazy.tsx:41
+#: src/routes/_main/goals.lazy.tsx:43
 msgid "New Goal"
 msgstr "새로운 목표"
 
@@ -414,6 +418,10 @@ msgstr "업데이트 준비 완료"
 msgid "Record daily progress"
 msgstr "일일 진행 상황 기록"
 
+#: src/components/ErrorFallback.tsx:110
+msgid "Refresh page"
+msgstr "페이지 새로고침"
+
 #: src/components/UpdatePrompt.tsx:68
 msgid "Refresh to get the latest improvements."
 msgstr "업데이트하여 개선 사항을 확인해 보세요."
@@ -439,8 +447,8 @@ msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
 #: src/components/NewEntryForm.tsx:426
-#: src/components/GoalEditForm.tsx:206
-#: src/components/GoalEditForm.tsx:217
+#: src/components/GoalEditForm.tsx:252
+#: src/components/GoalEditForm.tsx:263
 msgid "Save"
 msgstr "저장"
 
@@ -496,6 +504,10 @@ msgstr "회원 가입"
 msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
+#: src/components/ErrorFallback.tsx:109
+msgid "Something went wrong"
+msgstr "문제가 발생했습니다"
+
 #: src/routes/_main/goals.lazy.tsx:54
 #~ msgid "Sort by"
 #~ msgstr "정렬 기준"
@@ -520,7 +532,7 @@ msgstr "다시 시작"
 msgid "Sucessfully added goal"
 msgstr "목표가 추가되었습니다"
 
-#: src/components/GoalEditForm.tsx:60
+#: src/components/GoalEditForm.tsx:79
 msgid "Sucessfully updated goal"
 msgstr "목표가 업데이트되었습니다"
 
@@ -570,7 +582,7 @@ msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 msgid "Time Left"
 msgstr "남은 기간"
 
-#: src/components/CalendarHeatmap.tsx:167
+#: src/components/CalendarHeatmap.tsx:164
 msgid "Today"
 msgstr "오늘"
 
@@ -602,6 +614,10 @@ msgstr "단위"
 #: src/components/SignOutButton.tsx:49
 msgid "Unsynced data will be lost"
 msgstr "동기화되지 않은 데이터는 손실됩니다"
+
+#: src/components/ErrorFallback.tsx:111
+msgid "Update app"
+msgstr "앱 업데이트"
 
 #: src/components/UpdatePrompt.tsx:56
 msgid "Update available"
@@ -661,11 +677,11 @@ msgstr "데이터가 동기화되었습니다!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "최근 변경사항이 아직 동기화되지 않았습니다."
 
-#: src/components/GoalLineGraph.tsx:211
+#: src/components/GoalLineGraph.tsx:177
 msgid "Your Progress"
 msgstr "진행 상황"
 
-#: src/components/GoalLineGraph.tsx:310
+#: src/components/GoalLineGraph.tsx:286
 msgid "Your progress graph will be shown here"
 msgstr "여기에 진행 상황 그래프가 표시됩니다"
 

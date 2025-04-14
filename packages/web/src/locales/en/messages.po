@@ -38,13 +38,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
 #. placeholder {0}: format(day, 'd')
-#: src/components/CalendarHeatmap.tsx:230
-#: src/components/CalendarHeatmap.tsx:256
+#: src/components/CalendarHeatmap.tsx:227
+#: src/components/CalendarHeatmap.tsx:253
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:286
+#: src/components/CalendarHeatmap.tsx:283
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
@@ -52,7 +52,7 @@ msgstr "Add entry for <0>{0}</0>"
 msgid "Add new goal"
 msgstr "Add new goal"
 
-#: src/components/GoalLineGraph.tsx:314
+#: src/components/GoalLineGraph.tsx:290
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
@@ -72,6 +72,10 @@ msgstr "Already a user?"
 msgid "Amount"
 msgstr "Amount"
 
+#: src/components/ErrorFallback.tsx:112
+msgid "An unexpected error occurred."
+msgstr "An unexpected error occurred."
+
 #: src/components/GoalCard.tsx:254
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
@@ -89,11 +93,11 @@ msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
 #: src/components/SignOutButton.tsx:67
-#: src/components/GoalEditForm.tsx:195
+#: src/components/GoalEditForm.tsx:241
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/components/GoalEditForm.tsx:185
+#: src/components/GoalEditForm.tsx:231
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
@@ -185,7 +189,7 @@ msgstr "Due soon"
 msgid "e.g. words"
 msgstr "e.g. words"
 
-#: src/components/GoalEditForm.tsx:156
+#: src/components/GoalEditForm.tsx:202
 msgid "Edit goal"
 msgstr "Edit goal"
 
@@ -203,7 +207,7 @@ msgstr "Email"
 msgid "Email is required"
 msgstr "Email is required"
 
-#: src/components/GoalLineGraph.tsx:280
+#: src/components/GoalLineGraph.tsx:256
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
@@ -219,7 +223,7 @@ msgstr "Experience Seon Goals without creating an account"
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
-#: src/components/GoalEditForm.tsx:64
+#: src/components/GoalEditForm.tsx:83
 msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
@@ -248,7 +252,7 @@ msgstr "Go back"
 msgid "Goal achieved!"
 msgstr "Goal achieved!"
 
-#: src/components/GoalLineGraph.tsx:261
+#: src/components/GoalLineGraph.tsx:236
 msgid "Goal Benchmark"
 msgstr "Goal Benchmark"
 
@@ -314,7 +318,7 @@ msgid "Last synced:"
 msgstr "Last synced:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/components/GoalEditForm.tsx:159
+#: src/components/GoalEditForm.tsx:205
 msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
@@ -329,7 +333,7 @@ msgstr "Learn 1000 French words"
 
 #: src/routes/_main/goals.new.tsx:113
 #: src/components/SignUpForm.tsx:66
-#: src/components/GoalEditForm.tsx:113
+#: src/components/GoalEditForm.tsx:132
 msgid "Missing required fields"
 msgstr "Missing required fields"
 
@@ -350,7 +354,7 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:41
+#: src/routes/_main/goals.lazy.tsx:43
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -414,6 +418,10 @@ msgstr "Ready to update"
 msgid "Record daily progress"
 msgstr "Record daily progress"
 
+#: src/components/ErrorFallback.tsx:110
+msgid "Refresh page"
+msgstr "Refresh page"
+
 #: src/components/UpdatePrompt.tsx:68
 msgid "Refresh to get the latest improvements."
 msgstr "A new version is ready to install with improvements and fixes."
@@ -439,8 +447,8 @@ msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
 #: src/components/NewEntryForm.tsx:426
-#: src/components/GoalEditForm.tsx:206
-#: src/components/GoalEditForm.tsx:217
+#: src/components/GoalEditForm.tsx:252
+#: src/components/GoalEditForm.tsx:263
 msgid "Save"
 msgstr "Save"
 
@@ -496,6 +504,10 @@ msgstr "Sign Up"
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
+#: src/components/ErrorFallback.tsx:109
+msgid "Something went wrong"
+msgstr "Something went wrong"
+
 #: src/routes/_main/goals.lazy.tsx:54
 #~ msgid "Sort by"
 #~ msgstr "Sort by"
@@ -520,7 +532,7 @@ msgstr "Start Over"
 msgid "Sucessfully added goal"
 msgstr "Sucessfully added goal"
 
-#: src/components/GoalEditForm.tsx:60
+#: src/components/GoalEditForm.tsx:79
 msgid "Sucessfully updated goal"
 msgstr "Sucessfully updated goal"
 
@@ -570,7 +582,7 @@ msgstr "This will delete all your data and reset the demo."
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:167
+#: src/components/CalendarHeatmap.tsx:164
 msgid "Today"
 msgstr "Today"
 
@@ -602,6 +614,10 @@ msgstr "Unit"
 #: src/components/SignOutButton.tsx:49
 msgid "Unsynced data will be lost"
 msgstr "Unsynced data will be lost"
+
+#: src/components/ErrorFallback.tsx:111
+msgid "Update app"
+msgstr "Update app"
 
 #: src/components/UpdatePrompt.tsx:56
 msgid "Update available"
@@ -661,11 +677,11 @@ msgstr "Your data is synced!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "Your most recent changes have not been synced yet."
 
-#: src/components/GoalLineGraph.tsx:211
+#: src/components/GoalLineGraph.tsx:177
 msgid "Your Progress"
 msgstr "Your Progress"
 
-#: src/components/GoalLineGraph.tsx:310
+#: src/components/GoalLineGraph.tsx:286
 msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 
