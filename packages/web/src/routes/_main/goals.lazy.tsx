@@ -1,8 +1,10 @@
 import { Suspense, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 
+import ErrorFallback from '~/components/ErrorFallback';
 import { GoalFilter } from '~/components/GoalFilter';
 import { GoalsContent } from '~/components/GoalsContent';
 import { GoalSorting } from '~/components/GoalSorting';
@@ -46,9 +48,11 @@ function Layout() {
             <GoalSorting sort={sort} setSort={setSort} />
           </div>
         </div>
-        <Suspense>
-          <GoalsContent sort={sort} filter={filter} />
-        </Suspense>
+        <ErrorBoundary fallback={<ErrorFallback />}>
+          <Suspense>
+            <GoalsContent sort={sort} filter={filter} />
+          </Suspense>
+        </ErrorBoundary>
       </div>
       <Outlet />
     </>
