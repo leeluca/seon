@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { msg, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import {
   differenceInCalendarDays,
@@ -18,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
+import { GOALS } from '~/constants/query';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
@@ -155,12 +157,13 @@ export default function GoalCard({
   initialValue,
   shortId,
   currentValue: baseCurrentValue,
-}: Database['goal']) {
+  onDeleteSuccess,
+}: Database['goal'] & { onDeleteSuccess?: () => void }) {
   const { t } = useLingui();
   const cardRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef(null);
   const currentValue = baseCurrentValue ?? initialValue;
-
+  const queryClient = useQueryClient();
   const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
     0,
@@ -261,9 +264,13 @@ export default function GoalCard({
                 <Button
                   variant="destructive"
                   onClick={() => {
-                    void deleteGoal(id, () =>
-                      toast.success(t`Deleted goal: ${title}`),
-                    );
+                    void deleteGoal(id, () => {
+                      queryClient.invalidateQueries({
+                        queryKey: GOALS.all.queryKey,
+                      });
+                      onDeleteSuccess?.();
+                      toast.success(t`Deleted goal: ${title}`);
+                    });
                   }}
                 >
                   <Trans>Delete</Trans>
