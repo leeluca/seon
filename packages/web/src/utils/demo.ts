@@ -1,11 +1,11 @@
 import { t } from '@lingui/core/macro';
-import { addDays, subDays } from 'date-fns';
+import { addDays, addSeconds, subDays } from 'date-fns';
 
 import db from '~/lib/database';
-import { updateGoalProgress } from '~/utils/progress';
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { GoalType } from '~/types/goal';
 import { generateUUIDs } from '~/utils';
+import { updateGoalProgress } from '~/utils/progress';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';
 
@@ -46,6 +46,7 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       unit: 'pages',
       type: 'PROGRESS',
       userId,
+      createdAt: addSeconds(new Date(), 10),
     }),
 
     // COUNT type
@@ -59,6 +60,7 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       unit: 'words',
       type: 'COUNT',
       userId,
+      createdAt: addSeconds(new Date(), 5),
     }),
 
     // BOOLEAN type
@@ -72,6 +74,7 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       unit: 'days',
       type: 'BOOLEAN',
       userId,
+      createdAt: new Date(),
     }),
   ];
 };
@@ -86,9 +89,10 @@ const createGoal = (data: {
   unit: string;
   type: string;
   userId: string;
+  createdAt?: Date;
 }): Database['goal'] => {
   const { uuid, shortUuid } = generateUUIDs();
-  const now = new Date().toISOString();
+  const createdAt = data.createdAt?.toISOString() ?? new Date().toISOString();
 
   return {
     id: uuid,
@@ -101,8 +105,8 @@ const createGoal = (data: {
     startDate: data.startDate.toISOString(),
     targetDate: data.targetDate.toISOString(),
     unit: data.unit,
-    createdAt: now,
-    updatedAt: now,
+    createdAt: createdAt,
+    updatedAt: createdAt,
     userId: data.userId,
     type: data.type,
     completionDate: null,

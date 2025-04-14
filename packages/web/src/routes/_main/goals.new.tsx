@@ -69,6 +69,7 @@ async function handleSave(
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         type,
+        currentValue: initialValue,
       })
       .executeTakeFirstOrThrow();
 
