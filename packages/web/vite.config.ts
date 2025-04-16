@@ -1,3 +1,5 @@
+/// <reference types="vitest/config" />
+
 import { lingui } from '@lingui/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
@@ -70,5 +72,11 @@ export default defineConfig({
   worker: {
     format: 'es',
     plugins: () => [wasm(), topLevelAwait()] as Plugin[],
+  },
+  test: {
+    environment: 'happy-dom',
+    setupFiles: ['./src/test/setup.ts'],
+    globals: true,
+    css: false,
   },
 });
