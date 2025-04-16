@@ -3,9 +3,9 @@ import { addDays, addSeconds, subDays } from 'date-fns';
 
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { updateGoalProgress } from '~/services/progress';
 import type { GoalType } from '~/types/goal';
 import { generateUUIDs } from '~/utils';
-import { updateGoalProgress } from '~/utils/progress';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';
 

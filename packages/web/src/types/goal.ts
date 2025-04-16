@@ -1,3 +1,5 @@
+import type { Database } from '~/lib/powersync/AppSchema';
+
 export type GoalType = 'COUNT' | 'PROGRESS' | 'BOOLEAN';
 
 export type GoalSort =
@@ -9,3 +11,14 @@ export type GoalSort =
   | 'title desc';
 
 export type GoalFilter = 'all' | 'completed' | 'incomplete';
+
+export type GoalEditableFields = Pick<
+  Database['goal'],
+  | 'title'
+  | 'target'
+  | 'unit'
+  | 'startDate'
+  | 'targetDate'
+  | 'initialValue'
+  | 'type'
+>;

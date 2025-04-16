@@ -9,29 +9,15 @@ import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES } from '~/constants/query';
-import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { deleteEntry, handleSubmit } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
-import { cn, generateUUIDs } from '~/utils';
-import { updateGoalProgress } from '~/utils/progress';
+import { cn } from '~/utils';
 import FormError from './FormError';
 import FormItem from './FormItem';
 import { NumberInput } from './ui/number-input';
-
-async function deleteEntry(id: string, goalId: string, callback?: () => void) {
-  try {
-    await db.transaction().execute(async (tx) => {
-      await tx.deleteFrom('entry').where('id', '=', id).execute();
-      await updateGoalProgress(goalId, tx);
-    });
-    callback?.();
-  } catch (error) {
-    console.error('Failed to delete entry:', error);
-    toast.error('Failed to delete entry');
-  }
-}
 
 const findPreviousEntry = (
   entries: Database['entry'][],
@@ -41,68 +27,6 @@ const findPreviousEntry = (
     .filter((entry) => new Date(entry.date) < selectedDate)
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 };
-
-async function handleSubmit(
-  {
-    value,
-    date,
-    goalId,
-    userId,
-  }: { value: number; date: Date; goalId: string; userId: string },
-  onSubmitCallback: () => void,
-) {
-  const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-  const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-
-  try {
-    await db.transaction().execute(async (tx) => {
-      const sameDayEntry = await tx
-        .selectFrom('entry')
-        .selectAll()
-        .where((eb) =>
-          eb.and([
-            eb('goalId', '=', goalId),
-            eb('date', '>=', startOfDay.toISOString()),
-            eb('date', '<=', endOfDay.toISOString()),
-          ]),
-        )
-        .executeTakeFirst();
-
-      if (sameDayEntry) {
-        await tx
-          .updateTable('entry')
-          .set({ value, updatedAt: new Date().toISOString() })
-          .where('id', '=', sameDayEntry.id)
-          .execute();
-      } else {
-        const { uuid, shortUuid } = generateUUIDs();
-        await tx
-          .insertInto('entry')
-          .values({
-            id: uuid,
-            shortId: shortUuid,
-            goalId: goalId,
-            value,
-            date: date.toISOString(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            userId,
-          })
-          .execute();
-      }
-
-      await updateGoalProgress(goalId, tx, date);
-    });
-
-    onSubmitCallback();
-    return true;
-  } catch (error) {
-    console.error('err', error);
-    toast.error('Failed to add entry');
-    onSubmitCallback();
-    return false;
-  }
-}
 
 interface NewEntryFormProps {
   goalId: string;
@@ -148,6 +72,7 @@ const NewEntryForm = ({
     [t],
   );
 
+  // TODO: move query invalidation to services file
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
       queryKey: ENTRIES.goalId(goalId).queryKey,
@@ -180,7 +105,12 @@ const NewEntryForm = ({
           goalId,
           userId,
         },
-        onSubmitCallback,
+        {
+          callback: onSubmitCallback,
+          onError: () => {
+            toast.error(t`Failed to add entry`);
+          },
+        },
       );
     },
   });
@@ -281,7 +211,12 @@ const NewEntryForm = ({
                           disabled={!entryId}
                           onClick={() =>
                             entryId &&
-                            void deleteEntry(entryId, goalId, onSubmitCallback)
+                            void deleteEntry(entryId, goalId, {
+                              callback: onSubmitCallback,
+                              onError: () => {
+                                toast.error(t`Failed to delete entry`);
+                              },
+                            })
                           }
                         >
                           <Trash2Icon size={18} />
@@ -410,7 +345,12 @@ const NewEntryForm = ({
                       disabled={!entryId}
                       onClick={() =>
                         entryId &&
-                        void deleteEntry(entryId, goalId, onSubmitCallback)
+                        void deleteEntry(entryId, goalId, {
+                          callback: onSubmitCallback,
+                          onError: () => {
+                            toast.error(t`Failed to delete entry`);
+                          },
+                        })
                       }
                       size={isMobile ? 'lg' : 'default'}
                     >

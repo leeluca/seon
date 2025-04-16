@@ -16,70 +16,14 @@ import {
   DialogTitle,
 } from '~/components/ui/dialog';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
-import db from '~/lib/database';
-import type { Database } from '~/lib/powersync/AppSchema';
+import { handleSave } from '~/services/goal';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import { cn, generateUUIDs } from '~/utils';
+import { cn } from '~/utils';
 
 export const Route = createFileRoute('/_main/goals/new')({
   component: NewGoalDialog,
 });
-
-type GoalSubmitData = Pick<
-  Database['goal'],
-  | 'title'
-  | 'target'
-  | 'unit'
-  | 'startDate'
-  | 'targetDate'
-  | 'initialValue'
-  | 'userId'
-  | 'type'
->;
-
-async function handleSave(
-  {
-    title,
-    target,
-    unit,
-    startDate,
-    targetDate,
-    initialValue,
-    userId,
-    type,
-  }: GoalSubmitData,
-  callback?: () => void,
-) {
-  const { uuid, shortUuid } = generateUUIDs();
-
-  try {
-    await db
-      .insertInto('goal')
-      .values({
-        id: uuid,
-        shortId: shortUuid as string,
-        title,
-        initialValue,
-        target: target,
-        unit,
-        userId,
-        startDate: startDate,
-        targetDate: targetDate,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        type,
-        currentValue: initialValue,
-      })
-      .executeTakeFirstOrThrow();
-
-    toast.success(<Trans>Sucessfully added goal</Trans>);
-    callback?.();
-  } catch (error) {
-    console.error(error);
-    toast.error(<Trans>Failed to add goal</Trans>);
-  }
-}
 
 function NewGoalDialog() {
   const navigate = useNavigate();
@@ -132,7 +76,15 @@ function NewGoalDialog() {
           startDate: stringStartDate,
           targetDate: stringTargetDate,
         },
-        handleClose,
+        {
+          callback: () => {
+            toast.success(<Trans>Sucessfully added goal</Trans>);
+            handleClose();
+          },
+          onError: () => {
+            toast.error(<Trans>Failed to add goal</Trans>);
+          },
+        },
       );
     },
   });
