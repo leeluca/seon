@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 
-import { cleanup } from '@testing-library/react';
+import { cleanup } from './test-utils';
 
 vi.mock('~/lib/database', () => ({
   default: {

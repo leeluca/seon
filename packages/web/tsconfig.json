@@ -21,7 +21,8 @@
     "postcss.config.js",
     "vite.config.ts",
     "tailwind.config.ts",
-    "lingui.config.ts"
+    "lingui.config.ts",
+    "tests/**/*"
   ],
   "noEmit": true
 }
