@@ -7,9 +7,9 @@ import GoalCard from '~/components/GoalCard';
 import type { NoGoalsPlaceholderProps } from '~/components/NoGoalsPlaceholder';
 import { GOALS } from '~/constants/query';
 import db from '~/lib/database';
+import { updateGoalProgress } from '~/services/progress';
 import { useUserStore } from '~/states/stores/userStore';
 import type { GoalFilter, GoalSort } from '~/types/goal';
-import { updateGoalProgress } from '~/utils/progress';
 
 const LazyNoGoalsPlaceholder = lazy(
   () => import('~/components/NoGoalsPlaceholder'),

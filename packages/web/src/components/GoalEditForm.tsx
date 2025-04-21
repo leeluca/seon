@@ -7,93 +7,17 @@ import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { GOALS } from '~/constants/query';
-import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import { updateGoalProgress } from '~/utils/progress';
-import GoalForm, { GOAL_FORM_ID } from './GoalForm';
+import GoalForm, { GOAL_FORM_ID, type NewGoal } from './GoalForm';
 import { Button } from './ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ui/collapsible';
-
-async function handleUpdate(
-  goalId: string,
-  {
-    title,
-    target,
-    unit,
-    startDate,
-    targetDate,
-    initialValue,
-    type,
-  }: Pick<
-    Database['goal'],
-    | 'title'
-    | 'target'
-    | 'unit'
-    | 'startDate'
-    | 'targetDate'
-    | 'initialValue'
-    | 'type'
-  >,
-  callback?: () => void,
-  completionCriteriaChanged?: boolean,
-) {
-  try {
-    await db.transaction().execute(async (tx) => {
-      const [, latestEntry] = await Promise.all([
-        tx
-          .updateTable('goal')
-          .set({
-            title,
-            initialValue,
-            target: target,
-            unit,
-            startDate: startDate,
-            targetDate: targetDate,
-            updatedAt: new Date().toISOString(),
-            type,
-          })
-          .where('id', '=', goalId)
-          .executeTakeFirstOrThrow(),
-        completionCriteriaChanged &&
-          tx
-            .selectFrom('entry')
-            .select('date')
-            .where('goalId', '=', goalId)
-            .orderBy('date', 'desc')
-            .limit(1)
-            .executeTakeFirst(),
-      ]);
-      await updateGoalProgress(
-        goalId,
-        tx,
-        latestEntry ? new Date(latestEntry.date) : undefined,
-      );
-    });
-
-    toast.success(<Trans>Sucessfully updated goal</Trans>);
-    callback?.();
-  } catch (error) {
-    console.error(error);
-    toast.error(<Trans>Failed to update goal</Trans>);
-  }
-}
-
-// FIXME: use common goal interface
-interface NewGoal {
-  title: string;
-  targetValue?: number;
-  unit: string;
-  startDate: Date;
-  targetDate?: Date;
-  initialValue: number;
-  type: GoalType;
-}
+import { handleUpdate } from '~/services/goal';
 
 interface GoalEditFormProps {
   goal: Database['goal'];
@@ -152,8 +76,15 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
           startDate: stringStartDate,
           targetDate: stringTargetDate,
         },
-        undefined,
-        completionCriteriaChanged,
+        {
+          callback: () => {
+            toast.success(<Trans>Sucessfully updated goal</Trans>);
+          },
+          onError: () => {
+            toast.error(<Trans>Failed to update goal</Trans>);
+          },
+          completionCriteriaChanged,
+        },
       );
 
       await Promise.all([
@@ -182,9 +113,9 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
   return (
     <section className={className}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex h-[3.75rem] items-start justify-between">
+        <div className="flex h-[60px] items-start justify-between">
           <div className="flex items-start sm:items-center">
-            <CollapsibleTrigger asChild className="mr-4 mt-[2px] sm:mt-0">
+            <CollapsibleTrigger asChild className="mr-4 mt-[.125rem] sm:mt-0">
               <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
                 <ChevronRightIcon
                   size={18}

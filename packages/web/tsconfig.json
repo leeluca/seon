@@ -5,7 +5,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "strict": true,
     "skipLibCheck": true,
     "jsx": "react-jsx",
@@ -21,7 +21,8 @@
     "postcss.config.js",
     "vite.config.ts",
     "tailwind.config.ts",
-    "lingui.config.ts"
+    "lingui.config.ts",
+    "tests/**/*"
   ],
   "noEmit": true
 }

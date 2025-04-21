@@ -2,7 +2,6 @@ import type { Kysely } from '@powersync/kysely-driver';
 
 import type { Database } from '~/lib/powersync/AppSchema';
 
-// TODO: move to services folder?
 export async function updateGoalProgress(
   goalId: string,
   tx: Kysely<Database>,

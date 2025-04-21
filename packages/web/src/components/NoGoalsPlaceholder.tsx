@@ -59,7 +59,6 @@ function NoGoalsPlaceholder({
         alt="Hatching Chick"
         width="200"
         height="200"
-        loading="lazy"
         // FIXME: change spelling to `fetchPriority` after upgrading to React 19
         //@ts-ignore
         fetchpriority="high"

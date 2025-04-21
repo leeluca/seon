@@ -20,8 +20,8 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import { GOALS } from '~/constants/query';
-import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { deleteGoal } from '~/services/goal';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
@@ -141,11 +141,6 @@ function getProgressStatus({
     return 'ahead';
   }
   return 'behind';
-}
-
-async function deleteGoal(goalId: string, callback?: () => void) {
-  await db.deleteFrom('goal').where('id', '=', goalId).execute();
-  callback?.();
 }
 
 export default function GoalCard({
