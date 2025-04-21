@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
-import { ENTRIES } from '~/constants/query';
+import { ENTRIES, GOALS } from '~/constants/query';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { deleteEntry, handleSubmit } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
@@ -76,6 +76,9 @@ const NewEntryForm = ({
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
       queryKey: ENTRIES.goalId(goalId).queryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: GOALS.detail(goalId).queryKey,
     });
     onSubmitCallbackProp?.();
   };
