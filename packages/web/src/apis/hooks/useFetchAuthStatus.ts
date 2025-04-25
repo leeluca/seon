@@ -16,8 +16,8 @@ import fetcher from '../fetcher';
 const AUTH_STATUS_API = '/api/auth/status';
 
 // TODO: Consider if saving to localStorage is really necessary
-function getInitialData(): AuthStatus {
-  const sessionExp = localStorage.getItem(SESSION_EXP_KEY);
+function getInitialData(sessionExpKeyPrefix: string): AuthStatus {
+  const sessionExp = localStorage.getItem(sessionExpKeyPrefix);
   return {
     result: !!sessionExp && Number(sessionExp) > Math.floor(Date.now() / 1000),
     expiresAt: Number(sessionExp) || 0,
@@ -25,36 +25,43 @@ function getInitialData(): AuthStatus {
 }
 
 export function getAuthStatusQueryOptions(user: User) {
+  const SESSION_EXP_KEY_PREFIX = `${SESSION_EXP_KEY}_${user.shortId}`;
+
   return queryOptions({
     queryKey: AUTH_STATUS.all.queryKey,
     queryFn: () => fetcher<AuthStatus>(AUTH_STATUS_API),
     enabled: !!user?.useSync,
-    initialData: getInitialData(),
+    placeholderData: getInitialData(SESSION_EXP_KEY_PREFIX),
     gcTime: Number.POSITIVE_INFINITY,
   });
 }
 
 export function useFetchAuthStatus() {
   const user = useUserStore((state) => state.user);
+  const SESSION_EXP_KEY_PREFIX = `${SESSION_EXP_KEY}_${user.shortId}`;
 
   const queryResult = useQuery(getAuthStatusQueryOptions(user));
 
   const { data, error } = queryResult;
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (data) {
-      localStorage.setItem(SESSION_EXP_KEY, JSON.stringify(data.expiresAt));
+    if (data?.result) {
+      localStorage.setItem(
+        SESSION_EXP_KEY_PREFIX,
+        JSON.stringify(data.expiresAt),
+      );
     }
 
     if (error instanceof APIError && error.status === 401) {
-      localStorage.removeItem(SESSION_EXP_KEY);
+      localStorage.removeItem(SESSION_EXP_KEY_PREFIX);
       queryClient.setQueryData(AUTH_STATUS.all.queryKey, {
         result: false,
         expiresAt: 0,
       });
     }
-  }, [error, data, queryClient]);
+  }, [error, data, queryClient, SESSION_EXP_KEY_PREFIX]);
 
   return queryResult;
 }
