@@ -11,3 +11,9 @@ dist
 .DS_Store
 dev-dist
 coverage
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

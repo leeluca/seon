@@ -1,3 +1,4 @@
+import { INITIAL_DEMO_GOAL_COUNT } from './constants';
 import { expect, test } from './persistent-webkit-fixtures';
 
 test('homepage renders and redirects correctly', async ({ page }) => {
@@ -14,7 +15,10 @@ test('homepage renders and redirects correctly', async ({ page }) => {
     await startButton.click();
 
     await page.waitForURL(/\/goals/);
-    // TODO: verify goals were created correctly
+
+    await expect(page.getByTestId(/goal-card/i)).toHaveCount(
+      INITIAL_DEMO_GOAL_COUNT,
+    );
   } else {
     throw new Error(`Unexpected URL: ${currentUrl}. Expected /demo `);
   }

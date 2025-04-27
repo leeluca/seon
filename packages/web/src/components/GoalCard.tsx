@@ -188,7 +188,11 @@ export default function GoalCard({
   );
 
   return (
-    <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
+    <Card
+      className="w-full max-w-[600px] text-center shadow-sm"
+      ref={cardRef}
+      data-testid={`goal-card-${id}`}
+    >
       <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
         <div className="flex h-12 items-center sm:h-14">
           <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
