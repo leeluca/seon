@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { t } from '@lingui/core/macro';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import { cn } from '~/utils';
@@ -234,6 +235,7 @@ export function NumberInputButton({
         },
         className,
       )}
+      aria-label={direction === 'inc' ? t`Increase` : t`Decrease`}
       {...props}
     >
       {direction === 'inc' ? (

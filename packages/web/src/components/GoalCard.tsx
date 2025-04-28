@@ -40,7 +40,16 @@ function ProgressBar({
   currentValue,
 }: ProgressBarProps) {
   return (
-    <div className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3">
+    // biome-ignore lint/nursery/useAriaPropsSupportedByRole: biome rule bug
+    <div
+      role="progressbar"
+      aria-valuenow={currentValue}
+      aria-valuemin={0}
+      aria-valuemax={target}
+      aria-valuetext={`${currentValue.toFixed(0)}/${target}`}
+      tabIndex={-1}
+      className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3"
+    >
       <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
         {progressPercent <= 100
           ? `${currentValue.toFixed(0)}/${target}`
@@ -188,7 +197,11 @@ export default function GoalCard({
   );
 
   return (
-    <Card className="w-full max-w-[600px] text-center shadow-sm" ref={cardRef}>
+    <Card
+      className="w-full max-w-[600px] text-center shadow-sm"
+      ref={cardRef}
+      data-testid={`goal-card-${id}`}
+    >
       <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
         <div className="flex h-12 items-center sm:h-14">
           <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
@@ -226,6 +239,7 @@ export default function GoalCard({
                 )}
                 ref={triggerRef}
                 onClick={(e) => e.preventDefault()}
+                aria-label={t`Goal progress: ${progressMessage}`}
               >
                 <div>{progressIcon}</div>
               </Button>

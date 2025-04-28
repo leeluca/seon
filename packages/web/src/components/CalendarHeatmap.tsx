@@ -224,7 +224,8 @@ const CalendarHeatmap = ({
                         isAfter(day, new Date(goal?.completionDate)),
                     })}
                     disabled={isBlocked}
-                    aria-label={t`Add entry for ${format(day, 'd')}`}
+                    aria-label={t`Add entry for ${format(day, 'do')}`}
+                    aria-current={isToday ? 'date' : undefined}
                     onClick={() => {
                       setSelectedDateValue(() => [day, entryValue]);
                       setIsPopoverOpen(true);
@@ -250,7 +251,8 @@ const CalendarHeatmap = ({
                       isAfter(day, new Date(goal?.completionDate)),
                   })}
                   disabled={isBlocked}
-                  aria-label={t`Add entry for ${format(day, 'd')}`}
+                  aria-label={t`Add entry for ${format(day, 'do')}`}
+                  aria-current={isToday ? 'date' : undefined}
                   onClick={() => {
                     setSelectedDateValue(() => [day, entryValue]);
                     setIsPopoverOpen(true);

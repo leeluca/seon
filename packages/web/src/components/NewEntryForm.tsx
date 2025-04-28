@@ -221,6 +221,7 @@ const NewEntryForm = ({
                               },
                             })
                           }
+                          aria-label={t`Delete entry`}
                         >
                           <Trash2Icon size={18} />
                         </Button>
@@ -356,6 +357,7 @@ const NewEntryForm = ({
                         })
                       }
                       size={isMobile ? 'lg' : 'default'}
+                      aria-label={t`Delete entry`}
                     >
                       <Trash2Icon size={18} />
                     </Button>
