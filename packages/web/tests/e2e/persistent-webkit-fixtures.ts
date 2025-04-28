@@ -36,12 +36,13 @@ type AutoPurgeFixture = {
   _autoPurgeOpfsWebKit: unknown;
 };
 
-// Extend base test to provide a persistent context for WebKit AND auto-purge OPFS
+// NOTE: Safari does not support OPFS in non-persistent mode.
+// https://github.com/cypress-io/cypress/issues/30270
+// Therefore it is necessary to extend the base test to provide a persistent context for WebKit AND auto-purge OPFS
 export const test = base.extend<
   {
     context: import('@playwright/test').BrowserContext;
-  } & AutoPurgeFixture, // Include the auto-use fixture type
-  // Combine types needed for BOTH fixtures
+  } & AutoPurgeFixture,
   PlaywrightWorkerArgs &
     PlaywrightWorkerOptions &
     ProjectOptions &
@@ -50,10 +51,9 @@ export const test = base.extend<
 >({
   context: async (
     {
-      context, // Default context
+      context,
       browserName,
-      playwright, // playwright object
-      // Explicitly list used project options
+      playwright,
       acceptDownloads,
       bypassCSP,
       colorScheme,
@@ -75,7 +75,6 @@ export const test = base.extend<
     use,
   ) => {
     if (browserName === 'webkit') {
-      // Construct options object from explicitly listed fixtures
       const persistentContextOptions: BrowserContextOptions = {
         acceptDownloads,
         bypassCSP,
@@ -116,7 +115,6 @@ export const test = base.extend<
       { page, browserName }: { page: Page; browserName: string },
       use: () => Promise<void>,
     ) => {
-      // Run the test
       await use();
 
       // Teardown: Purge OPFS only for WebKit after the test has run

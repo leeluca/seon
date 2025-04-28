@@ -1,4 +1,4 @@
-name: Web E2E Test and Deploy
+name: Web E2E Test
 
 on:
   push:
@@ -11,6 +11,7 @@ on:
       - 'pnpm-workspace.yaml'
       - 'package.json'
       - 'pnpm-lock.yaml'
+  workflow_dispatch:
 
 jobs:
   test:
@@ -30,7 +31,6 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
           run_install: false
 
       - name: Get pnpm store directory
