@@ -37,14 +37,14 @@ msgstr "{fieldName} should be no longer than {max} characters."
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
-#. placeholder {0}: format(day, 'd')
+#. placeholder {0}: format(day, 'do')
 #: src/components/CalendarHeatmap.tsx:227
-#: src/components/CalendarHeatmap.tsx:253
+#: src/components/CalendarHeatmap.tsx:254
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:283
+#: src/components/CalendarHeatmap.tsx:285
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
@@ -153,9 +153,18 @@ msgstr "Create your first goal!"
 msgid "Date"
 msgstr "Date"
 
+#: src/components/ui/number-input.tsx:238
+msgid "Decrease"
+msgstr "Decrease"
+
 #: src/components/GoalCard.tsx:285
 msgid "Delete"
 msgstr "Delete"
+
+#: src/components/NewEntryForm.tsx:224
+#: src/components/NewEntryForm.tsx:360
+msgid "Delete entry"
+msgstr "Delete entry"
 
 #: src/components/GoalCard.tsx:255
 #: src/components/GoalCard.tsx:263
@@ -228,7 +237,7 @@ msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
 #: src/components/NewEntryForm.tsx:220
-#: src/components/NewEntryForm.tsx:354
+#: src/components/NewEntryForm.tsx:355
 msgid "Failed to delete entry"
 msgstr "Failed to delete entry"
 
@@ -298,6 +307,10 @@ msgstr "Improve French vocabulary"
 msgid "Incomplete"
 msgstr "Incomplete"
 
+#: src/components/ui/number-input.tsx:238
+msgid "Increase"
+msgstr "Increase"
+
 #: src/components/GoalForm.tsx:456
 msgid "Initial value"
 msgstr "Initial value"
@@ -335,8 +348,8 @@ msgstr "Last synced:"
 msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
-#: src/components/NewEntryForm.tsx:259
-#: src/components/NewEntryForm.tsx:292
+#: src/components/NewEntryForm.tsx:260
+#: src/components/NewEntryForm.tsx:293
 msgid "Last:"
 msgstr "Last:"
 
@@ -459,7 +472,7 @@ msgstr "Right on track!"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
-#: src/components/NewEntryForm.tsx:369
+#: src/components/NewEntryForm.tsx:371
 #: src/components/GoalEditForm.tsx:183
 #: src/components/GoalEditForm.tsx:194
 msgid "Save"

@@ -37,14 +37,14 @@ msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
-#. placeholder {0}: format(day, 'd')
+#. placeholder {0}: format(day, 'do')
 #: src/components/CalendarHeatmap.tsx:227
-#: src/components/CalendarHeatmap.tsx:253
+#: src/components/CalendarHeatmap.tsx:254
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:283
+#: src/components/CalendarHeatmap.tsx:285
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
@@ -153,9 +153,18 @@ msgstr "첫 번째 목표를 만들어 보세요!"
 msgid "Date"
 msgstr "날짜"
 
+#: src/components/ui/number-input.tsx:238
+msgid "Increase"
+msgstr "값 올리기"
+
 #: src/components/GoalCard.tsx:285
 msgid "Delete"
 msgstr "삭제"
+
+#: src/components/NewEntryForm.tsx:224
+#: src/components/NewEntryForm.tsx:360
+msgid "Delete entry"
+msgstr "기록 삭제"
 
 #: src/components/GoalCard.tsx:255
 #: src/components/GoalCard.tsx:263
@@ -228,7 +237,7 @@ msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
 #: src/components/NewEntryForm.tsx:220
-#: src/components/NewEntryForm.tsx:354
+#: src/components/NewEntryForm.tsx:355
 msgid "Failed to delete entry"
 msgstr "기록 삭제 실패"
 
@@ -298,6 +307,10 @@ msgstr "프랑스어 어휘력 향상하기"
 msgid "Incomplete"
 msgstr "미완료"
 
+#: src/components/ui/number-input.tsx:238
+msgid "Decrease"
+msgstr "값 내리기"
+
 #: src/components/GoalForm.tsx:456
 msgid "Initial value"
 msgstr "초기값"
@@ -335,8 +348,8 @@ msgstr "마지막 동기화:"
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/components/NewEntryForm.tsx:259
-#: src/components/NewEntryForm.tsx:292
+#: src/components/NewEntryForm.tsx:260
+#: src/components/NewEntryForm.tsx:293
 msgid "Last:"
 msgstr "이전:"
 
@@ -459,7 +472,7 @@ msgstr "진행 상황 원활"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
-#: src/components/NewEntryForm.tsx:369
+#: src/components/NewEntryForm.tsx:371
 #: src/components/GoalEditForm.tsx:183
 #: src/components/GoalEditForm.tsx:194
 msgid "Save"

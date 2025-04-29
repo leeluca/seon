@@ -107,6 +107,7 @@ export const test = base.extend<
     } else {
       // For non-webkit browsers, use the default context provided by Playwright Test
       await use(context);
+      await context.close();
     }
   },
 

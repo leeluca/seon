@@ -1,0 +1,70 @@
+name: Web E2E Test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/web/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/web-deploy.yml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Run Web E2E Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            playwright_deps: 'firefox chromium'
+            playwright_projects: '--project chromium --project firefox'
+          - os: macos-latest
+            playwright_deps: 'webkit'
+            playwright_projects: "--project 'Mobile Safari'"
+    environment: Test - seon-web
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright Browsers
+        run: pnpm --filter seon-web exec playwright install --with-deps ${{ matrix.playwright_deps }}
+
+      - name: Build Web App
+        run: pnpm --filter seon-web build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_POWERSYNC_URL: ${{ vars.VITE_POWERSYNC_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
+          VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
+
+      - name: Run Playwright tests
+        run: pnpm --filter seon-web exec playwright test ${{ matrix.playwright_projects }}
+
+      - name: Upload Playwright Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-${{ matrix.os }}
+          path: packages/web/playwright-report/

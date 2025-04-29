@@ -8,7 +8,7 @@ test.describe('Demo Flow', () => {
 
     await page.waitForLoadState('networkidle');
 
-    expect(page.url()).toContain('/demo');
+    await expect(page).toHaveURL(/\/demo/);
 
     const startButton = page.getByRole('button', { name: /start/i });
     await expect(startButton).toBeVisible();
