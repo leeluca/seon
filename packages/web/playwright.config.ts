@@ -37,16 +37,11 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     // NOTE: Safari does not work in parallel as it needs a persistent context to use OPFS
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    //   workers: 1,
-    // },
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    //   workers: 1,
-    // },
+    {
+      name: 'Mobile Safari',
+      use: { ...devices['iPhone 12'] },
+      workers: 1,
+    },
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -56,6 +51,11 @@ export default defineConfig({
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    //   workers: 1,
+    // },
 
     // {
     //   name: 'Mobile Chrome',

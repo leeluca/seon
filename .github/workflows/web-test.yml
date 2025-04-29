@@ -15,12 +15,21 @@ on:
 
 jobs:
   test:
-    name: Run Web E2E Tests
-    runs-on: ubuntu-latest
+    name: Run Web E2E Tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            playwright_deps: 'firefox chromium'
+            playwright_projects: '--project chromium --project firefox'
+          - os: macos-latest
+            playwright_deps: 'webkit'
+            playwright_projects: "--project 'Mobile Safari'"
     environment: Test - seon-web
-    container:
-      image: mcr.microsoft.com/playwright:v1.52.0
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -51,6 +60,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Install Playwright Browsers
+        run: pnpm --filter seon-web exec playwright install --with-deps ${{ matrix.playwright_deps }}
+
       - name: Build Web App
         run: pnpm --filter seon-web build
         env:
@@ -62,14 +74,12 @@ jobs:
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Run Playwright tests
-        run: pnpm --filter seon-web exec playwright test
-        env:
-          HOME: /root
+        run: pnpm --filter seon-web exec playwright test ${{ matrix.playwright_projects }}
 
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.os }}
           path: packages/web/playwright-report/
           retention-days: 30
