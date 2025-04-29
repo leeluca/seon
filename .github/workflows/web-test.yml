@@ -17,8 +17,8 @@ jobs:
   test:
     name: Run Web E2E Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-
+    timeout-minutes: 30
+    environment: Test - seon-web
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -54,14 +54,23 @@ jobs:
 
       - name: Build Web App
         run: pnpm --filter seon-web build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_POWERSYNC_URL: ${{ vars.VITE_POWERSYNC_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
+          VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Run Playwright tests
         run: pnpm --filter seon-web exec playwright test
+        env:
+          HOME: /root
 
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/
+          path: packages/web/playwright-report/
           retention-days: 30
