@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'packages/web/**'
+      - '.github/workflows/**'
 
 jobs:
   trigger-e2e:
@@ -14,7 +15,7 @@ jobs:
     permissions:
       actions: read
       contents: read
-    uses: ./.github/workflows/web-e2e-test.yml@main
+    uses: ./.github/workflows/web-e2e-test.yml
     secrets: inherit
 
   trigger-deploy:
@@ -22,8 +23,18 @@ jobs:
     needs: trigger-e2e # Run only if E2E tests pass
 
     permissions:
-      actions: read
-      contents: read
+      contents: write
+      deployments: write
 
-    uses: ./.github/workflows/web-deploy.yml@main
+    uses: ./.github/workflows/web-deploy.yml
+    secrets: inherit
+
+  trigger-release:
+    name: Trigger Release Creation
+    needs: trigger-deploy # Run only if deployment passes
+
+    permissions:
+      contents: write
+
+    uses: ./.github/workflows/release.yml
     secrets: inherit
