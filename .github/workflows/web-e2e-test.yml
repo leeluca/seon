@@ -1,16 +1,7 @@
 name: Web E2E Test
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'packages/web/**'
-      - 'playwright.config.ts'
-      - '.github/workflows/web-deploy.yml'
-      - 'pnpm-workspace.yaml'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
+  workflow_call:
   workflow_dispatch:
 
 jobs:
@@ -24,7 +15,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            playwright_deps: 'firefox chromium'
+            playwright_deps: 'firefox chromium --only-shell'
             playwright_projects: '--project chromium --project firefox'
           - os: macos-latest
             playwright_deps: 'webkit'

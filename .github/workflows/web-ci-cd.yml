@@ -1,0 +1,29 @@
+name: Web CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/web/**'
+
+jobs:
+  trigger-e2e:
+    name: Trigger Web E2E Tests
+
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/web-e2e-test.yml@main
+    secrets: inherit
+
+  trigger-deploy:
+    name: Trigger Web Deployment
+    needs: trigger-e2e # Run only if E2E tests pass
+
+    permissions:
+      actions: read
+      contents: read
+
+    uses: ./.github/workflows/web-deploy.yml@main
+    secrets: inherit
