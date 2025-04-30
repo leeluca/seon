@@ -13,7 +13,7 @@ jobs:
       contents: write
       deployments: write
 
-    environment: Production
+    environment: Production – seongoals
 
     steps:
       - name: Check out repository
@@ -40,10 +40,13 @@ jobs:
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
         #   VITE_IS_DEMO: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
 
+      - run: echo "ignore-workspace-root-check=true" >> .npmrc
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy packages/web/dist --project-name=${{vars.CLOUDFLARE_PAGES_PROJECT_NAME}} --commit-dirty=true
+          packageManager: pnpm
         #   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
