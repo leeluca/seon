@@ -24,7 +24,7 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            playwright_deps: 'firefox chromium'
+            playwright_deps: 'firefox chromium --only-shell'
             playwright_projects: '--project chromium --project firefox'
           - os: macos-latest
             playwright_deps: 'webkit'
