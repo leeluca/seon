@@ -1,22 +1,13 @@
 name: Server Deploy
+
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'packages/server/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - 'pnpm-workspace.yaml'
-      - 'server.Dockerfile'
-      - '.dockerignore'
-      - 'fly.toml'
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   deploy:
-    name: Deploy app
+    name: Deploy Server
     runs-on: ubuntu-latest
-    concurrency: deploy-group
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
