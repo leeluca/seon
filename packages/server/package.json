@@ -1,6 +1,5 @@
 {
   "name": "seon-server",
-  "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
   "type": "module",
@@ -21,18 +20,18 @@
   "dependencies": {
     "@hono/node-server": "^1.14.1",
     "@hono/typebox-validator": "^0.3.3",
-    "@sinclair/typebox": "^0.33.22",
-    "drizzle-orm": "^0.40.1",
-    "hono": "^4.7.6",
+    "@sinclair/typebox": "^0.34.33",
+    "drizzle-orm": "^0.43.1",
+    "hono": "^4.7.8",
     "jose": "^6.0.10",
     "postgres": "^3.4.5"
   },
   "devDependencies": {
     "@types/node": "^20.17.30",
-    "@vitest/coverage-v8": "^3.1.1",
-    "drizzle-kit": "^0.30.6",
-    "tsx": "^4.19.3",
-    "vitest": "^3.1.1"
+    "@vitest/coverage-v8": "^3.1.2",
+    "drizzle-kit": "^0.31.0",
+    "tsx": "^4.19.4",
+    "vitest": "^3.1.2"
   },
   "engines": {
     "node": ">=20.12.0"

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Logger from 'js-logger';
 
 import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import { powerSyncDb } from '~/lib/database';
@@ -16,9 +15,7 @@ export function usePowerSyncConnector() {
   // FIXME: run powerSync.disconnect() when isSignInVerified is false
   useEffect(() => {
     if (!isSignInVerified) return;
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    Logger.useDefaults();
-    Logger.setLevel(Logger.DEBUG);
+
     // For console testing, to be removed
     window._powersync = powerSync;
 
