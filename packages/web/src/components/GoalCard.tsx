@@ -294,7 +294,6 @@ export default function GoalCard({
               to: '/goals/$id',
               params: { id: shortId },
             }}
-            replace
             aria-label={t`Toggle goal details`}
             className={buttonVariants({
               variant: 'outline',
