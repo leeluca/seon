@@ -1,0 +1,83 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      # Web paths
+      - 'packages/web/**'
+      # Server paths
+      - 'packages/server/**'
+      - 'server.Dockerfile'
+      - 'fly.toml'
+      # Shared paths
+      #   - 'package.json'
+      #   - 'pnpm-lock.yaml'
+      #   - 'pnpm-workspace.yaml'
+      #   - '.dockerignore'
+      # Workflow paths
+      - '.github/workflows/**'
+
+jobs:
+  filter-paths:
+    name: Detect Changed Paths
+    runs-on: ubuntu-latest
+    outputs:
+      web: ${{ steps.filter.outputs.web }}
+      server: ${{ steps.filter.outputs.server }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            web:
+              - 'packages/web/**'
+              - '.github/workflows/web-*.yml'
+              - '.github/workflows/ci-cd.yml'
+            server:
+              - 'packages/server/**'
+              - 'server.Dockerfile'
+              - 'fly.toml'
+              - '.github/workflows/server-deploy.yml'
+              - '.github/workflows/ci-cd.yml'
+
+  trigger-e2e:
+    name: Trigger Web E2E Tests
+    needs: filter-paths
+    if: needs.filter-paths.outputs.web == 'true'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/web-e2e-test.yml
+    secrets: inherit
+
+  trigger-deploy:
+    name: Trigger Web Deployment
+    needs: [filter-paths, trigger-e2e]
+    if: needs.filter-paths.outputs.web == 'true' # Only run if web paths changed and E2E passed
+    permissions:
+      contents: write
+      deployments: write
+    uses: ./.github/workflows/web-deploy.yml
+    secrets: inherit
+
+  trigger-server-deploy:
+    name: Trigger Server Deployment
+    needs: filter-paths
+    if: needs.filter-paths.outputs.server == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/server-deploy.yml
+    secrets: inherit
+
+  trigger-release:
+    name: Trigger Release Creation
+    needs: [filter-paths, trigger-deploy, trigger-server-deploy]
+    # Run if either web or server paths triggered a change, and preceding jobs succeeded/skipped appropriately
+    if: always() && (needs.filter-paths.outputs.web == 'true' || needs.filter-paths.outputs.server == 'true')
+    permissions:
+      contents: write
+    uses: ./.github/workflows/release.yml
+    secrets: inherit
