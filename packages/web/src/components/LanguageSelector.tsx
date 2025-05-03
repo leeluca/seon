@@ -18,30 +18,31 @@ import {
 import { LOCALES } from '~/constants/locales';
 import db from '~/lib/database';
 import { useUserStore } from '~/states/stores/userStore';
-import type { Preferences } from '~/types/user';
 import { cn } from '~/utils/';
 
 interface UpdateUserLanguageArgs {
   userId: string;
-  currentPreferences: Preferences;
   updatedLanguage: keyof typeof LOCALES;
 }
 
 async function updateUserLanguage({
   userId,
-  currentPreferences,
   updatedLanguage,
 }: UpdateUserLanguageArgs) {
+  const updatedPreferences = JSON.stringify({
+    ...useUserStore.getState().userPreferences,
+    language: updatedLanguage,
+  });
+
   await db
     .updateTable('user')
     .set({
-      preferences: JSON.stringify({
-        ...currentPreferences,
-        language: updatedLanguage,
-      }),
+      preferences: updatedPreferences,
     })
     .where('id', '=', userId)
     .execute();
+
+  useUserStore.getState().setPreferences(updatedPreferences);
 }
 
 export default function LanguageSelector() {
@@ -50,8 +51,8 @@ export default function LanguageSelector() {
   } = useLingui() as { i18n: { locale: keyof typeof LOCALES } };
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(locale);
-  const [user, preferences, refetchUser] = useUserStore(
-    useShallow((state) => [state.user, state.userPreferences, state.fetch]),
+  const [user, refetchUser] = useUserStore(
+    useShallow((state) => [state.user, state.fetch]),
   );
 
   return (
@@ -81,7 +82,6 @@ export default function LanguageSelector() {
                     user &&
                       (await updateUserLanguage({
                         userId: user.id,
-                        currentPreferences: preferences || {},
                         updatedLanguage: key as keyof typeof LOCALES,
                       }));
                     refetchUser();

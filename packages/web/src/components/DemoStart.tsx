@@ -1,5 +1,6 @@
 import { Trans } from '@lingui/react/macro';
 
+import LanguageSelector from '~/components/LanguageSelector';
 import { Button } from '~/components/ui/button';
 import {
   Card,
@@ -79,6 +80,9 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
           </Button>
         </CardFooter>
       </Card>
+      <div className="absolute bottom-2 mb-1 self-start px-6 py-4 xl:p-8">
+        <LanguageSelector />
+      </div>
     </div>
   );
 };

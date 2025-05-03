@@ -32,15 +32,18 @@ async function getUserFromDb() {
 }
 
 const prefetchedUser = await getUserFromDb();
+const initialUser = prefetchedUser || generateOfflineUser();
 
 export const useUserStore = create<UserState & UserActions>()((set, get) => ({
-  user: prefetchedUser || generateOfflineUser(),
+  user: initialUser,
   isInitialized: !!prefetchedUser,
-  userPreferences: parseUserPreferences(prefetchedUser?.preferences),
+  userPreferences: parseUserPreferences(initialUser?.preferences),
   setUser: (user: User) => set({ user }),
   setIsInitialized: (isInitialized: boolean) => set({ isInitialized }),
-  setPreferences: (preferences: string | null) =>
-    set({ userPreferences: parseUserPreferences(preferences) }),
+  setPreferences: (preferences: string | null) => {
+    set({ userPreferences: parseUserPreferences(preferences) });
+    set({ user: { ...get().user, preferences } });
+  },
   fetch: async () => {
     const user = await getUserFromDb();
     if (user) {
