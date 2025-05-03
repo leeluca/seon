@@ -7,18 +7,6 @@ test.describe('Goal Creation Flow', () => {
     await ensureUserInitialized(page);
   });
 
-  test('should not allow creating a new goal with missing required fields', async ({
-    page,
-  }) => {
-    await page.getByRole('link', { name: /new goal/i }).click();
-
-    expect(
-      await page.getByRole('button', { name: /create goal/i }).isDisabled(),
-    ).toBeTruthy();
-
-    await page.getByRole('button', { name: /close/i }).click();
-  });
-
   test('should allow creating a new goal with required fields', async ({
     page,
   }) => {
@@ -34,6 +22,9 @@ test.describe('Goal Creation Flow', () => {
     );
     await expect(dialog).toBeVisible();
 
+    const createGoalButton = page.getByRole('button', { name: /create goal/i });
+    await expect(createGoalButton).toBeDisabled();
+
     // 3. Fill in required fields
     // Goal Name
     await dialog.locator('input#title').fill(newGoalTitle);
@@ -41,7 +32,7 @@ test.describe('Goal Creation Flow', () => {
     await dialog.locator('input#target-value').fill(targetValue);
 
     // 4. Submit the form
-    await dialog.getByRole('button', { name: /create goal/i }).click();
+    await createGoalButton.click();
 
     // 5. Verify dialog closes
     await expect(dialog).not.toBeVisible();
