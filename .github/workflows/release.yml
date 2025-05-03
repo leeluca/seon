@@ -33,10 +33,10 @@ jobs:
           fromTag: ${{ steps.tag_version.outputs.previous_tag }}
           toTag: ${{ steps.tag_version.outputs.new_tag }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          mode: 'HYBRID'
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "template": "#{{CHANGELOG}}\\n\\n[Full Changelog](#{{RELEASE_DIFF}})",
+              "pr_template": "- #{{TITLE}} (##{{NUMBER}})",
               "categories": [
                 { "title": "## Features", "labels": ["feat"] },
                 { "title": "## Bug Fixes", "labels": ["fix"] },
