@@ -35,7 +35,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           configurationJson: |
             {
-              "template": "#{{CHANGELOG}}\\n\\n[Full Changelog](#{{RELEASE_DIFF}})",
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...#{{TO_TAG}}](#{{RELEASE_DIFF}})",
               "pr_template": "- #{{TITLE}} (##{{NUMBER}})",
               "categories": [
                 { "title": "## Features", "labels": ["feat"] },
@@ -44,11 +44,10 @@ jobs:
                 { "title": "## Code Refactoring", "labels": ["refactor"] },
                 { "title": "## Tests", "labels": ["test", "tests"] },
                 { "title": "## Build System", "labels": ["build"] },
-                { "title": "## Continuous Integration", "labels": ["ci"] },
+                { "title": "## CI/CD", "labels": ["ci"] },
                 { "title": "## Documentation", "labels": ["docs"] },
-                { "title": "## Styling", "labels": ["style"] },
                 { "title": "## Reverts", "labels": ["revert"] },
-                { "title": "## Other", "labels": ["chore", "other"] }
+                { "title": "## Other", "labels": ["chore", "other", "style"] }
               ],
               "label_extractor": [
                 {
