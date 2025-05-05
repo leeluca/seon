@@ -18,7 +18,7 @@ interface DemoStartProps {
 
 const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center p-2 sm:p-4">
+    <div className="relative flex min-h-[max(100dvh,700px)] min-w-[375px] flex-col items-center justify-center p-2 sm:p-4">
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <div className="mb-2 flex items-center justify-center">
@@ -80,7 +80,7 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
           </Button>
         </CardFooter>
       </Card>
-      <div className="absolute bottom-2 mb-1 self-start px-6 py-4 xl:p-8">
+      <div className="xs:px-6 absolute bottom-0 mb-1 self-start px-1 py-2 xl:p-8">
         <LanguageSelector />
       </div>
     </div>

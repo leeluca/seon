@@ -44,11 +44,14 @@ msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:285
+#: src/components/CalendarHeatmap.tsx:286
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
-#: src/routes/_main/goals.new.tsx:110
+#: src/routes/_main/goals.new.tsx:118
+#: src/routes/_main/goals.new.tsx:183
+#: src/routes/_main/goals.lazy.tsx:63
+#: src/routes/_main/goals.lazy.tsx:70
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
@@ -76,7 +79,7 @@ msgstr "개수"
 msgid "An unexpected error occurred."
 msgstr "예상치 못한 오류가 발생했습니다."
 
-#: src/components/GoalCard.tsx:266
+#: src/components/GoalCard.tsx:268
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
@@ -92,6 +95,7 @@ msgstr "목표 시작 날짜 전"
 msgid "Behind schedule!"
 msgstr "일정 지연"
 
+#: src/routes/_main/goals.new.tsx:158
 #: src/components/SignOutButton.tsx:67
 #: src/components/GoalEditForm.tsx:172
 msgid "Cancel"
@@ -137,11 +141,12 @@ msgstr "새 목표를 만들거나 필터를 변경해 보세요!"
 msgid "Create account"
 msgstr "계정 만들기"
 
-#: src/components/DemoStart.tsx:48
+#: src/components/DemoStart.tsx:49
 msgid "Create and track personal goals"
 msgstr "개인 목표 생성 및 추적"
 
-#: src/routes/_main/goals.new.tsx:144
+#: src/routes/_main/goals.new.tsx:154
+#: src/routes/_main/goals.new.tsx:216
 msgid "Create goal"
 msgstr "목표 만들기"
 
@@ -149,33 +154,34 @@ msgstr "목표 만들기"
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
 
-#: src/components/NewEntryForm.tsx:132
+#: src/components/NewEntryForm.tsx:133
 msgid "Date"
 msgstr "날짜"
 
 #: src/components/ui/number-input.tsx:238
-msgid "Increase"
-msgstr "값 올리기"
+msgid "Decrease"
+msgstr "값 내리기"
 
-#: src/components/GoalCard.tsx:285
+#: src/components/GoalCard.tsx:287
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/NewEntryForm.tsx:224
-#: src/components/NewEntryForm.tsx:360
+#: src/components/NewEntryForm.tsx:225
+#: src/components/NewEntryForm.tsx:361
 msgid "Delete entry"
 msgstr "기록 삭제"
 
 #: src/components/GoalCard.tsx:255
-#: src/components/GoalCard.tsx:263
+#: src/components/GoalCard.tsx:260
+#: src/components/GoalCard.tsx:265
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:281
+#: src/components/GoalCard.tsx:283
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
-#: src/components/DemoStart.tsx:29
+#: src/components/DemoStart.tsx:30
 #: src/components/DemoIndicator.tsx:60
 #: src/components/DemoIndicator.tsx:65
 #: src/components/DemoIndicator.tsx:76
@@ -194,7 +200,7 @@ msgstr "목표일 늦은 순"
 msgid "Due soon"
 msgstr "목표일 가까운 순"
 
-#: src/components/GoalForm.tsx:446
+#: src/components/GoalForm.tsx:447
 msgid "e.g. words"
 msgstr "예: 단어"
 
@@ -224,7 +230,7 @@ msgstr "목표일 이후의 기록"
 msgid "Expected Completion"
 msgstr "예상 완료일"
 
-#: src/components/DemoStart.tsx:32
+#: src/components/DemoStart.tsx:33
 msgid "Experience Seon Goals without creating an account"
 msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
 
@@ -232,12 +238,12 @@ msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
 msgid "Failed to add entry"
 msgstr "기록 추가 실패"
 
-#: src/routes/_main/goals.new.tsx:85
+#: src/routes/_main/goals.new.tsx:94
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
-#: src/components/NewEntryForm.tsx:220
-#: src/components/NewEntryForm.tsx:355
+#: src/components/NewEntryForm.tsx:221
+#: src/components/NewEntryForm.tsx:356
 msgid "Failed to delete entry"
 msgstr "기록 삭제 실패"
 
@@ -291,7 +297,7 @@ msgstr "목표 진행 상태: {progressMessage}"
 msgid "Hello, {userName}!"
 msgstr "안녕하세요, {userName}님!"
 
-#: src/components/GoalForm.tsx:368
+#: src/components/GoalForm.tsx:369
 msgid "Hide extra options"
 msgstr "추가 옵션 숨기기"
 
@@ -308,14 +314,14 @@ msgid "Incomplete"
 msgstr "미완료"
 
 #: src/components/ui/number-input.tsx:238
-msgid "Decrease"
-msgstr "값 내리기"
+msgid "Increase"
+msgstr "값 올리기"
 
-#: src/components/GoalForm.tsx:456
+#: src/components/GoalForm.tsx:457
 msgid "Initial value"
 msgstr "초기값"
 
-#: src/components/DemoStart.tsx:57
+#: src/components/DemoStart.tsx:58
 msgid "Install as a PWA and use offline"
 msgstr "PWA로 설치하여 오프라인에서 사용하기"
 
@@ -348,8 +354,8 @@ msgstr "마지막 동기화:"
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/components/NewEntryForm.tsx:260
-#: src/components/NewEntryForm.tsx:293
+#: src/components/NewEntryForm.tsx:261
+#: src/components/NewEntryForm.tsx:294
 msgid "Last:"
 msgstr "이전:"
 
@@ -357,7 +363,7 @@ msgstr "이전:"
 msgid "Learn 1000 French words"
 msgstr "프랑스어 단어 1000개 익히기"
 
-#: src/routes/_main/goals.new.tsx:58
+#: src/routes/_main/goals.new.tsx:67
 #: src/components/SignUpForm.tsx:66
 #: src/components/GoalEditForm.tsx:56
 msgid "Missing required fields"
@@ -380,7 +386,7 @@ msgstr "이름 (역순)"
 msgid "Name is required"
 msgstr "이름을 입력해주세요"
 
-#: src/routes/_main/goals.lazy.tsx:43
+#: src/routes/_main/goals.lazy.tsx:45
 msgid "New Goal"
 msgstr "새로운 목표"
 
@@ -388,7 +394,7 @@ msgstr "새로운 목표"
 msgid "Newest goals"
 msgstr "최근 추가순"
 
-#: src/components/NewEntryForm.tsx:206
+#: src/components/NewEntryForm.tsx:207
 msgid "No"
 msgstr "아니요"
 
@@ -400,11 +406,11 @@ msgstr "아직 완료된 목표가 없습니다."
 msgid "No goals in progress."
 msgstr "진행 중인 목표가 없습니다."
 
-#: src/components/DemoStart.tsx:63
+#: src/components/DemoStart.tsx:64
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다.<0/>향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
 
-#: src/components/GoalForm.tsx:489
+#: src/components/GoalForm.tsx:490
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
 
@@ -440,7 +446,7 @@ msgstr "멋진 신세계 책 읽기"
 msgid "Ready to update"
 msgstr "업데이트 준비 완료"
 
-#: src/components/DemoStart.tsx:51
+#: src/components/DemoStart.tsx:52
 msgid "Record daily progress"
 msgstr "일일 진행 상황 기록"
 
@@ -472,7 +478,7 @@ msgstr "진행 상황 원활"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
-#: src/components/NewEntryForm.tsx:371
+#: src/components/NewEntryForm.tsx:372
 #: src/components/GoalEditForm.tsx:183
 #: src/components/GoalEditForm.tsx:194
 msgid "Save"
@@ -490,11 +496,12 @@ msgstr "정렬 기준 선택..."
 msgid "Set a target value for your goal."
 msgstr "목표 달성 값을 설정해 주세요."
 
-#: src/routes/_main/goals.new.tsx:113
+#: src/routes/_main/goals.new.tsx:121
+#: src/routes/_main/goals.new.tsx:186
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
-#: src/components/GoalForm.tsx:375
+#: src/components/GoalForm.tsx:376
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
@@ -538,11 +545,11 @@ msgstr "문제가 발생했습니다"
 #~ msgid "Sort by"
 #~ msgstr "정렬 기준"
 
-#: src/components/GoalForm.tsx:384
+#: src/components/GoalForm.tsx:385
 msgid "Start date"
 msgstr "시작일"
 
-#: src/components/DemoStart.tsx:78
+#: src/components/DemoStart.tsx:79
 msgid "Start Demo"
 msgstr "데모 시작하기"
 
@@ -554,7 +561,7 @@ msgstr "새로 시작하기"
 msgid "Start Over"
 msgstr "다시 시작"
 
-#: src/routes/_main/goals.new.tsx:81
+#: src/routes/_main/goals.new.tsx:90
 msgid "Sucessfully added goal"
 msgstr "목표가 추가되었습니다"
 
@@ -596,7 +603,7 @@ msgstr "목표값"
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
 
-#: src/components/DemoStart.tsx:37
+#: src/components/DemoStart.tsx:38
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있습니다. 데이터는 사용자의 기기에 로컬로 저장됩니다."
 
@@ -632,8 +639,8 @@ msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 �
 msgid "Type"
 msgstr "유형"
 
-#: src/components/GoalForm.tsx:415
-#: src/components/GoalForm.tsx:425
+#: src/components/GoalForm.tsx:416
+#: src/components/GoalForm.tsx:426
 msgid "Unit"
 msgstr "단위"
 
@@ -657,7 +664,7 @@ msgstr "지금 업데이트"
 msgid "Value for goal completion (number)"
 msgstr "목표 달성 값 (숫자)"
 
-#: src/components/DemoStart.tsx:54
+#: src/components/DemoStart.tsx:55
 msgid "View statistics and visualizations"
 msgstr "통계 및 시각화 보기"
 
@@ -683,11 +690,11 @@ msgstr "다시 오신 것을 환영합니다, {userName}님!"
 msgid "Welcome, {0}!"
 msgstr "환영합니다, {0}님!"
 
-#: src/components/DemoStart.tsx:44
+#: src/components/DemoStart.tsx:45
 msgid "What you can do in demo mode:"
 msgstr "데모 모드에서 할 수 있는 것:"
 
-#: src/components/NewEntryForm.tsx:192
+#: src/components/NewEntryForm.tsx:193
 msgid "Yes"
 msgstr "예"
 

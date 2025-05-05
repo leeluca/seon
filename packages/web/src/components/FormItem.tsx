@@ -21,12 +21,15 @@ function FormItem({
 }: FormMessageProps) {
   return (
     <div
-      className={cn('grid grid-cols-4 items-center gap-x-4 gap-y-1', className)}
+      className={cn(
+        'grid grid-cols-[minmax(100px,auto)_minmax(100px,1fr)] items-center gap-x-4 gap-y-1',
+        className,
+      )}
     >
       <Label
         htmlFor={labelFor}
         className={cn(
-          'text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-balance',
+          'text-balance text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
           labelClassName,
         )}
       >

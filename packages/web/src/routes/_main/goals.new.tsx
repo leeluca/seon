@@ -15,6 +15,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '~/components/ui/drawer';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { handleSave } from '~/services/goal';
 import { useUserStore } from '~/states/stores/userStore';
@@ -94,6 +103,71 @@ function NewGoalDialog() {
     clearExistingTimeout: clearTimeout,
   } = useDelayedExecution(() => void form.validateAllFields('change'));
 
+  const isMobile = useViewportStore((state) => state.isMobile);
+
+  if (isMobile) {
+    return (
+      <Drawer
+        open={isOpen}
+        onOpenChange={() => setIsOpen((prev) => !prev)}
+        onAnimationEnd={() => handleClose()}
+        repositionInputs={false}
+      >
+        <DrawerContent className="px-4 pb-6">
+          <DrawerHeader className="text-left">
+            <DrawerTitle>
+              <Trans>Add new goal</Trans>
+            </DrawerTitle>
+            <DrawerDescription>
+              <Trans>Set up your new goal. You can always edit it later.</Trans>
+            </DrawerDescription>
+          </DrawerHeader>
+          <GoalForm
+            form={form}
+            collapseOptionalFields
+            autoFocus={!isTouchScreen}
+            formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
+          />
+          <DrawerFooter className="pt-2">
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isTouched || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isSubmitDisabled]) => (
+                <div
+                  onMouseEnter={delayedValidation}
+                  onMouseLeave={clearTimeout}
+                  className={cn(
+                    'flex flex-col items-center gap-3 [&_button]:w-full',
+                    {
+                      'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
+                    },
+                  )}
+                >
+                  <Button
+                    type="submit"
+                    disabled={isSubmitDisabled}
+                    form={GOAL_FORM_ID}
+                    size="lg"
+                  >
+                    <Trans>Create goal</Trans>
+                  </Button>
+                  <DrawerClose asChild>
+                    <Button variant="outline" type="button">
+                      <Trans>Cancel</Trans>
+                    </Button>
+                  </DrawerClose>
+                </div>
+              )}
+            </form.Subscribe>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Dialog
       open={isOpen}
@@ -102,7 +176,7 @@ function NewGoalDialog() {
       }}
     >
       <DialogContent
-        className="p-4 sm:max-w-screen-sm sm:p-6"
+        className="p-4 sm:max-w-lg sm:p-6"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -115,12 +189,11 @@ function NewGoalDialog() {
         </DialogHeader>
         <GoalForm
           form={form}
-          labelClassName="text-right"
-          errorClassName="col-span-3 col-start-2"
+          errorClassName="col-start-2"
           collapseOptionalFields
           autoFocus={!isTouchScreen}
         />
-        <DialogFooter className="grid grid-cols-4 justify-items-end gap-4 sm:mt-4">
+        <DialogFooter className="grid grid-cols-[auto_1fr] justify-items-end gap-4 sm:mt-4">
           <form.Subscribe
             selector={(state) => [
               state.isSubmitting,
@@ -131,7 +204,7 @@ function NewGoalDialog() {
               <div
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}
-                className={cn('col-start-4', {
+                className={cn('col-start-2', {
                   'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                 })}
               >

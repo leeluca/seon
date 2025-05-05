@@ -119,6 +119,7 @@ const NewEntryForm = ({
   });
 
   return (
+    // TODO: refactor to separate goal type components
     <form
       onSubmit={(e) => {
         e.preventDefault();
@@ -127,11 +128,11 @@ const NewEntryForm = ({
       }}
     >
       <div className={cn('grid gap-4', className)}>
-        <div className="grid gap-2">
+        <div className="grid gap-4 sm:gap-2">
           <FormItem
             label={t`Date`}
             labelFor="entry-date"
-            className="grid grid-cols-3 items-center gap-4"
+            className="grid items-center gap-4 sm:grid-cols-3"
             labelClassName="text-start"
           >
             <form.Field name="date">
@@ -235,7 +236,7 @@ const NewEntryForm = ({
             <FormItem
               label={goalTypeTitle[goalType]}
               labelFor="entry-value"
-              className="grid grid-cols-3 items-center"
+              className="grid items-center gap-4 sm:grid-cols-3"
               labelClassName="text-start"
               required
             >
@@ -332,7 +333,7 @@ const NewEntryForm = ({
             >
               {([isSubmitting, isSubmitDisabled]) => (
                 <div
-                  className={cn('mt-1 grid grid-cols-3 gap-2', {
+                  className={cn('mt-1 grid grid-cols-4 gap-2', {
                     'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                     'mt-2': isMobile,
                   })}
@@ -356,7 +357,7 @@ const NewEntryForm = ({
                           },
                         })
                       }
-                      size={isMobile ? 'lg' : 'default'}
+                      size="responsive"
                       aria-label={t`Delete entry`}
                     >
                       <Trash2Icon size={18} />
@@ -365,8 +366,8 @@ const NewEntryForm = ({
                   <Button
                     type="submit"
                     disabled={isSubmitDisabled}
-                    className="col-span-2"
-                    size={isMobile ? 'lg' : 'default'}
+                    className="col-span-3"
+                    size="responsive"
                   >
                     <Trans>Save</Trans>
                   </Button>

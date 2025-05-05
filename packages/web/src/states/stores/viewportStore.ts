@@ -41,7 +41,7 @@ export const useViewportStore = create<ViewportState>()((set) => ({
       width,
       height,
       breakpoint,
-      isMobile: width < BREAKPOINTS.md,
+      isMobile: width < BREAKPOINTS.sm,
       isTouchScreen: navigator.maxTouchPoints > 0,
     });
   },

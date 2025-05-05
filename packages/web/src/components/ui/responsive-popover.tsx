@@ -2,7 +2,13 @@ import type { ComponentProps, ReactNode } from 'react';
 
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from './dialog';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from './drawer';
 import {
   Popover,
   PopoverAnchor,
@@ -15,19 +21,18 @@ interface ResponsivePopoverProps {
   children: ReactNode;
   className?: string;
   contentClassName?: string;
-  /** Optional props to pass to the Popover/Dialog content */
+  /** Optional props to pass to the Popover/Drawer content */
   contentProps?: ComponentProps<typeof PopoverContent> &
-    ComponentProps<typeof DialogContent>;
-  /** Control the open state */
+    ComponentProps<typeof DrawerContent>;
   open?: boolean;
-  /** Callback when open state changes */
   onOpenChange?: (open: boolean) => void;
   /** Virtual ref for anchor positioning */
   virtualRef?:
     | React.RefObject<Element>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
-  dialogTitle: ReactNode;
+  drawerTitle: ReactNode;
+  overlayClassName?: string;
 }
 
 export function ResponsivePopover({
@@ -39,25 +44,29 @@ export function ResponsivePopover({
   open,
   onOpenChange,
   virtualRef,
-  dialogTitle,
+  drawerTitle,
+  overlayClassName,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
 
   if (isMobile) {
     return (
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogTrigger asChild className={className}>
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerTrigger asChild className={className}>
           {trigger}
-        </DialogTrigger>
-        <DialogContent
-          className={cn('sm:max-w-[425px]', contentClassName)}
+        </DrawerTrigger>
+        <DrawerContent
+          className={cn('px-8 pb-6', contentClassName)}
+          overlayClassName={overlayClassName}
           aria-describedby={undefined}
           {...contentProps}
         >
-          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DrawerHeader className="mb-2">
+            <DrawerTitle>{drawerTitle}</DrawerTitle>
+          </DrawerHeader>
           {children}
-        </DialogContent>
-      </Dialog>
+        </DrawerContent>
+      </Drawer>
     );
   }
 
@@ -67,10 +76,7 @@ export function ResponsivePopover({
       <PopoverTrigger asChild className={className}>
         {trigger}
       </PopoverTrigger>
-      <PopoverContent
-        className={cn('w-auto min-w-[200px]', contentClassName)}
-        {...contentProps}
-      >
+      <PopoverContent className={contentClassName} {...contentProps}>
         {children}
       </PopoverContent>
     </Popover>
