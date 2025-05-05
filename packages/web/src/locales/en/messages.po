@@ -44,11 +44,14 @@ msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:285
+#: src/components/CalendarHeatmap.tsx:286
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
-#: src/routes/_main/goals.new.tsx:110
+#: src/routes/_main/goals.new.tsx:118
+#: src/routes/_main/goals.new.tsx:183
+#: src/routes/_main/goals.lazy.tsx:63
+#: src/routes/_main/goals.lazy.tsx:70
 msgid "Add new goal"
 msgstr "Add new goal"
 
@@ -76,7 +79,7 @@ msgstr "Amount"
 msgid "An unexpected error occurred."
 msgstr "An unexpected error occurred."
 
-#: src/components/GoalCard.tsx:266
+#: src/components/GoalCard.tsx:268
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
@@ -92,6 +95,7 @@ msgstr "Before goal's start date"
 msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
+#: src/routes/_main/goals.new.tsx:158
 #: src/components/SignOutButton.tsx:67
 #: src/components/GoalEditForm.tsx:172
 msgid "Cancel"
@@ -137,11 +141,12 @@ msgstr "Create a new goal or change the filter!"
 msgid "Create account"
 msgstr "Create account"
 
-#: src/components/DemoStart.tsx:48
+#: src/components/DemoStart.tsx:49
 msgid "Create and track personal goals"
 msgstr "Create and track personal goals"
 
-#: src/routes/_main/goals.new.tsx:144
+#: src/routes/_main/goals.new.tsx:154
+#: src/routes/_main/goals.new.tsx:216
 msgid "Create goal"
 msgstr "Create goal"
 
@@ -149,7 +154,7 @@ msgstr "Create goal"
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
-#: src/components/NewEntryForm.tsx:132
+#: src/components/NewEntryForm.tsx:133
 msgid "Date"
 msgstr "Date"
 
@@ -157,25 +162,26 @@ msgstr "Date"
 msgid "Decrease"
 msgstr "Decrease"
 
-#: src/components/GoalCard.tsx:285
+#: src/components/GoalCard.tsx:287
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/NewEntryForm.tsx:224
-#: src/components/NewEntryForm.tsx:360
+#: src/components/NewEntryForm.tsx:225
+#: src/components/NewEntryForm.tsx:361
 msgid "Delete entry"
 msgstr "Delete entry"
 
 #: src/components/GoalCard.tsx:255
-#: src/components/GoalCard.tsx:263
+#: src/components/GoalCard.tsx:260
+#: src/components/GoalCard.tsx:265
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:281
+#: src/components/GoalCard.tsx:283
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
-#: src/components/DemoStart.tsx:29
+#: src/components/DemoStart.tsx:30
 #: src/components/DemoIndicator.tsx:60
 #: src/components/DemoIndicator.tsx:65
 #: src/components/DemoIndicator.tsx:76
@@ -194,7 +200,7 @@ msgstr "Due later"
 msgid "Due soon"
 msgstr "Due soon"
 
-#: src/components/GoalForm.tsx:446
+#: src/components/GoalForm.tsx:447
 msgid "e.g. words"
 msgstr "e.g. words"
 
@@ -224,7 +230,7 @@ msgstr "Entries after target date"
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
-#: src/components/DemoStart.tsx:32
+#: src/components/DemoStart.tsx:33
 msgid "Experience Seon Goals without creating an account"
 msgstr "Experience Seon Goals without creating an account"
 
@@ -232,12 +238,12 @@ msgstr "Experience Seon Goals without creating an account"
 msgid "Failed to add entry"
 msgstr "Failed to add entry"
 
-#: src/routes/_main/goals.new.tsx:85
+#: src/routes/_main/goals.new.tsx:94
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
-#: src/components/NewEntryForm.tsx:220
-#: src/components/NewEntryForm.tsx:355
+#: src/components/NewEntryForm.tsx:221
+#: src/components/NewEntryForm.tsx:356
 msgid "Failed to delete entry"
 msgstr "Failed to delete entry"
 
@@ -291,7 +297,7 @@ msgstr "Goal progress: {progressMessage}"
 msgid "Hello, {userName}!"
 msgstr "Hello, {userName}!"
 
-#: src/components/GoalForm.tsx:368
+#: src/components/GoalForm.tsx:369
 msgid "Hide extra options"
 msgstr "Hide extra options"
 
@@ -311,11 +317,11 @@ msgstr "Incomplete"
 msgid "Increase"
 msgstr "Increase"
 
-#: src/components/GoalForm.tsx:456
+#: src/components/GoalForm.tsx:457
 msgid "Initial value"
 msgstr "Initial value"
 
-#: src/components/DemoStart.tsx:57
+#: src/components/DemoStart.tsx:58
 msgid "Install as a PWA and use offline"
 msgstr "Install as a PWA and use offline"
 
@@ -348,8 +354,8 @@ msgstr "Last synced:"
 msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
-#: src/components/NewEntryForm.tsx:260
-#: src/components/NewEntryForm.tsx:293
+#: src/components/NewEntryForm.tsx:261
+#: src/components/NewEntryForm.tsx:294
 msgid "Last:"
 msgstr "Last:"
 
@@ -357,7 +363,7 @@ msgstr "Last:"
 msgid "Learn 1000 French words"
 msgstr "Learn 1000 French words"
 
-#: src/routes/_main/goals.new.tsx:58
+#: src/routes/_main/goals.new.tsx:67
 #: src/components/SignUpForm.tsx:66
 #: src/components/GoalEditForm.tsx:56
 msgid "Missing required fields"
@@ -380,7 +386,7 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:43
+#: src/routes/_main/goals.lazy.tsx:45
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -388,7 +394,7 @@ msgstr "New Goal"
 msgid "Newest goals"
 msgstr "Newest first"
 
-#: src/components/NewEntryForm.tsx:206
+#: src/components/NewEntryForm.tsx:207
 msgid "No"
 msgstr "No"
 
@@ -400,11 +406,11 @@ msgstr "No completed goals yet."
 msgid "No goals in progress."
 msgstr "No goals in progress."
 
-#: src/components/DemoStart.tsx:63
+#: src/components/DemoStart.tsx:64
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 msgstr "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 
-#: src/components/GoalForm.tsx:489
+#: src/components/GoalForm.tsx:490
 msgid "Numbers only"
 msgstr "Numbers only"
 
@@ -440,7 +446,7 @@ msgstr "Read \"Brave New World\""
 msgid "Ready to update"
 msgstr "Ready to update"
 
-#: src/components/DemoStart.tsx:51
+#: src/components/DemoStart.tsx:52
 msgid "Record daily progress"
 msgstr "Record daily progress"
 
@@ -472,7 +478,7 @@ msgstr "Right on track!"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
-#: src/components/NewEntryForm.tsx:371
+#: src/components/NewEntryForm.tsx:372
 #: src/components/GoalEditForm.tsx:183
 #: src/components/GoalEditForm.tsx:194
 msgid "Save"
@@ -490,11 +496,12 @@ msgstr "Select sort..."
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
-#: src/routes/_main/goals.new.tsx:113
+#: src/routes/_main/goals.new.tsx:121
+#: src/routes/_main/goals.new.tsx:186
 msgid "Set up your new goal. You can always edit it later."
 msgstr "Set up your new goal. You can always edit it later."
 
-#: src/components/GoalForm.tsx:375
+#: src/components/GoalForm.tsx:376
 msgid "Show extra options"
 msgstr "Show extra options"
 
@@ -538,11 +545,11 @@ msgstr "Something went wrong"
 #~ msgid "Sort by"
 #~ msgstr "Sort by"
 
-#: src/components/GoalForm.tsx:384
+#: src/components/GoalForm.tsx:385
 msgid "Start date"
 msgstr "Start date"
 
-#: src/components/DemoStart.tsx:78
+#: src/components/DemoStart.tsx:79
 msgid "Start Demo"
 msgstr "Start Demo"
 
@@ -554,7 +561,7 @@ msgstr "Start New"
 msgid "Start Over"
 msgstr "Start Over"
 
-#: src/routes/_main/goals.new.tsx:81
+#: src/routes/_main/goals.new.tsx:90
 msgid "Sucessfully added goal"
 msgstr "Sucessfully added goal"
 
@@ -596,7 +603,7 @@ msgstr "Target value"
 msgid "There are no goals."
 msgstr "There are no goals."
 
-#: src/components/DemoStart.tsx:37
+#: src/components/DemoStart.tsx:38
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 
@@ -632,8 +639,8 @@ msgstr "Track your overall progress towards a target.<0/>E.g. reading a book (cu
 msgid "Type"
 msgstr "Type"
 
-#: src/components/GoalForm.tsx:415
-#: src/components/GoalForm.tsx:425
+#: src/components/GoalForm.tsx:416
+#: src/components/GoalForm.tsx:426
 msgid "Unit"
 msgstr "Unit"
 
@@ -657,7 +664,7 @@ msgstr "Install update"
 msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
 
-#: src/components/DemoStart.tsx:54
+#: src/components/DemoStart.tsx:55
 msgid "View statistics and visualizations"
 msgstr "View statistics and visualizations"
 
@@ -683,11 +690,11 @@ msgstr "Welcome back, {userName}!"
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
-#: src/components/DemoStart.tsx:44
+#: src/components/DemoStart.tsx:45
 msgid "What you can do in demo mode:"
 msgstr "What you can do in demo mode:"
 
-#: src/components/NewEntryForm.tsx:192
+#: src/components/NewEntryForm.tsx:193
 msgid "Yes"
 msgstr "Yes"
 

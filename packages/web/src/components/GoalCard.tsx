@@ -25,7 +25,7 @@ import { deleteGoal } from '~/services/goal';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { Button, buttonVariants } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import { ResponsivePopover } from './ui/responsive-popover';
 import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface ProgressBarProps {
@@ -247,8 +247,8 @@ export default function GoalCard({
           ) : null}
         </div>
         <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
-          <Popover>
-            <PopoverTrigger asChild>
+          <ResponsivePopover
+            trigger={
               <Button
                 size="icon-responsive"
                 variant="outline"
@@ -256,37 +256,38 @@ export default function GoalCard({
               >
                 <Trash2Icon size={18} />
               </Button>
-            </PopoverTrigger>
-            <PopoverContent sideOffset={5}>
-              <div className="space-y-2 pb-4">
-                <h3 className="font-medium leading-none">
-                  <Trans>Delete goal</Trans>
-                </h3>
-                <p className="text-muted-foreground text-pretty text-sm">
-                  <Trans>
-                    Are you sure you want to delete{' '}
-                    <span className="font-bold">{title}</span>?
-                  </Trans>
-                </p>
-              </div>
-              <div className="grid gap-4">
-                <Button
-                  variant="destructive"
-                  onClick={() => {
-                    void deleteGoal(id, () => {
-                      queryClient.invalidateQueries({
-                        queryKey: GOALS.all.queryKey,
-                      });
-                      onDeleteSuccess?.();
-                      toast.success(t`Deleted goal: ${title}`);
+            }
+            drawerTitle={t`Delete goal`}
+            contentProps={{ sideOffset: 5 }}
+          >
+            <div className="pb-6 sm:space-y-2 sm:pb-4">
+              <h3 className="hidden font-medium leading-none sm:block">
+                <Trans>Delete goal</Trans>
+              </h3>
+              <p className="text-muted-foreground text-pretty text-sm">
+                <Trans>
+                  Are you sure you want to delete{' '}
+                  <span className="font-bold">{title}</span>?
+                </Trans>
+              </p>
+            </div>
+            <div className="grid gap-4">
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  void deleteGoal(id, () => {
+                    queryClient.invalidateQueries({
+                      queryKey: GOALS.all.queryKey,
                     });
-                  }}
-                >
-                  <Trans>Delete</Trans>
-                </Button>
-              </div>
-            </PopoverContent>
-          </Popover>
+                    onDeleteSuccess?.();
+                    toast.success(t`Deleted goal: ${title}`);
+                  });
+                }}
+              >
+                <Trans>Delete</Trans>
+              </Button>
+            </div>
+          </ResponsivePopover>
           <Link
             to="/goals/$id"
             params={{ id }}

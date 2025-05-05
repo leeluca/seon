@@ -111,7 +111,6 @@ function NewGoalDialog() {
         open={isOpen}
         onOpenChange={() => setIsOpen((prev) => !prev)}
         onAnimationEnd={() => handleClose()}
-        modal={false}
       >
         <DrawerContent>
           <DrawerHeader className="text-left">

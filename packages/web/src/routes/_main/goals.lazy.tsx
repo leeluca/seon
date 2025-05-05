@@ -60,14 +60,14 @@ function Layout() {
 
       {/* Floating button for small screens */}
       <div className="fixed bottom-14 right-4 z-10 sm:hidden">
-        <ResponsiveTooltip content={t`Add new Goal`} side="top">
+        <ResponsiveTooltip content={t`Add new goal`} side="top">
           <Link
             to="/goals/new"
             className={cn(
               buttonVariants({ variant: 'default', size: 'lg' }),
               'flex h-16 w-16 rounded-full p-0 shadow-xl [&_svg]:!size-7',
             )}
-            aria-label={t`Add new Goal`}
+            aria-label={t`Add new goal`}
           >
             <PlusIcon />
           </Link>

@@ -280,10 +280,11 @@ const CalendarHeatmap = ({
         virtualRef={popoverAnchorRef}
         trigger={null}
         contentClassName={isMobile ? '' : 'w-fit max-w-72'}
-        dialogTitle={
+        overlayClassName={isMobile ? 'bg-black/50' : ''}
+        drawerTitle={
           <span>
             <Trans>
-              Add entry for <span className="text-gray-600">{goal?.title}</span>
+              Add entry for <span className="text-gray-500">{goal?.title}</span>
             </Trans>
           </span>
         }
@@ -299,7 +300,6 @@ const CalendarHeatmap = ({
           orderedEntries={entries}
           goalType={goal?.type as GoalType}
           onSubmitCallback={() => setIsPopoverOpen(false)}
-          className={isMobile ? 'px-6 pt-4' : ''}
         />
       </ResponsivePopover>
     </div>
