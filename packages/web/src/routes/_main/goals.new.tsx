@@ -102,7 +102,7 @@ function NewGoalDialog() {
       }}
     >
       <DialogContent
-        className="p-4 sm:max-w-screen-sm sm:p-6"
+        className="p-4 sm:max-w-lg sm:p-6"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <DialogHeader>
@@ -115,12 +115,11 @@ function NewGoalDialog() {
         </DialogHeader>
         <GoalForm
           form={form}
-          labelClassName="text-right"
-          errorClassName="col-span-3 col-start-2"
+          errorClassName="col-start-2"
           collapseOptionalFields
           autoFocus={!isTouchScreen}
         />
-        <DialogFooter className="grid grid-cols-4 justify-items-end gap-4 sm:mt-4">
+        <DialogFooter className="grid grid-cols-[auto_1fr] justify-items-end gap-4 sm:mt-4">
           <form.Subscribe
             selector={(state) => [
               state.isSubmitting,
@@ -131,7 +130,7 @@ function NewGoalDialog() {
               <div
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}
-                className={cn('col-start-4', {
+                className={cn('col-start-2', {
                   'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
                 })}
               >

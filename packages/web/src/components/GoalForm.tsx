@@ -113,7 +113,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-3 sm:col-span-2">
+                <div className="col-span-1">
                   <Input
                     id="title"
                     value={value}
@@ -152,7 +152,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-3 sm:col-span-2">
+                <div className="col-span-1">
                   <Input
                     id="target-value"
                     type="number"
@@ -204,7 +204,7 @@ function NewGoalForm({
                 errors={errors}
                 errorClassName={errorClassName}
               >
-                <div className="col-span-3 sm:col-span-2">
+                <div className="col-span-1">
                   <DatePicker
                     id="target-date"
                     date={value}
@@ -238,7 +238,7 @@ function NewGoalForm({
                 <RadioGroup
                   defaultValue="COUNT"
                   orientation="horizontal"
-                  className="col-span-3 flex flex-row flex-wrap gap-4 sm:gap-2"
+                  className="col-span-1 flex flex-row flex-wrap gap-4 sm:gap-2"
                   value={value}
                   // TODO: validate type on runtime?
                   onValueChange={(value) =>
@@ -351,6 +351,7 @@ function NewGoalForm({
                 variant="ghost"
                 type="button"
                 id="toggle-extra-options"
+                className="-ml-2"
               >
                 <ChevronRightIcon
                   size={18}
@@ -397,7 +398,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-3 sm:col-span-2">
+                      <div className="col-span-1">
                         <DatePicker
                           id="start-date"
                           defaultDate={new Date()}
@@ -438,7 +439,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-3 sm:col-span-2">
+                      <div className="col-span-1">
                         <Input
                           id="unit"
                           value={value}
@@ -469,7 +470,7 @@ function NewGoalForm({
                       errors={errors}
                       errorClassName={errorClassName}
                     >
-                      <div className="col-span-3 sm:col-span-2">
+                      <div className="col-span-1">
                         <Input
                           id="initial-value"
                           type="number"
