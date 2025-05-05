@@ -19,7 +19,7 @@ function Dashboard() {
       </div>
 
       <div className="px-3 py-2 sm:px-6 sm:py-4 xl:p-8">
-        <div className="m-auto mb-[90px] max-w-screen-2xl">
+        <div className="m-auto mb-24 max-w-screen-2xl">
           <ErrorBoundary fallback={<ErrorFallback />}>
             <Outlet />
           </ErrorBoundary>

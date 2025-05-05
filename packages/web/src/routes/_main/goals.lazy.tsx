@@ -1,5 +1,6 @@
 import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
@@ -9,6 +10,7 @@ import { GoalFilter } from '~/components/GoalFilter';
 import { GoalsContent } from '~/components/GoalsContent';
 import { GoalSorting } from '~/components/GoalSorting';
 import { buttonVariants } from '~/components/ui/button';
+import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
 import { useUserStore } from '~/states/stores/userStore';
 import type { GoalFilter as GoalFilterType, GoalSort } from '~/types/goal';
 import { cn } from '~/utils';
@@ -35,7 +37,7 @@ function Layout() {
             to="/goals/new"
             className={cn(
               buttonVariants({ variant: 'default', size: 'lg' }),
-              'h-12 pl-4 pr-5 sm:h-10',
+              'hidden h-12 pl-4 pr-5 sm:flex sm:h-10',
             )}
           >
             <div className="flex items-center justify-center text-base">
@@ -55,6 +57,22 @@ function Layout() {
         </ErrorBoundary>
       </div>
       <Outlet />
+
+      {/* Floating button for small screens */}
+      <div className="fixed bottom-14 right-4 z-10 sm:hidden">
+        <ResponsiveTooltip content={t`Add new Goal`} side="top">
+          <Link
+            to="/goals/new"
+            className={cn(
+              buttonVariants({ variant: 'default', size: 'lg' }),
+              'flex h-16 w-16 rounded-full p-0 shadow-xl [&_svg]:!size-7',
+            )}
+            aria-label={t`Add new Goal`}
+          >
+            <PlusIcon />
+          </Link>
+        </ResponsiveTooltip>
+      </div>
     </>
   );
 }
