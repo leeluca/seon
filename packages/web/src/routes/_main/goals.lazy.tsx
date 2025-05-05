@@ -60,7 +60,7 @@ function Layout() {
 
       {/* Floating button for small screens */}
       <div className="fixed bottom-14 right-4 z-10 sm:hidden">
-        <ResponsiveTooltip content={t`Add new goal`} side="top">
+        <ResponsiveTooltip content={<Trans>Add new goal</Trans>} side="top">
           <Link
             to="/goals/new"
             className={cn(
