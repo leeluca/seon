@@ -357,7 +357,7 @@ const NewEntryForm = ({
                           },
                         })
                       }
-                      size={isMobile ? 'lg' : 'default'}
+                      size="responsive"
                       aria-label={t`Delete entry`}
                     >
                       <Trash2Icon size={18} />
@@ -367,7 +367,7 @@ const NewEntryForm = ({
                     type="submit"
                     disabled={isSubmitDisabled}
                     className="col-span-3"
-                    size={isMobile ? 'lg' : 'default'}
+                    size="responsive"
                   >
                     <Trans>Save</Trans>
                   </Button>

@@ -111,8 +111,9 @@ function NewGoalDialog() {
         open={isOpen}
         onOpenChange={() => setIsOpen((prev) => !prev)}
         onAnimationEnd={() => handleClose()}
+        repositionInputs={false}
       >
-        <DrawerContent>
+        <DrawerContent className="px-4 pb-6">
           <DrawerHeader className="text-left">
             <DrawerTitle>
               <Trans>Add new goal</Trans>

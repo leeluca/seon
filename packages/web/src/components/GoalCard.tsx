@@ -274,6 +274,7 @@ export default function GoalCard({
             <div className="grid gap-4">
               <Button
                 variant="destructive"
+                size="responsive"
                 onClick={() => {
                   void deleteGoal(id, () => {
                     queryClient.invalidateQueries({

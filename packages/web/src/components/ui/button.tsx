@@ -25,6 +25,7 @@ const buttonVariants = cva(
         default: 'h-9 px-4 py-2',
         sm: 'h-8 rounded-md px-3 text-xs',
         lg: 'h-10 rounded-md px-8',
+        responsive: 'h-10 rounded-md px-8 sm:h-9 sm:px-4 sm:py-2',
         icon: 'h-9 w-9',
         'icon-sm': 'h-7 w-7',
         'icon-responsive': 'h-8 w-8 sm:h-7 sm:w-7',

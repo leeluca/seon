@@ -56,7 +56,7 @@ export function ResponsivePopover({
           {trigger}
         </DrawerTrigger>
         <DrawerContent
-          className={cn('px-8 pb-4', contentClassName)}
+          className={cn('px-8 pb-6', contentClassName)}
           overlayClassName={overlayClassName}
           aria-describedby={undefined}
           {...contentProps}
