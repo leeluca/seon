@@ -351,7 +351,7 @@ function NewGoalForm({
                 variant="ghost"
                 type="button"
                 id="toggle-extra-options"
-                className="-ml-2"
+                className="sm:-ml-2"
               >
                 <ChevronRightIcon
                   size={18}
@@ -363,14 +363,14 @@ function NewGoalForm({
             </CollapsibleTrigger>
             {showOptionalFields ? (
               <label
-                className="flex text-right text-xs font-medium"
+                className="flex text-right text-sm font-medium sm:text-xs"
                 htmlFor="toggle-extra-options"
               >
                 <Trans>Hide extra options</Trans>
               </label>
             ) : (
               <label
-                className="flex text-right text-xs font-medium"
+                className="flex text-right text-sm font-medium sm:text-xs"
                 htmlFor="toggle-extra-options"
               >
                 <Trans>Show extra options</Trans>

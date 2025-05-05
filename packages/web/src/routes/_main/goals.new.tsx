@@ -15,6 +15,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from '~/components/ui/dialog';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '~/components/ui/drawer';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { handleSave } from '~/services/goal';
 import { useUserStore } from '~/states/stores/userStore';
@@ -93,6 +102,71 @@ function NewGoalDialog() {
     startTimeout: delayedValidation,
     clearExistingTimeout: clearTimeout,
   } = useDelayedExecution(() => void form.validateAllFields('change'));
+
+  const isMobile = useViewportStore((state) => state.isMobile);
+
+  if (isMobile) {
+    return (
+      <Drawer
+        open={isOpen}
+        onOpenChange={() => setIsOpen((prev) => !prev)}
+        onAnimationEnd={() => handleClose()}
+        modal={false}
+      >
+        <DrawerContent>
+          <DrawerHeader className="text-left">
+            <DrawerTitle>
+              <Trans>Add new goal</Trans>
+            </DrawerTitle>
+            <DrawerDescription>
+              <Trans>Set up your new goal. You can always edit it later.</Trans>
+            </DrawerDescription>
+          </DrawerHeader>
+          <GoalForm
+            form={form}
+            collapseOptionalFields
+            autoFocus={!isTouchScreen}
+            formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
+          />
+          <DrawerFooter className="pt-2">
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isTouched || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isSubmitDisabled]) => (
+                <div
+                  onMouseEnter={delayedValidation}
+                  onMouseLeave={clearTimeout}
+                  className={cn(
+                    'flex flex-col items-center gap-3 [&_button]:w-full',
+                    {
+                      'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
+                    },
+                  )}
+                >
+                  <Button
+                    type="submit"
+                    disabled={isSubmitDisabled}
+                    form={GOAL_FORM_ID}
+                    size="lg"
+                  >
+                    <Trans>Create goal</Trans>
+                  </Button>
+                  <DrawerClose asChild>
+                    <Button variant="outline" type="button">
+                      <Trans>Cancel</Trans>
+                    </Button>
+                  </DrawerClose>
+                </div>
+              )}
+            </form.Subscribe>
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
 
   return (
     <Dialog
