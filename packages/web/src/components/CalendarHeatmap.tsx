@@ -53,12 +53,12 @@ const getButtonStyles = ({
 
   return cn(baseStyles, {
     // Success states
-    'bg-emerald-500 hover:bg-emerald-500/80': hasValue,
-    'bg-emerald-500/70': hasValue && isSelected,
+    'bg-primary/90 hover:bg-primary/80': hasValue,
+    'bg-primary/60': hasValue && isSelected,
 
     // Skipped states
     'bg-orange-300 hover:bg-orange-300/80': isEmptyPastDay,
-    'bg-orange-300/70': isEmptyPastDay && isSelected,
+    'bg-orange-300/60': isEmptyPastDay && isSelected,
 
     // Neutral states
     'bg-accent text-accent-foreground': isNeutralDay && isSelected,
