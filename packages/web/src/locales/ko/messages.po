@@ -48,8 +48,8 @@ msgstr "{0}에 기록 추가"
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
-#: src/routes/_main/goals.new.tsx:118
-#: src/routes/_main/goals.new.tsx:183
+#: src/routes/_main/goals.new.tsx:119
+#: src/routes/_main/goals.new.tsx:184
 #: src/routes/_main/goals.lazy.tsx:63
 #: src/routes/_main/goals.lazy.tsx:70
 msgid "Add new goal"
@@ -95,7 +95,7 @@ msgstr "목표 시작 날짜 전"
 msgid "Behind schedule!"
 msgstr "일정 지연"
 
-#: src/routes/_main/goals.new.tsx:158
+#: src/routes/_main/goals.new.tsx:159
 #: src/components/SignOutButton.tsx:67
 #: src/components/GoalEditForm.tsx:172
 msgid "Cancel"
@@ -145,8 +145,8 @@ msgstr "계정 만들기"
 msgid "Create and track personal goals"
 msgstr "개인 목표 생성 및 추적"
 
-#: src/routes/_main/goals.new.tsx:154
-#: src/routes/_main/goals.new.tsx:216
+#: src/routes/_main/goals.new.tsx:155
+#: src/routes/_main/goals.new.tsx:217
 msgid "Create goal"
 msgstr "목표 만들기"
 
@@ -162,7 +162,7 @@ msgstr "날짜"
 msgid "Decrease"
 msgstr "값 내리기"
 
-#: src/components/GoalCard.tsx:287
+#: src/components/GoalCard.tsx:288
 msgid "Delete"
 msgstr "삭제"
 
@@ -177,7 +177,7 @@ msgstr "기록 삭제"
 msgid "Delete goal"
 msgstr "목표 삭제"
 
-#: src/components/GoalCard.tsx:283
+#: src/components/GoalCard.tsx:284
 msgid "Deleted goal: {title}"
 msgstr "삭제된 목표: {title}"
 
@@ -418,6 +418,10 @@ msgstr "숫자만 입력 가능"
 msgid "Oldest goals"
 msgstr "오래된 순"
 
+#: src/components/NotFound.tsx:20
+msgid "Page Not Found"
+msgstr "페이지를 찾을 수 없습니다"
+
 #: src/components/SignUpForm.tsx:181
 #: src/components/SignInForm.tsx:114
 msgid "Password"
@@ -470,6 +474,10 @@ msgstr "초기화"
 msgid "Reset Demo"
 msgstr "데모 초기화"
 
+#: src/components/NotFound.tsx:29
+msgid "Return to Home"
+msgstr "홈으로 돌아가기"
+
 #: src/components/GoalCard.tsx:90
 msgid "Right on track!"
 msgstr "진행 상황 원활"
@@ -496,8 +504,8 @@ msgstr "정렬 기준 선택..."
 msgid "Set a target value for your goal."
 msgstr "목표 달성 값을 설정해 주세요."
 
-#: src/routes/_main/goals.new.tsx:121
-#: src/routes/_main/goals.new.tsx:186
+#: src/routes/_main/goals.new.tsx:122
+#: src/routes/_main/goals.new.tsx:187
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
@@ -599,6 +607,10 @@ msgstr "목표일은 시작일 이후여야 합니다"
 msgid "Target value"
 msgstr "목표값"
 
+#: src/components/NotFound.tsx:22
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr "찾으시는 페이지가 존재하지 않거나 이동되었습니다."
+
 #: src/components/NoGoalsPlaceholder.tsx:10
 msgid "There are no goals."
 msgstr "아직 목표가 없습니다."
@@ -619,7 +631,7 @@ msgstr "남은 기간"
 msgid "Today"
 msgstr "오늘"
 
-#: src/components/GoalCard.tsx:298
+#: src/components/GoalCard.tsx:299
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
 
