@@ -56,9 +56,9 @@ export default function DemoIndicator() {
         <PopoverTrigger asChild>
           <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100">
             <Button
-              variant="ghost"
+              variant="secondary"
               aria-label={t`Demo Mode`}
-              className="hover:bg-amber-200/50"
+              className="bg-amber-100 hover:bg-amber-200/50"
             >
               <FlaskConicalIcon size={18} className="text-amber-600" />
               <span className="text-sm font-medium text-amber-800">
