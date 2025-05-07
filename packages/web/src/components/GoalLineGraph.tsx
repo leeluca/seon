@@ -178,13 +178,13 @@ function getGraphData({
           data: progress,
           fill: true,
           borderColor: 'rgba(54, 162, 235, 0.8)',
-          backgroundColor: 'rgba(54, 162, 235, 0.1)',
+          backgroundColor: 'rgb(224, 242, 254)',
           pointBackgroundColor: (ctx) => {
             const idx = ctx.dataIndex;
             const isAfterTarget = aggregated[idx]?.date > targetDateObj;
             return isAfterTarget
               ? 'rgba(255, 205, 86, 0.1)'
-              : 'rgba(54, 162, 235, 0.1)';
+              : 'rgb(224, 242, 254)';
           },
           pointBorderColor: (ctx) => {
             const idx = ctx.dataIndex;

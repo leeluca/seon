@@ -62,7 +62,7 @@ const getButtonStyles = ({
 
     // Neutral states
     'bg-accent text-accent-foreground': isNeutralDay && isSelected,
-    'border-2 border-blue-200': isToday,
+    'border-2 border-cyan-500/30': isToday,
     'bg-gray-300 cursor-not-allowed border-none hover:bg-gray-300': isBlocked,
   });
 };

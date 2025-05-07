@@ -29,7 +29,7 @@ function StatusItem({ label, value }: StatusItemProps) {
     <div className="flex flex-col items-center">
       <h5 className="text-center font-medium">{label}</h5>
       <p
-        className={cn('text-sm text-gray-700', {
+        className={cn('text-muted-foreground text-sm', {
           'font-light': locale === 'en',
         })}
       >
@@ -122,7 +122,7 @@ export function GoalStatusSummary({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-around gap-5 rounded-xl bg-gray-100 p-5',
+        'bg-secondary/30 border-secondary flex flex-wrap items-center justify-around gap-5 rounded-xl border p-5',
         className,
       )}
     >
