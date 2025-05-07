@@ -48,8 +48,8 @@ msgstr "Add entry for {0}"
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
-#: src/routes/_main/goals.new.tsx:118
-#: src/routes/_main/goals.new.tsx:183
+#: src/routes/_main/goals.new.tsx:119
+#: src/routes/_main/goals.new.tsx:184
 #: src/routes/_main/goals.lazy.tsx:63
 #: src/routes/_main/goals.lazy.tsx:70
 msgid "Add new goal"
@@ -95,7 +95,7 @@ msgstr "Before goal's start date"
 msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
-#: src/routes/_main/goals.new.tsx:158
+#: src/routes/_main/goals.new.tsx:159
 #: src/components/SignOutButton.tsx:67
 #: src/components/GoalEditForm.tsx:172
 msgid "Cancel"
@@ -145,8 +145,8 @@ msgstr "Create account"
 msgid "Create and track personal goals"
 msgstr "Create and track personal goals"
 
-#: src/routes/_main/goals.new.tsx:154
-#: src/routes/_main/goals.new.tsx:216
+#: src/routes/_main/goals.new.tsx:155
+#: src/routes/_main/goals.new.tsx:217
 msgid "Create goal"
 msgstr "Create goal"
 
@@ -162,7 +162,7 @@ msgstr "Date"
 msgid "Decrease"
 msgstr "Decrease"
 
-#: src/components/GoalCard.tsx:287
+#: src/components/GoalCard.tsx:288
 msgid "Delete"
 msgstr "Delete"
 
@@ -177,7 +177,7 @@ msgstr "Delete entry"
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:283
+#: src/components/GoalCard.tsx:284
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
@@ -418,6 +418,10 @@ msgstr "Numbers only"
 msgid "Oldest goals"
 msgstr "Oldest first"
 
+#: src/components/NotFound.tsx:20
+msgid "Page Not Found"
+msgstr "Page Not Found"
+
 #: src/components/SignUpForm.tsx:181
 #: src/components/SignInForm.tsx:114
 msgid "Password"
@@ -470,6 +474,10 @@ msgstr "Reset"
 msgid "Reset Demo"
 msgstr "Reset Demo"
 
+#: src/components/NotFound.tsx:29
+msgid "Return to Home"
+msgstr "Return to Home"
+
 #: src/components/GoalCard.tsx:90
 msgid "Right on track!"
 msgstr "Right on track!"
@@ -496,8 +504,8 @@ msgstr "Select sort..."
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
-#: src/routes/_main/goals.new.tsx:121
-#: src/routes/_main/goals.new.tsx:186
+#: src/routes/_main/goals.new.tsx:122
+#: src/routes/_main/goals.new.tsx:187
 msgid "Set up your new goal. You can always edit it later."
 msgstr "Set up your new goal. You can always edit it later."
 
@@ -599,6 +607,10 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
+#: src/components/NotFound.tsx:22
+msgid "The page you're looking for doesn't exist or has been moved."
+msgstr "The page you're looking for doesn't exist or has been moved."
+
 #: src/components/NoGoalsPlaceholder.tsx:10
 msgid "There are no goals."
 msgstr "There are no goals."
@@ -619,7 +631,7 @@ msgstr "Time Left"
 msgid "Today"
 msgstr "Today"
 
-#: src/components/GoalCard.tsx:298
+#: src/components/GoalCard.tsx:299
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 

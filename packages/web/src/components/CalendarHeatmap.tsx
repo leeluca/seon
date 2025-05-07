@@ -53,12 +53,12 @@ const getButtonStyles = ({
 
   return cn(baseStyles, {
     // Success states
-    'bg-emerald-500 hover:bg-emerald-500/80': hasValue,
-    'bg-emerald-500/70': hasValue && isSelected,
+    'bg-primary/90 hover:bg-primary/80': hasValue,
+    'bg-primary/60': hasValue && isSelected,
 
     // Skipped states
     'bg-orange-300 hover:bg-orange-300/80': isEmptyPastDay,
-    'bg-orange-300/70': isEmptyPastDay && isSelected,
+    'bg-orange-300/60': isEmptyPastDay && isSelected,
 
     // Neutral states
     'bg-accent text-accent-foreground': isNeutralDay && isSelected,
@@ -166,7 +166,7 @@ const CalendarHeatmap = ({
       </div>
       <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2">
         <Button
-          variant="secondary"
+          variant="outline"
           size="icon-sm"
           onClick={handlePrevWeek}
           className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
@@ -266,7 +266,7 @@ const CalendarHeatmap = ({
           );
         })}
         <Button
-          variant="secondary"
+          variant="outline"
           size="icon-sm"
           onClick={handleNextWeek}
           className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"

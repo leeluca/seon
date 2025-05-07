@@ -265,7 +265,7 @@ function NewGoalForm({
                           </Trans>
                         </p>
                       }
-                      side="bottom"
+                      side={isMobile ? 'top' : 'bottom'}
                     >
                       <InfoCircledIcon
                         ref={setIconRef}
@@ -294,7 +294,7 @@ function NewGoalForm({
                           </Trans>
                         </p>
                       }
-                      side="bottom"
+                      side={isMobile ? 'top' : 'bottom'}
                     >
                       <InfoCircledIcon
                         width={isMobile ? 18 : 16}
@@ -323,7 +323,7 @@ function NewGoalForm({
                           </Trans>
                         </p>
                       }
-                      side="bottom"
+                      side={isMobile ? 'top' : 'bottom'}
                     >
                       <InfoCircledIcon
                         ref={setIconRef}

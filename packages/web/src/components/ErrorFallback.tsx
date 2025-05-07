@@ -98,7 +98,7 @@ function ErrorFallback({ isRoot = false, error }: ErrorFallbackProps) {
         title="Something went wrong"
         refreshText="Refresh page"
         errorMessage={errorMessage}
-        className="min-h-screen"
+        className="min-h-dvh"
       />
     );
   }

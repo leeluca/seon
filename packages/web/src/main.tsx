@@ -8,6 +8,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 
 import { useFetchAuthStatus } from './apis/hooks/useFetchAuthStatus';
 import ErrorFallback from './components/ErrorFallback';
+import NotFound from './components/NotFound';
 import { COMPATIBILITY_MESSAGE } from './constants/errors';
 import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
 import { queryClient } from './lib/queryClient';
@@ -25,6 +26,9 @@ const router = createRouter({
   defaultPreload: 'viewport',
   defaultErrorComponent: ({ error }) => {
     return <ErrorFallback isRoot error={error} />;
+  },
+  defaultNotFoundComponent: () => {
+    return <NotFound className="min-h-dvh" />;
   },
 });
 
