@@ -201,7 +201,7 @@ const NewEntryForm = ({
                               value === 0
                                 ? 'border-orange-200 bg-orange-100'
                                 : '',
-                              'h-10 w-1/2 px-8 text-base',
+                              'h-10 w-1/2 px-8 text-base hover:bg-orange-100/80',
                             )}
                           >
                             <Trans>No</Trans>

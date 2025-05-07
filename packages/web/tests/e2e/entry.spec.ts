@@ -42,7 +42,7 @@ test.describe('Goal Entry Management', () => {
     await Promise.all([
       expect(popover).not.toBeVisible(),
       expect(todayButton).not.toHaveClass(initialClass ?? ''),
-      expect(todayButton).toHaveClass(/bg-emerald-500/),
+      expect(todayButton).toHaveClass(/bg-primary\/90/),
     ]);
 
     // 7. Verify the progress value has increased
@@ -84,7 +84,7 @@ test.describe('Goal Entry Management', () => {
     await Promise.all([
       expect(popover).not.toBeVisible(),
       expect(todayButton).not.toHaveClass(initialClass ?? ''),
-      expect(todayButton).toHaveClass(/bg-emerald-500/),
+      expect(todayButton).toHaveClass(/bg-primary\/90/),
     ]);
 
     // 7. Verify the progress value has increased
@@ -120,7 +120,7 @@ test.describe('Goal Entry Management', () => {
     await Promise.all([
       expect(popover).not.toBeVisible(),
       expect(todayButton).not.toHaveClass(initialClass ?? ''),
-      expect(todayButton).toHaveClass(/bg-emerald-500/),
+      expect(todayButton).toHaveClass(/bg-primary\/90/),
     ]);
 
     // 2. Get updated values for comparison later
@@ -139,13 +139,13 @@ test.describe('Goal Entry Management', () => {
     await expect(deleteButton).toBeEnabled();
     await deleteButton.click();
 
-    // 5. Verify the popover closes, the button has the success background
+    // 5. Verify the popover closes and the button doesn't have the success background
     await Promise.all([
       expect(popover).not.toBeVisible(),
       expect(todayButton).not.toHaveClass(
         classAfterAdd ?? 'non-existent-class',
       ),
-      expect(todayButton).not.toHaveClass(/bg-emerald-500/),
+      expect(todayButton).not.toHaveClass(/bg-primary\/90/),
     ]);
 
     // 6. Verify the progress value has decreased
