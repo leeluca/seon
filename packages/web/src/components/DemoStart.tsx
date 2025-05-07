@@ -40,7 +40,7 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
               data will be stored locally on your device.
             </Trans>
           </p>
-          <div className="bg-muted rounded-md p-3 px-5 text-sm">
+          <div className="bg-background rounded-md border p-3 px-5 text-sm">
             <p className="font-medium">
               <Trans>What you can do in demo mode:</Trans>
             </p>

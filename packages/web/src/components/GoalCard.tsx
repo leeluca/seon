@@ -48,7 +48,7 @@ function ProgressBar({
       aria-valuemax={target}
       aria-valuetext={`${currentValue.toFixed(0)}/${target}`}
       tabIndex={-1}
-      className="w-[calc(100% + 48px)] group relative -mx-1 flex h-3 rounded bg-gray-200 sm:-mx-3"
+      className="w-[calc(100% + 48px)] bg-muted group relative -mx-1 flex h-3 rounded sm:-mx-3"
     >
       <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
         {progressPercent <= 100
@@ -56,7 +56,7 @@ function ProgressBar({
           : target}
       </p>
       <div
-        className="relative h-3 rounded border bg-blue-200 transition-all group-hover:border-blue-300 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
+        className="relative h-3 rounded bg-cyan-500/30 transition-all group-hover:border-cyan-500 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
         style={{ width: `${Math.max(progressPercent, 2)}%` }}
       >
         <p
@@ -246,7 +246,7 @@ export default function GoalCard({
             </ResponsiveTooltip>
           ) : null}
         </div>
-        <div className="ml-auto flex items-center gap-1 rounded-xl bg-gray-200/50 px-2 py-1">
+        <div className="bg-muted ml-auto flex items-center gap-1 rounded-xl px-2 py-1">
           <ResponsivePopover
             trigger={
               <Button
