@@ -29,7 +29,7 @@ export async function updateGoalProgress(
       .orderBy('date', 'desc')
       .limit(1)
       .executeTakeFirst();
-    currentValue = (latestEntry?.value ?? 0) + goal.initialValue;
+    currentValue = latestEntry?.value ?? 0;
   } else {
     // Else, sum all entry values
     const sumResult = await tx

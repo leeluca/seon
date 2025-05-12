@@ -59,65 +59,57 @@ export function GoalStatusSummary({
     ENTRIES.goalId(goalId),
   );
 
-  const entriesSum = useMemo(
-    () =>
-      goal?.type === 'PROGRESS'
-        ? (entries[entries.length - 1]?.value ?? 0) + (goal.initialValue ?? 0)
-        : entries.reduce((sum, entry) => sum + entry.value, 0) +
-          (goal?.initialValue ?? 0),
-    [entries, goal],
-  );
+  const entriesSum = goal?.currentValue ?? 0;
 
   if (!goal || isLoadingEntries) return null;
 
+  const startDate = new Date(goal.startDate);
+  const targetDate = new Date(goal.targetDate);
+
   const isGoalCompleted = entriesSum >= goal.target;
-  const isPastTargetDate =
-    !checkIsToday(goal.targetDate) && checkIsPast(goal.targetDate);
+  const isPastTargetDate = !checkIsToday(targetDate) && checkIsPast(targetDate);
 
   const daysRemaining = Math.max(
-    differenceInCalendarDays(goal.targetDate, new Date()) + 1,
+    differenceInCalendarDays(targetDate, new Date()) + 1,
     0,
   );
 
   let averagePerDay: number;
+
+  const calculateDaysElapsed = (endDate: Date, stDate: Date) =>
+    Math.max(differenceInCalendarDays(endDate, stDate) + 1, 1);
+
   if (isGoalCompleted) {
-    averagePerDay =
-      entriesSum /
-      Math.max(
-        differenceInCalendarDays(
-          entries[entries.length - 1]?.date ?? goal.targetDate,
-          goal.startDate,
-        ) - 1,
-        1,
-      );
+    const completionDate = goal.completionDate
+      ? new Date(goal.completionDate)
+      : targetDate;
+    const daysElapsed = calculateDaysElapsed(completionDate, startDate);
+    averagePerDay = entriesSum / daysElapsed;
   } else if (isPastTargetDate) {
-    averagePerDay =
-      entriesSum /
-      Math.max(
-        differenceInCalendarDays(goal.targetDate, goal.startDate) - 1,
-        1,
-      );
+    const daysElapsed = calculateDaysElapsed(targetDate, startDate);
+    averagePerDay = entriesSum / daysElapsed;
   } else {
-    averagePerDay =
-      entriesSum /
-      Math.max(differenceInCalendarDays(new Date(), goal.startDate) - 1, 1);
+    const daysElapsed = calculateDaysElapsed(new Date(), startDate);
+    averagePerDay = entriesSum / daysElapsed;
   }
 
   const remaining = Math.max(goal.target - entriesSum, 0);
 
   const averageNeededPerDay = isPastTargetDate
     ? 0
-    : remaining / (differenceInCalendarDays(goal.targetDate, new Date()) + 1);
-
+    : remaining /
+      Math.max(differenceInCalendarDays(targetDate, new Date()) + 1, 1);
   const estimatedCompletionDate =
-    (averagePerDay &&
-      (isGoalCompleted
-        ? t`Completed!`
-        : formatDate(
-            addDays(new Date(), Math.max(remaining / averagePerDay - 1, 0)),
-            'PP',
-          ))) ||
-    '-';
+    (averagePerDay > 0 &&
+      !isGoalCompleted &&
+      remaining > 0 &&
+      (() => {
+        const daysNeeded = remaining / averagePerDay;
+
+        const daysToAdd = Math.max(Math.ceil(daysNeeded) - 1, 0);
+        return formatDate(addDays(new Date(), daysToAdd), 'PP');
+      })()) ||
+    (isGoalCompleted ? t`Completed!` : '-');
 
   return (
     <div
