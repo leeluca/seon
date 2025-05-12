@@ -28,10 +28,18 @@ export const user = pgTable(
     name: text('name').notNull(),
     password: text('password').notNull(),
     email: text('email'),
-    createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
+    createdAt: timestamp('createdAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .notNull(),
-    updatedAt: timestamp('updatedAt', { precision: 3, mode: 'string' })
+    updatedAt: timestamp('updatedAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .$onUpdate(() => sql`now()`)
       .notNull(),
@@ -74,26 +82,34 @@ export const goal = pgTable(
     userId: uuid('userId').notNull(),
     startDate: timestamp('startDate', {
       precision: 3,
+      withTimezone: true,
       mode: 'string',
     })
       .defaultNow()
       .notNull(),
     targetDate: timestamp('targetDate', {
       precision: 3,
+      withTimezone: true,
       mode: 'string',
     })
       .defaultNow()
       .$onUpdate(() => sql`now()`)
       .notNull(),
-    createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
+    createdAt: timestamp('createdAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .notNull(),
     updatedAt: timestamp('updatedAt', {
       precision: 3,
+      withTimezone: true,
       mode: 'string',
     }).notNull(),
     completionDate: timestamp('completionDate', {
       precision: 3,
+      withTimezone: true,
       mode: 'string',
     }),
     type: goalType('type').default('COUNT').notNull(),
@@ -120,14 +136,23 @@ export const entry = pgTable(
     shortId: text('shortId'),
     goalId: uuid('goalId').notNull(),
     value: integer('value').notNull(),
-    date: timestamp('date', { precision: 3, mode: 'string' })
+    date: timestamp('date', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .notNull(),
-    createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
+    createdAt: timestamp('createdAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .notNull(),
     updatedAt: timestamp('updatedAt', {
       precision: 3,
+      withTimezone: true,
       mode: 'string',
     })
       .defaultNow()
@@ -165,9 +190,14 @@ export const refreshToken = pgTable(
     userId: uuid('userId').notNull(),
     expiration: timestamp('expiration', {
       precision: 3,
+      withTimezone: true,
       mode: 'date',
     }).notNull(),
-    createdAt: timestamp('createdAt', { precision: 3, mode: 'string' })
+    createdAt: timestamp('createdAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    })
       .defaultNow()
       .notNull(),
   },
