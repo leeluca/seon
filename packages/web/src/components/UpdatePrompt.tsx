@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
+import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
@@ -25,6 +26,9 @@ function ReloadPrompt() {
       await updateServiceWorker(true);
     } catch (error) {
       console.error('Failed to update:', error);
+      Sentry.captureException(error, {
+        tags: { update_error: 'update_service_worker' },
+      });
       setIsUpdating(false);
     }
   };

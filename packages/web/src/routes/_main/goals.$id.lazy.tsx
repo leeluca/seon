@@ -1,5 +1,5 @@
 import { Suspense, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import * as Sentry from '@sentry/react';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 
 import { GoalDetailPanel } from '~/components/GoalDetailPanel';
@@ -23,7 +23,7 @@ function RouteComponent() {
   const { id: goalId } = Route.useParams();
 
   return (
-    <ErrorBoundary
+    <Sentry.ErrorBoundary
       fallback={
         <GoalDetailPanel.ErrorFallback
           open={isOpen}
@@ -39,6 +39,6 @@ function RouteComponent() {
           isShortId={goalId.length < UUID_LENGTH}
         />
       </Suspense>
-    </ErrorBoundary>
+    </Sentry.ErrorBoundary>
   );
 }

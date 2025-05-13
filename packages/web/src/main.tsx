@@ -1,10 +1,11 @@
-import { StrictMode, useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import { createRouter, RouterProvider } from '@tanstack/react-router';
-
+import './lib/logging/instrument';
 import './tailwind.css';
 
+import { StrictMode, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { useFetchAuthStatus } from './apis/hooks/useFetchAuthStatus';
 import ErrorFallback from './components/ErrorFallback';
@@ -29,6 +30,9 @@ const router = createRouter({
   },
   defaultNotFoundComponent: () => {
     return <NotFound className="min-h-dvh" />;
+  },
+  defaultOnCatch(error, errorInfo) {
+    Sentry.captureReactException(error, errorInfo);
   },
 });
 

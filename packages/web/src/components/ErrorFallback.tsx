@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { t } from '@lingui/core/macro';
+import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon, RefreshCcwIcon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
@@ -23,6 +24,9 @@ function UpdateButton({ text }: { text?: React.ReactNode }) {
       await updateServiceWorker(true);
     } catch (error) {
       console.error('Failed to update:', error);
+      Sentry.captureException(error, {
+        tags: { update_error: 'update_service_worker' },
+      });
       setIsUpdating(false);
     }
   };

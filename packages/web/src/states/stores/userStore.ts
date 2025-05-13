@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react';
 import { create } from 'zustand';
 
 import db from '~/lib/database';
@@ -26,6 +27,11 @@ async function getUserFromDb() {
 
     return await db.selectFrom('user').selectAll().executeTakeFirst();
   } catch (error) {
+    Sentry.captureException(error, {
+      extra: { message: 'Failed to fetch user from database' },
+      tags: { storage_error: 'fetch_user' },
+    });
+
     console.error('Failed to fetch user from database', error);
     return undefined;
   }
