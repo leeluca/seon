@@ -170,9 +170,26 @@ export function NumberInputField({
   }, [combinedRef, context]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal =
-      e.target.value === '' ? undefined : Number.parseFloat(e.target.value);
+    const rawValue = e.target.value;
+    const sanitizedValueString = rawValue.replace(/[^0-9]/g, '');
+    let newVal: number | undefined = Number.parseInt(sanitizedValueString, 10);
+
+    if (Number.isNaN(newVal)) {
+      newVal = undefined;
+    } else {
+      if (context.min !== undefined && newVal < context.min) {
+        newVal = context.min;
+      }
+      if (context.max !== undefined && newVal > context.max) {
+        return;
+      }
+    }
+
     context.setValue(newVal);
+
+    // Update the event target's value for external handlers
+    e.target.value = newVal !== undefined ? String(newVal) : '';
+
     onChange?.(e);
   };
 
