@@ -83,7 +83,7 @@ const NewEntryForm = ({
     onSubmitCallbackProp?.();
   };
 
-  const form = useForm<{ value?: number; date: Date }>({
+  const form = useForm<{ value: number; date: Date }>({
     defaultValues: {
       date,
       value: value ?? previousValue,
@@ -91,7 +91,7 @@ const NewEntryForm = ({
     validators: {
       onChange({ value }) {
         const { value: inputtedValue } = value;
-        if (!inputtedValue === undefined) {
+        if (inputtedValue === undefined) {
           return 'Missing required fields';
         }
       },
@@ -276,6 +276,7 @@ const NewEntryForm = ({
                               <NumberInput.Field
                                 id="entry-value"
                                 autoFocus={!isMobile && !isTouchScreen}
+                                autoComplete="off"
                                 className={cn(
                                   'rounded-none',
                                   showPreviousValueHelper && 'pl-[39px]',
@@ -306,6 +307,7 @@ const NewEntryForm = ({
                               <NumberInput.Field
                                 id="entry-value"
                                 autoFocus={!isMobile && !isTouchScreen}
+                                autoComplete="off"
                                 className={cn(
                                   showPreviousValueHelper && 'pl-[39px]',
                                 )}

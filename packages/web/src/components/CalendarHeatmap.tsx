@@ -57,7 +57,7 @@ const getButtonStyles = ({
     'bg-primary/60': hasValue && isSelected,
 
     // Skipped states
-    'bg-orange-300 hover:bg-orange-300/80': isEmptyPastDay,
+    'bg-orange-300/90 hover:bg-orange-300/80': isEmptyPastDay,
     'bg-orange-300/60': isEmptyPastDay && isSelected,
 
     // Neutral states

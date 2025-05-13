@@ -54,7 +54,9 @@ export const blockNonNumberInput = (
     'End',
   ]);
 
-  if (!ALLOWED_KEYS.has(e.key) && !NUMBER_VALUES.has(e.key)) {
+  const isCommand = e.metaKey || e.ctrlKey;
+
+  if (!ALLOWED_KEYS.has(e.key) && !NUMBER_VALUES.has(e.key) && !isCommand) {
     e.preventDefault();
   }
 };

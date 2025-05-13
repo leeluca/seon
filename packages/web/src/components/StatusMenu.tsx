@@ -109,7 +109,7 @@ function StatusMenu() {
   );
 
   const { data, isLoading } = useFetchAuthStatus();
-  const isSignedIn = data?.result;
+  const isSignedIn = !!data?.result;
   const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;
