@@ -224,7 +224,7 @@ export default function GoalCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="px-4 pb-3 sm:px-6">
+      <CardFooter className="px-4 pb-4 sm:px-6 sm:pb-6">
         <div className="flex w-full justify-start">
           {currentValue ? (
             <ResponsiveTooltip content={<p>{progressMessage}</p>}>
