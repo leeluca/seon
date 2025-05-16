@@ -139,6 +139,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.6
         version: 1.2.6(@types/react-dom@18.3.7(@types/react@18.3.21))(@types/react@18.3.21)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@sentry/react':
+        specifier: ^9.17.0
+        version: 9.17.0(react@18.3.1)
       '@supabase/supabase-js':
         specifier: ^2.49.4
         version: 2.49.4
@@ -2036,6 +2039,36 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@sentry-internal/browser-utils@9.17.0':
+    resolution: {integrity: sha512-37n6NXtkUfdK7YiP3L5DJvhA/iusOmnjHQdX1e2VwI6a29xHCl/vRqLR3XNr5K4m+49al+3fWo2ltcKsfV+0xw==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/feedback@9.17.0':
+    resolution: {integrity: sha512-C2jBlGgYVGm8eXK38wlYQyd6NsHKaQlENg5fx8TDFMKWMNmLf6BmnPZ+y73OsFwcUtBz04CwZteybYB2GgYrvQ==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/replay-canvas@9.17.0':
+    resolution: {integrity: sha512-w9AxBJIa+MbxDngvwnqouoJ/ezb7wNjxzFXtmaVtGp7hbC4yme/TOTNtFYg2J/ceQf3GMc8AfW5tsP6zU0R7gg==}
+    engines: {node: '>=18'}
+
+  '@sentry-internal/replay@9.17.0':
+    resolution: {integrity: sha512-oH4NolXkEpe73eRP9r3K6WpERYItZisYQudsNrtkUBQL5M/uENiE7YTOvL5osD8AWmU0hCKY3Oua+qDi2lB+8g==}
+    engines: {node: '>=18'}
+
+  '@sentry/browser@9.17.0':
+    resolution: {integrity: sha512-3e/Q5bv06Q+XYV2cKmUgfMfnJtBY8MZKufpcwQ2ab2eMrastqau9KjYeWXapskDm179oPLfzLcDCSlDSTcvqpQ==}
+    engines: {node: '>=18'}
+
+  '@sentry/core@9.17.0':
+    resolution: {integrity: sha512-9f1A93/kY9lLH06L1thPx94IhyLjEP3aRxYAtjtBfzId8UtubSpwP92sbxgslodD73R4tURwWJj7nYZ9HLYBUg==}
+    engines: {node: '>=18'}
+
+  '@sentry/react@9.17.0':
+    resolution: {integrity: sha512-hJOVUheFoUKr5e4vHxyKiu72FRgqmMTFIUG9myim8PH8mJYDqab7Z7cOt4dsBR86soKanaRB5PJq5jGFuipLfg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      react: ^16.14.0 || 17.x || 18.x || 19.x
+
   '@sinclair/typebox@0.27.8':
     resolution: {integrity: sha512-+Fj43pSMwJs4KRrH/938Uf+uAELIgVBmQzg/q1YG10djyfA3TnrU8N8XzqCh/okZdszqBQTZf96idMfE5lnwTA==}
 
@@ -3247,6 +3280,9 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
+  hoist-non-react-statics@3.3.2:
+    resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+
   hono@4.7.9:
     resolution: {integrity: sha512-/EsCoR5h7N4yu01TDu9GMCCJa6ZLk5ZJIWFFGNawAXmd1Tp53+Wir4xm0D2X19bbykWUlzQG0+BvPAji6p9E8Q==}
     engines: {node: '>=16.9.0'}
@@ -4004,6 +4040,9 @@ packages:
     resolution: {integrity: sha512-tnjAxG+IkpLephNcePNA7v6F/QpWLH8He65+DmedchDwg162JZqx4NmbXj0mlAYVVEd81OW7aFhmbsScYfiAFQ==}
     peerDependencies:
       react: '>=16.13.1'
+
+  react-is@16.13.1:
+    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
 
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
@@ -6685,6 +6724,41 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.40.2':
     optional: true
 
+  '@sentry-internal/browser-utils@9.17.0':
+    dependencies:
+      '@sentry/core': 9.17.0
+
+  '@sentry-internal/feedback@9.17.0':
+    dependencies:
+      '@sentry/core': 9.17.0
+
+  '@sentry-internal/replay-canvas@9.17.0':
+    dependencies:
+      '@sentry-internal/replay': 9.17.0
+      '@sentry/core': 9.17.0
+
+  '@sentry-internal/replay@9.17.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 9.17.0
+      '@sentry/core': 9.17.0
+
+  '@sentry/browser@9.17.0':
+    dependencies:
+      '@sentry-internal/browser-utils': 9.17.0
+      '@sentry-internal/feedback': 9.17.0
+      '@sentry-internal/replay': 9.17.0
+      '@sentry-internal/replay-canvas': 9.17.0
+      '@sentry/core': 9.17.0
+
+  '@sentry/core@9.17.0': {}
+
+  '@sentry/react@9.17.0(react@18.3.1)':
+    dependencies:
+      '@sentry/browser': 9.17.0
+      '@sentry/core': 9.17.0
+      hoist-non-react-statics: 3.3.2
+      react: 18.3.1
+
   '@sinclair/typebox@0.27.8': {}
 
   '@sinclair/typebox@0.34.33': {}
@@ -7963,6 +8037,10 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
+  hoist-non-react-statics@3.3.2:
+    dependencies:
+      react-is: 16.13.1
+
   hono@4.7.9: {}
 
   html-encoding-sniffer@4.0.0:
@@ -8639,6 +8717,8 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.27.1
       react: 18.3.1
+
+  react-is@16.13.1: {}
 
   react-is@17.0.2: {}
 

@@ -1,3 +1,5 @@
+import * as Sentry from '@sentry/react';
+
 import { powerSyncDb } from '~/lib/database';
 
 /**
@@ -13,6 +15,9 @@ export async function isOpfsAvailable(): Promise<boolean> {
     return !!root;
   } catch (error) {
     console.error('OPFS availability check failed:', error);
+    Sentry.captureException(error, {
+      tags: { storage_error: 'is_opfs_available' },
+    });
     return false;
   }
 }
@@ -33,7 +38,12 @@ export async function purgeStorage() {
         await root.removeEntry(name, { recursive: true });
       }
     } catch (err) {
-      console.error(`Failed to delete ${entry.kind}: ${name}`, err);
+      const message = `Failed to delete ${entry.kind}: ${name}`;
+      console.error(message, err);
+      Sentry.captureException(err, {
+        extra: { message },
+        tags: { storage_error: 'purge_storage' },
+      });
     }
   }
 }

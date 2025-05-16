@@ -2,6 +2,7 @@ import { Suspense, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
+import * as Sentry from '@sentry/react';
 import { createLazyFileRoute, Link, Outlet } from '@tanstack/react-router';
 import { PlusIcon } from 'lucide-react';
 
@@ -50,11 +51,11 @@ function Layout() {
             <GoalSorting sort={sort} setSort={setSort} />
           </div>
         </header>
-        <ErrorBoundary fallback={<ErrorFallback />}>
+        <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
           <Suspense>
             <GoalsContent sort={sort} filter={filter} />
           </Suspense>
-        </ErrorBoundary>
+        </Sentry.ErrorBoundary>
       </div>
       <Outlet />
 
