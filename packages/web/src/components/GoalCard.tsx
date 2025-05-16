@@ -48,9 +48,9 @@ function ProgressBar({
       aria-valuemax={target}
       aria-valuetext={`${currentValue.toFixed(0)}/${target}`}
       tabIndex={-1}
-      className="w-[calc(100% + 48px)] bg-muted group relative -mx-1 flex h-3 rounded sm:-mx-3"
+      className="w-[calc(100% + 48px)] bg-muted group relative -mx-1 flex h-3 rounded sm:mx-1"
     >
-      <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs font-light">
+      <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs opacity-0 group-hover:opacity-100">
         {progressPercent <= 100
           ? `${currentValue.toFixed(0)}/${target}`
           : target}
@@ -61,7 +61,7 @@ function ProgressBar({
       >
         <p
           className={cn(
-            'absolute bottom-4 pb-[1px] text-sm font-medium opacity-0 transition-opacity group-hover:opacity-100',
+            'absolute bottom-4 pb-[1px] text-sm opacity-0 transition-opacity group-hover:opacity-100',
             progressPercent <= 85 ? '-right-5' : '-bottom-6 right-0',
           )}
         >
@@ -198,7 +198,7 @@ export default function GoalCard({
 
   return (
     <Card
-      className="w-full max-w-[600px] text-center shadow-sm"
+      className="w-full max-w-[600px] rounded-2xl text-center shadow-sm"
       ref={cardRef}
       data-testid={`goal-card-${id}`}
     >
@@ -209,7 +209,7 @@ export default function GoalCard({
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="flex flex-col gap-8 px-4 pb-4 sm:gap-9 sm:px-6 sm:pb-6">
+      <CardContent className="flex flex-col gap-5 px-5 pb-5 sm:gap-6 sm:px-6 sm:pb-6">
         <CalendarHeatmap
           goalId={id}
           checkBlockedDateFn={checkBlockedDateFn}
@@ -224,7 +224,7 @@ export default function GoalCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="px-3 pb-3">
+      <CardFooter className="px-4 pb-4 sm:px-6 sm:pb-6">
         <div className="flex w-full justify-start">
           {currentValue ? (
             <ResponsiveTooltip content={<p>{progressMessage}</p>}>
@@ -232,9 +232,9 @@ export default function GoalCard({
                 size="icon-responsive"
                 variant="ghost"
                 className={cn(
-                  'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-xl',
+                  'font-noto-emoji animate-[fadeIn_0.2s_ease-in-out_forwards] cursor-default text-2xl font-light opacity-0 sm:text-[22px]',
                   {
-                    'text-[26px] sm:text-[22px]': progressStatus === 'complete',
+                    'text-[26px] sm:text-[23px]': progressStatus === 'complete',
                   },
                 )}
                 ref={triggerRef}

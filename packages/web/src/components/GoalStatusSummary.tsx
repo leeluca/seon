@@ -99,14 +99,22 @@ export function GoalStatusSummary({
     ? 0
     : remaining /
       Math.max(differenceInCalendarDays(targetDate, new Date()) + 1, 1);
+
   const estimatedCompletionDate =
     (averagePerDay > 0 &&
       !isGoalCompleted &&
       remaining > 0 &&
       (() => {
         const daysNeeded = remaining / averagePerDay;
+        let daysToAdd = Math.max(Math.ceil(daysNeeded) - 1, 0);
 
-        const daysToAdd = Math.max(Math.ceil(daysNeeded) - 1, 0);
+        const hasEntryToday = entries.some((entry) => checkIsToday(entry.date));
+
+        // NOTE:If an entry was made today, consider today's contribution complete and start counting needed days from tomorrow.
+        if (hasEntryToday) {
+          daysToAdd += 1;
+        }
+
         return formatDate(addDays(new Date(), daysToAdd), 'PP');
       })()) ||
     (isGoalCompleted ? t`Completed!` : '-');

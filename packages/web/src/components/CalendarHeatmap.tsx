@@ -68,7 +68,7 @@ const getButtonStyles = ({
 };
 
 const CompletionBadge = () => (
-  <div className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-bold text-white ring-2 ring-white">
+  <div className="absolute -right-1 -top-1 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-bold text-white ring-2 ring-white">
     ✓
   </div>
 );
