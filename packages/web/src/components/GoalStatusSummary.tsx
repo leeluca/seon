@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { t } from '@lingui/core/macro';
+import { plural, t } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -133,7 +132,13 @@ export function GoalStatusSummary({
         value={t`${entriesSum} / ${goal.target}`}
       />
       <StatusSeparator />
-      <StatusItem label={t`Time Left`} value={t`${daysRemaining} days`} />
+      <StatusItem
+        label={t`Time Left`}
+        value={plural(daysRemaining, {
+          one: '# day',
+          other: '# days',
+        })}
+      />{' '}
       <StatusSeparator />
       <StatusItem
         label={t`Average Pace`}

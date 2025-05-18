@@ -15,21 +15,25 @@ msgstr ""
 
 #. placeholder {0}: averagePerDay.toFixed(1)
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:138
 #: src/components/GoalStatusSummary.tsx:145
+#: src/components/GoalStatusSummary.tsx:152
 msgid "{0}/day"
 msgstr "{0}/day"
 
+#: src/components/GoalStatusSummary.tsx:137
+msgid "{daysRemaining, plural, one {# day} other {# days}}"
+msgstr "{daysRemaining, plural, one {# day} other {# days}}"
+
 #: src/components/GoalStatusSummary.tsx:134
-msgid "{daysRemaining} days"
-msgstr "{daysRemaining} days"
+#~ msgid "{daysRemaining} days"
+#~ msgstr "{daysRemaining} days"
 
 #. placeholder {0}: goal.target
-#: src/components/GoalStatusSummary.tsx:131
+#: src/components/GoalStatusSummary.tsx:132
 msgid "{entriesSum} / {0}"
 msgstr "{entriesSum} / {0}"
 
-#: src/utils/validation.ts:68
+#: src/utils/validation.ts:70
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName} should be no longer than {max} characters."
 
@@ -83,7 +87,7 @@ msgstr "An unexpected error occurred."
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
-#: src/components/GoalStatusSummary.tsx:137
+#: src/components/GoalStatusSummary.tsx:144
 msgid "Average Pace"
 msgstr "Average Pace"
 
@@ -121,7 +125,7 @@ msgstr "Choose a name for your goal."
 msgid "Completed"
 msgstr "Completed"
 
-#: src/components/GoalStatusSummary.tsx:115
+#: src/components/GoalStatusSummary.tsx:121
 msgid "Completed!"
 msgstr "Completed!"
 
@@ -158,7 +162,7 @@ msgstr "Create your first goal!"
 msgid "Date"
 msgstr "Date"
 
-#: src/components/ui/number-input.tsx:238
+#: src/components/ui/number-input.tsx:255
 msgid "Decrease"
 msgstr "Decrease"
 
@@ -167,7 +171,7 @@ msgid "Delete"
 msgstr "Delete"
 
 #: src/components/NewEntryForm.tsx:225
-#: src/components/NewEntryForm.tsx:361
+#: src/components/NewEntryForm.tsx:363
 msgid "Delete entry"
 msgstr "Delete entry"
 
@@ -226,7 +230,7 @@ msgstr "Email is required"
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
-#: src/components/GoalStatusSummary.tsx:151
+#: src/components/GoalStatusSummary.tsx:158
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
@@ -243,7 +247,7 @@ msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
 #: src/components/NewEntryForm.tsx:221
-#: src/components/NewEntryForm.tsx:356
+#: src/components/NewEntryForm.tsx:358
 msgid "Failed to delete entry"
 msgstr "Failed to delete entry"
 
@@ -313,7 +317,7 @@ msgstr "Improve French vocabulary"
 msgid "Incomplete"
 msgstr "Incomplete"
 
-#: src/components/ui/number-input.tsx:238
+#: src/components/ui/number-input.tsx:255
 msgid "Increase"
 msgstr "Increase"
 
@@ -329,7 +333,7 @@ msgstr "Install as a PWA and use offline"
 msgid "Invalid credentials"
 msgstr "Invalid credentials"
 
-#: src/utils/validation.ts:75
+#: src/utils/validation.ts:77
 msgid "Invalid email address"
 msgstr "Invalid email address"
 
@@ -355,7 +359,7 @@ msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
 #: src/components/NewEntryForm.tsx:261
-#: src/components/NewEntryForm.tsx:294
+#: src/components/NewEntryForm.tsx:295
 msgid "Last:"
 msgstr "Last:"
 
@@ -418,7 +422,7 @@ msgstr "Numbers only"
 msgid "Oldest goals"
 msgstr "Oldest first"
 
-#: src/components/NotFound.tsx:20
+#: src/components/NotFound.tsx:21
 msgid "Page Not Found"
 msgstr "Page Not Found"
 
@@ -437,7 +441,7 @@ msgid "Pick a date"
 msgstr "Pick a date"
 
 #: src/components/NewEntryForm.tsx:69
-#: src/components/GoalStatusSummary.tsx:130
+#: src/components/GoalStatusSummary.tsx:131
 #: src/components/GoalForm.tsx:282
 msgid "Progress"
 msgstr "Progress"
@@ -462,7 +466,7 @@ msgstr "Refresh page"
 msgid "Refresh to get the latest improvements."
 msgstr "A new version is ready to install with improvements and fixes."
 
-#: src/components/GoalStatusSummary.tsx:142
+#: src/components/GoalStatusSummary.tsx:149
 msgid "Required Pace"
 msgstr "Required Pace"
 
@@ -474,7 +478,7 @@ msgstr "Reset"
 msgid "Reset Demo"
 msgstr "Reset Demo"
 
-#: src/components/NotFound.tsx:29
+#: src/components/NotFound.tsx:33
 msgid "Return to Home"
 msgstr "Return to Home"
 
@@ -486,7 +490,7 @@ msgstr "Right on track!"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
-#: src/components/NewEntryForm.tsx:372
+#: src/components/NewEntryForm.tsx:374
 #: src/components/GoalEditForm.tsx:183
 #: src/components/GoalEditForm.tsx:194
 msgid "Save"
@@ -607,7 +611,7 @@ msgstr "Target date must be after start date"
 msgid "Target value"
 msgstr "Target value"
 
-#: src/components/NotFound.tsx:22
+#: src/components/NotFound.tsx:24
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "The page you're looking for doesn't exist or has been moved."
 
@@ -623,7 +627,7 @@ msgstr "This demo allows you to try all features without signing up. Your data w
 msgid "This will delete all your data and reset the demo."
 msgstr "This will delete all your data and reset the demo."
 
-#: src/components/GoalStatusSummary.tsx:134
+#: src/components/GoalStatusSummary.tsx:136
 msgid "Time Left"
 msgstr "Time Left"
 
