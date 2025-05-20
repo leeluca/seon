@@ -10,10 +10,10 @@ import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-if (process.loadEnvFile) {
+try {
   process.loadEnvFile('.env.local');
-} else {
-  console.warn('process.loadEnvFile not available, skipping .env loading');
+} catch (error) {
+  console.warn('Failed to load .env.local', error);
 }
 
 const pwaManifest = {
