@@ -1,5 +1,4 @@
-import { useMemo } from 'react';
-import { t } from '@lingui/core/macro';
+import { plural, t } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -95,10 +94,15 @@ export function GoalStatusSummary({
 
   const remaining = Math.max(goal.target - entriesSum, 0);
 
+  // NOTE: If an entry was added today, consider today's contribution complete and start counting needed days from tomorrow.
+  const hasEntryToday = entries.some((entry) => checkIsToday(entry.date));
+
+  const adjustedDaysRemaining = hasEntryToday
+    ? Math.max(daysRemaining - 1, 0)
+    : daysRemaining;
   const averageNeededPerDay = isPastTargetDate
     ? 0
-    : remaining /
-      Math.max(differenceInCalendarDays(targetDate, new Date()) + 1, 1);
+    : remaining / Math.max(adjustedDaysRemaining, 1);
 
   const estimatedCompletionDate =
     (averagePerDay > 0 &&
@@ -108,9 +112,6 @@ export function GoalStatusSummary({
         const daysNeeded = remaining / averagePerDay;
         let daysToAdd = Math.max(Math.ceil(daysNeeded) - 1, 0);
 
-        const hasEntryToday = entries.some((entry) => checkIsToday(entry.date));
-
-        // NOTE:If an entry was made today, consider today's contribution complete and start counting needed days from tomorrow.
         if (hasEntryToday) {
           daysToAdd += 1;
         }
@@ -131,7 +132,13 @@ export function GoalStatusSummary({
         value={t`${entriesSum} / ${goal.target}`}
       />
       <StatusSeparator />
-      <StatusItem label={t`Time Left`} value={t`${daysRemaining} days`} />
+      <StatusItem
+        label={t`Time Left`}
+        value={plural(daysRemaining, {
+          one: '# day',
+          other: '# days',
+        })}
+      />{' '}
       <StatusSeparator />
       <StatusItem
         label={t`Average Pace`}
