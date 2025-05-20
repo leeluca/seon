@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 
 import { lingui } from '@lingui/vite-plugin';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
@@ -8,6 +9,12 @@ import { VitePWA } from 'vite-plugin-pwa';
 import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
+if (process.loadEnvFile) {
+  process.loadEnvFile('.env.local');
+} else {
+  console.warn('process.loadEnvFile not available, skipping .env loading');
+}
 
 const pwaManifest = {
   name: 'Seon Goals',
@@ -40,6 +47,9 @@ const pwaManifest = {
 
 export default defineConfig({
   envDir: '.',
+  build: {
+    sourcemap: true,
+  },
   optimizeDeps: {
     // Don't optimize these packages as they contain web workers and WASM files.
     // https://github.com/vitejs/vite/issues/11672#issuecomment-1415820673
@@ -66,7 +76,18 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB
+        sourcemap: false,
       },
+    }),
+    sentryVitePlugin({
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      disable: !process.env.SENTRY_AUTH_TOKEN,
+      bundleSizeOptimizations: {
+        excludeDebugStatements: true,
+        excludeTracing: true,
+      },
+      debug: true,
     }),
   ],
   worker: {

@@ -1,4 +1,4 @@
-import { ErrorBoundary } from 'react-error-boundary';
+import * as Sentry from '@sentry/react';
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
 import ErrorFallback from '~/components/ErrorFallback';
@@ -20,9 +20,9 @@ function Dashboard() {
 
       <div className="px-3 py-2 sm:px-6 sm:py-4 xl:p-8">
         <div className="m-auto mb-24 max-w-screen-2xl">
-          <ErrorBoundary fallback={<ErrorFallback />}>
+          <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
             <Outlet />
-          </ErrorBoundary>
+          </Sentry.ErrorBoundary>
         </div>
       </div>
       {/* TODO: add common footer to all pages at __root.tsx? */}
