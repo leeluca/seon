@@ -74,7 +74,7 @@ jobs:
 
   trigger-release:
     name: Trigger Release Creation
-    needs: [filter-paths, trigger-deploy, trigger-server-deploy]
+    needs: [filter-paths, trigger-e2e, trigger-deploy, trigger-server-deploy]
     # Run if either web or server paths triggered a change, and preceding jobs succeeded/skipped appropriately
     if: always() && (needs.filter-paths.outputs.web == 'true' || needs.filter-paths.outputs.server == 'true')
     permissions:
