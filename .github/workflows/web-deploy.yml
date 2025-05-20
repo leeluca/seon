@@ -38,7 +38,10 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_API_URL: ${{ vars.VITE_API_URL || secrets.VITE_API_URL }}
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
-        #   VITE_IS_DEMO: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
+          SENTRY_AUTH_TOKEN: ${{ vars.SENTRY_AUTH_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ vars.SENTRY_DSN || secrets.SENTRY_DSN }}
+          SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT || secrets.SENTRY_PROJECT }}
+        #   VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO || secrets.VITE_IS_DEMO }}
 
       - run: echo "ignore-workspace-root-check=true" >> .npmrc
 
