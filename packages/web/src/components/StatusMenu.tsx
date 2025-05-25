@@ -121,11 +121,14 @@ function StatusMenu() {
 
   if (isLoading) {
     return (
-      <div className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1">
+      <output
+        className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1"
+        aria-label={t`Loading user status`}
+      >
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.3s]" />
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500 [animation-delay:-0.15s]" />
         <div className="h-2 w-2 animate-bounce rounded-full bg-gray-500" />
-      </div>
+      </output>
     );
   }
 
@@ -142,110 +145,108 @@ function StatusMenu() {
   }
 
   return (
-    <>
-      <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
-        {debouncedIsSyncing && (
-          <div
-            className={buttonVariants({
-              variant: 'ghost',
-              size: 'icon-responsive',
-            })}
-            aria-label={t`Syncing`}
+    <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
+      {debouncedIsSyncing && (
+        <div
+          className={buttonVariants({
+            variant: 'ghost',
+            size: 'icon-responsive',
+          })}
+          aria-label={t`Syncing`}
+        >
+          <RefreshCcwIcon
+            size={18}
+            className="rotate-180 transform animate-spin"
+          />
+        </div>
+      )}
+      <UpdatePrompt />
+      {isOnline && isSyncConnected && hasSynced ? (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label="Check last sync time"
+            >
+              <CloudIcon size={18} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="mr-3 min-w-[121px] max-w-fit sm:mr-8"
+            sideOffset={5}
           >
-            <RefreshCcwIcon
-              size={18}
-              className="rotate-180 transform animate-spin"
+            <div className="space-y-2">
+              <h3 className="text-pretty font-medium leading-none">
+                <Trans>Your data is synced!</Trans>
+              </h3>
+              {lastSyncedAt && (
+                <div className="text-muted-foreground">
+                  <p className="text-sm">
+                    <Trans>Last synced:</Trans>{' '}
+                  </p>
+                  <p className="text-xs">{format(lastSyncedAt, 'p')} </p>
+                  {!isToday(lastSyncedAt) && (
+                    <p className="text-xs">{format(lastSyncedAt, 'P')}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
+      ) : (
+        <Popover open={open} onOpenChange={togglePopover}>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label={t`Check sync error or sign in`}
+            >
+              <CloudOffIcon size={18} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className={!isSignedIn ? 'mr-3 sm:mr-8' : undefined}
+            sideOffset={5}
+          >
+            <ConnectionErrorComponent
+              isSignedIn={isSignedIn}
+              isOnline={isOnline}
+              isSyncConnected={isSyncConnected}
+              isSyncEnabledUser={Boolean(useSync)}
+              onSignInCallback={({ name: userName }) => {
+                setOpen(false);
+                userName && toast.success(t`Welcome back, ${userName}!`);
+              }}
             />
-          </div>
-        )}
-        <UpdatePrompt />
-        {isOnline && isSyncConnected && hasSynced ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon-responsive"
-                variant="ghost"
-                aria-label="Check last sync time"
-              >
-                <CloudIcon size={18} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="mr-3 min-w-[121px] max-w-fit sm:mr-8"
-              sideOffset={5}
+          </PopoverContent>
+        </Popover>
+      )}
+      {(isSignedIn || Boolean(useSync)) && (
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label="User info"
             >
-              <div className="space-y-2">
-                <h3 className="text-pretty font-medium leading-none">
-                  <Trans>Your data is synced!</Trans>
-                </h3>
-                {lastSyncedAt && (
-                  <div className="text-muted-foreground">
-                    <p className="text-sm">
-                      <Trans>Last synced:</Trans>{' '}
-                    </p>
-                    <p className="text-xs">{format(lastSyncedAt, 'p')} </p>
-                    {!isToday(lastSyncedAt) && (
-                      <p className="text-xs">{format(lastSyncedAt, 'P')}</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <Popover open={open} onOpenChange={togglePopover}>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon-responsive"
-                variant="ghost"
-                aria-label={t`Check sync error or sign in`}
-              >
-                <CloudOffIcon size={18} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className={!isSignedIn ? 'mr-3 sm:mr-8' : undefined}
-              sideOffset={5}
-            >
-              <ConnectionErrorComponent
-                isSignedIn={isSignedIn}
-                isOnline={isOnline}
-                isSyncConnected={isSyncConnected}
-                isSyncEnabledUser={Boolean(useSync)}
-                onSignInCallback={({ name: userName }) => {
-                  setOpen(false);
-                  userName && toast.success(t`Welcome back, ${userName}!`);
-                }}
-              />
-            </PopoverContent>
-          </Popover>
-        )}
-        {(isSignedIn || Boolean(useSync)) && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                size="icon-responsive"
-                variant="ghost"
-                aria-label="User info"
-              >
-                <CircleUserIcon size={18} />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent
-              className="mr-3 w-min max-w-96 sm:mr-8"
-              sideOffset={5}
-            >
-              <div className="space-y-2 pb-4">
-                <h3 className="text-pretty text-center font-medium leading-none">
-                  <Trans>Hello, {userName}!</Trans>
-                </h3>
-              </div>
-              <SignOutButton />
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
-    </>
+              <CircleUserIcon size={18} />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            className="mr-3 w-min max-w-96 sm:mr-8"
+            sideOffset={5}
+          >
+            <div className="space-y-2 pb-4">
+              <h3 className="text-pretty text-center font-medium leading-none">
+                <Trans>Hello, {userName}!</Trans>
+              </h3>
+            </div>
+            <SignOutButton />
+          </PopoverContent>
+        </Popover>
+      )}
+    </div>
   );
 }
 

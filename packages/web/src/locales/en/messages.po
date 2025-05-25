@@ -54,8 +54,8 @@ msgstr "Add entry for <0>{0}</0>"
 
 #: src/routes/_main/goals.new.tsx:119
 #: src/routes/_main/goals.new.tsx:184
-#: src/routes/_main/goals.lazy.tsx:63
-#: src/routes/_main/goals.lazy.tsx:70
+#: src/routes/_main/goals.lazy.tsx:71
+#: src/routes/_main/goals.lazy.tsx:78
 msgid "Add new goal"
 msgstr "Add new goal"
 
@@ -79,7 +79,7 @@ msgstr "Already a user?"
 msgid "Amount"
 msgstr "Amount"
 
-#: src/components/ErrorFallback.tsx:112
+#: src/components/ErrorFallback.tsx:116
 msgid "An unexpected error occurred."
 msgstr "An unexpected error occurred."
 
@@ -109,7 +109,7 @@ msgstr "Cancel"
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
-#: src/components/StatusMenu.tsx:201
+#: src/components/StatusMenu.tsx:203
 msgid "Check sync error or sign in"
 msgstr "Check sync error or sign in"
 
@@ -145,7 +145,7 @@ msgstr "Create a new goal or change the filter!"
 msgid "Create account"
 msgstr "Create account"
 
-#: src/components/DemoStart.tsx:49
+#: src/components/DemoStart.tsx:48
 msgid "Create and track personal goals"
 msgstr "Create and track personal goals"
 
@@ -185,7 +185,6 @@ msgstr "Delete goal"
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
-#: src/components/DemoStart.tsx:30
 #: src/components/DemoIndicator.tsx:60
 #: src/components/DemoIndicator.tsx:65
 #: src/components/DemoIndicator.tsx:76
@@ -234,7 +233,7 @@ msgstr "Entries after target date"
 msgid "Expected Completion"
 msgstr "Expected Completion"
 
-#: src/components/DemoStart.tsx:33
+#: src/components/DemoStart.tsx:32
 msgid "Experience Seon Goals without creating an account"
 msgstr "Experience Seon Goals without creating an account"
 
@@ -293,11 +292,19 @@ msgstr "Goal name"
 msgid "Goal progress: {progressMessage}"
 msgstr "Goal progress: {progressMessage}"
 
+#: src/routes/_main/goals.lazy.tsx:37
+msgid "Goals"
+msgstr "Goals"
+
+#: src/components/GoalsContent.tsx:83
+msgid "Goals list"
+msgstr "Goals list"
+
 #: src/components/StatusMenu.tsx:237
 #~ msgid "Hello, {0}!"
 #~ msgstr "Hello, {0}!"
 
-#: src/components/StatusMenu.tsx:240
+#: src/components/StatusMenu.tsx:242
 msgid "Hello, {userName}!"
 msgstr "Hello, {userName}!"
 
@@ -325,7 +332,7 @@ msgstr "Increase"
 msgid "Initial value"
 msgstr "Initial value"
 
-#: src/components/DemoStart.tsx:58
+#: src/components/DemoStart.tsx:57
 msgid "Install as a PWA and use offline"
 msgstr "Install as a PWA and use offline"
 
@@ -349,7 +356,7 @@ msgstr "It seems like you are not connected!"
 msgid "Keep working on your goals!<0/>Change the filter to see all goals."
 msgstr "Keep working on your goals!<0/>Change the filter to see all goals."
 
-#: src/components/StatusMenu.tsx:184
+#: src/components/StatusMenu.tsx:186
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -366,6 +373,10 @@ msgstr "Last:"
 #: src/utils/demo.ts:54
 msgid "Learn 1000 French words"
 msgstr "Learn 1000 French words"
+
+#: src/components/StatusMenu.tsx:126
+msgid "Loading user status"
+msgstr "Loading user status"
 
 #: src/routes/_main/goals.new.tsx:67
 #: src/components/SignUpForm.tsx:66
@@ -390,7 +401,7 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:45
+#: src/routes/_main/goals.lazy.tsx:53
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -410,7 +421,7 @@ msgstr "No completed goals yet."
 msgid "No goals in progress."
 msgstr "No goals in progress."
 
-#: src/components/DemoStart.tsx:64
+#: src/components/DemoStart.tsx:66
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 msgstr "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 
@@ -450,19 +461,19 @@ msgstr "Progress"
 msgid "Read \"Brave New World\""
 msgstr "Read \"Brave New World\""
 
-#: src/components/UpdatePrompt.tsx:65
+#: src/components/UpdatePrompt.tsx:69
 msgid "Ready to update"
 msgstr "Ready to update"
 
-#: src/components/DemoStart.tsx:52
+#: src/components/DemoStart.tsx:51
 msgid "Record daily progress"
 msgstr "Record daily progress"
 
-#: src/components/ErrorFallback.tsx:110
+#: src/components/ErrorFallback.tsx:114
 msgid "Refresh page"
 msgstr "Refresh page"
 
-#: src/components/UpdatePrompt.tsx:68
+#: src/components/UpdatePrompt.tsx:72
 msgid "Refresh to get the latest improvements."
 msgstr "A new version is ready to install with improvements and fixes."
 
@@ -503,6 +514,10 @@ msgstr "See you again!"
 #: src/components/GoalSorting.tsx:111
 msgid "Select sort..."
 msgstr "Select sort..."
+
+#: src/components/DemoStart.tsx:29
+msgid "Seon Demo Mode"
+msgstr "Seon Demo Mode"
 
 #: src/components/GoalForm.tsx:142
 msgid "Set a target value for your goal."
@@ -549,7 +564,7 @@ msgstr "Sign Up"
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
-#: src/components/ErrorFallback.tsx:109
+#: src/components/ErrorFallback.tsx:113
 msgid "Something went wrong"
 msgstr "Something went wrong"
 
@@ -561,7 +576,7 @@ msgstr "Something went wrong"
 msgid "Start date"
 msgstr "Start date"
 
-#: src/components/DemoStart.tsx:79
+#: src/components/DemoStart.tsx:81
 msgid "Start Demo"
 msgstr "Start Demo"
 
@@ -587,7 +602,7 @@ msgstr "Sucessfully updated goal"
 msgid "Sync is off"
 msgstr "Sync is off"
 
-#: src/components/StatusMenu.tsx:153
+#: src/components/StatusMenu.tsx:155
 msgid "Syncing"
 msgstr "Syncing"
 
@@ -595,7 +610,7 @@ msgstr "Syncing"
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "Syncing features are disabled.<0/>All data is stored locally."
 
-#: src/components/GoalsContent.tsx:35
+#: src/components/GoalsContent.tsx:36
 msgid "Syncing your goals..."
 msgstr "Syncing your goals..."
 
@@ -619,7 +634,7 @@ msgstr "The page you're looking for doesn't exist or has been moved."
 msgid "There are no goals."
 msgstr "There are no goals."
 
-#: src/components/DemoStart.tsx:38
+#: src/components/DemoStart.tsx:37
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 
@@ -664,15 +679,15 @@ msgstr "Unit"
 msgid "Unsynced data will be lost"
 msgstr "Unsynced data will be lost"
 
-#: src/components/ErrorFallback.tsx:111
+#: src/components/ErrorFallback.tsx:115
 msgid "Update app"
 msgstr "Update app"
 
-#: src/components/UpdatePrompt.tsx:56
+#: src/components/UpdatePrompt.tsx:60
 msgid "Update available"
 msgstr "New update available"
 
-#: src/components/UpdatePrompt.tsx:72
+#: src/components/UpdatePrompt.tsx:76
 msgid "Update now"
 msgstr "Install update"
 
@@ -680,7 +695,7 @@ msgstr "Install update"
 msgid "Value for goal completion (number)"
 msgstr "Value for goal completion (number)"
 
-#: src/components/DemoStart.tsx:55
+#: src/components/DemoStart.tsx:54
 msgid "View statistics and visualizations"
 msgstr "View statistics and visualizations"
 
@@ -697,7 +712,7 @@ msgstr "Wake up early every day"
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:217
+#: src/components/StatusMenu.tsx:219
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -706,7 +721,7 @@ msgstr "Welcome back, {userName}!"
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
-#: src/components/DemoStart.tsx:45
+#: src/components/DemoStart.tsx:44
 msgid "What you can do in demo mode:"
 msgstr "What you can do in demo mode:"
 
@@ -718,7 +733,7 @@ msgstr "Yes"
 msgid "Yes or no"
 msgstr "Yes or no"
 
-#: src/components/StatusMenu.tsx:179
+#: src/components/StatusMenu.tsx:181
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 

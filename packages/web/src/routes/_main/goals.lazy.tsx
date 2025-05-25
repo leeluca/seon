@@ -33,7 +33,14 @@ function Layout() {
   return (
     <>
       <div className="w-full">
-        <header className="mb-8 flex flex-col flex-wrap justify-between gap-6 sm:flex-row sm:items-center">
+        <h1 className="sr-only">
+          <Trans>Goals</Trans>
+        </h1>
+        <div
+          className="mb-8 flex flex-col flex-wrap justify-between gap-6 sm:flex-row sm:items-center"
+          role="toolbar"
+          aria-label="Goal management controls"
+        >
           <Link
             to="/goals/new"
             className={cn(
@@ -50,7 +57,7 @@ function Layout() {
             <GoalFilter filter={filter} setFilter={setFilter} />
             <GoalSorting sort={sort} setSort={setSort} />
           </div>
-        </header>
+        </div>
         <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
           <Suspense>
             <GoalsContent sort={sort} filter={filter} />
