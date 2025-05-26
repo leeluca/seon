@@ -8,7 +8,6 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from '~/components/ui/card';
 
 interface DemoStartProps {
@@ -18,7 +17,7 @@ interface DemoStartProps {
 
 const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
   return (
-    <div className="relative flex min-h-[max(100dvh,700px)] min-w-[375px] flex-col items-center justify-center p-2 sm:p-4">
+    <main className="relative flex min-h-[max(100dvh,700px)] min-w-[375px] flex-col items-center justify-center p-2 sm:p-4">
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <div className="mb-2 flex items-center justify-center">
@@ -26,9 +25,9 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
               <img src="/favicon.svg" alt="Seon Logo" className="h-11 w-11" />
             </div>
           </div>
-          <CardTitle className="text-center text-2xl">
-            <Trans>Demo Mode</Trans>
-          </CardTitle>
+          <h1 className="text-center text-2xl">
+            <Trans>Seon Demo Mode</Trans>
+          </h1>
           <CardDescription className="text-center">
             <Trans>Experience Seon Goals without creating an account</Trans>
           </CardDescription>
@@ -41,9 +40,9 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
             </Trans>
           </p>
           <div className="bg-background rounded-md border p-3 px-5 text-sm">
-            <p className="font-medium">
+            <h2 className="font-medium">
               <Trans>What you can do in demo mode:</Trans>
-            </p>
+            </h2>
             <ul className="mt-2 list-inside list-disc text-left">
               <li>
                 <Trans>Create and track personal goals</Trans>
@@ -59,7 +58,10 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
               </li>
             </ul>
           </div>
-          <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400">
+          <div
+            className="rounded-md border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-400"
+            role="note"
+          >
             <p className="text-balance break-keep">
               <Trans>
                 Note: Seon Goals is still in early development.
@@ -83,7 +85,7 @@ const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
       <div className="xs:px-6 absolute bottom-0 mb-1 self-start px-1 py-2 xl:p-8">
         <LanguageSelector />
       </div>
-    </div>
+    </main>
   );
 };
 

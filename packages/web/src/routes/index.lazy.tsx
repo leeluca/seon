@@ -46,9 +46,9 @@ function Index() {
           </h1>
           <div className="flex items-end gap-8">
             <div>
-              <h5 className="mb-1 text-sm font-medium">
+              <h2 className="mb-1 text-sm font-medium">
                 <Trans>First time?</Trans>
-              </h5>
+              </h2>
               <Button
                 size="lg"
                 onClick={() => void initializeUser()}
@@ -58,9 +58,9 @@ function Index() {
               </Button>
             </div>
             <div>
-              <h5 className="mb-1 text-sm font-medium">
+              <h2 className="mb-1 text-sm font-medium">
                 <Trans>Already a user?</Trans>
-              </h5>
+              </h2>
               <Link
                 to="/signin"
                 preload="intent"

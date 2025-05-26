@@ -1,4 +1,5 @@
 import { lazy, Suspense, useCallback, useEffect } from 'react';
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useStatus, useSuspenseQuery } from '@powersync/react';
 import { useNavigate } from '@tanstack/react-router';
@@ -77,7 +78,10 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   }, [refresh]);
 
   return (
-    <main className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6">
+    <section
+      className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6"
+      aria-label={t`Goals list`}
+    >
       {showNoGoals &&
         (isSyncing ? (
           <SyncingPlaceholder />
@@ -95,6 +99,6 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
           onDeleteSuccess={handleDeleteSuccess}
         />
       ))}
-    </main>
+    </section>
   );
 }

@@ -1,5 +1,13 @@
+import { sql } from '@powersync/kysely-driver';
+
 import db from '~/lib/database';
-import type { GoalFilter, GoalSort, GoalType } from '~/types/goal';
+import type {
+  GoalFilter,
+  GoalSort,
+  GoalSortDirection,
+  GoalSortField,
+  GoalType,
+} from '~/types/goal';
 
 /* api */
 export const AUTH_STATUS = {
@@ -23,7 +31,19 @@ export const GOALS = {
         .where('target', '>', 0);
     }
 
-    query = query.orderBy(sort);
+    const [sortField, sortDirection] = sort.split(' ') as [
+      GoalSortField,
+      GoalSortDirection,
+    ];
+
+    if (sortField === 'title') {
+      query = query.orderBy(
+        sql`${sql.ref(sortField)} COLLATE NOCASE`,
+        sortDirection,
+      );
+    } else {
+      query = query.orderBy(sortField, sortDirection);
+    }
 
     return { queryKey, query };
   },

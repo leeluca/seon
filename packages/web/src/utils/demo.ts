@@ -46,7 +46,7 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       unit: 'pages',
       type: 'PROGRESS',
       userId,
-      createdAt: addSeconds(new Date(), 10),
+      createdAt: addSeconds(new Date(), 2),
     }),
 
     // COUNT type
@@ -60,7 +60,7 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       unit: 'words',
       type: 'COUNT',
       userId,
-      createdAt: addSeconds(new Date(), 5),
+      createdAt: addSeconds(new Date(), 1),
     }),
 
     // BOOLEAN type
