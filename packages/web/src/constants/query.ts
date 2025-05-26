@@ -1,3 +1,5 @@
+import { sql } from '@powersync/kysely-driver';
+
 import db from '~/lib/database';
 import type {
   GoalFilter,
@@ -33,7 +35,15 @@ export const GOALS = {
       GoalSortField,
       GoalSortDirection,
     ];
-    query = query.orderBy(sortField, sortDirection);
+
+    if (sortField === 'title') {
+      query = query.orderBy(
+        sql`${sql.ref(sortField)} COLLATE NOCASE`,
+        sortDirection,
+      );
+    } else {
+      query = query.orderBy(sortField, sortDirection);
+    }
 
     return { queryKey, query };
   },
