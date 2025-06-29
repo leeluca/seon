@@ -1,2 +1,6 @@
 packages:
-  - 'packages/*'
+  - packages/*
+onlyBuiltDependencies:
+  - '@journeyapps/wa-sqlite'
+  - '@swc/core'
+  - esbuild
