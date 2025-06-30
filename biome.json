@@ -30,6 +30,9 @@
   "assist": { "actions": { "source": { "organizeImports": "off" } } },
   "linter": {
     "enabled": true,
+    "domains": {
+      "react": "all"
+    },
     "rules": {
       "recommended": true,
       "a11y": {
