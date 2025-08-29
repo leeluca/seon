@@ -4,7 +4,7 @@ import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
 import { useAuthService } from '../services/index.js';
-import type { JWTTokenPayload } from '../services/jwt.js';
+import type { JWTConfigEnv, JWTTokenPayload } from '../services/jwt.js';
 import type { AuthRouteTypes } from '../types/context.js';
 
 export const validateAccess = createMiddleware<{
@@ -12,9 +12,11 @@ export const validateAccess = createMiddleware<{
     jwtAccessToken: string;
     jwtAccessPayload: JWTTokenPayload;
     jwtRefreshPayload?: JWTTokenPayload;
+    jwtConfigEnv: JWTConfigEnv;
   };
 }>(async (c, next) => {
-  const jwtConfigEnv = getContext<AuthRouteTypes>().var.jwtConfigEnv;
+  const jwtConfigEnv =
+    c.get('jwtConfigEnv') ?? getContext<AuthRouteTypes>().var.jwtConfigEnv;
   const authService = await useAuthService(c);
 
   // validate access token

@@ -56,6 +56,7 @@ const onSignOut = async (
 };
 
 // TODO: migrate to react-query
+// FIXME: should work offline
 const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
   const setUserIsInitialized = useUserStore((state) => state.setIsInitialized);
   const { resetConnector } = useSupabase();

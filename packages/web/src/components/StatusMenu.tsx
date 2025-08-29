@@ -1,11 +1,13 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useStatus } from '@powersync/react';
 import { format, isToday } from 'date-fns';
 import {
+  CableIcon,
   CircleUserIcon,
   CloudIcon,
   CloudOffIcon,
+  PlaneIcon,
   RefreshCcwIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -24,33 +26,18 @@ import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import UpdatePrompt from './UpdatePrompt';
 
-interface ConnectionErrorComponentProps {
+interface ErrorOrAuthContentProps {
   isSignedIn: boolean;
-  isOnline: boolean;
   isSyncEnabledUser: boolean;
   isSyncConnected: boolean;
   onSignInCallback: (userData: PostSignInResponse['user']) => void;
 }
-const ConnectionErrorComponent = ({
+const ErrorOrAuthContent = ({
   isSignedIn,
-  isOnline,
   isSyncEnabledUser,
   isSyncConnected,
   onSignInCallback,
-}: ConnectionErrorComponentProps) => {
-  if (!isOnline) {
-    return (
-      <div className="space-y-2">
-        <h4 className="font-medium leading-none">
-          <Trans>Sync is off</Trans>
-        </h4>
-        <p className="text-muted-foreground text-sm">
-          <Trans>Check your internet connection and try again.</Trans>
-        </p>
-      </div>
-    );
-  }
-
+}: ErrorOrAuthContentProps) => {
   if (!isSignedIn) {
     return (
       <>
@@ -95,6 +82,8 @@ const ConnectionErrorComponent = ({
   }
 };
 
+type SyncStatusDisplay = 'offline' | 'connecting' | 'synced' | 'error';
+
 function StatusMenu() {
   const { t } = useLingui();
   const {
@@ -102,6 +91,7 @@ function StatusMenu() {
     dataFlowStatus: { downloading, uploading },
     lastSyncedAt,
     hasSynced,
+    connecting,
   } = useStatus();
 
   const [userName, useSync] = useUserStore(
@@ -112,12 +102,29 @@ function StatusMenu() {
   const isSignedIn = !!data?.result;
   const isOnline = useIsOnline();
 
+  const firstConnecting = useRef(true);
   const isSyncing = downloading || uploading;
   const debouncedIsSyncing = useDebounceValue(isSyncing, 200);
+  const debouncedConnecting = useDebounceValue(connecting, 500);
 
   const [open, setOpen] = useState(false);
 
   const togglePopover = () => setOpen((prev) => !prev);
+
+  const display: SyncStatusDisplay = !isOnline
+    ? 'offline'
+    : firstConnecting.current || debouncedConnecting
+      ? 'connecting'
+      : isOnline && isSyncConnected && hasSynced
+        ? 'synced'
+        : 'error';
+
+  // NOTE: fix for delay in the connecting state to become true when the component is mounted
+  useEffect(() => {
+    setTimeout(() => {
+      firstConnecting.current = false;
+    }, 200);
+  }, []);
 
   if (isLoading) {
     return (
@@ -147,35 +154,51 @@ function StatusMenu() {
   return (
     <div className="ml-auto flex items-center gap-2 rounded-xl bg-gray-200/50 px-4 py-1">
       {debouncedIsSyncing && (
-        <div
+        <output
+          aria-live="polite"
+          aria-atomic="true"
           className={buttonVariants({
             variant: 'ghost',
             size: 'icon-responsive',
           })}
-          aria-label={t`Syncing`}
         >
+          <span className="sr-only">{t`Syncing`}</span>
           <RefreshCcwIcon
             size={18}
             className="rotate-180 transform animate-spin"
           />
-        </div>
+        </output>
       )}
       <UpdatePrompt />
-      {isOnline && isSyncConnected && hasSynced ? (
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              size="icon-responsive"
-              variant="ghost"
-              aria-label="Check last sync time"
-            >
-              <CloudIcon size={18} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className="mr-3 min-w-[121px] max-w-fit sm:mr-8"
-            sideOffset={5}
+      <Popover open={open} onOpenChange={togglePopover}>
+        <PopoverTrigger asChild>
+          <Button
+            size="icon-responsive"
+            variant="ghost"
+            aria-label={t`Check sync status`}
           >
+            {display === 'offline' ? (
+              <PlaneIcon size={18} />
+            ) : display === 'connecting' ? (
+              <CableIcon size={18} />
+            ) : display === 'synced' ? (
+              <CloudIcon size={18} />
+            ) : (
+              <CloudOffIcon size={18} />
+            )}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          className={
+            display === 'synced'
+              ? 'mr-3 min-w-[121px] max-w-fit sm:mr-8'
+              : !isSignedIn
+                ? 'mr-3 sm:mr-8'
+                : undefined
+          }
+          sideOffset={5}
+        >
+          {display === 'synced' && (
             <div className="space-y-2">
               <h3 className="text-pretty font-medium leading-none">
                 <Trans>Your data is synced!</Trans>
@@ -192,26 +215,35 @@ function StatusMenu() {
                 </div>
               )}
             </div>
-          </PopoverContent>
-        </Popover>
-      ) : (
-        <Popover open={open} onOpenChange={togglePopover}>
-          <PopoverTrigger asChild>
-            <Button
-              size="icon-responsive"
-              variant="ghost"
-              aria-label={t`Check sync error or sign in`}
-            >
-              <CloudOffIcon size={18} />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent
-            className={!isSignedIn ? 'mr-3 sm:mr-8' : undefined}
-            sideOffset={5}
-          >
-            <ConnectionErrorComponent
+          )}
+
+          {display === 'offline' && (
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">
+                <Trans>You're offline</Trans>
+              </h4>
+              <p className="text-muted-foreground text-sm">
+                <Trans>Check your internet connection and try again.</Trans>
+              </p>
+            </div>
+          )}
+
+          {display === 'connecting' && (
+            <div className="space-y-2">
+              <h4 className="font-medium leading-none">
+                <Trans>Connecting to sync…</Trans>
+              </h4>
+              <p className="text-muted-foreground text-sm">
+                <Trans>
+                  Establishing a connection. This may take a moment.
+                </Trans>
+              </p>
+            </div>
+          )}
+
+          {display === 'error' && (
+            <ErrorOrAuthContent
               isSignedIn={isSignedIn}
-              isOnline={isOnline}
               isSyncConnected={isSyncConnected}
               isSyncEnabledUser={Boolean(useSync)}
               onSignInCallback={({ name: userName }) => {
@@ -219,9 +251,9 @@ function StatusMenu() {
                 userName && toast.success(t`Welcome back, ${userName}!`);
               }}
             />
-          </PopoverContent>
-        </Popover>
-      )}
+          )}
+        </PopoverContent>
+      </Popover>
       {(isSignedIn || Boolean(useSync)) && (
         <Popover>
           <PopoverTrigger asChild>
