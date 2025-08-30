@@ -122,17 +122,17 @@ function createAuthService(
         const dbClient = deps.getDatabase(dbUrl);
 
         await dbClient.transaction(async (tx) => {
-          if (oldRefreshToken) {
-            await tx
-              .delete(refreshTokensTable)
-              .where(eq(refreshTokensTable.token, oldRefreshToken));
-          }
-
           await tx.insert(refreshTokensTable).values({
             userId: userId,
             token: currentToken,
             expiration: new Date(Date.now() + refreshExpiration * 1000),
           });
+
+          if (oldRefreshToken) {
+            await tx
+              .delete(refreshTokensTable)
+              .where(eq(refreshTokensTable.token, oldRefreshToken));
+          }
         });
         console.log(`Refresh token saved successfully for user: ${userId}`);
         return;
