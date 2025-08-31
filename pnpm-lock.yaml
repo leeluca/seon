@@ -44,7 +44,7 @@ importers:
         version: 0.34.40
       drizzle-orm:
         specifier: ^0.43.1
-        version: 0.43.1(gel@2.0.2)(kysely@0.28.5)(postgres@3.4.7)
+        version: 0.43.1(@electric-sql/pglite@0.3.7)(gel@2.0.2)(kysely@0.28.5)(postgres@3.4.7)
       hono:
         specifier: ^4.9.5
         version: 4.9.5
@@ -55,6 +55,9 @@ importers:
         specifier: ^3.4.7
         version: 3.4.7
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.3.7
+        version: 0.3.7
       '@types/node':
         specifier: ^20.19.11
         version: 20.19.11
@@ -965,6 +968,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
+  '@electric-sql/pglite@0.3.7':
+    resolution: {integrity: sha512-5c3mybVrhxu5s47zFZtIGdG8YHkKCBENOmqxnNBjY53ZoDhADY/c5UqBDl159b7qtkzNPtbbb893wL9zi1kAuw==}
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
@@ -5937,6 +5943,8 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
+  '@electric-sql/pglite@0.3.7': {}
+
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
       esbuild: 0.18.20
@@ -7927,8 +7935,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.43.1(gel@2.0.2)(kysely@0.28.5)(postgres@3.4.7):
+  drizzle-orm@0.43.1(@electric-sql/pglite@0.3.7)(gel@2.0.2)(kysely@0.28.5)(postgres@3.4.7):
     optionalDependencies:
+      '@electric-sql/pglite': 0.3.7
       gel: 2.0.2
       kysely: 0.28.5
       postgres: 3.4.7

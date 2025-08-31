@@ -77,6 +77,7 @@ export class SupabaseConnector
     this.iterateListeners((cb) => cb.initialized?.());
   }
 
+  // FIXME: keeps calling api even if unauthorized
   async fetchCredentials() {
     const { result, token, expiresAt, syncUrl } = await fetchSyncCredentials();
 

@@ -5,7 +5,6 @@ import { afterAll, beforeAll } from 'vitest';
 
 import auth from '../../../src/routes/auth.js';
 import type { Env } from '../../../src/types/context.js';
-import { createJWTTestData } from '../../utils/jwt-test-utils.js';
 
 type ServerType = ReturnType<typeof serve>;
 
@@ -14,27 +13,12 @@ const activeServers: { server: ServerType; port: number }[] = [];
 /**
  * Creates a test app with a fresh Hono instance, mimicking the production app setup
  */
-export async function createTestApp(dbUrl: string) {
-  const jwtTestData = await createJWTTestData();
-
-  const testEnv: Env = {
-    DB_URL: dbUrl,
-    JWT_PRIVATE_KEY: jwtTestData.config.privateKey,
-    JWT_PUBLIC_KEY: jwtTestData.config.publicKey,
-    JWT_REFRESH_SECRET: jwtTestData.config.refreshSecret,
-    JWT_DB_PRIVATE_KEY: jwtTestData.config.dbPrivateKey,
-    JWT_ACCESS_EXPIRATION: jwtTestData.config.accessExpiration,
-    JWT_REFRESH_EXPIRATION: jwtTestData.config.refreshExpiration,
-    JWT_DB_ACCESS_EXPIRATION: jwtTestData.config.dbAccessExpiration,
-    SYNC_URL: 'http://localhost:8787',
-    ORIGIN_URL: 'http://localhost:5173',
-  };
-
+export async function createTestApp() {
   const app = new Hono<{ Bindings: Env }>();
 
   app.use('/api/*', async (c, next) => {
     const corsMiddleware = cors({
-      origin: testEnv.ORIGIN_URL?.split(',') || '',
+      origin: process.env.ORIGIN_URL?.split(',') || '',
       allowHeaders: [
         'Origin',
         'X-Requested-With',
@@ -55,8 +39,6 @@ export async function createTestApp(dbUrl: string) {
 
   return {
     app,
-    jwtTestData,
-    testEnv,
   };
 }
 
@@ -74,7 +56,7 @@ export async function cleanupAllServers() {
 /**
  * Creates a server once per test file and reuses it for all tests in that file
  */
-export function setupTestServer(dbUrl: string) {
+export function setupTestServer() {
   let currentServer: ServerType | null = null;
   let baseUrl = '';
   let testApp: Awaited<ReturnType<typeof createTestApp>>;
@@ -86,7 +68,13 @@ export function setupTestServer(dbUrl: string) {
 
     await cleanupAllServers();
 
-    testApp = await createTestApp(dbUrl);
+    if (process.loadEnvFile) {
+      process.loadEnvFile();
+    } else {
+      console.warn('process.loadEnvFile not available, skipping .env loading');
+    }
+
+    testApp = await createTestApp();
 
     const port = Math.floor(Math.random() * 10000) + 10000;
     currentServer = serve({
