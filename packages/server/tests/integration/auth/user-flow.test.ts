@@ -7,8 +7,8 @@ import { setupTestServer } from '../setup/server.js';
 
 // TODO: test signin after registration
 describe('User Authentication Flow', async () => {
-  const { dbUrl, cleanup } = await setupTestDatabase();
-  const { getBaseUrl } = setupTestServer(dbUrl);
+  const { cleanup } = await setupTestDatabase();
+  const { getBaseUrl } = setupTestServer();
 
   afterAll(async () => {
     await cleanup();

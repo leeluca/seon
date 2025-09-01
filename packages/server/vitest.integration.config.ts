@@ -8,17 +8,18 @@ if (process.loadEnvFile) {
 
 export default defineConfig({
   test: {
-    include: ['test/integration/**/*.test.ts'],
+    include: ['tests/integration/**/*.test.ts'],
     environment: 'node',
     globals: true,
     testTimeout: 30000,
     hookTimeout: 30000,
+    setupFiles: ['test/integration/setup/mock-db.ts'],
     sequence: {
       hooks: 'list',
     },
     poolOptions: {
       threads: {
-        singleThread: true, // Run tests in single thread to avoid DB conflicts
+        // singleThread: true, // Run tests in single thread to avoid DB conflicts
       },
     },
   },

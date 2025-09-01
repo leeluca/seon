@@ -10,7 +10,6 @@ type Database = ReturnType<typeof drizzle<Schema>>;
 let client: ReturnType<typeof postgres> | null = null;
 let db: Database | null = null;
 
-// TODO: create a proper singleton
 export const getDb = (dbUrl: string) => {
   if (db) {
     return db;
@@ -19,12 +18,13 @@ export const getDb = (dbUrl: string) => {
     throw new Error('DB_URL is not set');
   }
 
-  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  client = postgres(dbUrl, { prepare: false });
+  db = drizzle(client, { schema: { ...schema, ...relations } });
   return db;
 };
 
 export const getClientAndDb = (dbUrl: string) => {
   client = postgres(dbUrl, { prepare: false });
-  db = drizzle(dbUrl, { schema: { ...schema, ...relations } });
+  db = drizzle(client, { schema: { ...schema, ...relations } });
   return { client, db };
 };

@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Server Tests
     runs-on: ubuntu-latest
+    environment: test-server
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -27,9 +28,24 @@ jobs:
         run: pnpm install
 
       - name: Run tests
+        env:
+          JWT_PRIVATE_KEY: ${{ vars.JWT_PRIVATE_KEY }}
+          JWT_PUBLIC_KEY: ${{ vars.JWT_PUBLIC_KEY }}
+          JWT_REFRESH_SECRET: ${{ vars.JWT_REFRESH_SECRET }}
+          JWT_DB_PRIVATE_KEY: ${{ vars.JWT_DB_PRIVATE_KEY }}
+          JWT_ACCESS_EXPIRATION: ${{ vars.JWT_ACCESS_EXPIRATION }}
+          JWT_REFRESH_EXPIRATION: ${{ vars.JWT_REFRESH_EXPIRATION }}
+          JWT_DB_ACCESS_EXPIRATION: ${{ vars.JWT_DB_ACCESS_EXPIRATION }}
+          SYNC_URL: ${{ vars.SYNC_URL }}
+          ORIGIN_URL: ${{ vars.ORIGIN_URL }}
+          DB_URL: ${{ vars.DB_URL }}
         id: test
         run: |
           pnpm --filter seon-server test | tee test-output.txt
-          echo "test_output<<EOF" >> $GITHUB_OUTPUT
-          cat test-output.txt >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          status=${PIPESTATUS[0]}
+          {
+            echo "test_output<<EOF"
+            cat test-output.txt
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+          exit $status

@@ -6,8 +6,8 @@ import { setupTestDatabase } from '../setup/database.js';
 import { setupTestServer } from '../setup/server.js';
 
 describe('Authentication Error Handling', async () => {
-  const { dbUrl, cleanup } = await setupTestDatabase();
-  const { getBaseUrl } = setupTestServer(dbUrl);
+  const { cleanup } = await setupTestDatabase();
+  const { getBaseUrl } = setupTestServer();
 
   afterAll(async () => {
     await cleanup();
