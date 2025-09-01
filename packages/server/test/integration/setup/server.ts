@@ -68,10 +68,10 @@ export function setupTestServer() {
 
     await cleanupAllServers();
 
-    if (process.loadEnvFile) {
+    try {
       process.loadEnvFile();
-    } else {
-      console.warn('process.loadEnvFile not available, skipping .env loading');
+    } catch {
+      console.warn('no .env file found');
     }
 
     testApp = await createTestApp();
