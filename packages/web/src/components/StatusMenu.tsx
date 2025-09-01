@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useStatus } from '@powersync/react';
 import { format, isToday } from 'date-fns';
@@ -97,32 +97,32 @@ function StatusMenu() {
   const [userName, useSync] = useUserStore(
     useShallow((state) => [state.user.name, state.user.useSync]),
   );
+  const [isFirstConnecting, setIsFirstConnecting] = useState(true);
 
   const { data, isLoading } = useFetchAuthStatus();
   const isSignedIn = !!data?.result;
   const isOnline = useIsOnline();
 
-  const firstConnecting = useRef(true);
   const isSyncing = downloading || uploading;
   const debouncedIsSyncing = useDebounceValue(isSyncing, 200);
-  const debouncedConnecting = useDebounceValue(connecting, 500);
+  const debouncedConnecting = useDebounceValue(connecting, 400);
 
   const [open, setOpen] = useState(false);
 
   const togglePopover = () => setOpen((prev) => !prev);
 
-  const display: SyncStatusDisplay = !isOnline
-    ? 'offline'
-    : firstConnecting.current || debouncedConnecting
-      ? 'connecting'
-      : isOnline && isSyncConnected && hasSynced
-        ? 'synced'
-        : 'error';
+  const display: SyncStatusDisplay = (() => {
+    if (!isOnline) return 'offline';
+    if (!isSignedIn) return 'error';
+    if (isFirstConnecting || debouncedConnecting) return 'connecting';
+    if (isSyncConnected && (isSyncing || hasSynced)) return 'synced';
+    return 'error';
+  })();
 
   // NOTE: fix for delay in the connecting state to become true when the component is mounted
   useEffect(() => {
     setTimeout(() => {
-      firstConnecting.current = false;
+      setIsFirstConnecting(false);
     }, 200);
   }, []);
 

@@ -1,4 +1,4 @@
-import { createSecretKey } from 'node:crypto';
+import { createSecretKey, randomUUID } from 'node:crypto';
 import type { Context } from 'hono';
 import { setCookie } from 'hono/cookie';
 import type { SignatureAlgorithm } from 'hono/utils/jwt/jwa';
@@ -13,6 +13,7 @@ export interface JWTTokenPayload extends JWTPayload {
   exp: number;
   iat: number;
   aud: string;
+  jti: string;
 }
 
 export interface JWTConfigEnv {
@@ -141,6 +142,7 @@ function generateTokenPayload(
     iat: Math.floor(Date.now() / 1000),
     aud: config.aud,
     role: config.role,
+    jti: randomUUID(),
   };
 }
 

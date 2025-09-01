@@ -113,56 +113,27 @@ function createAuthService(
   ) => {
     const refreshExpiration = Number.parseInt(envConfig.refreshExpiration, 10);
     const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
-    const maxAttempts = 3;
-    let currentAttempt = 1;
-    let currentToken = initialRefreshToken;
+    try {
+      const dbClient = deps.getDatabase(dbUrl);
 
-    while (currentAttempt <= maxAttempts) {
-      try {
-        const dbClient = deps.getDatabase(dbUrl);
-
-        await dbClient.transaction(async (tx) => {
-          await tx.insert(refreshTokensTable).values({
-            userId: userId,
-            token: currentToken,
-            expiration: new Date(Date.now() + refreshExpiration * 1000),
-          });
-
-          if (oldRefreshToken) {
-            await tx
-              .delete(refreshTokensTable)
-              .where(eq(refreshTokensTable.token, oldRefreshToken));
-          }
+      await dbClient.transaction(async (tx) => {
+        await tx.insert(refreshTokensTable).values({
+          userId: userId,
+          token: initialRefreshToken,
+          expiration: new Date(Date.now() + refreshExpiration * 1000),
         });
-        console.log(`Refresh token saved successfully for user: ${userId}`);
-        return;
-      } catch (error: unknown) {
-        const errorObj = error as { message?: string; code?: string };
-        const isUniqueViolation =
-          errorObj.message?.includes('refresh_token_token_unique') ||
-          errorObj.code === '23505'; // PostgreSQL unique violation code
 
-        if (isUniqueViolation && currentAttempt < maxAttempts) {
-          console.log(
-            `Token collision detected, regenerating (attempt ${currentAttempt}/${maxAttempts})...`,
-          );
-          currentAttempt++;
-
-          const result = await signTokenWithPayload(userId, 'refresh');
-          currentToken = result.token;
-          continue;
+        if (oldRefreshToken) {
+          await tx
+            .delete(refreshTokensTable)
+            .where(eq(refreshTokensTable.token, oldRefreshToken));
         }
-
-        console.error('Error saving refresh token:', error);
-
-        if (isUniqueViolation) {
-          throw new Error(
-            `Failed to generate unique refresh token after ${maxAttempts} attempts`,
-          );
-        }
-
-        throw new Error('Failed to save refresh token');
-      }
+      });
+      console.log(`Refresh token saved successfully for user: ${userId}`);
+      return;
+    } catch (error) {
+      console.error('Error saving refresh token:', error);
+      throw new Error('Failed to save refresh token');
     }
   };
 
