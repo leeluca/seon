@@ -4,9 +4,6 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "vite",
-    "serve": "vite preview",
     "ci:biome": "biome check --changed",
     "typecheck": "tsc"
   },

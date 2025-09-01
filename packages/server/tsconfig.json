@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig.json",
-  "files": ["./src/index.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "compilerOptions": {
     "outDir": "dist",
     "target": "ESNext",
@@ -10,6 +10,7 @@
     "skipLibCheck": true,
     "types": ["node"],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
+    "jsxImportSource": "hono/jsx",
+    "composite": true
   }
 }

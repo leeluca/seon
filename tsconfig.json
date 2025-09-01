@@ -2,13 +2,18 @@
   "compilerOptions": {
     "isolatedModules": true,
     "esModuleInterop": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
     "target": "ESNext",
     "strict": true,
     "allowJs": false,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-  }
+    "forceConsistentCasingInFileNames": true
+  },
+  "references": [
+    {
+      "path": "./packages/server"
+    },
+    {
+      "path": "./packages/web"
+    }
+  ]
 }
