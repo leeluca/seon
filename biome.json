@@ -13,7 +13,8 @@
       "!**/packages/server/src/db/**/*",
       "!**/routeTree.gen.ts",
       "!**/messages.ts",
-      "!**/migrations/**/*"
+      "!**/migrations/**/*",
+      "!**/tailwind.css"
     ]
   },
   "formatter": {

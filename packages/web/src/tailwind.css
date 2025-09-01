@@ -1,113 +1,236 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --breakpoint-*: initial;
+  --breakpoint-xs: 480px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-body-background: hsla(250, 75%, 98%, 0.5);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-warning: hsl(var(--warning));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-noto-emoji: 'Noto Emoji', Apple Color Emoji;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fadeIn 0.25s ease-in-out;
+  --animate-delayed-fade-in: fadeIn 0.25s ease-in-out 0.4s forwards;
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.25s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes collapsible-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-collapsible-content-height);
+    }
+  }
+  @keyframes collapsible-up {
+    from {
+      height: var(--radix-collapsible-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
+  @media (width >= --theme(--breakpoint-xs)) {
+    max-width: none;
+  }
+  @media (width >= 1400px) {
+    max-width: 1400px;
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
 @layer base {
-  :root {
-    --background: 214.29 63.64% 97.84%;
-    --foreground: 216.92 19.12% 26.67%;
-    --card: 0 0% 100%;
-    --card-foreground: 216.92 19.12% 26.67%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 216.92 19.12% 26.67%;
-    --primary: 142.09 70.56% 45.29%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 204.0 93.75% 93.73%;
-    --secondary-foreground: 215 13.79% 34.12%;
-    --muted: 220.0 14.29% 95.88%;
-    --muted-foreground: 220 8.94% 46.08%;
-    --accent: 149.27 80.39% 90.00%;
-    --accent-foreground: 216.92 19.12% 26.67%;
-    --destructive: 0 84.24% 60.20%;
-    --destructive-foreground: 0 0% 100%;
-    --warning: 24.6 95% 53.1%;
-    --border: 220 13.04% 90.98%;
-    --input: 220 13.04% 90.98%;
-    --ring: 142.09 70.56% 45.29%;
-    --chart-1: 142.09 70.56% 45.29%;
-    --chart-2: 160.12 84.08% 39.41%;
-    --chart-3: 161.38 93.55% 30.39%;
-    --chart-4: 162.93 93.55% 24.31%;
-    --chart-5: 163.15 88.12% 19.80%;
-    --sidebar: 204.0 93.75% 93.73%;
-    --sidebar-foreground: 216.92 19.12% 26.67%;
-    --sidebar-primary: 142.09 70.56% 45.29%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 149.27 80.39% 90.00%;
-    --sidebar-accent-foreground: 216.92 19.12% 26.67%;
-    --sidebar-border: 220 13.04% 90.98%;
-    --sidebar-ring: 142.09 70.56% 45.29%;
-    --font-sans: Poppins, sans-serif;
-    --font-serif: Lora, serif;
-    --font-mono: IBM Plex Mono, monospace;
-    --radius: 0.75rem;
-    --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-md: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 8px 10px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
   }
+}
 
-  .dark {
-    --background: 222.22 47.37% 11.18%;
-    --foreground: 216.0 12.20% 83.92%;
-    --card: 217.24 32.58% 17.45%;
-    --card-foreground: 216.0 12.20% 83.92%;
-    --popover: 217.24 32.58% 17.45%;
-    --popover-foreground: 216.0 12.20% 83.92%;
-    --primary: 158.11 64.37% 51.57%;
-    --primary-foreground: 222.22 47.37% 11.18%;
-    --secondary: 217.78 23.08% 22.94%;
-    --secondary-foreground: 240 5.03% 64.90%;
-    --muted: 0 0% 12.16%;
-    --muted-foreground: 0 0% 63.53%;
-    --accent: 216.92 19.12% 26.67%;
-    --accent-foreground: 240 5.03% 64.90%;
-    --destructive: 0 84.24% 60.20%;
-    --destructive-foreground: 222.22 47.37% 11.18%;
-    --warning: 24.6 95% 53.1%;
-    --border: 215 13.79% 34.12%;
-    --input: 215 13.79% 34.12%;
-    --ring: 158.11 64.37% 51.57%;
-    --chart-1: 158.11 64.37% 51.57%;
-    --chart-2: 172.46 66.01% 50.39%;
-    --chart-3: 142.09 70.56% 45.29%;
-    --chart-4: 160.12 84.08% 39.41%;
-    --chart-5: 161.38 93.55% 30.39%;
-    --sidebar: 217.24 32.58% 17.45%;
-    --sidebar-foreground: 216.0 12.20% 83.92%;
-    --sidebar-primary: 158.11 64.37% 51.57%;
-    --sidebar-primary-foreground: 222.22 47.37% 11.18%;
-    --sidebar-accent: 216.92 19.12% 26.67%;
-    --sidebar-accent-foreground: 240 5.03% 64.90%;
-    --sidebar-border: 215 13.79% 34.12%;
-    --sidebar-ring: 158.11 64.37% 51.57%;
-    --font-sans: Poppins, sans-serif;
-    --font-serif: Lora, serif;
-    --font-mono: IBM Plex Mono, monospace;
-    --radius: 0.75rem;
-    --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
-    --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
-    --shadow-sm: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-md: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-lg: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 8px 10px -2px
-      hsl(0 0% 0% / 0.1);
-    --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
-  }
+:root {
+  --background: 214.29 63.64% 97.84%;
+  --foreground: 216.92 19.12% 26.67%;
+  --card: 0 0% 100%;
+  --card-foreground: 216.92 19.12% 26.67%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 216.92 19.12% 26.67%;
+  --primary: 142.09 70.56% 45.29%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 204 93.75% 93.73%;
+  --secondary-foreground: 215 13.79% 34.12%;
+  --muted: 220 14.29% 95.88%;
+  --muted-foreground: 220 8.94% 46.08%;
+  --accent: 149.27 80.39% 90%;
+  --accent-foreground: 216.92 19.12% 26.67%;
+  --destructive: 0 84.24% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+  --warning: 24.6 95% 53.1%;
+  --border: 220 13.04% 90.98%;
+  --input: 220 13.04% 90.98%;
+  --ring: 142.09 70.56% 45.29%;
+  --chart-1: 142.09 70.56% 45.29%;
+  --chart-2: 160.12 84.08% 39.41%;
+  --chart-3: 161.38 93.55% 30.39%;
+  --chart-4: 162.93 93.55% 24.31%;
+  --chart-5: 163.15 88.12% 19.8%;
+  --sidebar: 204 93.75% 93.73%;
+  --sidebar-foreground: 216.92 19.12% 26.67%;
+  --sidebar-primary: 142.09 70.56% 45.29%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 149.27 80.39% 90%;
+  --sidebar-accent-foreground: 216.92 19.12% 26.67%;
+  --sidebar-border: 220 13.04% 90.98%;
+  --sidebar-ring: 142.09 70.56% 45.29%;
+  /* --font-sans: Poppins, sans-serif;
+  --font-serif: Lora, serif;
+  --font-mono: IBM Plex Mono, monospace; */
+  --radius: 0.75rem;
+  --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
+  --shadow-sm:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px hsl(0 0% 0% / 0.1);
+  --shadow:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px hsl(0 0% 0% / 0.1);
+  --shadow-md:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px hsl(0 0% 0% / 0.1);
+  --shadow-lg:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px hsl(0 0% 0% / 0.1);
+  --shadow-xl:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 8px 10px -2px hsl(0 0% 0% / 0.1);
+  --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
+}
+
+.dark {
+  --background: 222.22 47.37% 11.18%;
+  --foreground: 216 12.2% 83.92%;
+  --card: 217.24 32.58% 17.45%;
+  --card-foreground: 216 12.2% 83.92%;
+  --popover: 217.24 32.58% 17.45%;
+  --popover-foreground: 216 12.2% 83.92%;
+  --primary: 158.11 64.37% 51.57%;
+  --primary-foreground: 222.22 47.37% 11.18%;
+  --secondary: 217.78 23.08% 22.94%;
+  --secondary-foreground: 240 5.03% 64.9%;
+  --muted: 0 0% 12.16%;
+  --muted-foreground: 0 0% 63.53%;
+  --accent: 216.92 19.12% 26.67%;
+  --accent-foreground: 240 5.03% 64.9%;
+  --destructive: 0 84.24% 60.2%;
+  --destructive-foreground: 222.22 47.37% 11.18%;
+  --warning: 24.6 95% 53.1%;
+  --border: 215 13.79% 34.12%;
+  --input: 215 13.79% 34.12%;
+  --ring: 158.11 64.37% 51.57%;
+  --chart-1: 158.11 64.37% 51.57%;
+  --chart-2: 172.46 66.01% 50.39%;
+  --chart-3: 142.09 70.56% 45.29%;
+  --chart-4: 160.12 84.08% 39.41%;
+  --chart-5: 161.38 93.55% 30.39%;
+  --sidebar: 217.24 32.58% 17.45%;
+  --sidebar-foreground: 216 12.2% 83.92%;
+  --sidebar-primary: 158.11 64.37% 51.57%;
+  --sidebar-primary-foreground: 222.22 47.37% 11.18%;
+  --sidebar-accent: 216.92 19.12% 26.67%;
+  --sidebar-accent-foreground: 240 5.03% 64.9%;
+  --sidebar-border: 215 13.79% 34.12%;
+  --sidebar-ring: 158.11 64.37% 51.57%;
+  /* --font-sans: Poppins, sans-serif;
+  --font-serif: Lora, serif;
+  --font-mono: IBM Plex Mono, monospace; */
+  --radius: 0.75rem;
+  --shadow-2xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
+  --shadow-xs: 0px 4px 8px -1px hsl(0 0% 0% / 0.05);
+  --shadow-sm:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px hsl(0 0% 0% / 0.1);
+  --shadow:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 1px 2px -2px hsl(0 0% 0% / 0.1);
+  --shadow-md:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 2px 4px -2px hsl(0 0% 0% / 0.1);
+  --shadow-lg:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 4px 6px -2px hsl(0 0% 0% / 0.1);
+  --shadow-xl:
+    0px 4px 8px -1px hsl(0 0% 0% / 0.1), 0px 8px 10px -2px hsl(0 0% 0% / 0.1);
+  --shadow-2xl: 0px 4px 8px -1px hsl(0 0% 0% / 0.25);
 }
 
 @layer base {
@@ -116,5 +239,9 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
   }
 }

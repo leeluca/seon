@@ -23,7 +23,8 @@
     "vite.config.ts",
     "tailwind.config.ts",
     "lingui.config.ts",
-    "tests/**/*"
+    "tests/**/*",
+    "playwright.config.ts"
   ],
   "noEmit": true
 }

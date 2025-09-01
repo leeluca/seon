@@ -24,7 +24,7 @@ interface SheetProps {
 const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+      <SheetContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
         <SheetTitle className="text-2xl">
           <div>Goal not found</div>
         </SheetTitle>
@@ -66,7 +66,7 @@ export function GoalDetailPanel({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="max-h-full !w-full !max-w-full overflow-y-auto sm:!max-w-3xl">
+      <SheetContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
         {/* FIXME: header should be sticky and always visible regardless of scroll position */}
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>

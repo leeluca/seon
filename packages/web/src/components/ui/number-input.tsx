@@ -201,7 +201,7 @@ export function NumberInputField({
       onKeyDown={(e) => blockNonNumberInput(e)}
       ref={combinedRef}
       className={cn(
-        buttonStacked ? 'rounded-r-none focus-visible:z-[1]' : '',
+        buttonStacked ? 'rounded-r-none focus-visible:z-1' : '',
         className,
       )}
       {...props}

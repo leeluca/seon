@@ -113,6 +113,8 @@ function StatusMenu() {
 
   const display: SyncStatusDisplay = (() => {
     if (!isOnline) return 'offline';
+    // FIXME: if server not available, return 'error'.
+    // FIXME: if user is not signed in, return 'notSignedIn'.
     if (!isSignedIn) return 'error';
     if (isFirstConnecting || debouncedConnecting) return 'connecting';
     if (isSyncConnected && (isSyncing || hasSynced)) return 'synced';

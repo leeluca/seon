@@ -41,7 +41,7 @@ const Alert = React.forwardRef<
     )}
     {...props}
   >
-    {icon && <div className="flex-shrink-0">{icon}</div>}
+    {icon && <div className="shrink-0">{icon}</div>}
     <div>{children}</div>
   </div>
 ));

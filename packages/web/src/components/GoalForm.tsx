@@ -380,7 +380,7 @@ function NewGoalForm({
         )}
 
         <CollapsibleContent>
-          <div className="my-[1px] grid gap-4">
+          <div className="my-px grid gap-4">
             <FormItem
               label={t`Start date`}
               labelFor="start-date"

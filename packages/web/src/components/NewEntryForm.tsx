@@ -210,7 +210,7 @@ const NewEntryForm = ({
                         <Button
                           type="button"
                           variant="ghost"
-                          className="hover:bg-destructive/90 hover:text-destructive-foreground flex-shrink-0 justify-self-end"
+                          className="hover:bg-destructive/90 hover:text-destructive-foreground shrink-0 justify-self-end"
                           size="icon"
                           disabled={!entryId}
                           onClick={() =>
