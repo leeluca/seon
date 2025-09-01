@@ -8,7 +8,7 @@ if (process.loadEnvFile) {
 
 export default defineConfig({
   test: {
-    include: ['test/integration/**/*.test.ts'],
+    include: ['tests/integration/**/*.test.ts'],
     environment: 'node',
     globals: true,
     testTimeout: 30000,
