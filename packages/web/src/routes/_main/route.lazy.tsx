@@ -13,13 +13,13 @@ function Dashboard() {
   return (
     <div className="relative min-h-dvh min-w-[375px]">
       <header className="px-3 py-2 sm:px-8 sm:py-4">
-        <div className="mx-auto flex max-w-screen-2xl content-center justify-between">
+        <div className="mx-auto flex max-w-(--breakpoint-2xl) content-center justify-between">
           <AppStatusMenu />
         </div>
       </header>
 
       <main className="px-3 py-2 sm:px-6 sm:py-4 xl:p-8">
-        <div className="m-auto mb-24 max-w-screen-2xl">
+        <div className="m-auto mb-24 max-w-(--breakpoint-2xl)">
           <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
             <Outlet />
           </Sentry.ErrorBoundary>

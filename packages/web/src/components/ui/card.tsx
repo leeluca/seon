@@ -9,7 +9,7 @@ const Card = React.forwardRef<
   React.createElement(as, {
     ref,
     className: cn(
-      'bg-card text-card-foreground rounded-xl border shadow',
+      'bg-card text-card-foreground rounded-xl border shadow-sm',
       className,
     ),
     ...props,

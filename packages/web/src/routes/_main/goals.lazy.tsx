@@ -1,5 +1,4 @@
 import { Suspense, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
@@ -73,7 +72,7 @@ function Layout() {
             to="/goals/new"
             className={cn(
               buttonVariants({ variant: 'default', size: 'lg' }),
-              'flex h-16 w-16 rounded-full p-0 shadow-xl [&_svg]:!size-7',
+              '[&_svg]:size-7! flex h-16 w-16 rounded-full p-0 shadow-xl',
             )}
             aria-label={t`Add new goal`}
           >

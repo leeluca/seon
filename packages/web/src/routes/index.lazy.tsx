@@ -40,7 +40,7 @@ function Index() {
   return (
     <div>
       <div className="mb-10 mt-4 px-6 py-4 xl:p-8">
-        <div className="m-auto flex max-w-screen-xl flex-col items-center">
+        <div className="m-auto flex max-w-(--breakpoint-xl) flex-col items-center">
           <h1 className="mb-16 text-3xl">
             <Trans>🚧 Seon Goals 🚧</Trans>
           </h1>

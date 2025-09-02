@@ -40,7 +40,6 @@ function ProgressBar({
   currentValue,
 }: ProgressBarProps) {
   return (
-    // biome-ignore lint/nursery/useAriaPropsSupportedByRole: biome rule bug
     <div
       role="progressbar"
       aria-valuenow={currentValue}
@@ -50,7 +49,7 @@ function ProgressBar({
       tabIndex={-1}
       className="w-[calc(100% + 48px)] bg-muted group relative -mx-1 flex h-3 rounded sm:mx-1"
     >
-      <p className="absolute bottom-[17px] right-[2px] pb-[1px] text-xs opacity-0 group-hover:opacity-100">
+      <p className="absolute bottom-[17px] right-[2px] pb-px text-xs opacity-0 group-hover:opacity-100">
         {progressPercent <= 100
           ? `${currentValue.toFixed(0)}/${target}`
           : target}
@@ -61,7 +60,7 @@ function ProgressBar({
       >
         <p
           className={cn(
-            'absolute bottom-4 pb-[1px] text-sm opacity-0 transition-opacity group-hover:opacity-100',
+            'absolute bottom-4 pb-px text-sm opacity-0 transition-opacity group-hover:opacity-100',
             progressPercent <= 85 ? '-right-5' : '-bottom-6 right-0',
           )}
         >
@@ -198,7 +197,7 @@ export default function GoalCard({
 
   return (
     <Card
-      className="w-full max-w-[600px] rounded-2xl text-center shadow-sm"
+      className="shadow-xs w-full max-w-[600px] rounded-2xl text-center"
       ref={cardRef}
       data-testid={`goal-card-${id}`}
     >

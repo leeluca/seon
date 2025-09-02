@@ -13,7 +13,7 @@ import { useUserStore } from '~/states/stores/userStore';
 import SyncProvider from '~/states/syncContext';
 import type { AuthStatus } from '~/types/user';
 
-interface RouterContext {
+export interface RouterContext {
   authStatus: AuthStatus;
   isUserInitialized: boolean;
 }
