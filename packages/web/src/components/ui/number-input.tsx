@@ -51,6 +51,7 @@ function useCombinedRef(
   ) as React.RefObject<HTMLInputElement>;
 }
 
+// TODO: increase, decrease on arrow keys
 function useNumberInput({
   value: controlledValue,
   defaultValue,
@@ -157,17 +158,18 @@ export function NumberInputField({
   ...props
 }: NumberInputFieldProps) {
   const context = useContext(NumberInputContext);
-  if (!context) return null;
-
-  const { value, onChange, handleBlur, ref, buttonStacked } = context;
   const combinedRef = useCombinedRef(inputRef);
 
   useEffect(() => {
     // Sync context ref with combined ref
-    if (combinedRef.current && context.ref) {
+    if (combinedRef.current && context?.ref) {
       context.ref.current = combinedRef.current;
     }
   }, [combinedRef, context]);
+
+  if (!context) return null;
+
+  const { value, onChange, handleBlur, buttonStacked } = context;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;
@@ -201,7 +203,7 @@ export function NumberInputField({
       onKeyDown={(e) => blockNonNumberInput(e)}
       ref={combinedRef}
       className={cn(
-        buttonStacked ? 'rounded-r-none focus-visible:z-1' : '',
+        buttonStacked ? 'focus-visible:z-1 rounded-r-none' : '',
         className,
       )}
       {...props}
