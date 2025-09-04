@@ -59,8 +59,8 @@ export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
           value: 'completed',
         },
         {
-          label: t(msg`Incomplete`),
-          value: 'incomplete',
+          label: t(msg`Ongoing`),
+          value: 'ongoing',
         },
       ] as const,
     [t],
@@ -72,8 +72,6 @@ export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          // biome-ignore lint/a11y/useSemanticElements: cannot use svg icon inside <select> element
-          role="listbox"
           aria-expanded={open}
           className="max-w-[200px] justify-normal"
         >
