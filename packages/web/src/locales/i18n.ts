@@ -16,7 +16,7 @@ export async function dynamicallyImportLocale(locale: keyof typeof LOCALES) {
   };
 
   const [importedMessages, dfnsLocale] = await Promise.all([
-    import(`../locales/${locale}/messages.ts`) as Promise<{
+    import(`../locales/${locale}/messages.po`) as Promise<{
       messages: Messages;
     }>,
     dateFnslocaleMap[locale](),

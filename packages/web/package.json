@@ -10,7 +10,6 @@
     "lint": "biome check --write",
     "typecheck": "tsc",
     "messages:extract": "lingui extract",
-    "messages:compile": "lingui compile --typescript",
     "test": "vitest run",
     "test:watch": "vitest"
   },
