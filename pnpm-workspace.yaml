@@ -1,6 +1,9 @@
 packages:
   - packages/*
+ignoredBuiltDependencies:
+  - '@sentry/cli'
 onlyBuiltDependencies:
   - '@journeyapps/wa-sqlite'
+  - '@tailwindcss/oxide'
   - '@swc/core'
   - esbuild
