@@ -19,70 +19,67 @@ import { useDebounceValue } from '~/hooks/useDebounceValue';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
-// import { DemoIndicator } from './DemoIndicator';
+import { APIError } from '~/utils/errors';
 import SignInForm from './SignInForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import UpdatePrompt from './UpdatePrompt';
 
-interface ErrorOrAuthContentProps {
-  isSignedIn: boolean;
+interface NotSignedInContentProps {
   isSyncEnabledUser: boolean;
-  isSyncConnected: boolean;
   onSignInCallback: (userData: PostSignInResponse['user']) => void;
 }
-const ErrorOrAuthContent = ({
-  isSignedIn,
+const NotSignedInContent = ({
   isSyncEnabledUser,
-  isSyncConnected,
   onSignInCallback,
-}: ErrorOrAuthContentProps) => {
-  if (!isSignedIn) {
-    return (
-      <>
-        <div className="space-y-2 pb-4">
-          <h4 className="font-medium leading-none">
-            <Trans>Sync is off</Trans>
-          </h4>
-          {isSyncEnabledUser ? (
-            <div className="text-muted-foreground text-sm">
-              <p>
-                <Trans>Your session has expired.</Trans>
-              </p>
-              <p>
-                <Trans>Sign in again to sync your data.</Trans>
-              </p>
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">
-              <Trans>Sign in to sync your data.</Trans>
-            </p>
-          )}
-        </div>
-
-        <SignInForm onSignInCallback={onSignInCallback} />
-      </>
-    );
-  }
-
-  if (!isSyncConnected) {
-    return (
-      <div className="space-y-2">
+}: NotSignedInContentProps) => {
+  return (
+    <>
+      <div className="space-y-2 pb-4">
         <h4 className="font-medium leading-none">
           <Trans>Sync is off</Trans>
         </h4>
-        <p className="text-muted-foreground text-sm">
-          <Trans>
-            Could not connect with the sync service. Try again later.
-          </Trans>
-        </p>
+        {isSyncEnabledUser ? (
+          <div className="text-muted-foreground text-sm">
+            <p>
+              <Trans>Your session has expired.</Trans>
+            </p>
+            <p>
+              <Trans>Sign in again to sync your data.</Trans>
+            </p>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            <Trans>Sign in to sync your data.</Trans>
+          </p>
+        )}
       </div>
-    );
-  }
+
+      <SignInForm onSignInCallback={onSignInCallback} />
+    </>
+  );
 };
 
-type SyncStatusDisplay = 'offline' | 'connecting' | 'synced' | 'error';
+const SyncErrorContent = () => {
+  return (
+    <div className="space-y-2">
+      <h4 className="font-medium leading-none">
+        <Trans>Sync is off</Trans>
+      </h4>
+      <p className="text-muted-foreground text-pretty text-sm">
+        <Trans>Could not connect with the sync service. Try again later.</Trans>
+      </p>
+    </div>
+  );
+};
+
+type SyncStatusDisplay =
+  | 'offline'
+  | 'connecting'
+  | 'synced'
+  | 'notSignedIn'
+  | 'error';
 
 function StatusMenu() {
   const { t } = useLingui();
@@ -99,7 +96,8 @@ function StatusMenu() {
   );
   const [isFirstConnecting, setIsFirstConnecting] = useState(true);
 
-  const { data, isLoading } = useFetchAuthStatus();
+  const { data, isLoading, isError, error } = useFetchAuthStatus();
+
   const isSignedIn = !!data?.result;
   const isOnline = useIsOnline();
 
@@ -113,9 +111,9 @@ function StatusMenu() {
 
   const display: SyncStatusDisplay = (() => {
     if (!isOnline) return 'offline';
-    // FIXME: if server not available, return 'error'.
-    // FIXME: if user is not signed in, return 'notSignedIn'.
-    if (!isSignedIn) return 'error';
+    if (isError && (!(error instanceof APIError) || error.status !== 401))
+      return 'error';
+    if (!isSignedIn) return 'notSignedIn';
     if (isFirstConnecting || debouncedConnecting) return 'connecting';
     if (isSyncConnected && (isSyncing || hasSynced)) return 'synced';
     return 'error';
@@ -193,10 +191,8 @@ function StatusMenu() {
         <PopoverContent
           className={
             display === 'synced'
-              ? 'mr-3 min-w-[121px] max-w-fit sm:mr-8'
-              : !isSignedIn
-                ? 'mr-3 sm:mr-8'
-                : undefined
+              ? 'mr-3 mt-0.5 min-w-[121px] max-w-fit sm:mr-8'
+              : 'mr-3 mt-0.5 sm:mr-8'
           }
           sideOffset={5}
         >
@@ -235,7 +231,7 @@ function StatusMenu() {
               <h4 className="font-medium leading-none">
                 <Trans>Connecting to sync…</Trans>
               </h4>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-muted-foreground text-pretty break-keep">
                 <Trans>
                   Establishing a connection. This may take a moment.
                 </Trans>
@@ -243,10 +239,8 @@ function StatusMenu() {
             </div>
           )}
 
-          {display === 'error' && (
-            <ErrorOrAuthContent
-              isSignedIn={isSignedIn}
-              isSyncConnected={isSyncConnected}
+          {display === 'notSignedIn' && (
+            <NotSignedInContent
               isSyncEnabledUser={Boolean(useSync)}
               onSignInCallback={({ name: userName }) => {
                 setOpen(false);
@@ -254,6 +248,8 @@ function StatusMenu() {
               }}
             />
           )}
+
+          {display === 'error' && <SyncErrorContent />}
         </PopoverContent>
       </Popover>
       {(isSignedIn || Boolean(useSync)) && (

@@ -48,8 +48,8 @@ const getButtonStyles = ({
   const isNeutralDay = isEmpty && !isEmptyPastDay;
 
   const baseStyles = isNeutralDay
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground relative'
-    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9 relative';
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground relative transition-colors duration-300 ease-out motion-reduce:transition-none'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9 relative transition-colors duration-300 ease-out motion-reduce:transition-none';
 
   return cn(baseStyles, {
     // Success states
@@ -123,9 +123,9 @@ const CalendarHeatmap = ({
     new Date(),
     undefined,
   ]);
-  const popoverAnchorRef = useRef<HTMLElement | null>(null);
+  const popoverAnchorRef = useRef<Element | null>(null);
 
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
 
@@ -217,9 +217,10 @@ const CalendarHeatmap = ({
                       entryValue,
                       isSelected,
                       isToday,
-                      isPast: isPast && !isBlocked,
+                      isPast: goal !== undefined && isPast && !isBlocked,
                       isBlocked,
                       isAfterCompletion:
+                        goal !== undefined &&
                         !!goal?.completionDate &&
                         isAfter(day, new Date(goal?.completionDate)),
                     })}
@@ -244,9 +245,10 @@ const CalendarHeatmap = ({
                     entryValue,
                     isSelected,
                     isToday,
-                    isPast: isPast && !isBlocked,
+                    isPast: goal !== undefined && isPast && !isBlocked,
                     isBlocked,
                     isAfterCompletion:
+                      goal !== undefined &&
                       !!goal?.completionDate &&
                       isAfter(day, new Date(goal?.completionDate)),
                   })}

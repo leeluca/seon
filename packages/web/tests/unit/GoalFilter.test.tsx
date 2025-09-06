@@ -19,7 +19,7 @@ describe('GoalFilter', () => {
     fireEvent.click(button);
 
     expect(await screen.findByText('Completed')).toBeInTheDocument();
-    expect(await screen.findByText('Incomplete')).toBeInTheDocument();
+    expect(await screen.findByText('Ongoing')).toBeInTheDocument();
   });
 
   it('calls setFilter with the correct value when an option is selected', async () => {
@@ -48,10 +48,10 @@ describe('GoalFilter', () => {
     const button = screen.getByRole('listbox');
     fireEvent.click(button);
 
-    const incompleteOption = await screen.findByText('Incomplete');
+    const ongoingOption = await screen.findByText('Ongoing');
 
     await act(async () => {
-      fireEvent.click(incompleteOption);
+      fireEvent.click(ongoingOption);
     });
 
     expect(dbMock.default.updateTable).toHaveBeenCalled();
@@ -62,8 +62,8 @@ describe('GoalFilter', () => {
 
   it('displays filter value when selected', async () => {
     const setFilter = vi.fn();
-    render(<GoalFilter filter="incomplete" setFilter={setFilter} />);
+    render(<GoalFilter filter="ongoing" setFilter={setFilter} />);
 
-    expect(screen.getByText('Incomplete')).toBeInTheDocument();
+    expect(screen.getByText('Ongoing')).toBeInTheDocument();
   });
 });

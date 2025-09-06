@@ -52,8 +52,8 @@ msgstr "Add entry for {0}"
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
-#: src/routes/_main/goals.lazy.tsx:71
-#: src/routes/_main/goals.lazy.tsx:78
+#: src/routes/_main/goals.lazy.tsx:70
+#: src/routes/_main/goals.lazy.tsx:77
 #: src/routes/_main/goals.new.tsx:119
 #: src/routes/_main/goals.new.tsx:184
 msgid "Add new goal"
@@ -63,7 +63,7 @@ msgstr "Add new goal"
 msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
-#: src/components/GoalCard.tsx:96
+#: src/components/GoalCard.tsx:95
 msgid "Ahead of schedule!"
 msgstr "Ahead of schedule!"
 
@@ -83,7 +83,7 @@ msgstr "Amount"
 msgid "An unexpected error occurred."
 msgstr "An unexpected error occurred."
 
-#: src/components/GoalCard.tsx:268
+#: src/components/GoalCard.tsx:267
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
@@ -91,11 +91,11 @@ msgstr "Are you sure you want to delete <0>{title}</0>?"
 msgid "Average Pace"
 msgstr "Average Pace"
 
-#: src/components/GoalCard.tsx:216
+#: src/components/GoalCard.tsx:215
 msgid "Before goal's start date"
 msgstr "Before goal's start date"
 
-#: src/components/GoalCard.tsx:84
+#: src/components/GoalCard.tsx:83
 msgid "Behind schedule!"
 msgstr "Behind schedule!"
 
@@ -113,11 +113,11 @@ msgstr "Cancel editing"
 #~ msgid "Check sync error or sign in"
 #~ msgstr "Check sync error or sign in"
 
-#: src/components/StatusMenu.tsx:176
+#: src/components/StatusMenu.tsx:180
 msgid "Check sync status"
-msgstr ""
+msgstr "Check sync status"
 
-#: src/components/StatusMenu.tsx:224
+#: src/components/StatusMenu.tsx:228
 msgid "Check your internet connection and try again."
 msgstr "Check your internet connection and try again."
 
@@ -133,9 +133,9 @@ msgstr "Completed"
 msgid "Completed!"
 msgstr "Completed!"
 
-#: src/components/StatusMenu.tsx:232
+#: src/components/StatusMenu.tsx:236
 msgid "Connecting to sync…"
-msgstr ""
+msgstr "Connecting to sync…"
 
 #: src/components/StatusMenu.tsx:76
 msgid "Could not connect with the sync service. Try again later."
@@ -170,11 +170,11 @@ msgstr "Create your first goal!"
 msgid "Date"
 msgstr "Date"
 
-#: src/components/ui/number-input.tsx:255
+#: src/components/ui/number-input.tsx:257
 msgid "Decrease"
 msgstr "Decrease"
 
-#: src/components/GoalCard.tsx:288
+#: src/components/GoalCard.tsx:287
 msgid "Delete"
 msgstr "Delete"
 
@@ -183,13 +183,13 @@ msgstr "Delete"
 msgid "Delete entry"
 msgstr "Delete entry"
 
-#: src/components/GoalCard.tsx:255
-#: src/components/GoalCard.tsx:260
-#: src/components/GoalCard.tsx:265
+#: src/components/GoalCard.tsx:254
+#: src/components/GoalCard.tsx:259
+#: src/components/GoalCard.tsx:264
 msgid "Delete goal"
 msgstr "Delete goal"
 
-#: src/components/GoalCard.tsx:284
+#: src/components/GoalCard.tsx:283
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
@@ -237,9 +237,9 @@ msgstr "Email is required"
 msgid "Entries after target date"
 msgstr "Entries after target date"
 
-#: src/components/StatusMenu.tsx:235
+#: src/components/StatusMenu.tsx:239
 msgid "Establishing a connection. This may take a moment."
-msgstr ""
+msgstr "Establishing a connection. This may take a moment."
 
 #: src/components/GoalStatusSummary.tsx:158
 msgid "Expected Completion"
@@ -270,7 +270,7 @@ msgstr "Failed to update goal"
 #~ msgid "Filter by"
 #~ msgstr "Filter by"
 
-#: src/components/GoalFilter.tsx:83
+#: src/components/GoalFilter.tsx:81
 msgid "Filter goals..."
 msgstr "Filter goals..."
 
@@ -287,7 +287,7 @@ msgstr "First time?"
 msgid "Go back"
 msgstr "Go back"
 
-#: src/components/GoalCard.tsx:102
+#: src/components/GoalCard.tsx:101
 msgid "Goal achieved!"
 msgstr "Goal achieved!"
 
@@ -300,11 +300,11 @@ msgstr "Goal Benchmark"
 msgid "Goal name"
 msgstr "Goal name"
 
-#: src/components/GoalCard.tsx:242
+#: src/components/GoalCard.tsx:241
 msgid "Goal progress: {progressMessage}"
 msgstr "Goal progress: {progressMessage}"
 
-#: src/routes/_main/goals.lazy.tsx:37
+#: src/routes/_main/goals.lazy.tsx:36
 msgid "Goals"
 msgstr "Goals"
 
@@ -316,7 +316,7 @@ msgstr "Goals list"
 #~ msgid "Hello, {0}!"
 #~ msgstr "Hello, {0}!"
 
-#: src/components/StatusMenu.tsx:272
+#: src/components/StatusMenu.tsx:276
 msgid "Hello, {userName}!"
 msgstr "Hello, {userName}!"
 
@@ -332,11 +332,7 @@ msgstr "If you sign out now, this data will be permanently lost!"
 msgid "Improve French vocabulary"
 msgstr "Improve French vocabulary"
 
-#: src/components/GoalFilter.tsx:62
-msgid "Incomplete"
-msgstr "Incomplete"
-
-#: src/components/ui/number-input.tsx:255
+#: src/components/ui/number-input.tsx:257
 msgid "Increase"
 msgstr "Increase"
 
@@ -368,7 +364,7 @@ msgstr "It seems like you are not connected!"
 msgid "Keep working on your goals!<0/>Change the filter to see all goals."
 msgstr "Keep working on your goals!<0/>Change the filter to see all goals."
 
-#: src/components/StatusMenu.tsx:207
+#: src/components/StatusMenu.tsx:211
 msgid "Last synced:"
 msgstr "Last synced:"
 
@@ -386,7 +382,7 @@ msgstr "Last:"
 msgid "Learn 1000 French words"
 msgstr "Learn 1000 French words"
 
-#: src/components/StatusMenu.tsx:133
+#: src/components/StatusMenu.tsx:135
 msgid "Loading user status"
 msgstr "Loading user status"
 
@@ -413,7 +409,7 @@ msgstr "Name (Z to A)"
 msgid "Name is required"
 msgstr "Name is required"
 
-#: src/routes/_main/goals.lazy.tsx:53
+#: src/routes/_main/goals.lazy.tsx:52
 msgid "New Goal"
 msgstr "New Goal"
 
@@ -444,6 +440,10 @@ msgstr "Numbers only"
 #: src/components/GoalSorting.tsx:66
 msgid "Oldest goals"
 msgstr "Oldest first"
+
+#: src/components/GoalFilter.tsx:62
+msgid "Ongoing"
+msgstr "Ongoing"
 
 #: src/components/NotFound.tsx:21
 msgid "Page Not Found"
@@ -505,7 +505,7 @@ msgstr "Reset Demo"
 msgid "Return to Home"
 msgstr "Return to Home"
 
-#: src/components/GoalCard.tsx:90
+#: src/components/GoalCard.tsx:89
 msgid "Right on track!"
 msgstr "Right on track!"
 
@@ -613,7 +613,7 @@ msgstr "Sucessfully updated goal"
 msgid "Sync is off"
 msgstr "Sync is off"
 
-#: src/components/StatusMenu.tsx:162
+#: src/components/StatusMenu.tsx:167
 msgid "Syncing"
 msgstr "Syncing"
 
@@ -661,7 +661,7 @@ msgstr "Time Left"
 msgid "Today"
 msgstr "Today"
 
-#: src/components/GoalCard.tsx:299
+#: src/components/GoalCard.tsx:298
 msgid "Toggle goal details"
 msgstr "Toggle goal details"
 
@@ -723,7 +723,7 @@ msgstr "Wake up early every day"
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
-#: src/components/StatusMenu.tsx:249
+#: src/components/StatusMenu.tsx:253
 msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
@@ -744,11 +744,11 @@ msgstr "Yes"
 msgid "Yes or no"
 msgstr "Yes or no"
 
-#: src/components/StatusMenu.tsx:221
+#: src/components/StatusMenu.tsx:225
 msgid "You're offline"
-msgstr ""
+msgstr "You're offline"
 
-#: src/components/StatusMenu.tsx:202
+#: src/components/StatusMenu.tsx:206
 msgid "Your data is synced!"
 msgstr "Your data is synced!"
 

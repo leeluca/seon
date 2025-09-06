@@ -25,7 +25,7 @@ export const GOALS = {
       query = query
         .where((eb) => eb('currentValue', '>=', eb.ref('target')))
         .where('target', '>', 0);
-    } else if (filter === 'incomplete') {
+    } else if (filter === 'ongoing') {
       query = query
         .where((eb) => eb('currentValue', '<', eb.ref('target')))
         .where('target', '>', 0);
