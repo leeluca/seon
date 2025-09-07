@@ -1,8 +1,9 @@
-import React, { Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 import { Toaster } from '~/components/ui/sonner';
 import { TooltipProvider } from '~/components/ui/tooltip';
@@ -20,15 +21,6 @@ export interface RouterContext {
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: Root,
 });
-
-const TanStackRouterDevtools =
-  process.env.NODE_ENV === 'development'
-    ? React.lazy(() =>
-        import('@tanstack/router-devtools').then((res) => ({
-          default: res.TanStackRouterDevtools,
-        })),
-      )
-    : () => null;
 
 function Root() {
   const languagePreference = useUserStore(
@@ -57,9 +49,7 @@ function Root() {
           </OnlineStatusProvider>
         </TooltipProvider>
       </I18nProvider>
-      <Suspense>
-        <TanStackRouterDevtools position="bottom-right" />
-      </Suspense>
+      <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-left" />
     </SyncProvider>
   );

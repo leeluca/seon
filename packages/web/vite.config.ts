@@ -2,7 +2,7 @@
 
 import { lingui } from '@lingui/vite-plugin';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -57,7 +57,7 @@ export default defineConfig({
     include: [],
   },
   plugins: [
-    TanStackRouterVite(),
+    tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     viteReact({
       babel: {
         plugins: ['macros'],
