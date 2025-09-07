@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, isNotNull, lte, or } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { env } from 'hono/adapter';
 import { getContext } from 'hono/context-storage';
@@ -59,6 +59,7 @@ const defaultDependencies: Dependencies = {
     compare: comparePW,
   },
 };
+const REFRESH_GRACE_TIME = 30_000; // 30 seconds
 
 // Global cached service promise for long-lived servers
 let globalAuthService: Promise<ReturnType<typeof createAuthService>> | null =
@@ -120,12 +121,13 @@ function createAuthService(
         await tx.insert(refreshTokensTable).values({
           userId: userId,
           token: initialRefreshToken,
-          expiration: new Date(Date.now() + refreshExpiration * 1000),
+          expiresAt: new Date(Date.now() + refreshExpiration * 1000),
         });
 
         if (oldRefreshToken) {
           await tx
-            .delete(refreshTokensTable)
+            .update(refreshTokensTable)
+            .set({ revokedAt: new Date().toISOString() })
             .where(eq(refreshTokensTable.token, oldRefreshToken));
         }
       });
@@ -143,6 +145,28 @@ function createAuthService(
     configs: Record<string, JWTTypeConfig> = jwtConfigs,
   ) => {
     return deps.jwtUtils.signTokenWithPayload(userId, jwtType, configs);
+  };
+
+  const deleteExpiredRefreshTokens = async () => {
+    try {
+      const dbUrl = getContext<AuthRouteTypes>().env.DB_URL;
+
+      const dbClient = deps.getDatabase(dbUrl);
+      const cutoffRevoked = new Date(Date.now() - REFRESH_GRACE_TIME);
+      await dbClient
+        .delete(refreshTokensTable)
+        .where(
+          or(
+            lte(refreshTokensTable.expiresAt, new Date()),
+            and(
+              isNotNull(refreshTokensTable.revokedAt),
+              lte(refreshTokensTable.revokedAt, cutoffRevoked.toISOString()),
+            ),
+          ),
+        );
+    } catch (cleanupErr) {
+      console.error('Refresh token cleanup failed (ignored):', cleanupErr);
+    }
   };
 
   return {
@@ -170,8 +194,13 @@ function createAuthService(
       try {
         const dbClient = deps.getDatabase(env(c).DB_URL);
 
-        const savedRefreshToken = await dbClient
-          .select()
+        const rows = await dbClient
+          .select({
+            token: refreshTokensTable.token,
+            userId: refreshTokensTable.userId,
+            expiresAt: refreshTokensTable.expiresAt,
+            revokedAt: refreshTokensTable.revokedAt,
+          })
           .from(refreshTokensTable)
           .where(
             and(
@@ -182,13 +211,30 @@ function createAuthService(
           .innerJoin(usersTable, eq(refreshTokensTable.userId, usersTable.id))
           .limit(1);
 
+        const tokenRow = rows[0];
+
         console.log(
-          `Full token check with user join: ${savedRefreshToken.length > 0 ? 'Token with user found' : 'Token with user not found'}`,
+          `Full token check with user join: ${tokenRow ? 'Token with user found' : 'Token with user not found'}`,
         );
 
-        if (!savedRefreshToken.length) {
+        if (!tokenRow) {
           console.log('Token exists but user validation failed');
           return { refreshToken: null, refreshPayload: null };
+        }
+
+        const now = Date.now();
+        const expirationMs = tokenRow.expiresAt.getTime();
+        if (expirationMs <= now) {
+          console.log('Refresh token expired');
+          return { refreshToken: null, refreshPayload: null };
+        }
+
+        if (tokenRow.revokedAt) {
+          const revokedAtMs = new Date(tokenRow.revokedAt).getTime();
+          if (revokedAtMs + REFRESH_GRACE_TIME <= now) {
+            console.log('Refresh token revoked beyond grace period');
+            return { refreshToken: null, refreshPayload: null };
+          }
         }
 
         return { refreshToken, refreshPayload };
@@ -220,6 +266,8 @@ function createAuthService(
           envConfig,
           oldRefreshToken,
         );
+
+        void deleteExpiredRefreshTokens();
 
         if (shouldReturnPayload) {
           return { token: newRefreshToken, payload } as T extends true

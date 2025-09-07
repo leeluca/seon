@@ -64,7 +64,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   authService.setJWTCookie(c, 'access', accessToken);
   authService.setJWTCookie(c, 'refresh', refreshToken);
 
-  const { password: _password, status, ...returnUser } = user;
+  const { password: _password, status: _status, ...returnUser } = user;
   return c.json({
     result: true,
     expiresAt: refreshPayload.exp,

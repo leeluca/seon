@@ -91,44 +91,62 @@ vi.mock('../../../src/services/jwt.js', () => {
 
 // Mock database
 vi.mock('../../../src/db/db.js', () => ({
-  getDb: vi.fn().mockImplementation(() => ({
-    transaction: vi.fn().mockImplementation(async (fn) => {
-      await fn({
-        delete: vi.fn().mockReturnValue({
-          where: vi.fn().mockResolvedValue(undefined),
-        }),
-        insert: vi.fn().mockReturnValue({
-          values: vi.fn().mockResolvedValue(undefined),
-        }),
-      });
-    }),
-    select: vi.fn().mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi
-            .fn()
-            .mockResolvedValue([{ token: 'test-token', userId: TEST_USER.id }]),
-          innerJoin: vi.fn().mockReturnValue({
-            limit: vi.fn().mockResolvedValue([
-              {
-                refresh_token: { token: 'test-token', userId: TEST_USER.id },
-                user: { id: TEST_USER.id, email: TEST_USER.email },
-              },
-            ]),
+  getDb: vi.fn().mockImplementation(() => {
+    const topLevelDelete = vi.fn().mockReturnValue({
+      where: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const txDelete = vi.fn().mockReturnValue({
+      where: vi.fn().mockResolvedValue(undefined),
+    });
+    const txInsert = vi.fn().mockReturnValue({
+      values: vi.fn().mockResolvedValue(undefined),
+    });
+
+    const mockRowsWithAliases = [
+      {
+        token: 'test-token',
+        userId: TEST_USER.id,
+        expiresAt: new Date(Date.now() + 60_000),
+        revokedAt: null,
+      },
+    ];
+
+    return {
+      // used in deleteExpiredRefreshTokens()
+      delete: topLevelDelete,
+
+      transaction: vi.fn().mockImplementation(async (fn) => {
+        await fn({
+          delete: txDelete,
+          insert: txInsert,
+        });
+      }),
+
+      select: vi.fn().mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            // fallback without join
+            limit: vi.fn().mockResolvedValue(mockRowsWithAliases),
+            // with join path used by service
+            innerJoin: vi.fn().mockReturnValue({
+              limit: vi.fn().mockResolvedValue(mockRowsWithAliases),
+            }),
           }),
         }),
       }),
-    }),
-    query: {
-      user: {
-        findFirst: vi.fn().mockResolvedValue({
-          id: TEST_USER.id,
-          email: TEST_USER.email,
-          password: TEST_USER.password,
-        }),
+
+      query: {
+        user: {
+          findFirst: vi.fn().mockResolvedValue({
+            id: TEST_USER.id,
+            email: TEST_USER.email,
+            password: TEST_USER.password,
+          }),
+        },
       },
-    },
-  })),
+    };
+  }),
 }));
 
 vi.mock('hono/context-storage', () => ({
@@ -181,12 +199,11 @@ function createTestMockContext(
   } as unknown as Context;
 }
 
-// prettier-ignore biome-ignore format: <Due to hoisting, this import must be after the createTestMockContext function>
-import {
-  resetAuthService,
-  useAuthService,
-  type Dependencies,
-} from '../../../src/services/index.js';
+type Dependencies = import('../../../src/services/index.js').Dependencies;
+
+const { resetAuthService, useAuthService } = await import(
+  '../../../src/services/index.js'
+);
 
 describe('Auth Service', () => {
   beforeEach(() => {

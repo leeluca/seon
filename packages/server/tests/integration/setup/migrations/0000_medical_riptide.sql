@@ -31,8 +31,9 @@ CREATE TABLE "refresh_token" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"token" text NOT NULL,
 	"userId" uuid NOT NULL,
-	"expiration" timestamp (3) NOT NULL,
+	"expiresAt" timestamp (3) NOT NULL,
 	"createdAt" timestamp(3) DEFAULT now() NOT NULL,
+	"revokedAt" timestamp (3),
 	CONSTRAINT "refresh_token_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
