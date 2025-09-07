@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import {
   queryOptions,
   useQuery,
-  useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query';
 
@@ -33,6 +32,12 @@ export function getAuthStatusQueryOptions(user: User) {
     enabled: !!user?.useSync,
     placeholderData: getInitialData(SESSION_EXP_KEY_PREFIX),
     gcTime: Number.POSITIVE_INFINITY,
+    retry: (failureCount, error) => {
+      // retry once on 401 to absorb transient races
+      return error instanceof APIError && error.status === 401
+        ? failureCount < 1
+        : failureCount < 3;
+    },
   });
 }
 
@@ -44,8 +49,6 @@ export function useFetchAuthStatus() {
 
   const { data, error } = queryResult;
 
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     if (data?.result) {
       localStorage.setItem(
@@ -56,12 +59,8 @@ export function useFetchAuthStatus() {
 
     if (error instanceof APIError && error.status === 401) {
       localStorage.removeItem(SESSION_EXP_KEY_PREFIX);
-      queryClient.setQueryData(AUTH_STATUS.all.queryKey, {
-        result: false,
-        expiresAt: 0,
-      });
     }
-  }, [error, data, queryClient, SESSION_EXP_KEY_PREFIX]);
+  }, [error, data, SESSION_EXP_KEY_PREFIX]);
 
   return queryResult;
 }
