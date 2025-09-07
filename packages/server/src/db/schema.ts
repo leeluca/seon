@@ -188,7 +188,7 @@ export const refreshToken = pgTable(
     id: serial('id').primaryKey().notNull(),
     token: text('token').notNull(),
     userId: uuid('userId').notNull(),
-    expiration: timestamp('expiration', {
+    expiresAt: timestamp('expiresAt', {
       precision: 3,
       withTimezone: true,
       mode: 'date',
@@ -200,6 +200,11 @@ export const refreshToken = pgTable(
     })
       .defaultNow()
       .notNull(),
+    revokedAt: timestamp('revokedAt', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    }),
   },
   (table) => [
     foreignKey({
