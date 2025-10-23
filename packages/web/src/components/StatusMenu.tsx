@@ -16,6 +16,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
 import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import { useDebounceValue } from '~/hooks/useDebounceValue';
+import { useTimeout } from '~/hooks/useTimeout';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
@@ -107,6 +108,12 @@ function StatusMenu() {
 
   const [open, setOpen] = useState(false);
 
+  // NOTE: timeout for when sync server is not responding
+  const hasTimedOut = useTimeout({
+    delay: 60000, // 60 seconds
+    enabled: !isSyncConnected && isSignedIn && isOnline,
+  });
+
   const togglePopover = () => setOpen((prev) => !prev);
 
   const display: SyncStatusDisplay = (() => {
@@ -114,6 +121,7 @@ function StatusMenu() {
     if (isError && (!(error instanceof APIError) || error.status !== 401))
       return 'error';
     if (!isSignedIn) return 'notSignedIn';
+    if (hasTimedOut) return 'error';
     if (isFirstConnecting || debouncedConnecting) return 'connecting';
     if (isSyncConnected && (isSyncing || hasSynced)) return 'synced';
     return 'error';
