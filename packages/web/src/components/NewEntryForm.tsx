@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -9,6 +8,7 @@ import { DatePicker } from '~/components/DatePicker';
 import { Button } from '~/components/ui/button';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
+import { useAppForm } from '~/hooks/form';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { deleteEntry, handleSubmit } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
@@ -28,6 +28,8 @@ const findPreviousEntry = (
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 };
 
+// TODO: prevent event bubbling
+// TODO: show last entry value
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
@@ -83,7 +85,13 @@ const NewEntryForm = ({
     onSubmitCallbackProp?.();
   };
 
-  const form = useForm<{ value: number; date: Date }>({
+  const uid = useId();
+  const ids = {
+    entryDate: `${uid}-entry-date`,
+    entryValue: `${uid}-entry-value`,
+  };
+
+  const form = useAppForm({
     defaultValues: {
       date,
       value: value ?? previousValue,
@@ -131,7 +139,7 @@ const NewEntryForm = ({
         <div className="grid gap-4 sm:gap-2">
           <FormItem
             label={t`Date`}
-            labelFor="entry-date"
+            labelFor={ids.entryDate}
             className="grid items-center gap-4 sm:grid-cols-3"
             labelClassName="text-start"
           >
@@ -148,7 +156,7 @@ const NewEntryForm = ({
                   >
                     <div className="col-span-2">
                       <DatePicker
-                        id="entry-date"
+                        id={ids.entryDate}
                         defaultDate={value}
                         date={value}
                         setDate={(date) => date && field.handleChange(date)}
@@ -257,7 +265,7 @@ const NewEntryForm = ({
                         {isMobile ? (
                           <div className="relative">
                             {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute left-14 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-14 z-10 -translate-y-1/2 transform text-xs">
                                 {t`Last:`}&nbsp;
                               </span>
                             )}
@@ -274,7 +282,7 @@ const NewEntryForm = ({
                                 className="rounded-r-none"
                               />
                               <NumberInput.Field
-                                id="entry-value"
+                                id={ids.entryValue}
                                 autoFocus={!isMobile && !isTouchScreen}
                                 autoComplete="off"
                                 className={cn(
@@ -291,7 +299,7 @@ const NewEntryForm = ({
                         ) : (
                           <div className="relative">
                             {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-2 z-10 -translate-y-1/2 transform text-xs">
                                 {t`Last:`}&nbsp;
                               </span>
                             )}
@@ -305,7 +313,7 @@ const NewEntryForm = ({
                               buttonStacked
                             >
                               <NumberInput.Field
-                                id="entry-value"
+                                id={ids.entryValue}
                                 autoFocus={!isMobile && !isTouchScreen}
                                 autoComplete="off"
                                 className={cn(

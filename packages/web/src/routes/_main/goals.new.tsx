@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
+import { Trans } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { add, startOfDay } from 'date-fns';
-import { toast } from 'sonner';
 
-import GoalForm, { GOAL_FORM_ID, type NewGoal } from '~/components/GoalForm';
+import GoalForm, { GOAL_FORM_ID } from '~/components/GoalForm';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -25,7 +22,7 @@ import {
   DrawerTitle,
 } from '~/components/ui/drawer';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
-import { handleSave } from '~/services/goal';
+import { useGoalForm } from '~/hooks/useGoalForm';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
@@ -37,7 +34,6 @@ export const Route = createFileRoute('/_main/goals/new')({
 function NewGoalDialog() {
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.user.id);
-  const { t } = useLingui();
 
   const [isOpen, setIsOpen] = useState(true);
 
@@ -50,53 +46,7 @@ function NewGoalDialog() {
     }, 250);
   };
 
-  const form = useForm<NewGoal>({
-    defaultValues: {
-      title: '',
-      targetValue: 0,
-      unit: '',
-      startDate: new Date(),
-      targetDate: add(startOfDay(new Date()), { months: 1 }),
-      initialValue: 0,
-      type: 'COUNT',
-    },
-    validators: {
-      onChange({ value }) {
-        const { title, targetValue, targetDate } = value;
-        if (!title || !targetValue || !targetDate) {
-          return t`Missing required fields`;
-        }
-      },
-    },
-    onSubmit: async ({ value }) => {
-      const { startDate, targetDate, targetValue } = value;
-      if (!targetDate || !targetValue) {
-        return;
-      }
-      const stringStartDate = startDate.toISOString();
-      const stringTargetDate = targetDate.toISOString();
-      await handleSave(
-        {
-          ...value,
-          title: value.title.trim(),
-          unit: value.unit.trim(),
-          target: targetValue,
-          userId,
-          startDate: stringStartDate,
-          targetDate: stringTargetDate,
-        },
-        {
-          callback: () => {
-            toast.success(<Trans>Sucessfully added goal</Trans>);
-            handleClose();
-          },
-          onError: () => {
-            toast.error(<Trans>Failed to add goal</Trans>);
-          },
-        },
-      );
-    },
-  });
+  const form = useGoalForm({ mode: 'create', userId });
 
   const {
     startTimeout: delayedValidation,
@@ -136,6 +86,7 @@ function NewGoalDialog() {
               ]}
             >
               {([isSubmitting, isSubmitDisabled]) => (
+                // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
                 <div
                   onMouseEnter={delayedValidation}
                   onMouseLeave={clearTimeout}
@@ -201,6 +152,7 @@ function NewGoalDialog() {
             ]}
           >
             {([isSubmitting, isSubmitDisabled]) => (
+              // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
               <div
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}

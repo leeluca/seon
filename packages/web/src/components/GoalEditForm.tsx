@@ -1,122 +1,38 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
-import { useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
-import { toast } from 'sonner';
 
-import { GOALS } from '~/constants/query';
+import { useGoalForm } from '~/hooks/useGoalForm';
 import type { Database } from '~/lib/powersync/AppSchema';
-import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import GoalForm, { GOAL_FORM_ID, type NewGoal } from './GoalForm';
+import GoalForm, { GOAL_FORM_ID } from './GoalForm';
 import { Button } from './ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from './ui/collapsible';
-import { handleUpdate } from '~/services/goal';
 
 interface GoalEditFormProps {
   goal: Database['goal'];
   className?: string;
 }
 export function GoalEditForm({ goal, className }: GoalEditFormProps) {
-  const {
-    title,
-    target,
-    targetDate,
-    startDate,
-    unit,
-    id: goalId,
-    updatedAt,
-    type,
-    initialValue,
-  } = goal;
+  const { updatedAt } = goal;
   const { t } = useLingui();
-  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(true);
+  const toggleId = useId();
 
-  const form = useForm<NewGoal>({
-    defaultValues: {
-      title,
-      targetValue: target,
-      unit: unit,
-      startDate: new Date(startDate),
-      targetDate: new Date(targetDate),
-      initialValue: initialValue,
-      type: type as GoalType,
-    },
-    validators: {
-      onChange({ value }) {
-        const { title, targetValue, targetDate } = value;
-        if (!title || !targetValue || !targetDate) {
-          return t`Missing required fields`;
-        }
-      },
-    },
-    onSubmit: async ({ value, formApi }) => {
-      const { startDate, targetDate, targetValue, initialValue, title } = value;
-      if (!targetDate || !targetValue) {
-        return;
-      }
-      const stringStartDate = startDate.toISOString();
-      const stringTargetDate = targetDate.toISOString();
-      const completionCriteriaChanged =
-        targetValue !== formApi.options.defaultValues?.targetValue ||
-        initialValue !== formApi.options.defaultValues?.initialValue;
-
-      await handleUpdate(
-        goalId,
-        {
-          ...value,
-          target: targetValue,
-          startDate: stringStartDate,
-          targetDate: stringTargetDate,
-        },
-        {
-          callback: () => {
-            toast.success(<Trans>Sucessfully updated goal</Trans>);
-          },
-          onError: () => {
-            toast.error(<Trans>Failed to update goal</Trans>);
-          },
-          completionCriteriaChanged,
-        },
-      );
-
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: GOALS.detailShortId(goal.shortId).queryKey,
-        }),
-        queryClient.invalidateQueries({
-          queryKey: GOALS.detail(goalId).queryKey,
-        }),
-      ]);
-      if (
-        completionCriteriaChanged ||
-        title !== formApi.options.defaultValues?.title
-      ) {
-        await queryClient.invalidateQueries({
-          queryKey: GOALS.all.queryKey,
-        });
-      }
-
-      setTimeout(() => {
-        form.reset(value);
-      }, 150);
-    },
-  });
+  const form = useGoalForm({ mode: 'edit', goal });
 
   return (
     <section className={className}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex h-[60px] items-start justify-between">
           <div className="flex items-start sm:items-center">
-            <CollapsibleTrigger asChild className="mr-4 mt-[.125rem] sm:mt-0">
-              <Button id="edit-goal-toggle" size="icon-sm" variant="secondary">
+            <CollapsibleTrigger asChild className="mt-[.125rem] mr-4 sm:mt-0">
+              <Button id={toggleId} size="icon-sm" variant="secondary">
                 <ChevronRightIcon
                   size={18}
                   className={`transform transition-transform duration-300 ${
@@ -128,7 +44,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
             <header>
               <label
                 className="text-foreground text-xl font-semibold"
-                htmlFor="edit-goal-toggle"
+                htmlFor={toggleId}
               >
                 <Trans>Edit goal</Trans>
               </label>
