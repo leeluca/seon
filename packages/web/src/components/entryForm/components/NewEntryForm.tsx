@@ -4,20 +4,19 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { DatePicker } from '~/components/DatePicker';
+import FormError from '~/components/FormError';
+import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
+import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
-import { useAppForm } from '~/hooks/form';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { deleteEntry, handleSubmit } from '~/services/entry';
+import { deleteEntry } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import FormError from './FormError';
-import FormItem from './FormItem';
-import { NumberInput } from './ui/number-input';
+import { useEntryForm } from '../hooks/useEntryForm';
 
 const findPreviousEntry = (
   entries: Database['entry'][],
@@ -28,8 +27,6 @@ const findPreviousEntry = (
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 };
 
-// TODO: prevent event bubbling
-// TODO: show last entry value
 interface NewEntryFormProps {
   goalId: string;
   entryId?: string;
@@ -74,7 +71,6 @@ const NewEntryForm = ({
     [t],
   );
 
-  // TODO: move query invalidation to services file
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
       queryKey: ENTRIES.goalId(goalId).queryKey,
@@ -91,43 +87,22 @@ const NewEntryForm = ({
     entryValue: `${uid}-entry-value`,
   };
 
-  const form = useAppForm({
-    defaultValues: {
-      date,
-      value: value ?? previousValue,
-    },
-    validators: {
-      onChange({ value }) {
-        const { value: inputtedValue } = value;
-        if (inputtedValue === undefined) {
-          return 'Missing required fields';
-        }
-      },
-    },
-    onSubmit: async ({ value }) => {
-      const { value: inputtedValue, date } = value;
-      if (inputtedValue === undefined) {
-        return;
-      }
-      await handleSubmit(
-        {
-          value: inputtedValue,
-          date,
-          goalId,
-          userId,
-        },
-        {
-          callback: onSubmitCallback,
-          onError: () => {
-            toast.error(t`Failed to add entry`);
-          },
-        },
-      );
-    },
+  // FIXME: translations
+  const simpleT = (literals: TemplateStringsArray | string) =>
+    typeof literals === 'string' ? t`${literals}` : t(literals);
+
+  const form = useEntryForm({
+    goalId,
+    userId,
+    date,
+    value,
+    previousValue,
+    onSubmitCallback,
+    t: simpleT,
   });
 
+  // TODO: refactor to separate goal type components
   return (
-    // TODO: refactor to separate goal type components
     <form
       onSubmit={(e) => {
         e.preventDefault();
@@ -143,10 +118,9 @@ const NewEntryForm = ({
             className="grid items-center gap-4 sm:grid-cols-3"
             labelClassName="text-start"
           >
-            <form.Field name="date">
+            <form.AppField name="date">
               {(field) => {
                 const {
-                  value,
                   meta: { errors },
                 } = field.state;
                 return (
@@ -155,18 +129,16 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
-                      <DatePicker
+                      <field.DateField
                         id={ids.entryDate}
-                        defaultDate={value}
-                        date={value}
-                        setDate={(date) => date && field.handleChange(date)}
+                        defaultDate={field.state.value}
                         readOnly
                       />
                     </div>
                   </FormError.Wrapper>
                 );
               }}
-            </form.Field>
+            </form.AppField>
           </FormItem>
           {goalType === 'BOOLEAN' ? (
             <FormItem

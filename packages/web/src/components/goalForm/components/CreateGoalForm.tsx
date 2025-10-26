@@ -4,33 +4,27 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
 
-import { DatePicker } from '~/components/DatePicker';
 import FormError from '~/components/FormError';
 import FormItem from '~/components/FormItem';
-import { Input } from '~/components/ui/input';
+import { Button } from '~/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/collapsible';
+import { Label } from '~/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
+import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
 import {
   MAX_GOAL_NAME_LENGTH,
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
-import { withForm } from '~/hooks/form';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import {
-  blockNonNumberInput,
-  maxLengthValidator,
-  parseInputtedNumber,
-} from '~/utils/validation';
-import { Button } from './ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from './ui/collapsible';
-import { Label } from './ui/label';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { ResponsiveTooltip } from './ui/responsive-tooltip';
+import { maxLengthValidator } from '~/utils/validation';
+import { withForm } from '../hooks/useGoalForm';
 
 export const GOAL_FORM_ID = 'goal-form';
 
@@ -52,7 +46,7 @@ interface NewGoalFormProps {
   collapseOptionalFields?: boolean;
   autoFocus?: boolean;
 }
-const GoalForm = withForm({
+const CreateGoalForm = withForm({
   // Only used for type inference; not executed
   defaultValues: {
     title: '',
@@ -141,7 +135,6 @@ const GoalForm = withForm({
             >
               {(field) => {
                 const {
-                  value,
                   meta: { errors },
                 } = field.state;
                 return (
@@ -150,13 +143,11 @@ const GoalForm = withForm({
                     errorClassName={errorClassName}
                   >
                     <div className="col-span-1">
-                      <Input
+                      <field.TextField
                         id={id.title}
-                        value={value}
-                        onChange={(e) => field.handleChange(e.target.value)}
                         placeholder={t`eg. 'Learn 1000 French words'`}
-                        maxLength={100}
                         autoFocus={autoFocus}
+                        maxLength={100}
                       />
                     </div>
                   </FormError.Wrapper>
@@ -180,7 +171,6 @@ const GoalForm = withForm({
             >
               {(field) => {
                 const {
-                  value,
                   meta: { errors },
                 } = field.state;
                 return (
@@ -189,18 +179,8 @@ const GoalForm = withForm({
                     errorClassName={errorClassName}
                   >
                     <div className="col-span-1">
-                      <Input
+                      <field.NumberField
                         id={id.targetValue}
-                        type="number"
-                        // Removes leading zeros
-                        value={value?.toString() || ''}
-                        onKeyDown={(e) => blockNonNumberInput(e)}
-                        onChange={(e) => {
-                          parseInputtedNumber(
-                            e.target.value,
-                            field.handleChange,
-                          );
-                        }}
                         placeholder={t`Value for goal completion (number)`}
                         min={0}
                         max={MAX_INPUT_NUMBER}
@@ -235,7 +215,6 @@ const GoalForm = withForm({
             >
               {(field) => {
                 const {
-                  value,
                   meta: { errors },
                 } = field.state;
                 return (
@@ -244,12 +223,7 @@ const GoalForm = withForm({
                     errorClassName={errorClassName}
                   >
                     <div className="col-span-1">
-                      <DatePicker
-                        id={id.targetDate}
-                        date={value}
-                        setDate={(date) => date && field.handleChange(date)}
-                        showPresetDates
-                      />
+                      <field.DateField id={id.targetDate} showPresetDates />
                     </div>
                   </FormError.Wrapper>
                 );
@@ -432,7 +406,6 @@ const GoalForm = withForm({
                   <form.AppField name="startDate">
                     {(field) => {
                       const {
-                        value,
                         meta: { errors },
                       } = field.state;
                       return (
@@ -441,13 +414,9 @@ const GoalForm = withForm({
                           errorClassName={errorClassName}
                         >
                           <div className="col-span-1">
-                            <DatePicker
+                            <field.DateField
                               id={id.startDate}
                               defaultDate={new Date()}
-                              date={value}
-                              setDate={(date) =>
-                                date && field.handleChange(date)
-                              }
                               showPresetDates
                             />
                           </div>
@@ -475,7 +444,6 @@ const GoalForm = withForm({
                   >
                     {(field) => {
                       const {
-                        value,
                         meta: { errors },
                       } = field.state;
                       return (
@@ -484,12 +452,8 @@ const GoalForm = withForm({
                           errorClassName={errorClassName}
                         >
                           <div className="col-span-1">
-                            <Input
+                            <field.TextField
                               id={id.unit}
-                              value={value}
-                              onChange={(e) =>
-                                field.handleChange(e.target.value)
-                              }
                               placeholder={t`e.g. words`}
                               maxLength={100}
                             />
@@ -508,7 +472,6 @@ const GoalForm = withForm({
                   <form.AppField name="initialValue">
                     {(field) => {
                       const {
-                        value,
                         meta: { errors },
                       } = field.state;
                       return (
@@ -517,22 +480,8 @@ const GoalForm = withForm({
                           errorClassName={errorClassName}
                         >
                           <div className="col-span-1">
-                            <Input
+                            <field.NumberField
                               id={id.initialValue}
-                              type="number"
-                              // Removes leading zeros
-                              value={value.toString()}
-                              onKeyDown={(e) => blockNonNumberInput(e)}
-                              onChange={(e) => {
-                                parseInputtedNumber(
-                                  e.target.value,
-                                  (parsedNumber?: number) => {
-                                    parsedNumber
-                                      ? field.handleChange(parsedNumber)
-                                      : field.handleChange(0);
-                                  },
-                                );
-                              }}
                               placeholder={t`Numbers only`}
                               min={0}
                               max={MAX_INPUT_NUMBER}
@@ -552,4 +501,4 @@ const GoalForm = withForm({
   },
 });
 
-export default GoalForm;
+export default CreateGoalForm;

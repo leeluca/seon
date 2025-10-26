@@ -13,7 +13,7 @@ import {
 import { GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
-import { GoalEditForm } from './GoalEditForm';
+import { GoalEditForm } from './goalForm/';
 import GoalLineGraph from './GoalLineGraph';
 import { GoalStatusSummary } from './GoalStatusSummary';
 
@@ -87,7 +87,7 @@ export function GoalDetailPanel({
           </section>
           <GoalStatusSummary
             goalId={id}
-            className="mb-2 mt-6 sm:mb-5 sm:mt-3"
+            className="mt-6 mb-2 sm:mt-3 sm:mb-5"
           />
           <GoalEditForm goal={selectedGoal} className="my-5 sm:mx-2 sm:my-4" />
         </article>

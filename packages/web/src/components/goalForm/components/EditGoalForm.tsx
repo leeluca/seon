@@ -3,16 +3,16 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { format } from 'date-fns';
 import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
 
-import { useGoalForm } from '~/hooks/useGoalForm';
-import type { Database } from '~/lib/powersync/AppSchema';
-import { cn } from '~/utils';
-import GoalForm, { GOAL_FORM_ID } from './GoalForm';
-import { Button } from './ui/button';
+import { Button } from '~/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from './ui/collapsible';
+} from '~/components/ui/collapsible';
+import type { Database } from '~/lib/powersync/AppSchema';
+import { cn } from '~/utils';
+import CreateGoalForm, { GOAL_FORM_ID } from './CreateGoalForm';
+import { useGoalForm } from '../hooks/useGoalForm';
 
 interface GoalEditFormProps {
   goal: Database['goal'];
@@ -116,7 +116,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
           </form.Subscribe>
         </div>
         <CollapsibleContent>
-          <GoalForm
+          <CreateGoalForm
             form={form}
             formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
             className="py-3"

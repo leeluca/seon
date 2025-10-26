@@ -20,7 +20,7 @@ import { ENTRIES, GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import NewEntryForm from './NewEntryForm';
+import { NewEntryForm } from './entryForm/';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
 import { ResponsiveTooltip } from './ui/responsive-tooltip';
@@ -68,7 +68,7 @@ const getButtonStyles = ({
 };
 
 const CompletionBadge = () => (
-  <div className="absolute -right-1 -top-1 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-bold text-white ring-2 ring-white">
+  <div className="absolute -top-1 -right-1 z-10 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[8px] font-bold text-white ring-2 ring-white">
     ✓
   </div>
 );
@@ -169,7 +169,7 @@ const CalendarHeatmap = ({
           variant="outline"
           size="icon-sm"
           onClick={handlePrevWeek}
-          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
+          className="mt-7 mb-1 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigLeftIcon size={18} />
         </Button>
@@ -271,7 +271,7 @@ const CalendarHeatmap = ({
           variant="outline"
           size="icon-sm"
           onClick={handleNextWeek}
-          className="mb-1 mt-7 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
+          className="mt-7 mb-1 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
         </Button>

@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import GoalForm, { GOAL_FORM_ID } from '~/components/GoalForm';
+import CreateGoalForm, {
+  GOAL_FORM_ID,
+} from '~/components/goalForm/components/CreateGoalForm';
+import { useGoalForm } from '~/components/goalForm/hooks/useGoalForm';
 import { Button } from '~/components/ui/button';
 import {
   Dialog,
@@ -22,7 +25,6 @@ import {
   DrawerTitle,
 } from '~/components/ui/drawer';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
-import { useGoalForm } from '~/hooks/useGoalForm';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
@@ -72,7 +74,7 @@ function NewGoalDialog() {
               <Trans>Set up your new goal. You can always edit it later.</Trans>
             </DrawerDescription>
           </DrawerHeader>
-          <GoalForm
+          <CreateGoalForm
             form={form}
             collapseOptionalFields
             autoFocus={!isTouchScreen}
@@ -86,7 +88,7 @@ function NewGoalDialog() {
               ]}
             >
               {([isSubmitting, isSubmitDisabled]) => (
-                // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+                // biome-ignore lint/a11y/noStaticElementInteractions: onMouseEnter/onMouseLeave used to trigger validation
                 <div
                   onMouseEnter={delayedValidation}
                   onMouseLeave={clearTimeout}
@@ -138,7 +140,7 @@ function NewGoalDialog() {
             <Trans>Set up your new goal. You can always edit it later.</Trans>
           </DialogDescription>
         </DialogHeader>
-        <GoalForm
+        <CreateGoalForm
           form={form}
           errorClassName="col-start-2"
           collapseOptionalFields
@@ -152,7 +154,7 @@ function NewGoalDialog() {
             ]}
           >
             {([isSubmitting, isSubmitDisabled]) => (
-              // biome-ignore lint/a11y/noStaticElementInteractions: <explanation>
+              // biome-ignore lint/a11y/noStaticElementInteractions: onMouseEnter/onMouseLeave used to trigger validation
               <div
                 onMouseEnter={delayedValidation}
                 onMouseLeave={clearTimeout}

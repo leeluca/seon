@@ -1,13 +1,42 @@
-// TODO: add translation
+import { createFormHook } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { add, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
 
-import type { NewGoal } from '~/components/GoalForm';
+import {
+  DateField,
+  ErrorInfo,
+  NumberField,
+  TextField,
+} from '~/components/form/Fields';
 import { GOALS } from '~/constants/query';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { handleSave, handleUpdate } from '~/services/goal';
-import { useAppForm } from './form';
+import { fieldContext, formContext } from '~/states/formContext';
+
+// FIXME: add translations
+// FIXME: move to types/goal.ts
+export interface NewGoal {
+  title: string;
+  targetValue?: number;
+  unit: string;
+  startDate: Date;
+  targetDate?: Date;
+  initialValue: number;
+  type: 'COUNT' | 'PROGRESS' | 'BOOLEAN';
+}
+
+export const { useAppForm, withForm } = createFormHook({
+  fieldContext,
+  formContext,
+  fieldComponents: {
+    TextField,
+    NumberField,
+    DateField,
+    ErrorInfo,
+  },
+  formComponents: {},
+});
 
 type Mode = 'create' | 'edit';
 
