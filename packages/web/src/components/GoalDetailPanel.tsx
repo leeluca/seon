@@ -13,7 +13,7 @@ import {
 import { GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
-import { GoalEditForm } from './goalForm/';
+import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';
 import { GoalStatusSummary } from './GoalStatusSummary';
 

@@ -10,12 +10,14 @@ import { Button } from '~/components/ui/button';
 import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
+import { useIds } from '~/hooks/useIds';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { deleteEntry } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
+import { ENTRY_FIELD_SUFFIX } from '../constants';
 import { useEntryForm } from '../hooks/useEntryForm';
 
 const findPreviousEntry = (
@@ -81,11 +83,7 @@ const NewEntryForm = ({
     onSubmitCallbackProp?.();
   };
 
-  const uid = useId();
-  const ids = {
-    entryDate: `${uid}-entry-date`,
-    entryValue: `${uid}-entry-value`,
-  };
+  const ids = useIds(ENTRY_FIELD_SUFFIX);
 
   // FIXME: translations
   const simpleT = (literals: TemplateStringsArray | string) =>

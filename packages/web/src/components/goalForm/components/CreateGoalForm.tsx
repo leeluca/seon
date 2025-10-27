@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
@@ -20,13 +20,13 @@ import {
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
+import { useIds } from '~/hooks/useIds';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
 import { maxLengthValidator } from '~/utils/validation';
+import { GOAL_FIELD_SUFFIX, GOAL_FORM_ID } from '../constants';
 import { withForm } from '../hooks/useGoalForm';
-
-export const GOAL_FORM_ID = 'goal-form';
 
 export interface NewGoal {
   title: string;
@@ -85,20 +85,8 @@ const CreateGoalForm = withForm({
       }
     }, []);
     const isMobile = useViewportStore((state) => state.isMobile);
-    const uid = useId();
 
-    const id = {
-      title: `${uid}-title`,
-      targetValue: `${uid}-target-value`,
-      targetDate: `${uid}-target-date`,
-      typeCount: `${uid}-r1`,
-      typeProgress: `${uid}-r2`,
-      typeBoolean: `${uid}-r3`,
-      startDate: `${uid}-start-date`,
-      unit: `${uid}-unit`,
-      initialValue: `${uid}-initial-value`,
-      toggleExtra: `${uid}-toggle-extra-options`,
-    };
+    const ids = useIds(GOAL_FIELD_SUFFIX);
 
     return (
       <form.AppForm>
@@ -113,7 +101,7 @@ const CreateGoalForm = withForm({
         >
           <FormItem
             label={t`Goal name`}
-            labelFor={id.title}
+            labelFor={ids.title}
             className={formItemClassName}
             labelClassName={labelClassName}
             required
@@ -144,7 +132,7 @@ const CreateGoalForm = withForm({
                   >
                     <div className="col-span-1">
                       <field.TextField
-                        id={id.title}
+                        id={ids.title}
                         placeholder={t`eg. 'Learn 1000 French words'`}
                         autoFocus={autoFocus}
                         maxLength={100}
@@ -157,7 +145,7 @@ const CreateGoalForm = withForm({
           </FormItem>
           <FormItem
             label={t`Target value`}
-            labelFor={id.targetValue}
+            labelFor={ids.targetValue}
             required
             className={formItemClassName}
             labelClassName={labelClassName}
@@ -180,7 +168,7 @@ const CreateGoalForm = withForm({
                   >
                     <div className="col-span-1">
                       <field.NumberField
-                        id={id.targetValue}
+                        id={ids.targetValue}
                         placeholder={t`Value for goal completion (number)`}
                         min={0}
                         max={MAX_INPUT_NUMBER}
@@ -193,7 +181,7 @@ const CreateGoalForm = withForm({
           </FormItem>
           <FormItem
             label={t`Target date`}
-            labelFor={id.targetDate}
+            labelFor={ids.targetDate}
             required
             className={formItemClassName}
             labelClassName={labelClassName}
@@ -223,7 +211,7 @@ const CreateGoalForm = withForm({
                     errorClassName={errorClassName}
                   >
                     <div className="col-span-1">
-                      <field.DateField id={id.targetDate} showPresetDates />
+                      <field.DateField id={ids.targetDate} showPresetDates />
                     </div>
                   </FormError.Wrapper>
                 );
@@ -260,8 +248,8 @@ const CreateGoalForm = withForm({
                     >
                       <div className="flex items-center">
                         <div className="flex items-center gap-2">
-                          <RadioGroupItem value="COUNT" id={id.typeCount} />
-                          <Label htmlFor={id.typeCount}>
+                          <RadioGroupItem value="COUNT" id={ids.typeCount} />
+                          <Label htmlFor={ids.typeCount}>
                             <Trans>Count</Trans>
                           </Label>
                         </div>
@@ -292,9 +280,9 @@ const CreateGoalForm = withForm({
                         <div className="flex items-center gap-2">
                           <RadioGroupItem
                             value="PROGRESS"
-                            id={id.typeProgress}
+                            id={ids.typeProgress}
                           />
-                          <Label htmlFor={id.typeProgress}>
+                          <Label htmlFor={ids.typeProgress}>
                             <Trans>Progress</Trans>
                           </Label>
                         </div>
@@ -321,8 +309,11 @@ const CreateGoalForm = withForm({
                       </div>
                       <div className="flex items-center">
                         <div className="flex items-center gap-2">
-                          <RadioGroupItem value="BOOLEAN" id={id.typeBoolean} />
-                          <Label htmlFor={id.typeBoolean}>
+                          <RadioGroupItem
+                            value="BOOLEAN"
+                            id={ids.typeBoolean}
+                          />
+                          <Label htmlFor={ids.typeBoolean}>
                             <p className="text-pretty">
                               <Trans>Yes or no</Trans>
                             </p>
@@ -366,7 +357,7 @@ const CreateGoalForm = withForm({
                     size="icon-responsive"
                     variant="ghost"
                     type="button"
-                    id={id.toggleExtra}
+                    id={ids.toggleExtra}
                     className="sm:-ml-2"
                   >
                     <ChevronRightIcon
@@ -380,14 +371,14 @@ const CreateGoalForm = withForm({
                 {showOptionalFields ? (
                   <label
                     className="flex text-right text-sm font-medium sm:text-xs"
-                    htmlFor={id.toggleExtra}
+                    htmlFor={ids.toggleExtra}
                   >
                     <Trans>Hide extra options</Trans>
                   </label>
                 ) : (
                   <label
                     className="flex text-right text-sm font-medium sm:text-xs"
-                    htmlFor={id.toggleExtra}
+                    htmlFor={ids.toggleExtra}
                   >
                     <Trans>Show extra options</Trans>
                   </label>
@@ -399,7 +390,7 @@ const CreateGoalForm = withForm({
               <div className="my-px grid gap-4">
                 <FormItem
                   label={t`Start date`}
-                  labelFor={id.startDate}
+                  labelFor={ids.startDate}
                   className={formItemClassName}
                   labelClassName={labelClassName}
                 >
@@ -415,7 +406,7 @@ const CreateGoalForm = withForm({
                         >
                           <div className="col-span-1">
                             <field.DateField
-                              id={id.startDate}
+                              id={ids.startDate}
                               defaultDate={new Date()}
                               showPresetDates
                             />
@@ -427,7 +418,7 @@ const CreateGoalForm = withForm({
                 </FormItem>
                 <FormItem
                   label={t`Unit`}
-                  labelFor={id.unit}
+                  labelFor={ids.unit}
                   className={formItemClassName}
                   labelClassName={labelClassName}
                 >
@@ -453,7 +444,7 @@ const CreateGoalForm = withForm({
                         >
                           <div className="col-span-1">
                             <field.TextField
-                              id={id.unit}
+                              id={ids.unit}
                               placeholder={t`e.g. words`}
                               maxLength={100}
                             />
@@ -465,7 +456,7 @@ const CreateGoalForm = withForm({
                 </FormItem>
                 <FormItem
                   label={t`Initial value`}
-                  labelFor={id.initialValue}
+                  labelFor={ids.initialValue}
                   className={formItemClassName}
                   labelClassName={labelClassName}
                 >
@@ -481,7 +472,7 @@ const CreateGoalForm = withForm({
                         >
                           <div className="col-span-1">
                             <field.NumberField
-                              id={id.initialValue}
+                              id={ids.initialValue}
                               placeholder={t`Numbers only`}
                               min={0}
                               max={MAX_INPUT_NUMBER}

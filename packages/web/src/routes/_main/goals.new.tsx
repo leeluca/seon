@@ -2,9 +2,7 @@ import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
-import CreateGoalForm, {
-  GOAL_FORM_ID,
-} from '~/components/goalForm/components/CreateGoalForm';
+import { CreateGoalForm, GOAL_FORM_ID } from '~/components/goalForm/';
 import { useGoalForm } from '~/components/goalForm/hooks/useGoalForm';
 import { Button } from '~/components/ui/button';
 import {

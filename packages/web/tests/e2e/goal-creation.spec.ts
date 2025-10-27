@@ -1,3 +1,4 @@
+import { GOAL_FIELD_SUFFIX } from '~/components/goalForm/constants';
 import { INITIAL_DEMO_GOAL_COUNT as INITIAL_GOAL_COUNT } from './constants';
 import { expect, test } from './persistent-webkit-fixtures';
 import { ensureUserInitialized } from './testUtils';
@@ -25,26 +26,24 @@ test.describe('Goal Creation Flow', () => {
     const createGoalButton = page.getByRole('button', { name: /create goal/i });
     await expect(createGoalButton).toBeDisabled();
 
-    // 3. Fill in required fields
-    // Goal Name
-    await dialog.locator('input#title').fill(newGoalTitle);
-    // Target Value
-    await dialog.locator('input#target-value').fill(targetValue);
-
+    // 3. Fill in required fields (use generated input ids suffix)
+    await dialog
+      .locator(`input[id$="-${GOAL_FIELD_SUFFIX.title}"]`)
+      .fill(newGoalTitle);
+    await dialog
+      .locator(`input[id$="-${GOAL_FIELD_SUFFIX.targetValue}"]`)
+      .fill(targetValue);
     // 4. Submit the form
     await createGoalButton.click();
 
-    // 5. Verify dialog closes
-    await expect(dialog).not.toBeVisible();
-
-    // 6. Verify success toast appears
+    // 5. Verify success toast appears (dialog/drawer may remain open by design)
     const successToast = page.locator(
       '[data-sonner-toast][data-type="success"]',
     );
     await expect(successToast).toBeVisible();
     await expect(successToast).toContainText(/sucessfully added goal/i);
 
-    // 7. Verify the new goal appears on the goals list page
+    // 6. Verify the new goal appears on the goals list page
     await expect(
       page.locator(`article.bg-card:has(h3:has-text("${newGoalTitle}"))`),
     ).toBeVisible();

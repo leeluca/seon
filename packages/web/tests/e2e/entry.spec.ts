@@ -1,3 +1,4 @@
+import { ENTRY_FIELD_SUFFIX } from '~/components/entryForm/constants';
 import { DEMO_GOALS } from './constants';
 import { expect, test } from './persistent-webkit-fixtures';
 import { ensureUserInitialized } from './testUtils';
@@ -31,7 +32,9 @@ test.describe('Goal Entry Management', () => {
     await expect(popover).toBeVisible();
     await expect(popover.getByText('Progress')).toBeVisible();
 
-    const valueInput = popover.locator('input#entry-value');
+    const valueInput = popover.locator(
+      `input[id$=-${ENTRY_FIELD_SUFFIX.entryValue}]`,
+    );
     await expect(valueInput).toBeVisible();
 
     // 5. Increase the value by 1 and save
@@ -112,7 +115,7 @@ test.describe('Goal Entry Management', () => {
     await expect(popover).toBeVisible();
     await expect(popover.getByText('Progress')).toBeVisible();
 
-    const valueInput = popover.locator('input#entry-value');
+    const valueInput = popover.locator('input[id$="-entry-value"]');
     await expect(valueInput).toBeVisible();
     await page.getByRole('button', { name: 'Increase' }).click();
     await popover.getByRole('button', { name: 'Save' }).click();

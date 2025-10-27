@@ -20,7 +20,7 @@ import { ENTRIES, GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import { NewEntryForm } from './entryForm/';
+import { NewEntryForm } from './entryForm';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
 import { ResponsiveTooltip } from './ui/responsive-tooltip';
