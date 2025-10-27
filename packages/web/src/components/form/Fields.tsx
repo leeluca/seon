@@ -1,24 +1,49 @@
+import type {
+  FocusEvent,
+  HTMLInputTypeAttribute,
+  InputHTMLAttributes,
+} from 'react';
+
 import { DatePicker } from '~/components/DatePicker';
-import FormError from '~/components/FormError';
+import FormError from '~/components/form/FormError';
 import { Input } from '~/components/ui/input';
 import { useFieldContext } from '~/states/formContext';
 
-export function TextField(props: {
+interface TextFieldProps {
   id?: string;
   placeholder?: string;
   autoFocus?: boolean;
   maxLength?: number;
-}) {
+  type?: HTMLInputTypeAttribute;
+  autoComplete?: string;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>['inputMode'];
+  onBlur?: (event: FocusEvent<HTMLInputElement>) => void;
+}
+
+export function TextField(props: TextFieldProps) {
   const field = useFieldContext<string>();
-  const { id, placeholder, autoFocus, maxLength } = props;
+  const {
+    id,
+    placeholder,
+    autoFocus,
+    maxLength,
+    type = 'text',
+    autoComplete,
+    inputMode,
+    onBlur,
+  } = props;
   return (
     <Input
       id={id}
+      type={type}
       value={field.state.value}
       onChange={(e) => field.handleChange(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       autoFocus={autoFocus}
       maxLength={maxLength}
+      autoComplete={autoComplete}
+      inputMode={inputMode}
     />
   );
 }

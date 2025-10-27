@@ -1,10 +1,10 @@
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import FormError from '~/components/FormError';
+import FormError from '~/components/form/FormError';
 import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
 import { NumberInput } from '~/components/ui/number-input';

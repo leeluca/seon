@@ -4,7 +4,7 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
 
-import FormError from '~/components/FormError';
+import FormError from '~/components/form/FormError';
 import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
 import {

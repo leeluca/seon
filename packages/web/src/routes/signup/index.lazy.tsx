@@ -3,7 +3,7 @@ import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowBigLeftIcon } from 'lucide-react';
 
 // import LanguageSelector from '~/components/LanguageSelector';
-import SignUpForm from '~/components/SignUpForm';
+import { SignUpForm } from '~/components/authForm';
 import { buttonVariants } from '~/components/ui/button';
 
 export const Route = createLazyFileRoute('/signup/')({

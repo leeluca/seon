@@ -21,7 +21,7 @@ import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
 import { APIError } from '~/utils/errors';
-import SignInForm from './SignInForm';
+import { SignInForm } from './authForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';

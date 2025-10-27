@@ -4,7 +4,7 @@ import { ArrowBigLeftIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 // import LanguageSelector from '~/components/LanguageSelector';
-import SignInForm from '~/components/SignInForm';
+import { SignInForm } from '~/components/authForm';
 import { buttonVariants } from '~/components/ui/button';
 
 export const Route = createLazyFileRoute('/signin/')({
