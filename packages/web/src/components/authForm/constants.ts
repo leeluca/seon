@@ -8,4 +8,3 @@ export const SIGN_UP_FIELD_SUFFIX = {
   email: 'email',
   password: 'password',
 } as const;
-

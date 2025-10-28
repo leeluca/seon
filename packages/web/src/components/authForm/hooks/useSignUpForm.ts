@@ -17,30 +17,28 @@ export function useSignUpForm(options: UseSignUpFormOptions) {
   const userId = useUserStore((state) => state.user.id);
   const refetchUser = useUserStore((state) => state.fetch);
 
-  const { trigger: postSignUp } = usePostSignUp({
-    onSuccess: ({ result, user }) => {
-      void (async () => {
-        if (!result) return;
+  const { mutateAsync: postSignUp } = usePostSignUp({
+    onSuccess: async ({ result, user }) => {
+      if (!result) return;
 
-        await db
-          .updateTable('user')
-          .set({
-            useSync: Number(user.useSync),
-            name: user.name,
-            email: user.email,
-          })
-          .where('id', '=', user.id)
-          .execute();
+      await db
+        .updateTable('user')
+        .set({
+          useSync: Number(user.useSync),
+          name: user.name,
+          email: user.email,
+        })
+        .where('id', '=', user.id)
+        .execute();
 
-        const updatedUser = await db
-          .selectFrom('user')
-          .selectAll()
-          .where('id', '=', user.id)
-          .executeTakeFirstOrThrow();
+      const updatedUser = await db
+        .selectFrom('user')
+        .selectAll()
+        .where('id', '=', user.id)
+        .executeTakeFirstOrThrow();
 
-        refetchUser();
-        onSuccess?.(updatedUser);
-      })();
+      refetchUser();
+      onSuccess?.(updatedUser);
     },
   });
 

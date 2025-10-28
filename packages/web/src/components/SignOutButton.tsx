@@ -16,7 +16,7 @@ import {
 import { Button, buttonVariants } from './ui/button';
 
 function SignOutButton() {
-  const { trigger: signOut, isMutating } = usePostSignOut();
+  const { mutate: signOut, isPending } = usePostSignOut();
 
   const powerSync = usePowerSync();
 
@@ -27,7 +27,7 @@ function SignOutButton() {
     if (syncQueue.length) {
       setSignOutAlertOpen(true);
     } else {
-      void signOut();
+      signOut();
     }
   };
 
@@ -35,7 +35,7 @@ function SignOutButton() {
     <>
       <Button
         variant="outline"
-        disabled={isMutating}
+        disabled={isPending}
         onClick={() => {
           void onSignOut();
         }}
@@ -67,7 +67,7 @@ function SignOutButton() {
               <Trans>Cancel</Trans>
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => void signOut()}
+              onClick={() => signOut()}
               className={buttonVariants({ variant: 'destructive' })}
             >
               <Trans>Sign out</Trans>

@@ -12,7 +12,7 @@ export interface UseSignInFormOptions {
 export function useSignInForm(options: UseSignInFormOptions) {
   const { onSuccess } = options;
 
-  const { trigger: postSignIn, error } = usePostSignIn({
+  const { mutateAsync: postSignIn, error } = usePostSignIn({
     onSuccess: (data) => {
       if (data.result) {
         onSuccess(data.user);
