@@ -1,55 +1,34 @@
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
-import { Link } from '@tanstack/react-router';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
-import usePostSignIn, {
-  type PostSignInResponse,
-  type SignInParams,
-} from '~/apis/hooks/usePostSignIn';
+import FormError from '~/components/form/FormError';
+import FormItem from '~/components/FormItem';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { Button } from '~/components/ui/button';
+import { MAX_USER_NAME_LENGTH } from '~/constants';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
+import { useIds } from '~/hooks/useIds';
 import { useIsOnline } from '~/states/isOnlineContext';
-import { cn } from '~/utils';
-import { emailValidator } from '~/utils/validation';
-import FormError from './FormError';
-import FormItem from './FormItem';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { Button, buttonVariants } from './ui/button';
-import { Input } from './ui/input';
+import { emailValidator, maxLengthValidator } from '~/utils/validation';
+import { SIGN_UP_FIELD_SUFFIX } from '../constants';
+import { useSignUpForm } from '../hooks/useSignUpForm';
 
-interface SignInFormProps {
-  onSignInCallback: (user: PostSignInResponse['user']) => void;
+interface SignUpFormProps {
+  onSignUpCallback?: () => void;
 }
-function SignInForm({ onSignInCallback }: SignInFormProps) {
-  const isOnline = useIsOnline();
+
+function SignUpForm({ onSignUpCallback }: SignUpFormProps) {
   const { t } = useLingui();
+  const isOnline = useIsOnline();
 
-  const { trigger: postSignIn, error } = usePostSignIn({
-    onSuccess: (data) => {
-      if (data.result) {
-        onSignInCallback(data.user);
-      }
+  const { form } = useSignUpForm({
+    onSuccess: (user) => {
+      toast.success(t`Welcome, ${user.name}!`);
+      onSignUpCallback?.();
     },
   });
-
-  const form = useForm<SignInParams>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-    validators: {
-      onChange({ value }) {
-        const { email, password } = value;
-        if (!email.trim() || !password.trim()) {
-          return 'Missing required fields';
-        }
-      },
-    },
-    onSubmit: async ({ value }) => {
-      const { email, password } = value;
-      await postSignIn({ email, password });
-    },
-  });
+  const ids = useIds(SIGN_UP_FIELD_SUFFIX);
 
   const {
     startTimeout: delayedValidation,
@@ -66,13 +45,51 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
       }}
     >
       <FormItem
-        label={t`Email`}
-        labelFor="email"
+        label={t`Name`}
+        labelFor={ids.name}
         className="grid-cols-3"
         labelClassName="text-start"
         required
       >
-        <form.Field
+        <form.AppField
+          name="name"
+          validators={{
+            onChange: ({ value }) => {
+              if (!value.trim()) return t`Name is required`;
+              const errorMessage = maxLengthValidator(
+                value,
+                MAX_USER_NAME_LENGTH,
+                t`Name`,
+              );
+              if (errorMessage) return errorMessage;
+            },
+          }}
+        >
+          {(field) => {
+            const {
+              meta: { errors },
+            } = field.state;
+            return (
+              <FormError.Wrapper
+                errors={errors}
+                errorClassName="col-span-2 col-start-2"
+              >
+                <div className="col-span-2">
+                  <field.TextField id={ids.name} maxLength={100} />
+                </div>
+              </FormError.Wrapper>
+            );
+          }}
+        </form.AppField>
+      </FormItem>
+      <FormItem
+        label={t`Email`}
+        labelFor={ids.email}
+        className="grid-cols-3"
+        labelClassName="text-start"
+        required
+      >
+        <form.AppField
           name="email"
           validators={{
             onChange: ({ value }) => {
@@ -86,7 +103,6 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         >
           {(field) => {
             const {
-              value,
               meta: { errors },
             } = field.state;
             return (
@@ -95,11 +111,9 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 errorClassName="col-span-2 col-start-2"
               >
                 <div className="col-span-2">
-                  <Input
-                    id="email"
+                  <field.TextField
+                    id={ids.email}
                     type="email"
-                    value={value}
-                    onChange={(e) => field.handleChange(e.target.value)}
                     onBlur={field.handleBlur}
                     maxLength={100}
                     autoComplete="username"
@@ -108,16 +122,16 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
               </FormError.Wrapper>
             );
           }}
-        </form.Field>
+        </form.AppField>
       </FormItem>
       <FormItem
         label={t`Password`}
-        labelFor="password"
+        labelFor={ids.password}
         className="grid-cols-3"
         labelClassName="text-start"
         required
       >
-        <form.Field
+        <form.AppField
           name="password"
           validators={{
             onChange: ({ value }) => {
@@ -127,43 +141,37 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         >
           {(field) => {
             const {
-              value,
               meta: { errors },
             } = field.state;
             return (
               <FormError.Wrapper
-                errors={[
-                  ...errors,
-                  error?.status === 401 && t`Invalid credentials`,
-                ].filter(Boolean)}
+                errors={errors}
                 errorClassName="col-span-2 col-start-2"
               >
                 <div className="col-span-2">
-                  <Input
-                    id="password"
+                  <field.TextField
+                    id={ids.password}
                     type="password"
-                    value={value}
-                    onChange={(e) => field.handleChange(e.target.value)}
                     maxLength={100}
-                    autoComplete="current-password"
+                    autoComplete="new-password"
                   />
                 </div>
               </FormError.Wrapper>
             );
           }}
-        </form.Field>
+        </form.AppField>
       </FormItem>
       {!isOnline && (
         <Alert
           variant="warning"
           icon={<CircleAlertIcon size={18} />}
-          className="-mb-1 mt-3"
+          className="mt-3 -mb-1"
         >
           <AlertTitle>
-            <Trans>It looks like you are offline!</Trans>
+            <Trans>It seems like you are not connected!</Trans>
           </AlertTitle>
           <AlertDescription>
-            <Trans>Sign in will not work.</Trans>
+            <Trans>Sign up will not work.</Trans>
           </AlertDescription>
         </Alert>
       )}
@@ -175,7 +183,8 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
         ]}
       >
         {([isSubmitting, isSubmitDisabled, isTouched]) => (
-          <div className="mt-4 flex w-full flex-col items-center gap-2">
+          <div className="mt-4 flex flex-col items-center gap-2">
+            {/** biome-ignore lint/a11y/noStaticElementInteractions: onMouseEnter/onMouseLeave used to trigger validation */}
             <div
               onMouseEnter={isTouched ? delayedValidation : undefined}
               onMouseLeave={clearTimeout}
@@ -189,26 +198,14 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
                 {isSubmitting && (
                   <LoaderCircleIcon size={14} className="mr-2 animate-spin" />
                 )}
-                <Trans>Sign In</Trans>
+                <Trans>Sign Up</Trans>
               </Button>
             </div>
           </div>
         )}
       </form.Subscribe>
-      <Link
-        to="/signup"
-        className={cn(
-          'text-muted-foreground w-64 justify-self-center text-sm',
-          buttonVariants({
-            variant: 'ghost',
-          }),
-        )}
-        preload="intent"
-      >
-        <Trans>Create account</Trans>
-      </Link>
     </form>
   );
 }
 
-export default SignInForm;
+export default SignUpForm;

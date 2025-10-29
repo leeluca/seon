@@ -1,23 +1,24 @@
 import { useMemo } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useForm } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import { DatePicker } from '~/components/DatePicker';
+import FormError from '~/components/form/FormError';
+import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
+import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
+import { useIds } from '~/hooks/useIds';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { deleteEntry, handleSubmit } from '~/services/entry';
+import { deleteEntry } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import FormError from './FormError';
-import FormItem from './FormItem';
-import { NumberInput } from './ui/number-input';
+import { ENTRY_FIELD_SUFFIX } from '../constants';
+import { useEntryForm } from '../hooks/useEntryForm';
 
 const findPreviousEntry = (
   entries: Database['entry'][],
@@ -72,7 +73,6 @@ const NewEntryForm = ({
     [t],
   );
 
-  // TODO: move query invalidation to services file
   const onSubmitCallback = () => {
     queryClient.invalidateQueries({
       queryKey: ENTRIES.goalId(goalId).queryKey,
@@ -83,43 +83,19 @@ const NewEntryForm = ({
     onSubmitCallbackProp?.();
   };
 
-  const form = useForm<{ value: number; date: Date }>({
-    defaultValues: {
-      date,
-      value: value ?? previousValue,
-    },
-    validators: {
-      onChange({ value }) {
-        const { value: inputtedValue } = value;
-        if (inputtedValue === undefined) {
-          return 'Missing required fields';
-        }
-      },
-    },
-    onSubmit: async ({ value }) => {
-      const { value: inputtedValue, date } = value;
-      if (inputtedValue === undefined) {
-        return;
-      }
-      await handleSubmit(
-        {
-          value: inputtedValue,
-          date,
-          goalId,
-          userId,
-        },
-        {
-          callback: onSubmitCallback,
-          onError: () => {
-            toast.error(t`Failed to add entry`);
-          },
-        },
-      );
-    },
+  const ids = useIds(ENTRY_FIELD_SUFFIX);
+
+  const form = useEntryForm({
+    goalId,
+    userId,
+    date,
+    value,
+    previousValue,
+    onSubmitCallback,
   });
 
+  // TODO: refactor to separate goal type components
   return (
-    // TODO: refactor to separate goal type components
     <form
       onSubmit={(e) => {
         e.preventDefault();
@@ -131,14 +107,13 @@ const NewEntryForm = ({
         <div className="grid gap-4 sm:gap-2">
           <FormItem
             label={t`Date`}
-            labelFor="entry-date"
+            labelFor={ids.entryDate}
             className="grid items-center gap-4 sm:grid-cols-3"
             labelClassName="text-start"
           >
-            <form.Field name="date">
+            <form.AppField name="date">
               {(field) => {
                 const {
-                  value,
                   meta: { errors },
                 } = field.state;
                 return (
@@ -147,18 +122,16 @@ const NewEntryForm = ({
                     errorClassName="col-span-2 col-start-2"
                   >
                     <div className="col-span-2">
-                      <DatePicker
-                        id="entry-date"
-                        defaultDate={value}
-                        date={value}
-                        setDate={(date) => date && field.handleChange(date)}
+                      <field.DateField
+                        id={ids.entryDate}
+                        defaultDate={field.state.value}
                         readOnly
                       />
                     </div>
                   </FormError.Wrapper>
                 );
               }}
-            </form.Field>
+            </form.AppField>
           </FormItem>
           {goalType === 'BOOLEAN' ? (
             <FormItem
@@ -257,7 +230,7 @@ const NewEntryForm = ({
                         {isMobile ? (
                           <div className="relative">
                             {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute left-14 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-14 z-10 -translate-y-1/2 transform text-xs">
                                 {t`Last:`}&nbsp;
                               </span>
                             )}
@@ -274,7 +247,7 @@ const NewEntryForm = ({
                                 className="rounded-r-none"
                               />
                               <NumberInput.Field
-                                id="entry-value"
+                                id={ids.entryValue}
                                 autoFocus={!isMobile && !isTouchScreen}
                                 autoComplete="off"
                                 className={cn(
@@ -291,7 +264,7 @@ const NewEntryForm = ({
                         ) : (
                           <div className="relative">
                             {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 transform text-xs">
+                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-2 z-10 -translate-y-1/2 transform text-xs">
                                 {t`Last:`}&nbsp;
                               </span>
                             )}
@@ -305,7 +278,7 @@ const NewEntryForm = ({
                               buttonStacked
                             >
                               <NumberInput.Field
-                                id="entry-value"
+                                id={ids.entryValue}
                                 autoFocus={!isMobile && !isTouchScreen}
                                 autoComplete="off"
                                 className={cn(
