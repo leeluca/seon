@@ -85,10 +85,6 @@ const NewEntryForm = ({
 
   const ids = useIds(ENTRY_FIELD_SUFFIX);
 
-  // FIXME: translations
-  const simpleT = (literals: TemplateStringsArray | string) =>
-    typeof literals === 'string' ? t`${literals}` : t(literals);
-
   const form = useEntryForm({
     goalId,
     userId,
@@ -96,7 +92,6 @@ const NewEntryForm = ({
     value,
     previousValue,
     onSubmitCallback,
-    t: simpleT,
   });
 
   // TODO: refactor to separate goal type components

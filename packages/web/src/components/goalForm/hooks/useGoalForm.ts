@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { createFormHook } from '@tanstack/react-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { add, startOfDay } from 'date-fns';
@@ -86,7 +87,7 @@ export function useGoalForm(options: UseGoalFormOptions) {
       onChange({ value }) {
         const { title, targetValue, targetDate } = value;
         if (!title || !targetValue || !targetDate) {
-          return 'Missing required fields';
+          return t`Missing required fields`;
         }
       },
     },
@@ -108,10 +109,10 @@ export function useGoalForm(options: UseGoalFormOptions) {
           { ...payload, userId: options.userId },
           {
             callback: () => {
-              toast.success('Sucessfully added goal');
+              toast.success(t`Sucessfully added goal`);
             },
             onError: () => {
-              toast.error('Failed to add goal');
+              toast.error(t`Failed to add goal`);
             },
           },
         );
@@ -124,10 +125,10 @@ export function useGoalForm(options: UseGoalFormOptions) {
 
       await handleUpdate(options.goal.id, payload, {
         callback: () => {
-          toast.success('Sucessfully updated goal');
+          toast.success(t`Sucessfully updated goal`);
         },
         onError: () => {
-          toast.error('Failed to update goal');
+          toast.error(t`Failed to update goal`);
         },
         completionCriteriaChanged,
       });

@@ -36,6 +36,7 @@ export const syncLocalUserDataAfterSignIn = async ({
     db.selectFrom('entry').selectAll().execute(),
   ]);
 
+  // NOTE: Update the userId of all local goals and entries to match the signed in user's
   const updatedGoals = localGoals.map((goal) => ({
     ...goal,
     userId: newUserId,
@@ -45,6 +46,7 @@ export const syncLocalUserDataAfterSignIn = async ({
     userId: newUserId,
   }));
 
+  // Delete all local entries and insert the signed in user (this will not be included in the upload queue)
   await db.transaction().execute(async (tx) => {
     await tx.executeQuery(db.deleteFrom('goal'));
     await tx.executeQuery(db.deleteFrom('entry'));
@@ -56,6 +58,7 @@ export const syncLocalUserDataAfterSignIn = async ({
     );
   });
 
+  // Clear the upload queue
   await powerSync.execute('DELETE FROM ps_crud');
 
   await db.transaction().execute(async (tx) => {

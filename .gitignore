@@ -11,6 +11,7 @@ dist
 .DS_Store
 dev-dist
 coverage
+.docs
 
 # Playwright
 /test-results/

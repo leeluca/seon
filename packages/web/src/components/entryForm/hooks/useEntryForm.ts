@@ -1,3 +1,4 @@
+import { t } from '@lingui/core/macro';
 import { createFormHook } from '@tanstack/react-form';
 import { toast } from 'sonner';
 
@@ -29,7 +30,6 @@ export function useEntryForm(options: {
   value?: number;
   previousValue?: number;
   onSubmitCallback: () => void;
-  t: (msg: TemplateStringsArray | string) => string;
 }) {
   const {
     goalId,
@@ -38,7 +38,6 @@ export function useEntryForm(options: {
     value,
     previousValue = 0,
     onSubmitCallback,
-    t,
   } = options;
 
   const form = useAppForm({
@@ -50,7 +49,7 @@ export function useEntryForm(options: {
       onChange({ value }) {
         const { value: inputtedValue } = value;
         if (inputtedValue === undefined) {
-          return 'Missing required fields';
+          return t`Missing required fields`;
         }
       },
     },
