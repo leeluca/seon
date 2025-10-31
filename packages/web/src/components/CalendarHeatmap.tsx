@@ -1,4 +1,12 @@
-import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
@@ -124,6 +132,16 @@ const CalendarHeatmap = ({
     undefined,
   ]);
   const popoverAnchorRef = useRef<Element | null>(null);
+  const sliderContainerRef = useRef<HTMLDivElement | null>(null);
+  const pointerIdRef = useRef<number | null>(null);
+  const pointerStartXRef = useRef(0);
+  const dragOffsetRef = useRef(0);
+  const hasActivePointerRef = useRef(false);
+  const isDraggingRef = useRef(false);
+  const shouldBlockClickRef = useRef(false);
+  const [sliderWidth, setSliderWidth] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDraggingSlider, setIsDraggingSlider] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useViewportStore((state) => state.isMobile);
@@ -147,6 +165,219 @@ const CalendarHeatmap = ({
     };
   }, [isPopoverOpen, selectedDateValue]);
 
+  useEffect(() => {
+    const node = sliderContainerRef.current;
+    if (!node || typeof window === 'undefined') {
+      return;
+    }
+
+    const updateWidth = () => {
+      setSliderWidth(node.offsetWidth);
+    };
+
+    updateWidth();
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver((entries) => {
+        if (entries[0]) {
+          setSliderWidth(entries[0].contentRect.width);
+        }
+      });
+      observer.observe(node);
+      return () => observer.disconnect();
+    }
+
+    window.addEventListener('resize', updateWidth);
+    return () => {
+      window.removeEventListener('resize', updateWidth);
+    };
+  }, []);
+
+  const getSliderWidth = () => {
+    if (sliderWidth) {
+      return sliderWidth;
+    }
+    const node = sliderContainerRef.current;
+    return node ? node.offsetWidth : 0;
+  };
+
+  const clampOffset = (value: number) => {
+    const width = getSliderWidth();
+    if (!width) {
+      return 0;
+    }
+    const limit = width;
+    return Math.max(Math.min(value, limit), -limit);
+  };
+  // TODO: change to use animation library
+  const finalizeDrag = (shouldSnap: boolean) => {
+    const container = sliderContainerRef.current;
+    const pointerId = pointerIdRef.current;
+    const wasDragging = isDraggingRef.current;
+
+    if (pointerId !== null && container?.hasPointerCapture?.(pointerId)) {
+      container.releasePointerCapture(pointerId);
+    }
+
+    if (shouldSnap && wasDragging) {
+      const width = getSliderWidth();
+      const offset = dragOffsetRef.current;
+
+      if (width) {
+        const threshold = width * 0.2; // 20% threshold to snap
+        let weeksDelta = 0;
+
+        if (Math.abs(offset) > threshold) {
+          weeksDelta = offset < 0 ? 1 : -1; // -offset means swipe left -> next week (1)
+        }
+
+        if (weeksDelta !== 0) {
+          // 1. Keep transitions disabled to prevent animation
+          setIsDraggingSlider(true);
+
+          // 2. Instantly change the week
+          setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
+
+          // 3. Instantly reset the drag offset for the new week
+          setDragOffset(0);
+
+          // 4. Reset all pointer-tracking refs
+          pointerIdRef.current = null;
+          pointerStartXRef.current = 0;
+          dragOffsetRef.current = 0;
+          hasActivePointerRef.current = false;
+          isDraggingRef.current = false;
+
+          // 5. Use setTimeout to re-enable transitions *after* this render cycle, to ensure the new week appears at offset 0 with no jump.
+          setTimeout(() => {
+            setIsDraggingSlider(false);
+            shouldBlockClickRef.current = false;
+          }, 0);
+
+          return;
+        }
+      }
+    }
+
+    // snap back to center
+    // This code now only runs if weeksDelta was 0 or if it wasn't a drag.
+
+    // 1. Reset all pointer-tracking refs
+    pointerIdRef.current = null;
+    pointerStartXRef.current = 0;
+    dragOffsetRef.current = 0;
+    hasActivePointerRef.current = false;
+    isDraggingRef.current = false;
+
+    if (!wasDragging) {
+      shouldBlockClickRef.current = false;
+    }
+
+    // 2. Animate the offset back to 0
+    setDragOffset(0);
+
+    if (wasDragging) {
+      // 3. Re-enable transitions so the snap-back animation runs
+      setIsDraggingSlider(false);
+      setTimeout(() => {
+        shouldBlockClickRef.current = false;
+      }, 0);
+    }
+  };
+
+  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return;
+    }
+
+    const width = getSliderWidth();
+    if (!width) {
+      const node = sliderContainerRef.current;
+      if (node) {
+        setSliderWidth(node.offsetWidth);
+      }
+    }
+
+    pointerIdRef.current = event.pointerId;
+    pointerStartXRef.current = event.clientX;
+    dragOffsetRef.current = 0;
+    hasActivePointerRef.current = true;
+    shouldBlockClickRef.current = false;
+  };
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (
+      !hasActivePointerRef.current ||
+      pointerIdRef.current === null ||
+      pointerIdRef.current !== event.pointerId
+    ) {
+      return;
+    }
+
+    const delta = event.clientX - pointerStartXRef.current;
+
+    if (!isDraggingRef.current) {
+      const DRAG_ACTIVATION_THRESHOLD = 10;
+      if (Math.abs(delta) < DRAG_ACTIVATION_THRESHOLD) {
+        return;
+      }
+      isDraggingRef.current = true;
+      shouldBlockClickRef.current = true;
+      setIsDraggingSlider(true);
+      const container = sliderContainerRef.current;
+      if (container && pointerIdRef.current !== null) {
+        container.setPointerCapture?.(pointerIdRef.current);
+      }
+    }
+
+    event.preventDefault();
+    const clamped = clampOffset(delta);
+    dragOffsetRef.current = clamped;
+    setDragOffset(clamped);
+  };
+
+  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!hasActivePointerRef.current) {
+      return;
+    }
+
+    if (isDraggingRef.current) {
+      event.preventDefault();
+    }
+
+    finalizeDrag(isDraggingRef.current);
+  };
+
+  const handlePointerCancel = () => {
+    if (!hasActivePointerRef.current) {
+      return;
+    }
+    finalizeDrag(false);
+  };
+
+  const handlePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (
+      !hasActivePointerRef.current ||
+      pointerIdRef.current !== event.pointerId
+    ) {
+      return;
+    }
+
+    finalizeDrag(isDraggingRef.current);
+  };
+
+  const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
+    if (!shouldBlockClickRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    shouldBlockClickRef.current = false;
+  };
+
+  const weeksToRender = [-1, 0, 1];
+
   return (
     <div className={cn('flex flex-col items-center', className)}>
       <div className="mb-2 flex w-full items-center justify-between">
@@ -164,114 +395,172 @@ const CalendarHeatmap = ({
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="mb-2 grid w-full auto-cols-fr grid-flow-col items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2">
+      <div className="mb-2 flex w-full items-end gap-[2px] sm:gap-2">
         <Button
           variant="outline"
           size="icon-sm"
           onClick={handlePrevWeek}
-          className="mt-7 mb-1 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
+          className="mb-[9px] aspect-square h-6 w-6 min-w-0 justify-self-center p-2 sm:mt-6 sm:mb-[5px] sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigLeftIcon size={18} />
         </Button>
-        {days.map((day) => {
-          const stringDate = day.toDateString();
-          const savedEntry = entriesMap.get(stringDate);
-          const entryValue = savedEntry?.value;
-          const isSelected = selectedDateValue[0]?.getTime() === day.getTime();
-          const isBlocked = checkBlockedDateFn?.(day) ?? false;
-          const isToday = checkIsToday(day);
-          const isPast = !isToday && checkIsPast(day);
-          const isCompletionDay =
-            !!goal?.completionDate &&
-            isSameDay(day, new Date(goal.completionDate));
-          const showTooltip =
-            (!!entryValue && !isTouchScreen) ||
-            (isBlocked && !!blockedDateFeedback);
+        <div
+          ref={sliderContainerRef}
+          className={cn(
+            'relative flex-1 touch-pan-y overflow-hidden px-[2px] sm:px-2',
+            isDraggingSlider ? 'cursor-grabbing select-none' : 'cursor-grab',
+          )}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerCancel}
+          onPointerLeave={handlePointerLeave}
+          onClickCapture={handleClickCapture}
+        >
+          {/* Left/right gradient overlays to indicate horizontal scrollability. */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-2 sm:w-3">
+            <div className="h-full w-full bg-linear-to-r from-white/90 to-transparent dark:from-black/70" />
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-2 sm:w-3">
+            <div className="h-full w-full bg-linear-to-l from-white/90 to-transparent dark:from-black/70" />
+          </div>
 
-          return (
-            <div
-              key={stringDate}
-              className="flex flex-col"
-              ref={(el) => {
-                if (day.getTime() === selectedDateValue[0]?.getTime()) {
-                  popoverAnchorRef.current = el;
-                }
-              }}
-            >
-              <p className="mb-2 text-xs font-light">{format(day, 'EEEEE')}</p>
+          <div
+            className="flex items-stretch"
+            style={{
+              // NOTE: 12px offsets week margins (4px each) + container padding to center current week
+              transform: `translateX(calc(-100% - 12px + ${dragOffset}px))`,
+              transition: isDraggingSlider
+                ? 'none'
+                : 'transform 200ms ease-out',
+              willChange: 'transform',
+            }}
+          >
+            {weeksToRender.map((weekOffset) => {
+              const weekStart = addWeeks(currentWeekStart, weekOffset);
+              const weekDays = Array.from({ length: 7 }).map((_, index) =>
+                addDays(weekStart, index),
+              );
 
-              {showTooltip ? (
-                <ResponsiveTooltip
-                  content={
-                    isBlocked && blockedDateFeedback ? (
-                      <p>{blockedDateFeedback}</p>
-                    ) : (
-                      <p>{entryValue}</p>
-                    )
-                  }
-                  side="top"
+              return (
+                <div
+                  key={`${weekStart.toISOString()}-${weekOffset}`}
+                  className="mx-1 grid auto-rows-fr grid-cols-7 items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2"
+                  style={{ flex: '0 0 100%' }}
                 >
-                  <Button
-                    variant={savedEntry ? null : 'outline'}
-                    className={getButtonStyles({
-                      entryValue,
-                      isSelected,
-                      isToday,
-                      isPast: goal !== undefined && isPast && !isBlocked,
-                      isBlocked,
-                      isAfterCompletion:
-                        goal !== undefined &&
-                        !!goal?.completionDate &&
-                        isAfter(day, new Date(goal?.completionDate)),
-                    })}
-                    disabled={isBlocked}
-                    aria-label={t`Add entry for ${format(day, 'do')}`}
-                    aria-current={isToday ? 'date' : undefined}
-                    onClick={() => {
-                      setSelectedDateValue(() => [day, entryValue]);
-                      setIsPopoverOpen(true);
-                    }}
-                  >
-                    <div className="text-center text-xs">
-                      {format(day, 'd')}
-                    </div>
-                    {isCompletionDay && <CompletionBadge />}
-                  </Button>
-                </ResponsiveTooltip>
-              ) : (
-                <Button
-                  variant={savedEntry ? null : 'outline'}
-                  className={getButtonStyles({
-                    entryValue,
-                    isSelected,
-                    isToday,
-                    isPast: goal !== undefined && isPast && !isBlocked,
-                    isBlocked,
-                    isAfterCompletion:
-                      goal !== undefined &&
+                  {weekDays.map((day) => {
+                    const stringDate = day.toDateString();
+                    const savedEntry = entriesMap.get(stringDate);
+                    const entryValue = savedEntry?.value;
+                    const isSelected =
+                      selectedDateValue[0]?.getTime() === day.getTime();
+                    const isBlocked = checkBlockedDateFn?.(day) ?? false;
+                    const isToday = checkIsToday(day);
+                    const isPast = !isToday && checkIsPast(day);
+                    const isCompletionDay =
                       !!goal?.completionDate &&
-                      isAfter(day, new Date(goal?.completionDate)),
+                      isSameDay(day, new Date(goal.completionDate));
+                    const showTooltip =
+                      (!!entryValue && !isTouchScreen) ||
+                      (isBlocked && !!blockedDateFeedback);
+
+                    return (
+                      <div
+                        key={stringDate}
+                        className="flex flex-col"
+                        ref={(el) => {
+                          if (
+                            day.getTime() === selectedDateValue[0]?.getTime()
+                          ) {
+                            popoverAnchorRef.current = el;
+                          }
+                        }}
+                      >
+                        <p className="mb-2 text-xs font-light">
+                          {format(day, 'EEEEE')}
+                        </p>
+
+                        {showTooltip ? (
+                          <ResponsiveTooltip
+                            content={
+                              isBlocked && blockedDateFeedback ? (
+                                <p>{blockedDateFeedback}</p>
+                              ) : (
+                                <p>{entryValue}</p>
+                              )
+                            }
+                            side="top"
+                          >
+                            <Button
+                              variant={savedEntry ? null : 'outline'}
+                              className={getButtonStyles({
+                                entryValue,
+                                isSelected,
+                                isToday,
+                                isPast:
+                                  goal !== undefined && isPast && !isBlocked,
+                                isBlocked,
+                                isAfterCompletion:
+                                  goal !== undefined &&
+                                  !!goal?.completionDate &&
+                                  isAfter(day, new Date(goal?.completionDate)),
+                              })}
+                              disabled={isBlocked}
+                              aria-label={t`Add entry for ${format(day, 'do')}`}
+                              aria-current={isToday ? 'date' : undefined}
+                              onClick={() => {
+                                setSelectedDateValue(() => [day, entryValue]);
+                                setIsPopoverOpen(true);
+                              }}
+                            >
+                              <div className="text-center text-xs">
+                                {format(day, 'd')}
+                              </div>
+                              {isCompletionDay && <CompletionBadge />}
+                            </Button>
+                          </ResponsiveTooltip>
+                        ) : (
+                          <Button
+                            variant={savedEntry ? null : 'outline'}
+                            className={getButtonStyles({
+                              entryValue,
+                              isSelected,
+                              isToday,
+                              isPast:
+                                goal !== undefined && isPast && !isBlocked,
+                              isBlocked,
+                              isAfterCompletion:
+                                goal !== undefined &&
+                                !!goal?.completionDate &&
+                                isAfter(day, new Date(goal?.completionDate)),
+                            })}
+                            disabled={isBlocked}
+                            aria-label={t`Add entry for ${format(day, 'do')}`}
+                            aria-current={isToday ? 'date' : undefined}
+                            onClick={() => {
+                              setSelectedDateValue(() => [day, entryValue]);
+                              setIsPopoverOpen(true);
+                            }}
+                          >
+                            <div className="text-center text-xs">
+                              {format(day, 'd')}
+                            </div>
+                            {isCompletionDay && <CompletionBadge />}
+                          </Button>
+                        )}
+                      </div>
+                    );
                   })}
-                  disabled={isBlocked}
-                  aria-label={t`Add entry for ${format(day, 'do')}`}
-                  aria-current={isToday ? 'date' : undefined}
-                  onClick={() => {
-                    setSelectedDateValue(() => [day, entryValue]);
-                    setIsPopoverOpen(true);
-                  }}
-                >
-                  <div className="text-center text-xs">{format(day, 'd')}</div>
-                  {isCompletionDay && <CompletionBadge />}
-                </Button>
-              )}
-            </div>
-          );
-        })}
+                </div>
+              );
+            })}
+          </div>
+        </div>
         <Button
           variant="outline"
           size="icon-sm"
           onClick={handleNextWeek}
-          className="mt-7 mb-1 aspect-square h-auto w-auto min-w-0 justify-self-center p-2 sm:mt-0 sm:h-7 sm:w-7 sm:p-0"
+          className="mb-[9px] aspect-square h-6 w-6 min-w-0 justify-self-center p-2 sm:mt-6 sm:mb-[5px] sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
         </Button>
