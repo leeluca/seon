@@ -2,6 +2,15 @@ import type { ReactElement } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from '~/components/ui/drawer';
+import {
   Sheet,
   SheetClose,
   SheetContent,
@@ -22,9 +31,26 @@ interface SheetProps {
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
+  const isMobile = useViewportStore((state) => state.isMobile);
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
+          <DrawerTitle className="text-2xl">
+            <div>Goal not found</div>
+          </DrawerTitle>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
+      <SheetContent
+        className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!"
+        side="right"
+      >
         <SheetTitle className="text-2xl">
           <div>Goal not found</div>
         </SheetTitle>
@@ -63,6 +89,44 @@ export function GoalDetailPanel({
     initialValue,
     type,
   } = selectedGoal;
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="max-h-full w-full! max-w-full! rounded-t-none">
+          <DrawerHeader>
+            <DrawerTitle className="text-2xl">{title}</DrawerTitle>
+            <DrawerDescription>{description}</DrawerDescription>
+          </DrawerHeader>
+          <article className="flex min-h-full flex-col gap-1 overflow-x-hidden px-4">
+            <section className="relative flex min-h-[250px] items-center justify-center overflow-x-hidden">
+              <GoalLineGraph
+                key={`${id}-graph-${isMobile}`}
+                goalId={id}
+                targetDate={targetDate}
+                target={target}
+                startDate={startDate}
+                initialValue={initialValue}
+                isMobile={isMobile}
+                goalType={type as GoalType}
+              />
+            </section>
+            <GoalStatusSummary
+              goalId={id}
+              className="mt-6 mb-2 sm:mt-3 sm:mb-5"
+            />
+            <GoalEditForm
+              goal={selectedGoal}
+              className="my-5 sm:mx-2 sm:my-4"
+            />
+          </article>
+          <DrawerFooter>
+            <DrawerClose asChild />
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
