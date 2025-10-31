@@ -38,7 +38,7 @@ const NotSignedInContent = ({
   return (
     <>
       <div className="space-y-2 pb-4">
-        <h4 className="font-medium leading-none">
+        <h4 className="leading-none font-medium">
           <Trans>Sync is off</Trans>
         </h4>
         {isSyncEnabledUser ? (
@@ -65,10 +65,10 @@ const NotSignedInContent = ({
 const SyncErrorContent = () => {
   return (
     <div className="space-y-2">
-      <h4 className="font-medium leading-none">
+      <h4 className="leading-none font-medium">
         <Trans>Sync is off</Trans>
       </h4>
-      <p className="text-muted-foreground text-pretty text-sm">
+      <p className="text-muted-foreground text-sm text-pretty">
         <Trans>Could not connect with the sync service. Try again later.</Trans>
       </p>
     </div>
@@ -173,7 +173,7 @@ function StatusMenu() {
           <span className="sr-only">{t`Syncing`}</span>
           <RefreshCcwIcon
             size={18}
-            className="rotate-180 transform animate-spin"
+            className="direction-reverse animate-spin"
           />
         </output>
       )}
@@ -199,14 +199,14 @@ function StatusMenu() {
         <PopoverContent
           className={
             display === 'synced'
-              ? 'mr-3 mt-0.5 min-w-[121px] max-w-fit sm:mr-8'
-              : 'mr-3 mt-0.5 sm:mr-8'
+              ? 'mt-0.5 mr-3 max-w-fit min-w-[121px] sm:mr-8'
+              : 'mt-0.5 mr-3 sm:mr-8'
           }
           sideOffset={5}
         >
           {display === 'synced' && (
             <div className="space-y-2">
-              <h3 className="text-pretty font-medium leading-none">
+              <h3 className="leading-none font-medium text-pretty">
                 <Trans>Your data is synced!</Trans>
               </h3>
               {lastSyncedAt && (
@@ -225,7 +225,7 @@ function StatusMenu() {
 
           {display === 'offline' && (
             <div className="space-y-2">
-              <h4 className="font-medium leading-none">
+              <h4 className="leading-none font-medium">
                 <Trans>You're offline</Trans>
               </h4>
               <p className="text-muted-foreground text-sm">
@@ -236,7 +236,7 @@ function StatusMenu() {
 
           {display === 'connecting' && (
             <div className="space-y-2">
-              <h4 className="font-medium leading-none">
+              <h4 className="leading-none font-medium">
                 <Trans>Connecting to sync…</Trans>
               </h4>
               <p className="text-muted-foreground text-pretty break-keep">
@@ -276,7 +276,7 @@ function StatusMenu() {
             sideOffset={5}
           >
             <div className="space-y-2 pb-4">
-              <h3 className="text-pretty text-center font-medium leading-none">
+              <h3 className="text-center leading-none font-medium text-pretty">
                 <Trans>Hello, {userName}!</Trans>
               </h3>
             </div>
