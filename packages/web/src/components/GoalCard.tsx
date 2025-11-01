@@ -1,11 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useLingui } from '@lingui/react/macro';
-import {
-  differenceInCalendarDays,
-  eachDayOfInterval,
-  isBefore,
-  startOfDay,
-} from 'date-fns';
+import { isBefore, startOfDay } from 'date-fns';
 
 import {
   Card,

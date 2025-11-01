@@ -38,14 +38,21 @@ const BaseRouterLink = React.forwardRef<HTMLDivElement, BaseRouterLinkProps>(
 
     const handleClick = React.useCallback(
       (event: React.MouseEvent<HTMLDivElement>) => {
+        // NOTE: if the event target is not contained within the current target (e.g. coming from a portal) do not trigger navigation.
+        if (!event.currentTarget.contains(event.target as Node)) {
+          return;
+        }
+
         if (disabled) {
           event.preventDefault();
           event.stopPropagation();
           return;
         }
+
         if (!shouldNavigate(event.target)) {
           return;
         }
+
         onClick?.(event);
       },
       [disabled, shouldNavigate, onClick],
@@ -53,6 +60,10 @@ const BaseRouterLink = React.forwardRef<HTMLDivElement, BaseRouterLinkProps>(
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (!event.currentTarget.contains(event.target as Node)) {
+          return;
+        }
+
         onKeyDown?.(event);
         if (event.defaultPrevented || disabled) {
           return;
