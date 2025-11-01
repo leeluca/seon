@@ -51,7 +51,6 @@ function useCombinedRef(
   ) as React.RefObject<HTMLInputElement>;
 }
 
-// TODO: increase, decrease on arrow keys
 function useNumberInput({
   value: controlledValue,
   defaultValue,
@@ -76,7 +75,7 @@ function useNumberInput({
     setValue((prev) => {
       const newVal =
         prev === undefined
-          ? (stepper ?? 1)
+          ? Math.min(stepper ?? 1, max)
           : Math.min(prev + (stepper ?? 1), max);
       if (internalRef.current) {
         internalRef.current.value = String(newVal ?? '');
@@ -93,7 +92,7 @@ function useNumberInput({
     setValue((prev) => {
       const newVal =
         prev === undefined
-          ? -(stepper ?? 1)
+          ? Math.max(-(stepper ?? 1), min)
           : Math.max(prev - (stepper ?? 1), min);
       if (internalRef.current) {
         internalRef.current.value = String(newVal ?? '');
@@ -195,15 +194,27 @@ export function NumberInputField({
     onChange?.(e);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      context.handleIncrement?.();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      context.handleDecrement?.();
+    } else {
+      blockNonNumberInput(e);
+    }
+  };
+
   return (
     <Input
       value={value ?? ''}
       onChange={handleChange}
       onBlur={handleBlur}
-      onKeyDown={(e) => blockNonNumberInput(e)}
+      onKeyDown={handleKeyDown}
       ref={combinedRef}
       className={cn(
-        buttonStacked ? 'focus-visible:z-1 rounded-r-none' : '',
+        buttonStacked ? 'rounded-r-none focus-visible:z-1' : '',
         className,
       )}
       {...props}
@@ -249,7 +260,7 @@ export function NumberInputButton({
           'border-input h-[18px] px-2 focus-visible:relative': buttonStacked,
           'rounded-l-none rounded-br-none border-b-0 border-l-0':
             buttonStacked && direction === 'inc',
-          'rounded-l-none rounded-tr-none border-l-0 border-t-[0.5px]':
+          'rounded-l-none rounded-tr-none border-t-[0.5px] border-l-0':
             buttonStacked && direction === 'dec',
         },
         className,

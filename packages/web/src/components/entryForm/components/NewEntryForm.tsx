@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import FormError from '~/components/form/FormError';
 import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
-import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
 import { useIds } from '~/hooks/useIds';
@@ -39,7 +38,7 @@ interface NewEntryFormProps {
   onSubmitCallback?: () => void;
   className?: string;
 }
-
+// TODO: rename to CreateEntryForm
 const NewEntryForm = ({
   goalId,
   entryId,
@@ -213,7 +212,7 @@ const NewEntryForm = ({
               labelClassName="text-start"
               required
             >
-              <form.Field name="value">
+              <form.AppField name="value">
                 {(field) => {
                   const {
                     value,
@@ -227,76 +226,22 @@ const NewEntryForm = ({
                       errorClassName="col-span-2 col-start-2"
                     >
                       <div className="col-span-2">
-                        {isMobile ? (
-                          <div className="relative">
-                            {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-14 z-10 -translate-y-1/2 transform text-xs">
-                                {t`Last:`}&nbsp;
-                              </span>
-                            )}
-                            <NumberInput.Root
-                              value={value}
-                              onChange={(e) => {
-                                field.handleChange(Number(e.target.value));
-                              }}
-                              min={0}
-                              max={MAX_INPUT_NUMBER}
-                            >
-                              <NumberInput.Button
-                                direction="dec"
-                                className="rounded-r-none"
-                              />
-                              <NumberInput.Field
-                                id={ids.entryValue}
-                                autoFocus={!isMobile && !isTouchScreen}
-                                autoComplete="off"
-                                className={cn(
-                                  'rounded-none',
-                                  showPreviousValueHelper && 'pl-[39px]',
-                                )}
-                              />
-                              <NumberInput.Button
-                                direction="inc"
-                                className="rounded-l-none"
-                              />
-                            </NumberInput.Root>
-                          </div>
-                        ) : (
-                          <div className="relative">
-                            {showPreviousValueHelper && (
-                              <span className="text-muted-foreground pointer-events-none absolute top-1/2 left-2 z-10 -translate-y-1/2 transform text-xs">
-                                {t`Last:`}&nbsp;
-                              </span>
-                            )}
-                            <NumberInput.Root
-                              value={value}
-                              onChange={(e) => {
-                                field.handleChange(Number(e.target.value));
-                              }}
-                              min={0}
-                              max={MAX_INPUT_NUMBER}
-                              buttonStacked
-                            >
-                              <NumberInput.Field
-                                id={ids.entryValue}
-                                autoFocus={!isMobile && !isTouchScreen}
-                                autoComplete="off"
-                                className={cn(
-                                  showPreviousValueHelper && 'pl-[39px]',
-                                )}
-                              />
-                              <div className="flex flex-col">
-                                <NumberInput.Button direction="inc" />
-                                <NumberInput.Button direction="dec" />
-                              </div>
-                            </NumberInput.Root>
-                          </div>
-                        )}
+                        <field.NumberField
+                          id={ids.entryValue}
+                          min={0}
+                          max={MAX_INPUT_NUMBER}
+                          buttonStacked={!isMobile}
+                          autoFocus={!isMobile && !isTouchScreen}
+                          autoComplete="off"
+                          helperText={
+                            showPreviousValueHelper ? `${t`Last:`} ` : undefined
+                          }
+                        />
                       </div>
                     </FormError.Wrapper>
                   );
                 }}
-              </form.Field>
+              </form.AppField>
             </FormItem>
           )}
           {goalType !== 'BOOLEAN' && (

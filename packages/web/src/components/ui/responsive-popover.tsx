@@ -33,6 +33,7 @@ interface ResponsivePopoverProps {
     | null;
   drawerTitle: ReactNode;
   overlayClassName?: string;
+  handleOnly?: boolean;
 }
 
 export function ResponsivePopover({
@@ -46,12 +47,13 @@ export function ResponsivePopover({
   virtualRef,
   drawerTitle,
   overlayClassName,
+  handleOnly,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
+      <Drawer open={open} onOpenChange={onOpenChange} handleOnly={handleOnly}>
         <DrawerTrigger asChild className={className}>
           {trigger}
         </DrawerTrigger>
