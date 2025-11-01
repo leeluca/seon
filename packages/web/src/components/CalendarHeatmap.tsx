@@ -56,8 +56,8 @@ const getButtonStyles = ({
   const isNeutralDay = isEmpty && !isEmptyPastDay;
 
   const baseStyles = isNeutralDay
-    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded xs:h-9 hover:bg-accent hover:text-accent-foreground relative transition-colors duration-300 ease-out motion-reduce:transition-none'
-    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded xs:h-9 relative transition-colors duration-300 ease-out motion-reduce:transition-none';
+    ? 'border border-input aspect-square h-auto w-full min-w-0 rounded-xl xs:h-9 hover:bg-accent hover:text-accent-foreground relative transition-colors duration-300 ease-out motion-reduce:transition-none'
+    : 'hover:text-white text-white aspect-square h-auto w-full min-w-0 rounded-xl xs:h-9 relative transition-colors duration-300 ease-out motion-reduce:transition-none';
 
   return cn(baseStyles, {
     // Success states
@@ -109,10 +109,10 @@ const CalendarHeatmap = ({
     startOfWeek(new Date(), { weekStartsOn: 0 }),
   );
   const handlePrevWeek = () => {
-    setCurrentWeekStart(subWeeks(currentWeekStart, 1));
+    animateWeekChange(-1);
   };
   const handleNextWeek = () => {
-    setCurrentWeekStart(addWeeks(currentWeekStart, 1));
+    animateWeekChange(1);
   };
 
   const goBackToCurrentWeek = () => {
@@ -142,6 +142,7 @@ const CalendarHeatmap = ({
   const [sliderWidth, setSliderWidth] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
+  const [isSnapping, setIsSnapping] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useViewportStore((state) => state.isMobile);
@@ -209,6 +210,48 @@ const CalendarHeatmap = ({
     const limit = width;
     return Math.max(Math.min(value, limit), -limit);
   };
+
+  const TRANSITION_DURATION_MS = 300;
+
+  const animateWeekChange = (weeksDelta: number) => {
+    // Prevent multiple animations at once or no change
+    if (isSnapping || weeksDelta === 0) {
+      return;
+    }
+
+    const width = getSliderWidth();
+    if (!width) {
+      setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
+      return;
+    }
+
+    setIsSnapping(true); // Lock input
+    setIsDraggingSlider(false); // Ensure transitions are ON
+
+    // Animate to the target (the adjacent week)
+    // -1 (prev) -> slide right (to +width)
+    // +1 (next) -> slide left (to -width)
+    const snapTargetOffset = weeksDelta > 0 ? -width : width;
+    setDragOffset(snapTargetOffset);
+
+    setTimeout(() => {
+      // Disable transitions for the instant content swap
+      setIsDraggingSlider(true);
+
+      // Change the week
+      setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
+
+      setDragOffset(0);
+
+      requestAnimationFrame(() => {
+        setIsDraggingSlider(false);
+        setIsSnapping(false);
+
+        shouldBlockClickRef.current = false;
+      });
+    }, TRANSITION_DURATION_MS);
+  };
+
   // TODO: change to use animation library
   const finalizeDrag = (shouldSnap: boolean) => {
     const container = sliderContainerRef.current;
@@ -219,74 +262,43 @@ const CalendarHeatmap = ({
       container.releasePointerCapture(pointerId);
     }
 
+    // Reset pointer-tracking refs
+    pointerIdRef.current = null;
+    hasActivePointerRef.current = false;
+    isDraggingRef.current = false;
+    dragOffsetRef.current = 0;
+    pointerStartXRef.current = 0;
+
     if (shouldSnap && wasDragging) {
       const width = getSliderWidth();
-      const offset = dragOffsetRef.current;
+      const offset = dragOffset;
+      const threshold = width * 0.2;
+      let weeksDelta = 0;
 
-      if (width) {
-        const threshold = width * 0.2; // 20% threshold to snap
-        let weeksDelta = 0;
+      if (Math.abs(offset) > threshold) {
+        weeksDelta = offset < 0 ? 1 : -1;
+      }
 
-        if (Math.abs(offset) > threshold) {
-          weeksDelta = offset < 0 ? 1 : -1; // -offset means swipe left -> next week (1)
-        }
-
-        if (weeksDelta !== 0) {
-          // 1. Keep transitions disabled to prevent animation
-          setIsDraggingSlider(true);
-
-          // 2. Instantly change the week
-          setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
-
-          // 3. Instantly reset the drag offset for the new week
-          setDragOffset(0);
-
-          // 4. Reset all pointer-tracking refs
-          pointerIdRef.current = null;
-          pointerStartXRef.current = 0;
-          dragOffsetRef.current = 0;
-          hasActivePointerRef.current = false;
-          isDraggingRef.current = false;
-
-          // 5. Use setTimeout to re-enable transitions *after* this render cycle, to ensure the new week appears at offset 0 with no jump.
-          setTimeout(() => {
-            setIsDraggingSlider(false);
-            shouldBlockClickRef.current = false;
-          }, 0);
-
-          return;
-        }
+      if (weeksDelta !== 0) {
+        animateWeekChange(weeksDelta);
+        return;
       }
     }
 
-    // snap back to center
-    // This code now only runs if weeksDelta was 0 or if it wasn't a drag.
-
-    // 1. Reset all pointer-tracking refs
-    pointerIdRef.current = null;
-    pointerStartXRef.current = 0;
-    dragOffsetRef.current = 0;
-    hasActivePointerRef.current = false;
-    isDraggingRef.current = false;
-
-    if (!wasDragging) {
-      shouldBlockClickRef.current = false;
-    }
-
-    // 2. Animate the offset back to 0
     setDragOffset(0);
+    setIsDraggingSlider(false);
 
     if (wasDragging) {
-      // 3. Re-enable transitions so the snap-back animation runs
-      setIsDraggingSlider(false);
       setTimeout(() => {
         shouldBlockClickRef.current = false;
       }, 0);
+    } else {
+      shouldBlockClickRef.current = false;
     }
   };
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (event.pointerType === 'mouse' && event.button !== 0) {
+    if (isSnapping || (event.pointerType === 'mouse' && event.button !== 0)) {
       return;
     }
 
@@ -395,19 +407,11 @@ const CalendarHeatmap = ({
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="mb-2 flex w-full items-end gap-[2px] sm:gap-2">
-        <Button
-          variant="outline"
-          size="icon-sm"
-          onClick={handlePrevWeek}
-          className="mb-[9px] aspect-square h-6 w-6 min-w-0 justify-self-center p-2 sm:mt-6 sm:mb-[5px] sm:h-7 sm:w-7 sm:p-0"
-        >
-          <ArrowBigLeftIcon size={18} />
-        </Button>
+      <div className="relative mb-2 w-full px-3.5 sm:px-8">
         <div
           ref={sliderContainerRef}
           className={cn(
-            'relative flex-1 touch-pan-y overflow-hidden px-[2px] sm:px-2',
+            'relative w-full touch-pan-y overflow-hidden',
             isDraggingSlider ? 'cursor-grabbing select-none' : 'cursor-grab',
           )}
           onPointerDown={handlePointerDown}
@@ -417,22 +421,31 @@ const CalendarHeatmap = ({
           onPointerLeave={handlePointerLeave}
           onClickCapture={handleClickCapture}
         >
-          {/* Left/right gradient overlays to indicate horizontal scrollability. */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-2 sm:w-3">
+          {/* NOTE: left/right gradient overlays to indicate horizontal scrollability. */}
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-y-0 left-0 z-10 w-4',
+              isDraggingSlider ? '' : 'hidden',
+            )}
+          >
             <div className="h-full w-full bg-linear-to-r from-white/90 to-transparent dark:from-black/70" />
           </div>
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-2 sm:w-3">
+          <div
+            className={cn(
+              'pointer-events-none absolute inset-y-0 right-0 z-10 w-4',
+              isDraggingSlider ? '' : 'hidden',
+            )}
+          >
             <div className="h-full w-full bg-linear-to-l from-white/90 to-transparent dark:from-black/70" />
           </div>
 
           <div
             className="flex items-stretch"
             style={{
-              // NOTE: 12px offsets week margins (4px each) + container padding to center current week
-              transform: `translateX(calc(-100% - 12px + ${dragOffset}px))`,
+              transform: `translateX(calc(-100% + ${dragOffset}px))`,
               transition: isDraggingSlider
                 ? 'none'
-                : 'transform 200ms ease-out',
+                : 'transform 300ms ease-out',
               willChange: 'transform',
             }}
           >
@@ -445,7 +458,7 @@ const CalendarHeatmap = ({
               return (
                 <div
                   key={`${weekStart.toISOString()}-${weekOffset}`}
-                  className="mx-1 grid auto-rows-fr grid-cols-7 items-center justify-items-stretch gap-[2px] sm:items-end sm:gap-2"
+                  className="grid auto-rows-fr grid-cols-7 items-center justify-items-stretch gap-0.5 sm:items-end sm:gap-1"
                   style={{ flex: '0 0 100%' }}
                 >
                   {weekDays.map((day) => {
@@ -461,8 +474,9 @@ const CalendarHeatmap = ({
                       !!goal?.completionDate &&
                       isSameDay(day, new Date(goal.completionDate));
                     const showTooltip =
-                      (!!entryValue && !isTouchScreen) ||
-                      (isBlocked && !!blockedDateFeedback);
+                      ((!!entryValue && !isTouchScreen) ||
+                        (isBlocked && !!blockedDateFeedback)) &&
+                      (!isDraggingSlider || !isSnapping);
 
                     return (
                       <div
@@ -482,6 +496,7 @@ const CalendarHeatmap = ({
 
                         {showTooltip ? (
                           <ResponsiveTooltip
+                            delayDuration={300}
                             content={
                               isBlocked && blockedDateFeedback ? (
                                 <p>{blockedDateFeedback}</p>
@@ -557,10 +572,21 @@ const CalendarHeatmap = ({
           </div>
         </div>
         <Button
-          variant="outline"
+          variant="ghost"
+          size="icon-sm"
+          onClick={handlePrevWeek}
+          disabled={isSnapping}
+          // NOTE: 0.75rem = date label's 'mb-2 text-xs' height
+          className="absolute top-[calc(50%+0.75rem)] left-0 z-10 aspect-square h-6 w-6 min-w-0 -translate-y-1/2 p-2 shadow-md sm:h-7 sm:w-7 sm:p-0"
+        >
+          <ArrowBigLeftIcon size={18} />
+        </Button>
+        <Button
+          variant="ghost"
           size="icon-sm"
           onClick={handleNextWeek}
-          className="mb-[9px] aspect-square h-6 w-6 min-w-0 justify-self-center p-2 sm:mt-6 sm:mb-[5px] sm:h-7 sm:w-7 sm:p-0"
+          disabled={isSnapping}
+          className="absolute top-[calc(50%+0.75rem)] right-0 z-10 aspect-square h-6 w-6 min-w-0 -translate-y-1/2 p-2 shadow-md sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
         </Button>

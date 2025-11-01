@@ -44,7 +44,7 @@ function Layout() {
             to="/goals/new"
             className={cn(
               buttonVariants({ variant: 'default', size: 'lg' }),
-              'hidden h-12 pl-4 pr-5 sm:flex sm:h-10',
+              'hidden h-12 pr-5 pl-4 sm:flex sm:h-10',
             )}
           >
             <div className="flex items-center justify-center text-base">
@@ -66,13 +66,13 @@ function Layout() {
       <Outlet />
 
       {/* Floating button for small screens */}
-      <div className="fixed bottom-14 right-4 z-10 sm:hidden">
+      <div className="fixed right-4 bottom-14 z-20 sm:hidden">
         <ResponsiveTooltip content={<Trans>Add new goal</Trans>} side="top">
           <Link
             to="/goals/new"
             className={cn(
               buttonVariants({ variant: 'default', size: 'lg' }),
-              '[&_svg]:size-7! flex h-16 w-16 rounded-full p-0 shadow-xl',
+              'flex h-16 w-16 rounded-full p-0 shadow-xl [&_svg]:size-7!',
             )}
             aria-label={t`Add new goal`}
           >

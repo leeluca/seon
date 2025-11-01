@@ -56,6 +56,7 @@ interface ResponsiveTipProps {
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
   contentClassName?: string;
+  delayDuration?: number;
 }
 
 export const ResponsiveTooltip = ({
@@ -65,6 +66,7 @@ export const ResponsiveTooltip = ({
   contentClassName,
   side = 'top',
   align = 'center',
+  delayDuration = 200,
 }: ResponsiveTipProps) => {
   const [open, setOpen] = React.useState(false);
   const toggleOpen = React.useCallback(() => {
@@ -72,7 +74,7 @@ export const ResponsiveTooltip = ({
   }, []);
 
   return (
-    <TooltipProvider delayDuration={200}>
+    <TooltipProvider delayDuration={delayDuration}>
       <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild onTooltipOpenChange={toggleOpen}>
           <span className={className}>{children}</span>
