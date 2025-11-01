@@ -391,7 +391,10 @@ const CalendarHeatmap = ({
   const weeksToRender = [-1, 0, 1];
 
   return (
-    <div className={cn('flex flex-col items-center', className)}>
+    <div
+      className={cn('flex cursor-default flex-col items-center', className)}
+      data-interactive
+    >
       <div className="mb-2 flex w-full items-center justify-between">
         <p className="ml-2 text-xs font-medium">
           {startMonth === endMonth
@@ -490,7 +493,7 @@ const CalendarHeatmap = ({
                           }
                         }}
                       >
-                        <p className="mb-2 text-xs font-light">
+                        <p className="mb-2 text-xs font-light select-none">
                           {format(day, 'EEEEE')}
                         </p>
 
@@ -575,7 +578,6 @@ const CalendarHeatmap = ({
           variant="ghost"
           size="icon-sm"
           onClick={handlePrevWeek}
-          disabled={isSnapping}
           // NOTE: 0.75rem = date label's 'mb-2 text-xs' height
           className="absolute top-[calc(50%+0.75rem)] left-0 z-10 aspect-square h-6 w-6 min-w-0 -translate-y-1/2 p-2 shadow-md sm:h-7 sm:w-7 sm:p-0"
         >
@@ -585,7 +587,6 @@ const CalendarHeatmap = ({
           variant="ghost"
           size="icon-sm"
           onClick={handleNextWeek}
-          disabled={isSnapping}
           className="absolute top-[calc(50%+0.75rem)] right-0 z-10 aspect-square h-6 w-6 min-w-0 -translate-y-1/2 p-2 shadow-md sm:h-7 sm:w-7 sm:p-0"
         >
           <ArrowBigRightIcon size={18} />
