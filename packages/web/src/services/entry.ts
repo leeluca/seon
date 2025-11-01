@@ -1,4 +1,5 @@
 import db from '~/lib/database';
+import type { Database } from '~/lib/powersync/AppSchema';
 import { generateUUIDs } from '~/utils';
 import { updateGoalProgress } from './progress';
 
@@ -75,6 +76,16 @@ export async function deleteEntry(
     });
     callback?.();
   } catch (error) {
+    onError?.();
     console.error('Failed to delete entry:', error);
   }
+}
+
+export function getPreviousEntry(
+  entries: Database['entry'][],
+  selectedDate: Date,
+) {
+  return entries
+    .filter((entry) => new Date(entry.date) < selectedDate)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
 }

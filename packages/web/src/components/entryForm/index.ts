@@ -1,2 +1,2 @@
-export { default as NewEntryForm } from './components/NewEntryForm';
+export { default as CreateEntryForm } from './components/CreateEntryForm';
 export * from './constants';

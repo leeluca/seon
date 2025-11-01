@@ -11,7 +11,7 @@ import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
 import { useIds } from '~/hooks/useIds';
 import type { Database } from '~/lib/powersync/AppSchema';
-import { deleteEntry } from '~/services/entry';
+import { deleteEntry, getPreviousEntry } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
@@ -19,16 +19,7 @@ import { cn } from '~/utils';
 import { ENTRY_FIELD_SUFFIX } from '../constants';
 import { useEntryForm } from '../hooks/useEntryForm';
 
-const findPreviousEntry = (
-  entries: Database['entry'][],
-  selectedDate: Date,
-) => {
-  return entries
-    .filter((entry) => new Date(entry.date) < selectedDate)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-};
-
-interface NewEntryFormProps {
+interface CreateEntryFormProps {
   goalId: string;
   entryId?: string;
   date?: Date;
@@ -38,8 +29,7 @@ interface NewEntryFormProps {
   onSubmitCallback?: () => void;
   className?: string;
 }
-// TODO: rename to CreateEntryForm
-const NewEntryForm = ({
+const CreateEntryForm = ({
   goalId,
   entryId,
   date = new Date(),
@@ -48,7 +38,7 @@ const NewEntryForm = ({
   orderedEntries,
   onSubmitCallback: onSubmitCallbackProp,
   className,
-}: NewEntryFormProps) => {
+}: CreateEntryFormProps) => {
   const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
   const queryClient = useQueryClient();
@@ -58,7 +48,7 @@ const NewEntryForm = ({
   const previousValue = useMemo(() => {
     return (
       (goalType === 'PROGRESS' &&
-        findPreviousEntry(orderedEntries, date)?.value) ||
+        getPreviousEntry(orderedEntries, date)?.value) ||
       0
     );
   }, [goalType, orderedEntries, date]);
@@ -301,4 +291,4 @@ const NewEntryForm = ({
   );
 };
 
-export default NewEntryForm;
+export default CreateEntryForm;
