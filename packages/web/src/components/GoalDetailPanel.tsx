@@ -12,16 +12,15 @@ import {
 } from '~/components/ui/drawer';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/sheet';
 import { GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/types/goal';
+import { GoalControls } from './GoalControls';
 import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';
 import { GoalStatusSummary } from './GoalStatusSummary';
@@ -93,12 +92,12 @@ export function GoalDetailPanel({
   if (isMobile) {
     return (
       <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-full w-full! max-w-full! rounded-t-none">
+        <DrawerContent className="flex max-h-full w-full! max-w-full! flex-col rounded-t-none">
           <DrawerHeader>
             <DrawerTitle className="text-2xl">{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <article className="flex min-h-full flex-col gap-1 overflow-x-hidden px-4">
+          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4">
             <section className="relative flex min-h-[250px] items-center justify-center overflow-x-hidden">
               <GoalLineGraph
                 key={`${id}-graph-${isMobile}`}
@@ -117,7 +116,12 @@ export function GoalDetailPanel({
             />
             <GoalEditForm
               goal={selectedGoal}
-              className="my-5 sm:mx-2 sm:my-4"
+              className="my-7 sm:mx-2 sm:my-4"
+            />
+            <GoalControls
+              id={id}
+              title={title}
+              onDeleteSuccess={() => onOpenChange(false)}
             />
           </article>
           <DrawerFooter>
@@ -130,14 +134,13 @@ export function GoalDetailPanel({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
-        {/* FIXME: header should be sticky and always visible regardless of scroll position */}
+      <SheetContent className="flex max-h-full w-full! max-w-full! flex-col overflow-hidden sm:max-w-3xl!">
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex min-h-full flex-col gap-1 overflow-x-hidden">
-          <section className="relative mt-4 flex min-h-[250px] items-center justify-center overflow-x-hidden">
+        <article className="flex flex-1 flex-col gap-6 overflow-auto [scrollbar-gutter:stable_both-edges] [scrollbar-width:thin]">
+          <section className="w-maxitems-center relative mt-4 flex min-h-[250px] shrink-0 justify-center overflow-x-hidden">
             <GoalLineGraph
               key={`${id}-graph-${isMobile}`}
               goalId={id}
@@ -153,11 +156,17 @@ export function GoalDetailPanel({
             goalId={id}
             className="mt-6 mb-2 sm:mt-3 sm:mb-5"
           />
-          <GoalEditForm goal={selectedGoal} className="my-5 sm:mx-2 sm:my-4" />
+          <GoalEditForm goal={selectedGoal} />
+          <GoalControls
+            id={id}
+            title={title}
+            onDeleteSuccess={() => onOpenChange(false)}
+            className="mt-auto"
+          />
         </article>
-        <SheetFooter>
+        {/* <SheetFooter>
           <SheetClose asChild />
-        </SheetFooter>
+        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   );
