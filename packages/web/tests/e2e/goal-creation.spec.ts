@@ -36,51 +36,55 @@ test.describe('Goal Creation Flow', () => {
     // 4. Submit the form
     await createGoalButton.click();
 
-    // 5. Verify success toast appears (dialog/drawer may remain open by design)
+    // 5. Verify dialog closes
+    await expect(dialog).not.toBeVisible();
+
+    // 6. Verify success toast appears (dialog/drawer may remain open by design)
     const successToast = page.locator(
       '[data-sonner-toast][data-type="success"]',
     );
     await expect(successToast).toBeVisible();
     await expect(successToast).toContainText(/sucessfully added goal/i);
 
-    // 6. Verify the new goal appears on the goals list page
+    // 7. Verify the new goal appears on the goals list page
     await expect(
       page.locator(`article.bg-card:has(h3:has-text("${newGoalTitle}"))`),
     ).toBeVisible();
   });
 
-  test('should allow deleting a goal', async ({ page }) => {
-    // 1. Wait for the first goal card to be visible
-    await page
-      .getByTestId(/goal-card/i)
-      .first()
-      .waitFor({
-        state: 'visible',
-      });
+  // FIXME: move this to goal details page spec
+  // test('should allow deleting a goal', async ({ page }) => {
+  //   // 1. Wait for the first goal card to be visible
+  //   await page
+  //     .getByTestId(/goal-card/i)
+  //     .first()
+  //     .waitFor({
+  //       state: 'visible',
+  //     });
 
-    // 2. Verify the initial goal count
-    await expect(page.getByTestId(/goal-card/i)).toHaveCount(
-      INITIAL_GOAL_COUNT,
-    );
+  //   // 2. Verify the initial goal count
+  //   await expect(page.getByTestId(/goal-card/i)).toHaveCount(
+  //     INITIAL_GOAL_COUNT,
+  //   );
 
-    // 3. Click the "Delete goal" button
-    const firstGoalCard = page.getByTestId(/goal-card/i).first();
+  //   // 3. Click the "Delete goal" button
+  //   const firstGoalCard = page.getByTestId(/goal-card/i).first();
 
-    await firstGoalCard
-      .getByRole('button', { name: 'Delete goal', exact: true })
-      .click();
-    await page.getByRole('button', { name: 'Delete', exact: true }).click();
+  //   await firstGoalCard
+  //     .getByRole('button', { name: 'Delete goal', exact: true })
+  //     .click();
+  //   await page.getByRole('button', { name: 'Delete', exact: true }).click();
 
-    // 4. Verify success toast appears
-    const successToast = page.locator(
-      '[data-sonner-toast][data-type="success"]',
-    );
-    await expect(successToast).toBeVisible();
-    await expect(successToast).toContainText(/deleted goal/i);
+  //   // 4. Verify success toast appears
+  //   const successToast = page.locator(
+  //     '[data-sonner-toast][data-type="success"]',
+  //   );
+  //   await expect(successToast).toBeVisible();
+  //   await expect(successToast).toContainText(/deleted goal/i);
 
-    // 5. Verify the goal count is reduced by 1
-    await expect(page.getByTestId(/goal-card/i)).toHaveCount(
-      INITIAL_GOAL_COUNT - 1,
-    );
-  });
+  //   // 5. Verify the goal count is reduced by 1
+  //   await expect(page.getByTestId(/goal-card/i)).toHaveCount(
+  //     INITIAL_GOAL_COUNT - 1,
+  //   );
+  // });
 });

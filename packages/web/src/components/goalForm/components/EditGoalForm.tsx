@@ -22,7 +22,7 @@ interface GoalEditFormProps {
 export function GoalEditForm({ goal, className }: GoalEditFormProps) {
   const { updatedAt } = goal;
   const { t } = useLingui();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const toggleId = useId();
 
   const form = useGoalForm({ mode: 'edit', goal });
@@ -32,7 +32,7 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex h-[60px] items-start justify-between">
           <div className="flex items-start sm:items-center">
-            <CollapsibleTrigger asChild className="mt-[.125rem] mr-4 sm:mt-0">
+            <CollapsibleTrigger asChild className="mt-0.5 mr-4 sm:mt-0">
               <Button id={toggleId} size="icon-sm" variant="secondary">
                 <ChevronRightIcon
                   size={18}
@@ -43,15 +43,14 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
               </Button>
             </CollapsibleTrigger>
             <header>
-              <label
-                className="text-foreground text-xl font-semibold"
-                htmlFor={toggleId}
-              >
-                <Trans>Edit goal</Trans>
+              <label htmlFor={toggleId}>
+                <p className="text-foreground text-xl font-semibold">
+                  <Trans>Edit goal</Trans>
+                </p>
+                <p className="text-muted-foreground mt-1 text-xs">
+                  <Trans>Last update: {format(updatedAt, 'PPp')}</Trans>
+                </p>
               </label>
-              <p className="text-muted-foreground mt-1 text-xs">
-                <Trans>Last update: {format(updatedAt, 'PPp')}</Trans>
-              </p>
             </header>
           </div>
 

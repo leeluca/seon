@@ -46,7 +46,7 @@ function NewGoalDialog() {
     }, 250);
   };
 
-  const form = useGoalForm({ mode: 'create', userId });
+  const form = useGoalForm({ mode: 'create', userId, onSuccess: handleClose });
 
   const {
     startTimeout: delayedValidation,

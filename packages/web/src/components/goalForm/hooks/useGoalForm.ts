@@ -43,6 +43,7 @@ type Mode = 'create' | 'edit';
 
 interface UseGoalFormBase {
   mode: Mode;
+  onSuccess?: () => void;
 }
 
 interface UseGoalFormCreate extends UseGoalFormBase {
@@ -57,7 +58,7 @@ interface UseGoalFormEdit extends UseGoalFormBase {
 
 export type UseGoalFormOptions = UseGoalFormCreate | UseGoalFormEdit;
 
-export function useGoalForm(options: UseGoalFormOptions) {
+export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
   const queryClient = useQueryClient();
 
   const defaultValues: NewGoal =
@@ -109,6 +110,7 @@ export function useGoalForm(options: UseGoalFormOptions) {
           { ...payload, userId: options.userId },
           {
             callback: () => {
+              onSuccess?.();
               toast.success(t`Sucessfully added goal`);
             },
             onError: () => {

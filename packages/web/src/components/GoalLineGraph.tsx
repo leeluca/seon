@@ -314,7 +314,7 @@ function GoalLineGraph({
             },
           },
         },
-        aspectRatio: isMobile ? 1.5 : undefined,
+        aspectRatio: isMobile ? 1.4 : undefined,
       }}
     />
   );
