@@ -15,12 +15,12 @@ msgstr ""
 
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
 #. placeholder {0}: averagePerDay.toFixed(1)
-#: src/components/GoalStatusSummary.tsx:145
-#: src/components/GoalStatusSummary.tsx:152
+#: src/components/GoalStatusSummary.tsx:160
+#: src/components/GoalStatusSummary.tsx:167
 msgid "{0}/day"
 msgstr "{0}개/일"
 
-#: src/components/GoalStatusSummary.tsx:137
+#: src/components/GoalStatusSummary.tsx:152
 msgid "{daysRemaining, plural, one {# day} other {# days}}"
 msgstr "{daysRemaining, plural, one {#일} other {#일}}"
 
@@ -29,7 +29,7 @@ msgstr "{daysRemaining, plural, one {#일} other {#일}}"
 #~ msgstr "{daysRemaining}일"
 
 #. placeholder {0}: goal.target
-#: src/components/GoalStatusSummary.tsx:132
+#: src/components/GoalStatusSummary.tsx:142
 msgid "{entriesSum} / {0}"
 msgstr "{entriesSum} / {0}개"
 
@@ -75,7 +75,7 @@ msgstr "모든 목표"
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:69
+#: src/components/entryForm/components/NewEntryForm.tsx:68
 msgid "Amount"
 msgstr "개수"
 
@@ -87,7 +87,7 @@ msgstr "예상치 못한 오류가 발생했습니다."
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 
-#: src/components/GoalStatusSummary.tsx:144
+#: src/components/GoalStatusSummary.tsx:159
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
@@ -166,11 +166,11 @@ msgstr "목표 만들기"
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:109
+#: src/components/entryForm/components/NewEntryForm.tsx:108
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/ui/number-input.tsx:257
+#: src/components/ui/number-input.tsx:268
 msgid "Decrease"
 msgstr "값 내리기"
 
@@ -178,8 +178,8 @@ msgstr "값 내리기"
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:198
-#: src/components/entryForm/components/NewEntryForm.tsx:336
+#: src/components/entryForm/components/NewEntryForm.tsx:197
+#: src/components/entryForm/components/NewEntryForm.tsx:281
 msgid "Delete entry"
 msgstr "기록 삭제"
 
@@ -199,7 +199,7 @@ msgstr "삭제된 목표: {title}"
 msgid "Demo Mode"
 msgstr "데모 모드"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:71
+#: src/components/entryForm/components/NewEntryForm.tsx:70
 msgid "Did you achieve it?"
 msgstr "달성하셨나요?"
 
@@ -241,9 +241,13 @@ msgstr "목표일 이후의 기록"
 msgid "Establishing a connection. This may take a moment."
 msgstr "연결을 설정하고 있습니다. 잠시만 기다려 주세요."
 
-#: src/components/GoalStatusSummary.tsx:158
-msgid "Expected Completion"
+#: src/components/GoalStatusSummary.tsx:172
+msgid "Estimated Date"
 msgstr "예상 완료일"
+
+#: src/components/GoalStatusSummary.tsx:158
+#~ msgid "Expected Completion"
+#~ msgstr "예상 완료일"
 
 #: src/components/DemoStart.tsx:32
 msgid "Experience Seon Goals without creating an account"
@@ -257,8 +261,8 @@ msgstr "기록 추가 실패"
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:194
-#: src/components/entryForm/components/NewEntryForm.tsx:331
+#: src/components/entryForm/components/NewEntryForm.tsx:193
+#: src/components/entryForm/components/NewEntryForm.tsx:276
 msgid "Failed to delete entry"
 msgstr "기록 삭제 실패"
 
@@ -332,7 +336,7 @@ msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니�
 msgid "Improve French vocabulary"
 msgstr "프랑스어 어휘력 향상하기"
 
-#: src/components/ui/number-input.tsx:257
+#: src/components/ui/number-input.tsx:268
 msgid "Increase"
 msgstr "값 올리기"
 
@@ -373,8 +377,7 @@ msgstr "마지막 동기화:"
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:234
-#: src/components/entryForm/components/NewEntryForm.tsx:268
+#: src/components/entryForm/components/NewEntryForm.tsx:237
 msgid "Last:"
 msgstr "이전:"
 
@@ -416,7 +419,7 @@ msgstr "새로운 목표"
 msgid "Newest goals"
 msgstr "최근 추가순"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:180
+#: src/components/entryForm/components/NewEntryForm.tsx:179
 msgid "No"
 msgstr "아니요"
 
@@ -462,9 +465,9 @@ msgstr "비밀번호를 입력해주세요"
 msgid "Pick a date"
 msgstr "날짜 선택"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:70
+#: src/components/entryForm/components/NewEntryForm.tsx:69
 #: src/components/goalForm/components/CreateGoalForm.tsx:286
-#: src/components/GoalStatusSummary.tsx:131
+#: src/components/GoalStatusSummary.tsx:141
 msgid "Progress"
 msgstr "진행도"
 
@@ -488,7 +491,7 @@ msgstr "페이지 새로고침"
 msgid "Refresh to get the latest improvements."
 msgstr "업데이트하여 개선 사항을 확인해 보세요."
 
-#: src/components/GoalStatusSummary.tsx:149
+#: src/components/GoalStatusSummary.tsx:164
 msgid "Required Pace"
 msgstr "권장 진행 속도"
 
@@ -512,7 +515,7 @@ msgstr "진행 상황 원활"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
-#: src/components/entryForm/components/NewEntryForm.tsx:347
+#: src/components/entryForm/components/NewEntryForm.tsx:292
 #: src/components/goalForm/components/EditGoalForm.tsx:100
 #: src/components/goalForm/components/EditGoalForm.tsx:111
 msgid "Save"
@@ -656,7 +659,7 @@ msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있
 msgid "This will delete all your data and reset the demo."
 msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 
-#: src/components/GoalStatusSummary.tsx:136
+#: src/components/GoalStatusSummary.tsx:151
 msgid "Time Left"
 msgstr "남은 기간"
 
@@ -739,7 +742,7 @@ msgstr "환영합니다, {0}님!"
 msgid "What you can do in demo mode:"
 msgstr "데모 모드에서 할 수 있는 것:"
 
-#: src/components/entryForm/components/NewEntryForm.tsx:166
+#: src/components/entryForm/components/NewEntryForm.tsx:165
 msgid "Yes"
 msgstr "예"
 

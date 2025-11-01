@@ -120,6 +120,16 @@ export function GoalStatusSummary({
       })()) ||
     (isGoalCompleted ? t`Completed!` : '-');
 
+  // Calculate today's expected value based on required pace
+  // const daysElapsedSinceStart = calculateDaysElapsed(new Date(), startDate);
+  // const requiredPacePerDay =
+  //   goal.target /
+  //   Math.max(differenceInCalendarDays(targetDate, startDate) + 1, 1);
+  // const todaysExpectedValue =
+  //   isGoalCompleted || isPastTargetDate
+  //     ? entriesSum
+  //     : Math.min(requiredPacePerDay * daysElapsedSinceStart, goal.target);
+
   return (
     <div
       className={cn(
@@ -131,6 +141,11 @@ export function GoalStatusSummary({
         label={t`Progress`}
         value={t`${entriesSum} / ${goal.target}`}
       />
+      {/* <StatusSeparator /> */}
+      {/* <StatusItem
+        label={t`Target today`}
+        value={todaysExpectedValue.toFixed(1)}
+      /> */}
       <StatusSeparator />
       <StatusItem
         label={t`Time Left`}
@@ -138,7 +153,7 @@ export function GoalStatusSummary({
           one: '# day',
           other: '# days',
         })}
-      />{' '}
+      />
       <StatusSeparator />
       <StatusItem
         label={t`Average Pace`}
@@ -154,10 +169,7 @@ export function GoalStatusSummary({
         }
       />
       <StatusSeparator />
-      <StatusItem
-        label={t`Expected Completion`}
-        value={estimatedCompletionDate}
-      />
+      <StatusItem label={t`Estimated Date`} value={estimatedCompletionDate} />
     </div>
   );
 }
