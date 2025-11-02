@@ -1,44 +1,18 @@
-import { addDays, addSeconds, subDays } from 'date-fns';
+import { addDays, addSeconds } from 'date-fns';
+
+import { DEMO_GOAL_DATA } from '~/constants/setup';
 
 export const INITIAL_DEMO_GOAL_COUNT = 3;
 
-export const DEMO_GOALS = [
-  // PROGRESS type
-  {
-    title: 'Read "Brave New World"',
-    description: 'Finish reading the 288-page book',
-    target: 288,
-    initialValue: 0,
-    startDate: subDays(new Date(), 10),
-    targetDate: addDays(new Date(), 20),
-    unit: 'pages',
-    type: 'PROGRESS',
-    createdAt: addSeconds(new Date(), 10),
-  },
+export const DEMO_GOALS = DEMO_GOAL_DATA.map((goal) => ({
+  ...goal,
+  startDate: addDays(new Date(), goal.startDateOffset),
+  targetDate: addDays(new Date(), goal.targetDateOffset),
+  createdAt: addSeconds(new Date(), goal.createdAtOffset),
+}));
 
-  // COUNT type
-  {
-    title: 'Learn 1000 French words',
-    description: 'Improve French vocabulary',
-    target: 1000,
-    initialValue: 0,
-    startDate: subDays(new Date(), 14),
-    targetDate: addDays(new Date(), 100),
-    unit: 'words',
-    type: 'COUNT',
-    createdAt: addSeconds(new Date(), 5),
-  },
-
-  // BOOLEAN type
-  {
-    title: 'Wake up at 7 AM',
-    description: 'Wake up early every day',
-    target: 30,
-    initialValue: 0,
-    startDate: subDays(new Date(), 5),
-    targetDate: addDays(new Date(), 25),
-    unit: 'days',
-    type: 'BOOLEAN',
-    createdAt: new Date(),
-  },
-] as const;
+export const DEMO_GOAL_TITLES = {
+  progress: DEMO_GOAL_DATA[0].title,
+  count: DEMO_GOAL_DATA[1].title,
+  boolean: DEMO_GOAL_DATA[2].title,
+} as const;

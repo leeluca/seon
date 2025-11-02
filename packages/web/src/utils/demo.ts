@@ -1,6 +1,7 @@
 import { t } from '@lingui/core/macro';
 import { addDays, addSeconds, subDays } from 'date-fns';
 
+import { DEMO_GOAL_DATA } from '~/constants/setup';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
 import { updateGoalProgress } from '~/services/progress';
@@ -34,49 +35,20 @@ export const generateDemoData = async (userId: string) => {
 const createSampleGoals = (userId: string): Database['goal'][] => {
   const today = new Date();
 
-  return [
-    // PROGRESS type
+  return DEMO_GOAL_DATA.map((goalData) =>
     createGoal({
-      title: t`Read "Brave New World"`,
-      description: t`Finish reading the 288-page book`,
-      target: 288,
-      initialValue: 0,
-      startDate: subDays(today, 10),
-      targetDate: addDays(today, 20),
-      unit: 'pages',
-      type: 'PROGRESS',
+      title: t`${goalData.title}`,
+      description: t`${goalData.description}`,
+      target: goalData.target,
+      initialValue: goalData.initialValue,
+      startDate: addDays(today, goalData.startDateOffset),
+      targetDate: addDays(today, goalData.targetDateOffset),
+      unit: goalData.unit,
+      type: goalData.type,
       userId,
-      createdAt: addSeconds(new Date(), 2),
+      createdAt: addSeconds(new Date(), goalData.createdAtOffset),
     }),
-
-    // COUNT type
-    createGoal({
-      title: t`Learn 1000 French words`,
-      description: t`Improve French vocabulary`,
-      target: 1000,
-      initialValue: 0,
-      startDate: subDays(today, 14),
-      targetDate: addDays(today, 100),
-      unit: 'words',
-      type: 'COUNT',
-      userId,
-      createdAt: addSeconds(new Date(), 1),
-    }),
-
-    // BOOLEAN type
-    createGoal({
-      title: t`Wake up at 7 AM`,
-      description: t`Wake up early every day`,
-      target: 30,
-      initialValue: 0,
-      startDate: subDays(today, 5),
-      targetDate: addDays(today, 25),
-      unit: 'days',
-      type: 'BOOLEAN',
-      userId,
-      createdAt: new Date(),
-    }),
-  ];
+  );
 };
 
 const createGoal = (data: {
@@ -110,6 +82,7 @@ const createGoal = (data: {
     userId: data.userId,
     type: data.type,
     completionDate: null,
+    archivedAt: null,
   };
 };
 
@@ -128,7 +101,7 @@ const createSampleEntries = (
       .reverse();
 
     let currentProgress = 20;
-    daysAgo.forEach((date, index) => {
+    daysAgo.forEach((date) => {
       // Add between 10-40 each day
       const increment = 10 + Math.floor(Math.random() * 30);
       currentProgress += increment;
