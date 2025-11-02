@@ -54,7 +54,7 @@ export const user = pgTable(
         | 'targetDate asc'
         | 'title asc'
         | 'title desc';
-      defaultGoalFilter?: 'all' | 'active' | 'completed';
+      defaultGoalFilter?: 'all' | 'ongoing' | 'completed' | 'archived';
     }>(),
   },
   (table) => [
@@ -108,6 +108,11 @@ export const goal = pgTable(
       mode: 'string',
     }).notNull(),
     completionDate: timestamp('completionDate', {
+      precision: 3,
+      withTimezone: true,
+      mode: 'string',
+    }),
+    archivedAt: timestamp('archivedAt', {
       precision: 3,
       withTimezone: true,
       mode: 'string',

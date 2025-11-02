@@ -21,14 +21,20 @@ export const GOALS = {
     const queryKey = ['goal', { sort }, { filter }];
     let query = db.selectFrom('goal').selectAll();
 
-    if (filter === 'completed') {
-      query = query
-        .where((eb) => eb('currentValue', '>=', eb.ref('target')))
-        .where('target', '>', 0);
-    } else if (filter === 'ongoing') {
-      query = query
-        .where((eb) => eb('currentValue', '<', eb.ref('target')))
-        .where('target', '>', 0);
+    if (filter === 'archived') {
+      query = query.where((eb) => eb('archivedAt', 'is not', eb.val(null)));
+    } else {
+      query = query.where((eb) => eb('archivedAt', 'is', eb.val(null)));
+
+      if (filter === 'completed') {
+        query = query
+          .where((eb) => eb('currentValue', '>=', eb.ref('target')))
+          .where('target', '>', 0);
+      } else if (filter === 'ongoing') {
+        query = query
+          .where((eb) => eb('currentValue', '<', eb.ref('target')))
+          .where('target', '>', 0);
+      }
     }
 
     const [sortField, sortDirection] = sort.split(' ') as [

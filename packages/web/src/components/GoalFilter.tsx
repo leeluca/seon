@@ -62,6 +62,10 @@ export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
           label: t(msg`Ongoing`),
           value: 'ongoing',
         },
+        {
+          label: t(msg`Archived`),
+          value: 'archived',
+        },
       ] as const,
     [t],
   );

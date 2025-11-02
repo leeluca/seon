@@ -4,7 +4,10 @@ import { CDN_URL } from '~/constants';
 import type { GoalFilter } from '~/types/goal';
 import { cn } from '~/utils';
 
-const content = {
+const content: Record<
+  GoalFilter,
+  { image: string; title: JSX.Element; description: JSX.Element }
+> = {
   all: {
     image: 'hatching_chick.webp',
     title: <Trans>There are no goals.</Trans>,
@@ -23,6 +26,17 @@ const content = {
         Keep working on your goals!
         <br />
         Change the filter to see all goals.
+      </Trans>
+    ),
+  },
+  archived: {
+    image: 'side_baby_chick.webp',
+    title: <Trans>No archived goals.</Trans>,
+    description: (
+      <Trans>
+        Archived goals will appear here.
+        <br />
+        Switch filters to view active goals.
       </Trans>
     ),
   },
@@ -46,7 +60,8 @@ function NoGoalsPlaceholder({
       className={cn(
         'animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0',
         className,
-        filter === 'completed' && 'pointer-events-none',
+        (filter === 'completed' || filter === 'archived') &&
+          'pointer-events-none',
       )}
       onClick={onClick}
       onKeyDown={(e) => {
@@ -61,8 +76,7 @@ function NoGoalsPlaceholder({
         width="200"
         height="200"
         // FIXME: change spelling to `fetchPriority` after upgrading to React 19
-        // biome-ignore lint/nursery/noTsIgnore: need to upgrade to React 19
-        //@ts-ignore
+        // @ts-expect-error -- fetchpriority attribute is not yet available in React 18 types
         fetchpriority="high"
       />
       <h4 className="mb-2 text-3xl">{title}</h4>

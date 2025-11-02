@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useQueryClient } from '@tanstack/react-query';
-import { Trash2Icon } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { ArchiveIcon, Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { GOALS } from '~/constants/query';
-import { deleteGoal } from '~/services/goal';
+import { archiveGoal, deleteGoal, unarchiveGoal } from '~/services/goal';
 import { cn } from '~/utils';
 import { Button } from './ui/button';
 import { ResponsivePopover } from './ui/responsive-popover';
@@ -13,34 +13,89 @@ import { ResponsivePopover } from './ui/responsive-popover';
 interface GoalControlsProps {
   id: string;
   title: string;
+  archivedAt: string | null;
   onDeleteSuccess?: () => void;
+  onArchiveToggle?: (isArchived: boolean) => void;
   className?: string;
 }
 
 export function GoalControls({
   id,
   title,
+  archivedAt,
   onDeleteSuccess,
+  onArchiveToggle,
   className,
 }: GoalControlsProps) {
   const { t } = useLingui();
   const queryClient = useQueryClient();
-  const [state, setState] = useState({ isOpen: false, isDeleting: false });
+  const [state, setState] = useState({
+    isOpen: false,
+  });
+
+  const isArchived = Boolean(archivedAt);
+
+  const invalidateGoalQueries = async () => {
+    await queryClient.invalidateQueries({ queryKey: GOALS.all.queryKey });
+  };
+
+  // Mutations using TanStack Query
+  const archiveMutation = useMutation({
+    mutationFn: ({ id, unarchive }: { id: string; unarchive: boolean }) =>
+      unarchive ? unarchiveGoal(id) : archiveGoal(id),
+    onSuccess: async (_data, variables) => {
+      void invalidateGoalQueries();
+      onArchiveToggle?.(!variables.unarchive);
+      toast.success(
+        variables.unarchive
+          ? t`Unarchived goal: ${title}`
+          : t`Archived goal: ${title}`,
+      );
+    },
+    onError: (_err, variables) => {
+      toast.error(
+        variables.unarchive
+          ? t`Failed to unarchive ${title}`
+          : t`Failed to archive ${title}`,
+      );
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (goalId: string) => deleteGoal(goalId),
+    onSuccess: async () => {
+      void invalidateGoalQueries();
+      onDeleteSuccess?.();
+      setState((prev) => ({ ...prev, isOpen: false }));
+      toast.success(t`Deleted goal: ${title}`);
+    },
+    onError: () => {
+      toast.error(t`Failed to delete ${title}`);
+    },
+  });
+
+  const isMutating = archiveMutation.isPending || deleteMutation.isPending;
+
+  const handleArchiveToggle = () => {
+    archiveMutation.mutate({ id, unarchive: isArchived });
+  };
 
   return (
     <div className={cn('flex flex-row gap-3 sm:gap-2', className)}>
-      {/* <Button
+      <Button
         variant="outline"
         size="responsive"
-        aria-label={t`Archive goal`}
         className="flex-1"
-        onClick={() => {
-          // TODO: Implement archive logic
-          toast.info(t`Archive feature coming soon`);
-        }}
+        disabled={isMutating}
+        onClick={handleArchiveToggle}
       >
-        <ArchiveIcon size={18} /> <Trans>Archive Goal</Trans>
-      </Button> */}
+        <ArchiveIcon size={18} />
+        {isArchived ? (
+          <Trans>Unarchive Goal</Trans>
+        ) : (
+          <Trans>Archive Goal</Trans>
+        )}
+      </Button>
       <ResponsivePopover
         open={state.isOpen}
         onOpenChange={(isOpen) => setState((prev) => ({ ...prev, isOpen }))}
@@ -50,6 +105,7 @@ export function GoalControls({
             size="responsive"
             aria-label={t`Delete goal`}
             className="flex-1"
+            disabled={isMutating}
           >
             <Trash2Icon size={18} /> <Trans>Delete Goal</Trans>
           </Button>
@@ -72,17 +128,9 @@ export function GoalControls({
           <Button
             variant="destructive"
             size="responsive"
-            disabled={state.isDeleting}
+            disabled={isMutating}
             onClick={() => {
-              setState({ isOpen: false, isDeleting: true });
-              void deleteGoal(id, () => {
-                queryClient.invalidateQueries({
-                  queryKey: GOALS.all.queryKey,
-                });
-                onDeleteSuccess?.();
-                setState({ isOpen: false, isDeleting: false });
-                toast.success(t`Deleted goal: ${title}`);
-              });
+              deleteMutation.mutate(id);
             }}
           >
             <Trans>Delete</Trans>

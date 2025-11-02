@@ -7,7 +7,7 @@ export type GoalSortDirection = 'asc' | 'desc';
 
 export type GoalSort = `${GoalSortField} ${GoalSortDirection}`;
 
-export type GoalFilter = 'all' | 'completed' | 'ongoing';
+export type GoalFilter = 'all' | 'completed' | 'ongoing' | 'archived';
 
 export type GoalEditableFields = Pick<
   Database['goal'],

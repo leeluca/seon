@@ -87,6 +87,7 @@ export function GoalDetailPanel({
     startDate,
     initialValue,
     type,
+    archivedAt,
   } = selectedGoal;
 
   if (isMobile) {
@@ -121,6 +122,8 @@ export function GoalDetailPanel({
             <GoalControls
               id={id}
               title={title}
+              archivedAt={archivedAt}
+              onArchiveToggle={() => onOpenChange(false)}
               onDeleteSuccess={() => onOpenChange(false)}
             />
           </article>
@@ -160,6 +163,8 @@ export function GoalDetailPanel({
           <GoalControls
             id={id}
             title={title}
+            archivedAt={archivedAt}
+            onArchiveToggle={() => onOpenChange(false)}
             onDeleteSuccess={() => onOpenChange(false)}
             className="mt-auto"
           />

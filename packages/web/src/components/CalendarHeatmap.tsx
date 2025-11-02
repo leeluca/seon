@@ -391,10 +391,7 @@ const CalendarHeatmap = ({
   const weeksToRender = [-1, 0, 1];
 
   return (
-    <div
-      className={cn('flex cursor-default flex-col items-center', className)}
-      data-interactive
-    >
+    <div className={cn('flex flex-col items-center', className)}>
       <div className="mb-2 flex w-full items-center justify-between">
         <p className="ml-2 text-xs font-medium">
           {startMonth === endMonth
@@ -406,11 +403,12 @@ const CalendarHeatmap = ({
           className={isSameWeek ? 'invisible' : ''}
           size="sm"
           onClick={goBackToCurrentWeek}
+          data-interactive
         >
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="relative mb-2 w-full px-3.5 sm:px-8">
+      <div className="relative mb-2 w-full px-3.5 sm:px-8" data-interactive>
         <div
           ref={sliderContainerRef}
           className={cn(

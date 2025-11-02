@@ -73,6 +73,7 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const isSyncing = useSync && !hasSynced;
 
   // FIXME: temporary workaround to refresh the goals list after deleting a goal
+  // FIXME: also need to fix issue for archiving/unarchiving goals
   const handleDeleteSuccess = useCallback(() => {
     refresh?.();
   }, [refresh]);
