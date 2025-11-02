@@ -65,6 +65,7 @@ const goal = new Table(
     type: column.text,
     currentValue: column.real,
     completionDate: column.optionalTimestamp,
+    archivedAt: column.optionalTimestamp,
   },
   { indexes: {} },
 );

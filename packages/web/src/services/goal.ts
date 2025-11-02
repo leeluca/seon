@@ -33,6 +33,7 @@ export async function handleSave(
         targetDate: targetDate,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        archivedAt: null,
         type,
         currentValue: initialValue,
       })
@@ -108,6 +109,26 @@ export async function handleUpdate(
     console.error(error);
     onError?.();
   }
+}
+
+export async function archiveGoal(goalId: string) {
+  const timestamp = new Date().toISOString();
+
+  await db
+    .updateTable('goal')
+    .set({ archivedAt: timestamp, updatedAt: timestamp })
+    .where('id', '=', goalId)
+    .executeTakeFirstOrThrow();
+}
+
+export async function unarchiveGoal(goalId: string) {
+  const timestamp = new Date().toISOString();
+
+  await db
+    .updateTable('goal')
+    .set({ archivedAt: null, updatedAt: timestamp })
+    .where('id', '=', goalId)
+    .executeTakeFirstOrThrow();
 }
 
 export async function deleteGoal(goalId: string, callback?: () => void) {
