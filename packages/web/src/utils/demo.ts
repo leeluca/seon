@@ -1,4 +1,3 @@
-import { t } from '@lingui/core/macro';
 import { addDays, addSeconds, subDays } from 'date-fns';
 
 import { DEMO_GOAL_DATA } from '~/constants/setup';
@@ -37,8 +36,8 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
 
   return DEMO_GOAL_DATA.map((goalData) =>
     createGoal({
-      title: t`${goalData.title}`,
-      description: t`${goalData.description}`,
+      title: goalData.title,
+      description: goalData.description,
       target: goalData.target,
       initialValue: goalData.initialValue,
       startDate: addDays(today, goalData.startDateOffset),

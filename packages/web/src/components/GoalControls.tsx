@@ -91,9 +91,9 @@ export function GoalControls({
       >
         <ArchiveIcon size={18} />
         {isArchived ? (
-          <Trans>Unarchive Goal</Trans>
+          <Trans>Unarchive goal</Trans>
         ) : (
-          <Trans>Archive Goal</Trans>
+          <Trans>Archive goal</Trans>
         )}
       </Button>
       <ResponsivePopover
@@ -107,7 +107,7 @@ export function GoalControls({
             className="flex-1"
             disabled={isMutating}
           >
-            <Trash2Icon size={18} /> <Trans>Delete Goal</Trans>
+            <Trash2Icon size={18} /> <Trans>Delete goal</Trans>
           </Button>
         }
         drawerTitle={t`Delete goal`}

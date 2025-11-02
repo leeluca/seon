@@ -1,3 +1,4 @@
+// TODO: add translations for title and description fields
 export const DEMO_GOAL_DATA = [
   // PROGRESS type
   {
