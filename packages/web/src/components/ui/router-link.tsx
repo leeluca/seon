@@ -12,6 +12,7 @@ interface BaseRouterLinkProps
   interactiveChildSelector?: string | false;
 }
 
+// FIXME: navigate if there's a popover open (should close the popover first)
 const BaseRouterLink = React.forwardRef<HTMLDivElement, BaseRouterLinkProps>(
   (
     {

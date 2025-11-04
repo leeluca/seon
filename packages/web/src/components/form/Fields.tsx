@@ -55,6 +55,7 @@ export function NumberField(props: {
   autoComplete?: string;
   className?: string;
   helperText?: string;
+  customButton?: React.ReactNode;
 }) {
   const field = useFieldContext<number | undefined>();
   const isMobile = useViewportStore((state) => state.isMobile);
@@ -68,6 +69,7 @@ export function NumberField(props: {
     autoComplete,
     className,
     helperText,
+    customButton,
   } = props;
 
   return (
@@ -93,13 +95,24 @@ export function NumberField(props: {
       >
         {buttonStacked ? (
           <>
-            <NumberInput.Field
-              id={id}
-              autoFocus={autoFocus}
-              autoComplete={autoComplete}
-              placeholder={placeholder}
-              className={cn(helperText && 'pl-[39px]', className)}
-            />
+            <div className="relative flex-1">
+              <NumberInput.Field
+                id={id}
+                autoFocus={autoFocus}
+                autoComplete={autoComplete}
+                placeholder={placeholder}
+                className={cn(
+                  helperText && 'pl-[39px]',
+                  customButton && 'pr-[52px]',
+                  className,
+                )}
+              />
+              {customButton && (
+                <div className="absolute top-1/2 right-2 z-10 -translate-y-1/2 transform">
+                  {customButton}
+                </div>
+              )}
+            </div>
             <div className="flex flex-col">
               <NumberInput.Button direction="inc" />
               <NumberInput.Button direction="dec" />
@@ -108,17 +121,25 @@ export function NumberField(props: {
         ) : (
           <>
             <NumberInput.Button direction="dec" className="rounded-r-none" />
-            <NumberInput.Field
-              id={id}
-              autoFocus={autoFocus}
-              autoComplete={autoComplete}
-              placeholder={placeholder}
-              className={cn(
-                'rounded-none',
-                helperText && 'pl-[39px]',
-                className,
+            <div className="relative flex-1">
+              <NumberInput.Field
+                id={id}
+                autoFocus={autoFocus}
+                autoComplete={autoComplete}
+                placeholder={placeholder}
+                className={cn(
+                  'rounded-none',
+                  helperText && 'pl-[39px]',
+                  customButton && 'pr-[52px]',
+                  className,
+                )}
+              />
+              {customButton && (
+                <div className="absolute top-1/2 right-2 z-10 -translate-y-1/2 transform">
+                  {customButton}
+                </div>
               )}
-            />
+            </div>
             <NumberInput.Button direction="inc" className="rounded-l-none" />
           </>
         )}

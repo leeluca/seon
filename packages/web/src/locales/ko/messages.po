@@ -42,13 +42,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon 목표 관리 🚧"
 
 #. placeholder {0}: format(day, 'do')
-#: src/components/CalendarHeatmap.tsx:525
-#: src/components/CalendarHeatmap.tsx:554
+#: src/components/CalendarHeatmap.tsx:524
+#: src/components/CalendarHeatmap.tsx:553
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:602
+#: src/components/CalendarHeatmap.tsx:601
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
@@ -75,7 +75,7 @@ msgstr "모든 목표"
 msgid "Already a user?"
 msgstr "이미 계정이 있으신가요?"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:58
+#: src/components/entryForm/components/CreateEntryForm.tsx:64
 msgid "Amount"
 msgstr "개수"
 
@@ -115,13 +115,13 @@ msgstr "목표 시작 날짜 전"
 #~ msgid "Behind schedule!"
 #~ msgstr "일정 지연"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:88
+#: src/components/goalForm/components/EditGoalForm.tsx:104
 #: src/components/SignOutButton.tsx:67
 #: src/routes/_main/goals.new.tsx:110
 msgid "Cancel"
 msgstr "취소"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:78
+#: src/components/goalForm/components/EditGoalForm.tsx:94
 msgid "Cancel editing"
 msgstr "수정 취소"
 
@@ -182,11 +182,11 @@ msgstr "목표 만들기"
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:98
+#: src/components/entryForm/components/CreateEntryForm.tsx:143
 msgid "Date"
 msgstr "날짜"
 
-#: src/components/ui/number-input.tsx:268
+#: src/components/ui/number-input.tsx:287
 msgid "Decrease"
 msgstr "값 내리기"
 
@@ -194,8 +194,8 @@ msgstr "값 내리기"
 msgid "Delete"
 msgstr "삭제"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:187
-#: src/components/entryForm/components/CreateEntryForm.tsx:271
+#: src/components/entryForm/components/CreateEntryForm.tsx:232
+#: src/components/entryForm/components/CreateEntryForm.tsx:326
 msgid "Delete entry"
 msgstr "기록 삭제"
 
@@ -216,7 +216,7 @@ msgstr "삭제된 목표: {title}"
 msgid "Demo Mode"
 msgstr "데모 모드"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:60
+#: src/components/entryForm/components/CreateEntryForm.tsx:66
 msgid "Did you achieve it?"
 msgstr "달성하셨나요?"
 
@@ -232,7 +232,7 @@ msgstr "목표일 가까운 순"
 msgid "e.g. words"
 msgstr "예: 단어"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:48
+#: src/components/goalForm/components/EditGoalForm.tsx:64
 msgid "Edit goal"
 msgstr "목표 수정"
 
@@ -286,8 +286,8 @@ msgstr "{title} 보관에 실패했습니다"
 msgid "Failed to delete {title}"
 msgstr "{title} 삭제에 실패했습니다"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:183
-#: src/components/entryForm/components/CreateEntryForm.tsx:266
+#: src/components/entryForm/components/CreateEntryForm.tsx:228
+#: src/components/entryForm/components/CreateEntryForm.tsx:321
 msgid "Failed to delete entry"
 msgstr "기록 삭제 실패"
 
@@ -365,7 +365,7 @@ msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니�
 #~ msgid "Improve French vocabulary"
 #~ msgstr "프랑스어 어휘력 향상하기"
 
-#: src/components/ui/number-input.tsx:268
+#: src/components/ui/number-input.tsx:287
 msgid "Increase"
 msgstr "값 올리기"
 
@@ -402,11 +402,11 @@ msgid "Last synced:"
 msgstr "마지막 동기화:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/components/goalForm/components/EditGoalForm.tsx:51
+#: src/components/goalForm/components/EditGoalForm.tsx:67
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:227
+#: src/components/entryForm/components/CreateEntryForm.tsx:272
 msgid "Last:"
 msgstr "이전:"
 
@@ -448,7 +448,7 @@ msgstr "새로운 목표"
 msgid "Newest goals"
 msgstr "최근 추가순"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:169
+#: src/components/entryForm/components/CreateEntryForm.tsx:214
 msgid "No"
 msgstr "아니요"
 
@@ -498,7 +498,7 @@ msgstr "비밀번호를 입력해주세요"
 msgid "Pick a date"
 msgstr "날짜 선택"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:59
+#: src/components/entryForm/components/CreateEntryForm.tsx:65
 #: src/components/goalForm/components/CreateGoalForm.tsx:286
 #: src/components/GoalStatusSummary.tsx:141
 msgid "Progress"
@@ -548,9 +548,9 @@ msgstr "홈으로 돌아가기"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:282
-#: src/components/goalForm/components/EditGoalForm.tsx:99
-#: src/components/goalForm/components/EditGoalForm.tsx:110
+#: src/components/entryForm/components/CreateEntryForm.tsx:337
+#: src/components/goalForm/components/EditGoalForm.tsx:115
+#: src/components/goalForm/components/EditGoalForm.tsx:126
 msgid "Save"
 msgstr "저장"
 
@@ -647,6 +647,10 @@ msgstr "목표가 추가되었습니다"
 msgid "Sucessfully updated goal"
 msgstr "목표가 업데이트되었습니다"
 
+#: src/components/entryForm/components/CreateEntryForm.tsx:280
+msgid "Suggested amount"
+msgstr ""
+
 #: src/components/StatusMenu.tsx:42
 #: src/components/StatusMenu.tsx:69
 msgid "Sync is off"
@@ -696,7 +700,7 @@ msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 msgid "Time Left"
 msgstr "남은 기간"
 
-#: src/components/CalendarHeatmap.tsx:408
+#: src/components/CalendarHeatmap.tsx:407
 msgid "Today"
 msgstr "오늘"
 
@@ -783,7 +787,7 @@ msgstr "환영합니다, {0}님!"
 msgid "What you can do in demo mode:"
 msgstr "데모 모드에서 할 수 있는 것:"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:155
+#: src/components/entryForm/components/CreateEntryForm.tsx:200
 msgid "Yes"
 msgstr "예"
 
