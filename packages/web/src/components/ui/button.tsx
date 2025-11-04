@@ -4,9 +4,8 @@ import { Slot } from '@radix-ui/react-slot';
 
 import { cn } from '~/utils/';
 
-// TODO: add focus colors
 const buttonVariants = cva(
-  'inline-flex gap-2 select-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex gap-2 select-none [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors has-hover:focus-visible:outline-hidden has-hover:focus-visible:ring-1 has-hover:focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
