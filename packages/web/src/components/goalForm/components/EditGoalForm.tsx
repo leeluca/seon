@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { format } from 'date-fns';
 import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
@@ -24,11 +24,27 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
   const { t } = useLingui();
   const [isOpen, setIsOpen] = useState(false);
   const toggleId = useId();
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   const form = useGoalForm({ mode: 'edit', goal });
 
+  // NOTE: when opening the collapsible, scroll the CreateGoalForm into view (centered)
+  useEffect(() => {
+    if (isOpen) {
+      // Wait for animation to end
+      const id = window.setTimeout(() => {
+        contentRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }, 210);
+      return () => window.clearTimeout(id);
+    }
+    return undefined;
+  }, [isOpen]);
+
   return (
-    <section className={className}>
+    <section className={cn('scroll-mt-24', className)}>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <div className="flex h-[60px] items-start justify-between">
           <div className="flex items-start sm:items-center">
@@ -116,11 +132,13 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
           </form.Subscribe>
         </div>
         <CollapsibleContent>
-          <CreateGoalForm
-            form={form}
-            formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
-            className="py-3"
-          />
+          <div ref={contentRef}>
+            <CreateGoalForm
+              form={form}
+              formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
+              className="py-3"
+            />
+          </div>
         </CollapsibleContent>
       </Collapsible>
     </section>
