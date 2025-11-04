@@ -399,15 +399,15 @@ const CalendarHeatmap = ({
         </p>
         <Button
           variant="outline"
-          className={isSameWeek ? 'invisible' : ''}
+          className={isSameWeek ? 'invisible' : 'mr-3'}
+          disabled={isSameWeek}
           size="sm"
           onClick={goBackToCurrentWeek}
-          data-interactive
         >
           <Trans>Today</Trans>
         </Button>
       </div>
-      <div className="relative mb-2 w-full px-3.5 sm:px-8" data-interactive>
+      <div className="relative mb-2 w-full px-3.5 sm:px-8">
         <div
           ref={sliderContainerRef}
           className={cn(

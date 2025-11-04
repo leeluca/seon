@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@custom-variant has-hover (@media (hover: hover));
+@custom-variant no-hover (@media (hover: none));
+
+
 @theme inline {
   --breakpoint-*: initial;
   --breakpoint-xs: 480px;

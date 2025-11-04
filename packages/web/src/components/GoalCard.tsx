@@ -1,6 +1,8 @@
 import { useCallback, useRef } from 'react';
 import { useLingui } from '@lingui/react/macro';
+import { Link } from '@tanstack/react-router';
 import { isBefore, startOfDay } from 'date-fns';
+import { ChevronRight } from 'lucide-react';
 
 import {
   Card,
@@ -12,7 +14,7 @@ import {
 import type { Database } from '~/lib/powersync/AppSchema';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
-import { RouterLink } from './ui/router-link';
+import { buttonVariants } from './ui/button';
 
 interface ProgressBarProps {
   progressPercent: number;
@@ -160,44 +162,52 @@ export default function GoalCard({
   );
 
   return (
-    <RouterLink
-      to="/goals/$id"
-      params={{ id }}
-      mask={{
-        to: '/goals/$id',
-        params: { id: shortId },
-      }}
-      aria-label={t`Toggle goal details`}
+    <Card
+      className="w-full max-w-[600px] rounded-2xl text-center shadow-xs"
+      ref={cardRef}
+      data-testid={`goal-card-${id}`}
     >
-      <Card
-        className="w-full max-w-[600px] rounded-2xl text-center shadow-xs"
-        ref={cardRef}
-        data-testid={`goal-card-${id}`}
-      >
-        <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
-          <div className="flex h-12 items-center sm:h-14">
-            <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
-              {title}
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5 px-5 pb-5 sm:gap-6 sm:px-6 sm:pb-6">
-          <CalendarHeatmap
-            goalId={id}
-            checkBlockedDateFn={checkBlockedDateFn}
-            blockedDateFeedback={t`Before goal's start date`}
-            className="-mx-2 sm:mx-0"
+      <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
+        <div className="flex h-12 items-center sm:h-14">
+          <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
+            <Link
+              to="/goals/$id"
+              params={{ id }}
+              mask={{
+                to: '/goals/$id',
+                params: { id: shortId },
+              }}
+              aria-label={t`Toggle goal details`}
+              className={cn(
+                buttonVariants({
+                  variant: 'ghost',
+                  size: 'lg',
+                }),
+                'relative flex w-full items-center text-xl font-medium sm:text-2xl',
+              )}
+            >
+              <span className="flex-1 text-center">{title}</span>
+              <ChevronRight className="absolute right-2" />
+            </Link>
+          </CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-5 px-5 pb-5 sm:gap-6 sm:px-6 sm:pb-6">
+        <CalendarHeatmap
+          goalId={id}
+          checkBlockedDateFn={checkBlockedDateFn}
+          blockedDateFeedback={t`Before goal's start date`}
+          className="-mx-2 sm:mx-0"
+        />
+        <div className="flex flex-col gap-2">
+          <ProgressBar
+            progressPercent={progressPercent}
+            target={target}
+            currentValue={currentValue}
           />
-          <div className="flex flex-col gap-2">
-            <ProgressBar
-              progressPercent={progressPercent}
-              target={target}
-              currentValue={currentValue}
-            />
-          </div>
-        </CardContent>
-        <CardFooter className="px-4 pb-4 sm:px-6 sm:pb-6" />
-      </Card>
-    </RouterLink>
+        </div>
+      </CardContent>
+      <CardFooter className="px-4 pb-4 sm:px-6 sm:pb-6" />
+    </Card>
   );
 }
