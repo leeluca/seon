@@ -1,12 +1,18 @@
 import { useMemo } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  isPast as checkIsPast,
+  isToday as checkIsToday,
+  differenceInCalendarDays,
+} from 'date-fns';
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import FormError from '~/components/form/FormError';
 import FormItem from '~/components/FormItem';
 import { Button } from '~/components/ui/button';
+import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
 import { useIds } from '~/hooks/useIds';
@@ -82,6 +88,45 @@ const CreateEntryForm = ({
     previousValue,
     onSubmitCallback,
   });
+
+  // FIXME: repeated logic from GoalStatusSummary.tsx
+  // Fetch goal data to calculate averageNeededPerDay
+  const { data: goal } = useQuery(GOALS.detail(goalId));
+
+  // Calculate averageNeededPerDay
+  const averageNeededPerDay = useMemo(() => {
+    if (!goal || goalType === 'BOOLEAN') return 0;
+
+    const targetDate = new Date(goal.targetDate);
+    const entriesSum = goal.currentValue ?? 0;
+    const isGoalCompleted = entriesSum >= goal.target;
+    const isPastTargetDate =
+      !checkIsToday(targetDate) && checkIsPast(targetDate);
+
+    if (isGoalCompleted || isPastTargetDate) {
+      return 0;
+    }
+
+    const daysRemaining = Math.max(
+      differenceInCalendarDays(targetDate, new Date()) + 1,
+      0,
+    );
+
+    const remaining = Math.max(goal.target - entriesSum, 0);
+
+    // Check if an entry was added today
+    const hasEntryToday = orderedEntries.some((entry) =>
+      checkIsToday(entry.date),
+    );
+
+    const adjustedDaysRemaining = hasEntryToday
+      ? Math.max(daysRemaining - 1, 0)
+      : daysRemaining;
+
+    const averageNeeded = remaining / Math.max(adjustedDaysRemaining, 1);
+
+    return Math.ceil(averageNeeded);
+  }, [goal, goalType, orderedEntries]);
 
   // TODO: refactor to separate goal type components
   return (
@@ -225,6 +270,16 @@ const CreateEntryForm = ({
                           autoComplete="off"
                           helperText={
                             showPreviousValueHelper ? `${t`Last:`} ` : undefined
+                          }
+                          customButton={
+                            averageNeededPerDay > 0 ? (
+                              <NumberInput.CustomButton
+                                amount={averageNeededPerDay}
+                                label={`+${averageNeededPerDay}`}
+                                className="h-7 rounded-md px-2 text-xs"
+                                aria-label={t`Suggested amount`}
+                              />
+                            ) : null
                           }
                         />
                       </div>

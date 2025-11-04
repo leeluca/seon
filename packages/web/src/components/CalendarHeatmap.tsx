@@ -20,7 +20,6 @@ import {
   isAfter,
   isSameDay,
   startOfWeek,
-  subWeeks,
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
@@ -441,7 +440,7 @@ const CalendarHeatmap = ({
           </div>
 
           <div
-            className="flex items-stretch"
+            className="flex items-stretch py-px"
             style={{
               transform: `translateX(calc(-100% + ${dragOffset}px))`,
               transition: isDraggingSlider

@@ -42,13 +42,13 @@ msgid "🚧 Seon Goals 🚧"
 msgstr "🚧 Seon Goals 🚧"
 
 #. placeholder {0}: format(day, 'do')
-#: src/components/CalendarHeatmap.tsx:525
-#: src/components/CalendarHeatmap.tsx:554
+#: src/components/CalendarHeatmap.tsx:524
+#: src/components/CalendarHeatmap.tsx:553
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal?.title
-#: src/components/CalendarHeatmap.tsx:602
+#: src/components/CalendarHeatmap.tsx:601
 msgid "Add entry for <0>{0}</0>"
 msgstr "Add entry for <0>{0}</0>"
 
@@ -75,7 +75,7 @@ msgstr "All Goals"
 msgid "Already a user?"
 msgstr "Already a user?"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:58
+#: src/components/entryForm/components/CreateEntryForm.tsx:64
 msgid "Amount"
 msgstr "Amount"
 
@@ -115,13 +115,13 @@ msgstr "Before goal's start date"
 #~ msgid "Behind schedule!"
 #~ msgstr "Behind schedule!"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:88
+#: src/components/goalForm/components/EditGoalForm.tsx:104
 #: src/components/SignOutButton.tsx:67
 #: src/routes/_main/goals.new.tsx:110
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:78
+#: src/components/goalForm/components/EditGoalForm.tsx:94
 msgid "Cancel editing"
 msgstr "Cancel editing"
 
@@ -182,11 +182,11 @@ msgstr "Create goal"
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:98
+#: src/components/entryForm/components/CreateEntryForm.tsx:143
 msgid "Date"
 msgstr "Date"
 
-#: src/components/ui/number-input.tsx:268
+#: src/components/ui/number-input.tsx:287
 msgid "Decrease"
 msgstr "Decrease"
 
@@ -194,8 +194,8 @@ msgstr "Decrease"
 msgid "Delete"
 msgstr "Delete"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:187
-#: src/components/entryForm/components/CreateEntryForm.tsx:271
+#: src/components/entryForm/components/CreateEntryForm.tsx:232
+#: src/components/entryForm/components/CreateEntryForm.tsx:326
 msgid "Delete entry"
 msgstr "Delete entry"
 
@@ -216,7 +216,7 @@ msgstr "Deleted goal: {title}"
 msgid "Demo Mode"
 msgstr "Demo Mode"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:60
+#: src/components/entryForm/components/CreateEntryForm.tsx:66
 msgid "Did you achieve it?"
 msgstr "Did you achieve it?"
 
@@ -232,7 +232,7 @@ msgstr "Due soon"
 msgid "e.g. words"
 msgstr "e.g. words"
 
-#: src/components/goalForm/components/EditGoalForm.tsx:48
+#: src/components/goalForm/components/EditGoalForm.tsx:64
 msgid "Edit goal"
 msgstr "Edit goal"
 
@@ -286,8 +286,8 @@ msgstr "Failed to archive {title}"
 msgid "Failed to delete {title}"
 msgstr "Failed to delete {title}"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:183
-#: src/components/entryForm/components/CreateEntryForm.tsx:266
+#: src/components/entryForm/components/CreateEntryForm.tsx:228
+#: src/components/entryForm/components/CreateEntryForm.tsx:321
 msgid "Failed to delete entry"
 msgstr "Failed to delete entry"
 
@@ -365,7 +365,7 @@ msgstr "If you sign out now, this data will be permanently lost!"
 #~ msgid "Improve French vocabulary"
 #~ msgstr "Improve French vocabulary"
 
-#: src/components/ui/number-input.tsx:268
+#: src/components/ui/number-input.tsx:287
 msgid "Increase"
 msgstr "Increase"
 
@@ -402,11 +402,11 @@ msgid "Last synced:"
 msgstr "Last synced:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/components/goalForm/components/EditGoalForm.tsx:51
+#: src/components/goalForm/components/EditGoalForm.tsx:67
 msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:227
+#: src/components/entryForm/components/CreateEntryForm.tsx:272
 msgid "Last:"
 msgstr "Last:"
 
@@ -448,7 +448,7 @@ msgstr "New Goal"
 msgid "Newest goals"
 msgstr "Newest first"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:169
+#: src/components/entryForm/components/CreateEntryForm.tsx:214
 msgid "No"
 msgstr "No"
 
@@ -498,7 +498,7 @@ msgstr "Password is required"
 msgid "Pick a date"
 msgstr "Pick a date"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:59
+#: src/components/entryForm/components/CreateEntryForm.tsx:65
 #: src/components/goalForm/components/CreateGoalForm.tsx:286
 #: src/components/GoalStatusSummary.tsx:141
 msgid "Progress"
@@ -548,9 +548,9 @@ msgstr "Return to Home"
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:282
-#: src/components/goalForm/components/EditGoalForm.tsx:99
-#: src/components/goalForm/components/EditGoalForm.tsx:110
+#: src/components/entryForm/components/CreateEntryForm.tsx:337
+#: src/components/goalForm/components/EditGoalForm.tsx:115
+#: src/components/goalForm/components/EditGoalForm.tsx:126
 msgid "Save"
 msgstr "Save"
 
@@ -647,6 +647,10 @@ msgstr "Sucessfully added goal"
 msgid "Sucessfully updated goal"
 msgstr "Sucessfully updated goal"
 
+#: src/components/entryForm/components/CreateEntryForm.tsx:280
+msgid "Suggested amount"
+msgstr "Suggested amount"
+
 #: src/components/StatusMenu.tsx:42
 #: src/components/StatusMenu.tsx:69
 msgid "Sync is off"
@@ -696,7 +700,7 @@ msgstr "This will delete all your data and reset the demo."
 msgid "Time Left"
 msgstr "Time Left"
 
-#: src/components/CalendarHeatmap.tsx:408
+#: src/components/CalendarHeatmap.tsx:407
 msgid "Today"
 msgstr "Today"
 
@@ -783,7 +787,7 @@ msgstr "Welcome, {0}!"
 msgid "What you can do in demo mode:"
 msgstr "What you can do in demo mode:"
 
-#: src/components/entryForm/components/CreateEntryForm.tsx:155
+#: src/components/entryForm/components/CreateEntryForm.tsx:200
 msgid "Yes"
 msgstr "Yes"
 

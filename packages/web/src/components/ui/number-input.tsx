@@ -27,6 +27,7 @@ interface NumberInputContextValue {
   handleBlur?: () => void;
   handleIncrement?: () => void;
   handleDecrement?: () => void;
+  handleCustomIncrement?: (amount: number) => void;
 }
 
 const NumberInputContext = createContext<NumberInputContextValue | null>(null);
@@ -121,6 +122,23 @@ function useNumberInput({
     }
   }, [min, max, value]);
 
+  const handleCustomIncrement = useCallback(
+    (amount: number) => {
+      setValue((prev) => {
+        const newVal = Math.min((prev ?? 0) + amount, max);
+        if (internalRef.current) {
+          internalRef.current.value = String(newVal ?? '');
+          onChange?.({
+            target: internalRef.current,
+            currentTarget: internalRef.current,
+          } as React.ChangeEvent<HTMLInputElement>);
+        }
+        return newVal;
+      });
+    },
+    [max, onChange],
+  );
+
   return {
     value,
     setValue,
@@ -133,6 +151,7 @@ function useNumberInput({
     handleBlur,
     handleIncrement,
     handleDecrement,
+    handleCustomIncrement,
   };
 }
 
@@ -277,8 +296,45 @@ export function NumberInputButton({
   );
 }
 
+export interface NumberInputCustomButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  amount: number;
+  label?: string;
+}
+
+export function NumberInputCustomButton({
+  amount,
+  label,
+  className,
+  ...props
+}: NumberInputCustomButtonProps) {
+  const context = useContext(NumberInputContext);
+  if (!context) return null;
+
+  const { value, max, handleCustomIncrement } = context;
+  const isDisabled = value !== undefined && value >= max;
+
+  const handleClick = () => {
+    handleCustomIncrement?.(amount);
+  };
+
+  return (
+    <Button
+      onClick={handleClick}
+      disabled={isDisabled}
+      variant="outline"
+      type="button"
+      className={className}
+      {...props}
+    >
+      {label ?? `+${amount}`}
+    </Button>
+  );
+}
+
 export const NumberInput = {
   Root: NumberInputRoot,
   Field: NumberInputField,
   Button: NumberInputButton,
+  CustomButton: NumberInputCustomButton,
 };
