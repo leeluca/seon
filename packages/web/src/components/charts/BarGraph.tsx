@@ -1,27 +1,30 @@
-import type { ChartData } from "chart.js";
-import { Bar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+import type { CSSProperties } from 'react';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import type { EChartsOption } from './echarts';
+import { ReactEChartsCore, echarts } from './echarts';
 
 interface BarGraphProps {
-  data: ChartData<"bar", number[], string>;
+  option: EChartsOption;
+  height?: number | string;
+  className?: string;
+  style?: CSSProperties;
 }
-export const BarGraph = ({ data }: BarGraphProps) => {
-  return <Bar data={data} />;
+
+export const BarGraph = ({
+  option,
+  height = 280,
+  className,
+  style,
+}: BarGraphProps) => {
+  return (
+    <ReactEChartsCore
+      echarts={echarts}
+      option={option}
+      notMerge
+      lazyUpdate
+      className={className}
+      style={{ width: '100%', height, ...style }}
+      opts={{ renderer: 'canvas' }}
+    />
+  );
 };

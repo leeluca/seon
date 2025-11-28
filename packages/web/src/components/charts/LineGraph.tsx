@@ -1,33 +1,30 @@
-import type { ChartData, ChartOptions } from 'chart.js';
+import type { CSSProperties } from 'react';
 
-import {
-  CategoryScale,
-  Chart as ChartJS,
-  Filler,
-  Legend,
-  LinearScale,
-  LineElement,
-  PointElement,
-  Title,
-  Tooltip,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Filler,
-);
+import type { EChartsOption } from './echarts';
+import { ReactEChartsCore, echarts } from './echarts';
 
 export interface LineGraphProps {
-  data: ChartData<'line', number[], string | string[]>;
-  options?: ChartOptions<'line'>;
+  option: EChartsOption;
+  height?: number | string;
+  className?: string;
+  style?: CSSProperties;
 }
-export const LineGraph = ({ data, options }: LineGraphProps) => {
-  return <Line data={data} options={options} />;
+
+export const LineGraph = ({
+  option,
+  height = 320,
+  className,
+  style,
+}: LineGraphProps) => {
+  return (
+    <ReactEChartsCore
+      echarts={echarts}
+      option={option}
+      notMerge
+      lazyUpdate
+      className={className}
+      style={{ width: '100%', height, ...style }}
+      opts={{ renderer: 'canvas' }}
+    />
+  );
 };
