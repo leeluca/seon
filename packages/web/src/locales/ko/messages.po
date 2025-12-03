@@ -59,9 +59,13 @@ msgstr "<0>{0}</0>에 기록 추가"
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
-#: src/components/GoalLineGraph.tsx:290
+#: src/components/GoalLineGraph/GoalLineGraph.tsx:112
 msgid "Add your first entry to start"
 msgstr "아직 목표를 진행하지 않았습니다."
+
+#: src/components/GoalLineGraph/logic.ts:386
+msgid "After target date"
+msgstr "목표일 이후"
 
 #: src/components/GoalCard.tsx:95
 #~ msgid "Ahead of schedule!"
@@ -107,7 +111,7 @@ msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
-#: src/components/GoalCard.tsx:188
+#: src/components/GoalCard.tsx:199
 msgid "Before goal's start date"
 msgstr "목표 시작 날짜 전"
 
@@ -129,11 +133,11 @@ msgstr "수정 취소"
 #~ msgid "Check sync error or sign in"
 #~ msgstr "동기화 오류를 확인하거나 로그인하세요"
 
-#: src/components/StatusMenu.tsx:186
+#: src/components/StatusMenu.tsx:187
 msgid "Check sync status"
 msgstr "동기화 상태 확인"
 
-#: src/components/StatusMenu.tsx:232
+#: src/components/StatusMenu.tsx:233
 msgid "Check your internet connection and try again."
 msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 
@@ -149,11 +153,11 @@ msgstr "완료됨"
 msgid "Completed!"
 msgstr "목표 달성!"
 
-#: src/components/StatusMenu.tsx:240
+#: src/components/StatusMenu.tsx:241
 msgid "Connecting to sync…"
 msgstr "동기화 연결 중…"
 
-#: src/components/StatusMenu.tsx:72
+#: src/components/StatusMenu.tsx:73
 msgid "Could not connect with the sync service. Try again later."
 msgstr "동기화 서비스에 연결할 수 없습니다. 나중에 다시 시도해주세요."
 
@@ -181,6 +185,10 @@ msgstr "목표 만들기"
 #: src/components/NoGoalsPlaceholder.tsx:14
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
+
+#: src/components/GoalLineGraph/logic.ts:42
+msgid "Daily"
+msgstr "일별"
 
 #: src/components/entryForm/components/CreateEntryForm.tsx:143
 msgid "Date"
@@ -251,10 +259,10 @@ msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
 
 #: src/components/GoalLineGraph.tsx:256
-msgid "Entries after target date"
-msgstr "목표일 이후의 기록"
+#~ msgid "Entries after target date"
+#~ msgstr "목표일 이후의 기록"
 
-#: src/components/StatusMenu.tsx:243
+#: src/components/StatusMenu.tsx:244
 msgid "Establishing a connection. This may take a moment."
 msgstr "연결을 설정하고 있습니다. 잠시만 기다려 주세요."
 
@@ -324,14 +332,23 @@ msgstr "뒤로 가기"
 #~ msgid "Goal achieved!"
 #~ msgstr "목표 달성!"
 
-#: src/components/GoalLineGraph.tsx:236
+#: src/components/GoalLineGraph/logic.ts:387
 msgid "Goal Benchmark"
 msgstr "목표 기준선"
+
+#: src/routes/_main/goals.lazy.tsx:41
+msgid "Goal management controls"
+msgstr "목표 관리"
 
 #: src/components/goalForm/components/CreateGoalForm.tsx:103
 #: src/components/goalForm/components/CreateGoalForm.tsx:118
 msgid "Goal name"
 msgstr "목표 이름"
+
+#: src/components/GoalDetailPanel.tsx:41
+#: src/components/GoalDetailPanel.tsx:55
+msgid "Goal not found"
+msgstr "목표를 찾을 수 없습니다"
 
 #: src/components/GoalCard.tsx:241
 #~ msgid "Goal progress: {progressMessage}"
@@ -349,7 +366,7 @@ msgstr "목표 목록"
 #~ msgid "Hello, {0}!"
 #~ msgstr "안녕하세요, {0}님!"
 
-#: src/components/StatusMenu.tsx:280
+#: src/components/StatusMenu.tsx:281
 msgid "Hello, {userName}!"
 msgstr "안녕하세요, {userName}님!"
 
@@ -364,6 +381,15 @@ msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니�
 #: src/constants/setup.ts:19
 #~ msgid "Improve French vocabulary"
 #~ msgstr "프랑스어 어휘력 향상하기"
+
+#: src/components/DatePicker.tsx:35
+#: src/components/DatePicker.tsx:36
+msgid "In a month"
+msgstr "1개월 후"
+
+#: src/components/DatePicker.tsx:34
+msgid "In a week"
+msgstr "1주일 후"
 
 #: src/components/ui/number-input.tsx:287
 msgid "Increase"
@@ -397,7 +423,7 @@ msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 msgid "Keep working on your goals!<0/>Change the filter to see all goals."
 msgstr "목표를 위해 계속 노력하세요!<0/>필터를 변경하여 모든 목표를 확인할 수 있습니다."
 
-#: src/components/StatusMenu.tsx:215
+#: src/components/StatusMenu.tsx:216
 msgid "Last synced:"
 msgstr "마지막 동기화:"
 
@@ -414,7 +440,7 @@ msgstr "이전:"
 #~ msgid "Learn 1000 French words"
 #~ msgstr "프랑스어 단어 1000개 익히기"
 
-#: src/components/StatusMenu.tsx:141
+#: src/components/StatusMenu.tsx:142
 msgid "Loading user status"
 msgstr "사용자 상태 로딩 중"
 
@@ -422,6 +448,10 @@ msgstr "사용자 상태 로딩 중"
 #: src/components/goalForm/hooks/useGoalForm.ts:91
 msgid "Missing required fields"
 msgstr "필수 항목을 입력해 주세요"
+
+#: src/components/GoalLineGraph/logic.ts:44
+msgid "Monthly"
+msgstr "월별"
 
 #: src/components/authForm/components/SignUpForm.tsx:48
 #: src/components/authForm/components/SignUpForm.tsx:62
@@ -494,7 +524,7 @@ msgstr "비밀번호"
 msgid "Password is required"
 msgstr "비밀번호를 입력해주세요"
 
-#: src/components/DatePicker.tsx:117
+#: src/components/DatePicker.tsx:121
 msgid "Pick a date"
 msgstr "날짜 선택"
 
@@ -508,7 +538,7 @@ msgstr "진행도"
 #~ msgid "Read \"Brave New World\""
 #~ msgstr "멋진 신세계 책 읽기"
 
-#: src/components/UpdatePrompt.tsx:69
+#: src/components/UpdatePrompt.tsx:70
 msgid "Ready to update"
 msgstr "업데이트 준비 완료"
 
@@ -520,7 +550,7 @@ msgstr "일일 진행 상황 기록"
 msgid "Refresh page"
 msgstr "페이지 새로고침"
 
-#: src/components/UpdatePrompt.tsx:72
+#: src/components/UpdatePrompt.tsx:73
 msgid "Refresh to get the latest improvements."
 msgstr "업데이트하여 개선 사항을 확인해 보세요."
 
@@ -558,6 +588,10 @@ msgstr "저장"
 msgid "See you again!"
 msgstr "다음에 또 뵈어요!"
 
+#: src/components/DatePicker.tsx:142
+msgid "Select"
+msgstr "선택"
+
 #: src/components/GoalSorting.tsx:111
 msgid "Select sort..."
 msgstr "정렬 기준 선택..."
@@ -585,11 +619,11 @@ msgstr "추가 옵션 보기"
 msgid "Sign In"
 msgstr "로그인"
 
-#: src/components/StatusMenu.tsx:50
+#: src/components/StatusMenu.tsx:51
 msgid "Sign in again to sync your data."
 msgstr "데이터 동기화를 위해 다시 로그인해주세요."
 
-#: src/components/StatusMenu.tsx:55
+#: src/components/StatusMenu.tsx:56
 msgid "Sign in to sync your data."
 msgstr "데이터 동기화를 위해 로그인해 주세요."
 
@@ -649,14 +683,14 @@ msgstr "목표가 업데이트되었습니다"
 
 #: src/components/entryForm/components/CreateEntryForm.tsx:280
 msgid "Suggested amount"
-msgstr ""
+msgstr "제안된 양"
 
-#: src/components/StatusMenu.tsx:42
-#: src/components/StatusMenu.tsx:69
+#: src/components/StatusMenu.tsx:43
+#: src/components/StatusMenu.tsx:70
 msgid "Sync is off"
 msgstr "동기화가 꺼져 있습니다"
 
-#: src/components/StatusMenu.tsx:173
+#: src/components/StatusMenu.tsx:174
 msgid "Syncing"
 msgstr "동기화 중"
 
@@ -701,12 +735,17 @@ msgid "Time Left"
 msgstr "남은 기간"
 
 #: src/components/CalendarHeatmap.tsx:407
+#: src/components/DatePicker.tsx:32
 msgid "Today"
 msgstr "오늘"
 
-#: src/components/GoalCard.tsx:170
+#: src/components/GoalCard.tsx:180
 msgid "Toggle goal details"
 msgstr "목표 상세 정보 토글"
+
+#: src/components/DatePicker.tsx:33
+msgid "Tomorrow"
+msgstr "내일"
 
 #: src/components/goalForm/components/CreateGoalForm.tsx:326
 msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
@@ -745,13 +784,18 @@ msgstr "동기화되지 않은 데이터는 손실됩니다"
 msgid "Update app"
 msgstr "앱 업데이트"
 
-#: src/components/UpdatePrompt.tsx:60
+#: src/components/UpdatePrompt.tsx:47
+#: src/components/UpdatePrompt.tsx:61
 msgid "Update available"
 msgstr "업데이트 있음"
 
-#: src/components/UpdatePrompt.tsx:76
+#: src/components/UpdatePrompt.tsx:77
 msgid "Update now"
 msgstr "지금 업데이트"
+
+#: src/components/StatusMenu.tsx:270
+msgid "User info"
+msgstr "사용자 정보"
 
 #: src/components/goalForm/components/CreateGoalForm.tsx:172
 msgid "Value for goal completion (number)"
@@ -769,12 +813,16 @@ msgstr "통계 및 시각화 보기"
 #~ msgid "Wake up early every day"
 #~ msgstr "매일 일찍 일어나기"
 
+#: src/components/GoalLineGraph/logic.ts:43
+msgid "Weekly"
+msgstr "주별"
+
 #. placeholder {0}: user.name
 #: src/routes/signin/index.lazy.tsx:33
 msgid "Welcome back, {0}!"
 msgstr "다시 오신 것을 환영합니다, {0}님!"
 
-#: src/components/StatusMenu.tsx:255
+#: src/components/StatusMenu.tsx:256
 msgid "Welcome back, {userName}!"
 msgstr "다시 오신 것을 환영합니다, {userName}님!"
 
@@ -795,11 +843,11 @@ msgstr "예"
 msgid "Yes or no"
 msgstr "예/아니오"
 
-#: src/components/StatusMenu.tsx:229
+#: src/components/StatusMenu.tsx:230
 msgid "You're offline"
 msgstr "오프라인 상태입니다"
 
-#: src/components/StatusMenu.tsx:210
+#: src/components/StatusMenu.tsx:211
 msgid "Your data is synced!"
 msgstr "데이터가 동기화되었습니다!"
 
@@ -807,14 +855,14 @@ msgstr "데이터가 동기화되었습니다!"
 msgid "Your most recent changes have not been synced yet."
 msgstr "최근 변경사항이 아직 동기화되지 않았습니다."
 
-#: src/components/GoalLineGraph.tsx:177
+#: src/components/GoalLineGraph/logic.ts:385
 msgid "Your Progress"
 msgstr "진행 상황"
 
-#: src/components/GoalLineGraph.tsx:286
+#: src/components/GoalLineGraph/GoalLineGraph.tsx:108
 msgid "Your progress graph will be shown here"
 msgstr "여기에 진행 상황 그래프가 표시됩니다"
 
-#: src/components/StatusMenu.tsx:47
+#: src/components/StatusMenu.tsx:48
 msgid "Your session has expired."
 msgstr "세션이 만료되었습니다."

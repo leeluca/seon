@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import {
@@ -37,7 +38,9 @@ const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
           <DrawerTitle className="text-2xl">
-            <div>Goal not found</div>
+            <div>
+              <Trans>Goal not found</Trans>
+            </div>
           </DrawerTitle>
         </DrawerContent>
       </Drawer>
@@ -51,7 +54,9 @@ const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
         side="right"
       >
         <SheetTitle className="text-2xl">
-          <div>Goal not found</div>
+          <div>
+            <Trans>Goal not found</Trans>
+          </div>
         </SheetTitle>
       </SheetContent>
     </Sheet>

@@ -266,7 +266,7 @@ function StatusMenu() {
             <Button
               size="icon-responsive"
               variant="ghost"
-              aria-label="User info"
+              aria-label={t`User info`}
             >
               <CircleUserIcon size={18} />
             </Button>
