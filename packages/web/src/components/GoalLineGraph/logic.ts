@@ -351,13 +351,14 @@ export const buildGoalLineGraphOptions = ({
       const labels = points.map((point) => point.label);
 
       const baselineSeries = points.map((point) => point.baseline);
+      // Combined progress for the slider data shadow (all progress values)
+      const allProgress = points.map((point) => point.progressValue);
       // Keep all progress values for continuous line, but track which have user entries
       const progressBeforeTarget = points.map((point) =>
         !point.isAfterTarget ? point.progressValue : null,
       );
-      // Only include after-target values where user created an entry
       const progressAfterTarget = points.map((point) =>
-        point.isAfterTarget && point.hasUserEntry ? point.progressValue : null,
+        point.isAfterTarget ? point.progressValue : null,
       );
       const hasAfterTargetData = progressAfterTarget.some(
         (value) => value !== null && value !== undefined,
@@ -409,6 +410,9 @@ export const buildGoalLineGraphOptions = ({
             ...(hasAfterTargetData ? [afterTargetLabel] : []),
           ],
           left: 8,
+          selected: {
+            _allProgress: false,
+          },
         },
         grid: {
           left: isMobile ? 42 : 52,
@@ -490,11 +494,12 @@ export const buildGoalLineGraphOptions = ({
             end,
             zoomOnMouseWheel: 'shift',
             moveOnMouseMove: 'shift',
+            filterMode: 'none' as const,
           },
           ...(needsSlider
             ? [
                 {
-                  type: 'slider',
+                  type: 'slider' as const,
                   start,
                   end,
                   height: isMobile ? 32 : 30,
@@ -503,11 +508,24 @@ export const buildGoalLineGraphOptions = ({
                   showDetail: false,
                   handleSize: isMobile ? 12 : 10,
                   handleIcon: 'path://M512 64L832 512 512 960 192 512 512 64Z',
+                  filterMode: 'none' as const,
                 },
               ]
             : []),
         ],
         series: [
+          // Hidden series for slider data shadow - contains all progress values
+          {
+            name: '_allProgress',
+            type: 'line',
+            data: allProgress,
+            showSymbol: false,
+            lineStyle: { width: 0, opacity: 0 },
+            areaStyle: { opacity: 0 },
+            itemStyle: { opacity: 0 },
+            silent: true,
+            z: 0,
+          },
           {
             name: progressLabel,
             type: 'line',
@@ -563,8 +581,12 @@ export const buildGoalLineGraphOptions = ({
                   type: 'line' as const,
                   data: progressAfterTarget.map((value, index) => ({
                     value,
-                    symbol:
-                      index === firstAchievementIndex ? 'diamond' : 'circle',
+                    // Only show symbol for points with user entries
+                    symbol: !points[index]?.hasUserEntry
+                      ? 'none'
+                      : index === firstAchievementIndex
+                        ? 'diamond'
+                        : 'circle',
                     itemStyle:
                       index === firstAchievementIndex
                         ? {
@@ -574,7 +596,7 @@ export const buildGoalLineGraphOptions = ({
                           }
                         : undefined,
                   })),
-                  connectNulls: true,
+                  connectNulls: false,
                   showSymbol: true,
                   symbolSize,
                   lineStyle: { width: 3, color: COLORS.afterTargetLine },

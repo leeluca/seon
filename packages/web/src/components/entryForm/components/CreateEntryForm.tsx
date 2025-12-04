@@ -125,7 +125,7 @@ const CreateEntryForm = ({
 
     const averageNeeded = remaining / Math.max(adjustedDaysRemaining, 1);
 
-    return Math.round(averageNeeded);
+    return Math.ceil(averageNeeded);
   }, [goal, goalType, orderedEntries]);
 
   // TODO: refactor to separate goal type components
