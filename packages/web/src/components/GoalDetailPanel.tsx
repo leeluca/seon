@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { Trans } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import {
@@ -37,7 +38,9 @@ const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
       <Drawer open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
           <DrawerTitle className="text-2xl">
-            <div>Goal not found</div>
+            <div>
+              <Trans>Goal not found</Trans>
+            </div>
           </DrawerTitle>
         </DrawerContent>
       </Drawer>
@@ -51,7 +54,9 @@ const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
         side="right"
       >
         <SheetTitle className="text-2xl">
-          <div>Goal not found</div>
+          <div>
+            <Trans>Goal not found</Trans>
+          </div>
         </SheetTitle>
       </SheetContent>
     </Sheet>
@@ -99,7 +104,7 @@ export function GoalDetailPanel({
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
           <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4">
-            <section className="relative flex min-h-[250px] items-center justify-center overflow-x-hidden">
+            <section className="relative flex min-h-[365px] items-center justify-center overflow-x-hidden">
               <GoalLineGraph
                 key={`${id}-graph-${isMobile}`}
                 goalId={id}
@@ -113,7 +118,7 @@ export function GoalDetailPanel({
             </section>
             <GoalStatusSummary
               goalId={id}
-              className="mt-6 mb-2 sm:mt-3 sm:mb-5"
+              className="mt-4 mb-2 sm:mt-3 sm:mb-5"
             />
             <GoalEditForm
               goal={selectedGoal}
@@ -143,7 +148,7 @@ export function GoalDetailPanel({
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <article className="flex flex-1 flex-col gap-6 overflow-auto [scrollbar-gutter:stable_both-edges] [scrollbar-width:thin]">
-          <section className="w-maxitems-center relative mt-4 flex min-h-[250px] shrink-0 justify-center overflow-x-hidden">
+          <section className="relative mt-4 flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
             <GoalLineGraph
               key={`${id}-graph-${isMobile}`}
               goalId={id}
@@ -157,7 +162,7 @@ export function GoalDetailPanel({
           </section>
           <GoalStatusSummary
             goalId={id}
-            className="mt-6 mb-2 sm:mt-3 sm:mb-5"
+            className="mt-6 mb-2 sm:mt-1 sm:mb-5"
           />
           <GoalEditForm goal={selectedGoal} />
           <GoalControls

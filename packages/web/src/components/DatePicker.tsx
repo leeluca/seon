@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import {
@@ -26,17 +27,20 @@ import {
 } from '~/components/ui/select';
 import { cn } from '~/utils';
 
-const DATE_DISTANCE_NAMES: Record<number, string> = {
-  0: 'Today',
-  1: 'Tomorrow',
-  7: 'In a week',
-  30: 'In a month',
-  31: 'In a month',
-};
+function getDateDistanceNames(): Record<number, string> {
+  return {
+    0: t`Today`,
+    1: t`Tomorrow`,
+    7: t`In a week`,
+    30: t`In a month`,
+    31: t`In a month`,
+  };
+}
 
 function getPresetRelativeDateText(date: Date) {
+  const dateDistanceNames = getDateDistanceNames();
   const differenceInDaysNumber = differenceInCalendarDays(date, new Date());
-  return DATE_DISTANCE_NAMES[differenceInDaysNumber];
+  return dateDistanceNames[differenceInDaysNumber];
 }
 function getRelativeDistanceText(date: Date) {
   const distanceName =
@@ -135,14 +139,14 @@ export const DatePicker = React.forwardRef(
             >
               <SelectTrigger>
                 <SelectValue
-                  placeholder={date ? getRelativeDistanceText(date) : 'Select'}
+                  placeholder={date ? getRelativeDistanceText(date) : t`Select`}
                 />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="0">{DATE_DISTANCE_NAMES[0]}</SelectItem>
-                <SelectItem value="1">{DATE_DISTANCE_NAMES[1]}</SelectItem>
-                <SelectItem value="7">{DATE_DISTANCE_NAMES[7]}</SelectItem>
-                <SelectItem value="30">{DATE_DISTANCE_NAMES[30]}</SelectItem>
+                <SelectItem value="0">{getDateDistanceNames()[0]}</SelectItem>
+                <SelectItem value="1">{getDateDistanceNames()[1]}</SelectItem>
+                <SelectItem value="7">{getDateDistanceNames()[7]}</SelectItem>
+                <SelectItem value="30">{getDateDistanceNames()[30]}</SelectItem>
               </SelectContent>
             </Select>
           )}

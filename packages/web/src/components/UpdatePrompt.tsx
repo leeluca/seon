@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { TooltipArrow } from '@radix-ui/react-tooltip';
 import * as Sentry from '@sentry/react';
@@ -43,7 +44,7 @@ function ReloadPrompt() {
                 <Button
                   size="icon-responsive"
                   variant="ghost"
-                  aria-label="User info"
+                  aria-label={t`Update available`}
                 >
                   <BadgePlusIcon size={18} />
                 </Button>
@@ -62,13 +63,13 @@ function ReloadPrompt() {
             </TooltipContent>
           </Tooltip>
           <PopoverContent
-            className="mr-3 flex w-min min-w-44 max-w-96 flex-col items-center justify-center gap-2 sm:mr-8"
+            className="mr-3 flex w-min max-w-96 min-w-44 flex-col items-center justify-center gap-2 sm:mr-8"
             sideOffset={5}
           >
-            <h3 className="text-nowrap text-center font-medium leading-none">
+            <h3 className="text-center leading-none font-medium text-nowrap">
               <Trans>Ready to update</Trans>
             </h3>
-            <p className="mb-1 shrink-0 text-balance break-keep text-center text-sm font-light leading-none">
+            <p className="mb-1 shrink-0 text-center text-sm leading-none font-light text-balance break-keep">
               <Trans>Refresh to get the latest improvements.</Trans>
             </p>
             <Button onClick={handleUpdate} disabled={isUpdating}>

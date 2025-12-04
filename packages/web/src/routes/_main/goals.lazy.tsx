@@ -38,7 +38,7 @@ function Layout() {
         <div
           className="mb-8 flex flex-col flex-wrap justify-between gap-6 sm:flex-row sm:items-center"
           role="toolbar"
-          aria-label="Goal management controls"
+          aria-label={t`Goal management controls`}
         >
           <Link
             to="/goals/new"
