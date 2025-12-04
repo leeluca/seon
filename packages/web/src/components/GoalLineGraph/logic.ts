@@ -2,7 +2,6 @@ import { i18n, type MessageDescriptor } from '@lingui/core';
 import { msg, t } from '@lingui/core/macro';
 import {
   closestTo,
-  differenceInDays,
   eachDayOfInterval,
   eachMonthOfInterval,
   eachWeekOfInterval,
@@ -476,11 +475,11 @@ export const buildGoalLineGraphOptions = ({
                   type: 'slider',
                   start,
                   end,
-                  height: isMobile ? 30 : 30,
-                  bottom: isMobile ? 14 : 18,
+                  height: isMobile ? 32 : 30,
+                  bottom: isMobile ? 12 : 18,
                   brushSelect: false,
                   showDetail: false,
-                  handleSize: 10,
+                  handleSize: isMobile ? 12 : 10,
                   handleIcon: 'path://M512 64L832 512 512 960 192 512 512 64Z',
                 },
               ]

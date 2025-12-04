@@ -120,8 +120,8 @@ function GoalLineGraph({
     graphConfig.optionsByMode[graphConfig.defaultMode]?.option;
 
   // TODO: use constant for heights (graph height + slider)
-  const graphHeight = resolvedMobile ? 300 : 340;
-  console.log(resolvedMobile, graphHeight, { isMobile, isMobileViewport });
+  const graphHeight = resolvedMobile ? 320 : 340;
+
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="flex flex-wrap items-center justify-end gap-2">
