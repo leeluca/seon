@@ -25,6 +25,7 @@ const COLORS = {
   afterTargetLine: 'rgba(255, 205, 86, 0.9)',
   afterTargetArea: 'rgba(255, 205, 86, 0.18)',
   baseline: 'rgba(255, 99, 132, 0.9)',
+  achieved: 'rgba(34, 197, 94, 0.8)',
 };
 
 const MAX_POINTS_WITHOUT_ZOOM = {
@@ -344,22 +345,14 @@ export const buildGoalLineGraphOptions = ({
         point.isAfterTarget ? point.progressValue : null,
       );
       const hasAfterTargetData = progressAfterTarget.some(
-        (value) => value !== null,
+        (value) => value !== null && value !== undefined,
       );
-      // const completionIndex = points.findIndex(
-      //   (point) =>
-      //     point.progressValue !== null && point.progressValue >= point.baseline,
-      // );
-      // const completionMeta =
-      //   completionIndex === -1
-      //     ? null
-      //     : {
-      //         label: labels[completionIndex],
-      //         value:
-      //           points[completionIndex]?.progressValue ??
-      //           points[completionIndex]?.baseline ??
-      //           null,
-      //       };
+
+      // Find the first point where the goal was achieved
+      const firstAchievementIndex = points.findIndex(
+        (point) =>
+          point.progressValue !== null && point.progressValue >= target,
+      );
 
       const firstFutureIndex = points.findIndex((point) => point.date >= today);
       const focusIndex =
@@ -371,14 +364,21 @@ export const buildGoalLineGraphOptions = ({
         isMobile,
       );
 
-      const symbolSize = (value?: number | null) =>
-        value !== null && value !== undefined && value >= target
+      const symbolSize = (
+        value: number | null | undefined,
+        params: { dataIndex: number },
+      ) => {
+        if (params.dataIndex === firstAchievementIndex) {
+          return isMobile ? 16 : 14;
+        }
+        return value && value >= target
           ? isMobile
             ? 12
             : 11
           : isMobile
             ? 9
             : 8;
+      };
 
       const gridBottom = needsSlider ? (isMobile ? 76 : 86) : 50;
       const progressLabel = t`Your Progress`;
@@ -411,15 +411,24 @@ export const buildGoalLineGraphOptions = ({
 
             const dataIndex = params[0]?.dataIndex ?? 0;
             const heading = (labels[dataIndex] ?? '').replace(/\n/g, '<br />');
+            const isFirstAchievement = dataIndex === firstAchievementIndex;
             const lines = [`<strong>${heading}</strong>`];
 
             params.forEach((param) => {
-              const value =
-                typeof param.data === 'number'
-                  ? param.data
-                  : Array.isArray(param.data)
-                    ? param.data[1]
-                    : param.data;
+              let value: number | null | undefined;
+              if (typeof param.data === 'number') {
+                value = param.data;
+              } else if (Array.isArray(param.data)) {
+                value = param.data[1] as number | null;
+              } else if (
+                param.data &&
+                typeof param.data === 'object' &&
+                'value' in param.data
+              ) {
+                value = (param.data as { value: number | null }).value;
+              } else {
+                value = param.data as number | null;
+              }
 
               if (
                 value === null ||
@@ -434,6 +443,13 @@ export const buildGoalLineGraphOptions = ({
               );
             });
 
+            if (isFirstAchievement) {
+              const achievedLabel = t`🎉 Goal achieved!`;
+              lines.push(
+                `<div style="margin-top: 4px; color: #22c55e; font-weight: 600;">${achievedLabel}</div>`,
+              );
+            }
+
             return lines.join('<br />');
           },
           valueFormatter: (value) =>
@@ -447,6 +463,8 @@ export const buildGoalLineGraphOptions = ({
             interval: 'auto',
             fontSize: isMobile ? 11 : 12,
             lineHeight: isMobile ? 14 : 16,
+            hideOverlap: true,
+            alignMaxLabel: 'right',
           },
         },
         yAxis: {
@@ -489,7 +507,18 @@ export const buildGoalLineGraphOptions = ({
           {
             name: progressLabel,
             type: 'line',
-            data: progressBeforeTarget,
+            data: progressBeforeTarget.map((value, index) => ({
+              value,
+              symbol: index === firstAchievementIndex ? 'diamond' : 'circle',
+              itemStyle:
+                index === firstAchievementIndex
+                  ? {
+                      color: COLORS.achieved,
+                      borderColor: COLORS.achieved,
+                      borderWidth: 2,
+                    }
+                  : undefined,
+            })),
             connectNulls: false,
             showSymbol: true,
             symbolSize,
@@ -518,22 +547,38 @@ export const buildGoalLineGraphOptions = ({
             emphasis: { focus: 'series' },
             z: 1,
           },
-          {
-            name: afterTargetLabel,
-            type: 'line',
-            data: progressAfterTarget,
-            connectNulls: false,
-            showSymbol: true,
-            symbolSize,
-            lineStyle: { width: 3, color: COLORS.afterTargetLine },
-            areaStyle: { color: COLORS.afterTargetArea },
-            itemStyle: {
-              color: COLORS.afterTargetLine,
-              borderColor: COLORS.afterTargetLine,
-            },
-            emphasis: { focus: 'series' },
-            z: 2,
-          },
+          ...(hasAfterTargetData
+            ? [
+                {
+                  name: afterTargetLabel,
+                  type: 'line' as const,
+                  data: progressAfterTarget.map((value, index) => ({
+                    value,
+                    symbol:
+                      index === firstAchievementIndex ? 'diamond' : 'circle',
+                    itemStyle:
+                      index === firstAchievementIndex
+                        ? {
+                            color: COLORS.achieved,
+                            borderColor: COLORS.achieved,
+                            borderWidth: 2,
+                          }
+                        : undefined,
+                  })),
+                  connectNulls: false,
+                  showSymbol: true,
+                  symbolSize,
+                  lineStyle: { width: 3, color: COLORS.afterTargetLine },
+                  areaStyle: { color: COLORS.afterTargetArea },
+                  itemStyle: {
+                    color: COLORS.afterTargetLine,
+                    borderColor: COLORS.afterTargetLine,
+                  },
+                  emphasis: { focus: 'series' as const },
+                  z: 2,
+                },
+              ]
+            : []),
         ],
       };
 
