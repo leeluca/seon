@@ -1,37 +1,20 @@
-import { i18n } from '@lingui/core';
-import { I18nProvider } from '@lingui/react';
 import { describe, expect, it, vi } from 'vitest';
 
 import { GoalSorting } from '~/components/GoalSorting';
-import { messages as enMessages } from '~/locales/en/messages';
-import { messages as koMessages } from '~/locales/ko/messages';
 import type { GoalSort } from '~/types/goal';
 import { act, fireEvent, customRender as render, screen } from '../test-utils';
-
-i18n.load({
-  en: enMessages,
-  ko: koMessages,
-});
-i18n.activate('en');
-const TestingI18nProvider = ({ children }: { children: React.ReactNode }) => (
-  <I18nProvider i18n={i18n}>{children}</I18nProvider>
-);
 
 describe('GoalSorting', () => {
   it('renders with the current sort option displayed', () => {
     const setSort = vi.fn();
-    render(<GoalSorting sort="createdAt desc" setSort={setSort} />, {
-      wrapper: TestingI18nProvider,
-    });
+    render(<GoalSorting sort="createdAt desc" setSort={setSort} />);
 
     expect(screen.getByText('Newest first')).toBeInTheDocument();
   });
 
   it('opens popover when clicked', async () => {
     const setSort = vi.fn();
-    render(<GoalSorting sort="createdAt desc" setSort={setSort} />, {
-      wrapper: TestingI18nProvider,
-    });
+    render(<GoalSorting sort="createdAt desc" setSort={setSort} />);
 
     const button = screen.getByRole('listbox');
     fireEvent.click(button);
@@ -42,9 +25,7 @@ describe('GoalSorting', () => {
 
   it('calls setSort with the correct value when an option is selected', async () => {
     const setSort = vi.fn();
-    render(<GoalSorting sort="createdAt desc" setSort={setSort} />, {
-      wrapper: TestingI18nProvider,
-    });
+    render(<GoalSorting sort="createdAt desc" setSort={setSort} />);
 
     const button = screen.getByRole('listbox');
     fireEvent.click(button);
@@ -63,9 +44,7 @@ describe('GoalSorting', () => {
     const userStoreMock = await import('~/states/stores/userStore');
 
     const setSort = vi.fn();
-    render(<GoalSorting sort="createdAt desc" setSort={setSort} />, {
-      wrapper: TestingI18nProvider,
-    });
+    render(<GoalSorting sort="createdAt desc" setSort={setSort} />);
 
     const button = screen.getByRole('listbox');
     fireEvent.click(button);
@@ -86,7 +65,6 @@ describe('GoalSorting', () => {
     const setSort = vi.fn();
     render(
       <GoalSorting sort={'unknown value' as GoalSort} setSort={setSort} />,
-      { wrapper: TestingI18nProvider },
     );
 
     expect(screen.getByText('Select sort...')).toBeInTheDocument();
@@ -94,9 +72,7 @@ describe('GoalSorting', () => {
 
   it('shows correct icon based on sort parameter', () => {
     const setSort = vi.fn();
-    render(<GoalSorting sort="title desc" setSort={setSort} />, {
-      wrapper: TestingI18nProvider,
-    });
+    render(<GoalSorting sort="title desc" setSort={setSort} />);
 
     expect(screen.getByText('Name (Z to A)')).toBeInTheDocument();
   });

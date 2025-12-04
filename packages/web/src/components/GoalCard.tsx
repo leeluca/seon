@@ -2,7 +2,7 @@ import { useCallback, useRef } from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { isBefore, startOfDay } from 'date-fns';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 
 import {
   Card,
@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
 import { buttonVariants } from './ui/button';
@@ -155,6 +156,7 @@ export default function GoalCard({
     Math.min((currentValue / target) * 100, 100),
     0,
   );
+  const isMobile = useViewportStore((state) => state.isMobile);
 
   const checkBlockedDateFn = useCallback(
     (date: Date) => isBefore(startOfDay(date), startOfDay(startDate)),
@@ -187,7 +189,11 @@ export default function GoalCard({
               )}
             >
               <span className="flex-1 text-center">{title}</span>
-              <ChevronRight className="absolute right-2" />
+              {isMobile ? (
+                <ChevronUpIcon className="absolute right-2" />
+              ) : (
+                <ChevronRightIcon className="absolute right-2" />
+              )}
             </Link>
           </CardTitle>
         </div>

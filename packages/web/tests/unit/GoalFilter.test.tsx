@@ -15,7 +15,7 @@ describe('GoalFilter', () => {
     const setFilter = vi.fn();
     render(<GoalFilter filter="all" setFilter={setFilter} />);
 
-    const button = screen.getByRole('listbox');
+    const button = screen.getByRole('button');
     fireEvent.click(button);
 
     expect(await screen.findByText('Completed')).toBeInTheDocument();
@@ -26,7 +26,7 @@ describe('GoalFilter', () => {
     const setFilter = vi.fn();
     render(<GoalFilter filter="all" setFilter={setFilter} />);
 
-    const button = screen.getByRole('listbox');
+    const button = screen.getByRole('button');
     fireEvent.click(button);
 
     const completedOption = await screen.findByText('Completed');
@@ -45,7 +45,7 @@ describe('GoalFilter', () => {
     const setFilter = vi.fn();
     render(<GoalFilter filter="all" setFilter={setFilter} />);
 
-    const button = screen.getByRole('listbox');
+    const button = screen.getByRole('button');
     fireEvent.click(button);
 
     const ongoingOption = await screen.findByText('Ongoing');

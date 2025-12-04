@@ -99,5 +99,6 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     globals: true,
     css: false,
+    exclude: ['**/tests/e2e/**', '**/node_modules/**', '**/dist/**'],
   },
 });

@@ -1,4 +1,5 @@
 import { Trans, useLingui } from '@lingui/react/macro';
+import { Link } from '@tanstack/react-router';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -204,6 +205,18 @@ function SignUpForm({ onSignUpCallback }: SignUpFormProps) {
           </div>
         )}
       </form.Subscribe>
+      <div className="mt-2 text-center text-sm">
+        <span className="text-muted-foreground">
+          <Trans>Already have an account?</Trans>{' '}
+        </span>
+        <Link
+          to="/signin"
+          className="text-primary hover:underline"
+          preload="intent"
+        >
+          <Trans>Sign in</Trans>
+        </Link>
+      </div>
     </form>
   );
 }

@@ -6,11 +6,10 @@ import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
 import FormError from '~/components/form/FormError';
 import FormItem from '~/components/FormItem';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button, buttonVariants } from '~/components/ui/button';
+import { Button } from '~/components/ui/button';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { useIds } from '~/hooks/useIds';
 import { useIsOnline } from '~/states/isOnlineContext';
-import { cn } from '~/utils';
 import { emailValidator } from '~/utils/validation';
 import { SIGN_IN_FIELD_SUFFIX } from '../constants';
 import { useSignInForm } from '../hooks/useSignInForm';
@@ -167,18 +166,18 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
           </div>
         )}
       </form.Subscribe>
-      <Link
-        to="/signup"
-        className={cn(
-          'text-muted-foreground w-64 justify-self-center text-sm',
-          buttonVariants({
-            variant: 'ghost',
-          }),
-        )}
-        preload="intent"
-      >
-        <Trans>Create account</Trans>
-      </Link>
+      <div className="mt-2 text-center text-sm">
+        <span className="text-muted-foreground">
+          <Trans>Don't have an account?</Trans>{' '}
+        </span>
+        <Link
+          to="/signup"
+          className="text-primary hover:underline"
+          preload="intent"
+        >
+          <Trans>Sign up</Trans>
+        </Link>
+      </div>
     </form>
   );
 }
