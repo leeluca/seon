@@ -64,6 +64,7 @@ interface AggregatedPoint {
   progressValue: number | null;
   isAfterTarget: boolean;
   isAchieved: boolean;
+  hasUserEntry: boolean;
 }
 
 interface BuildGraphArgs {
@@ -175,6 +176,16 @@ const getIntervalValue = (
   return matchingEntries.reduce((sum, entry) => sum + entry.value, 0);
 };
 
+const hasIntervalEntry = (
+  entries: Database['entry'][],
+  targetDate: Date,
+  mode: IntervalMode,
+) => {
+  return entries.some((entry) =>
+    isSameInterval(new Date(entry.date), targetDate, mode),
+  );
+};
+
 const buildBaselineValues = (
   start: Date,
   targetDate: Date,
@@ -270,6 +281,7 @@ const buildAggregatedPoints = ({
 
   return dates.map((date, index) => {
     const intervalValue = getIntervalValue(sortedEntries, date, mode, goalType);
+    const hasUserEntry = hasIntervalEntry(sortedEntries, date, mode);
 
     if (goalType === 'PROGRESS') {
       runningTotal = intervalValue ?? runningTotal;
@@ -288,6 +300,7 @@ const buildAggregatedPoints = ({
       progressValue,
       isAfterTarget,
       isAchieved: (progressValue ?? runningTotal) >= target,
+      hasUserEntry,
     };
   });
 };
@@ -338,11 +351,13 @@ export const buildGoalLineGraphOptions = ({
       const labels = points.map((point) => point.label);
 
       const baselineSeries = points.map((point) => point.baseline);
+      // Keep all progress values for continuous line, but track which have user entries
       const progressBeforeTarget = points.map((point) =>
-        point.isAfterTarget ? null : point.progressValue,
+        !point.isAfterTarget ? point.progressValue : null,
       );
+      // Only include after-target values where user created an entry
       const progressAfterTarget = points.map((point) =>
-        point.isAfterTarget ? point.progressValue : null,
+        point.isAfterTarget && point.hasUserEntry ? point.progressValue : null,
       );
       const hasAfterTargetData = progressAfterTarget.some(
         (value) => value !== null && value !== undefined,
@@ -415,20 +430,9 @@ export const buildGoalLineGraphOptions = ({
             const lines = [`<strong>${heading}</strong>`];
 
             params.forEach((param) => {
-              let value: number | null | undefined;
-              if (typeof param.data === 'number') {
-                value = param.data;
-              } else if (Array.isArray(param.data)) {
-                value = param.data[1] as number | null;
-              } else if (
-                param.data &&
-                typeof param.data === 'object' &&
-                'value' in param.data
-              ) {
-                value = (param.data as { value: number | null }).value;
-              } else {
-                value = param.data as number | null;
-              }
+              // `param.value` is the canonical place ECharts exposes the datum value
+              const value = (param as unknown as { value?: number | null })
+                .value as number | null | undefined;
 
               if (
                 value === null ||
@@ -509,7 +513,12 @@ export const buildGoalLineGraphOptions = ({
             type: 'line',
             data: progressBeforeTarget.map((value, index) => ({
               value,
-              symbol: index === firstAchievementIndex ? 'diamond' : 'circle',
+              // Only show symbol for points with user entries
+              symbol: !points[index]?.hasUserEntry
+                ? 'none'
+                : index === firstAchievementIndex
+                  ? 'diamond'
+                  : 'circle',
               itemStyle:
                 index === firstAchievementIndex
                   ? {
@@ -565,7 +574,7 @@ export const buildGoalLineGraphOptions = ({
                           }
                         : undefined,
                   })),
-                  connectNulls: false,
+                  connectNulls: true,
                   showSymbol: true,
                   symbolSize,
                   lineStyle: { width: 3, color: COLORS.afterTargetLine },
