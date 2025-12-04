@@ -36,7 +36,7 @@ const dateDistanceNames = {
   31: msg`In a month`,
 } as const;
 
-export function getPresetRelativeDateText(
+function getPresetRelativeDateText(
   d: Date,
   translate: (msgDescriptor: MessageDescriptor) => string,
 ) {
@@ -46,7 +46,7 @@ export function getPresetRelativeDateText(
   return msgDescriptor ? translate(msgDescriptor) : undefined;
 }
 
-export function getRelativeDistanceText(
+function getRelativeDistanceText(
   d: Date,
   translate: (msgDescriptor: MessageDescriptor) => string,
 ) {

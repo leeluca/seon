@@ -4,13 +4,22 @@ import { addDays, addSeconds, subDays } from 'date-fns';
 import { DEMO_GOAL_DATA } from '~/constants/setup';
 import db from '~/lib/database';
 import type { Database } from '~/lib/powersync/AppSchema';
+import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import { updateGoalProgress } from '~/services/progress';
+import { useUserStore } from '~/states/stores/userStore';
 import type { GoalType } from '~/types/goal';
 import { generateUUIDs } from '~/utils';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';
 
 export const generateDemoData = async (userId: string) => {
+  const preferredLocale =
+    useUserStore.getState().userPreferences.language ?? defaultLocale;
+
+  if (i18n.locale !== preferredLocale) {
+    await dynamicallyImportLocale(preferredLocale);
+  }
+
   const goalsData = createSampleGoals(userId);
 
   await Promise.all(

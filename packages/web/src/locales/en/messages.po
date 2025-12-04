@@ -67,6 +67,10 @@ msgstr "After target date"
 msgid "All Goals"
 msgstr "All Goals"
 
+#: src/components/authForm/components/SignUpForm.tsx:210
+msgid "Already have an account?"
+msgstr "Already have an account?"
+
 #: src/components/entryForm/components/CreateEntryForm.tsx:64
 msgid "Amount"
 msgstr "Amount"
@@ -98,6 +102,11 @@ msgstr "Are you sure you want to delete <0>{title}</0>?"
 #: src/components/GoalStatusSummary.tsx:159
 msgid "Average Pace"
 msgstr "Average Pace"
+
+#: src/routes/signin/index.lazy.tsx:27
+#: src/routes/signup/index.lazy.tsx:26
+msgid "Back"
+msgstr "Back"
 
 #: src/components/GoalCard.tsx:205
 msgid "Before goal's start date"
@@ -150,8 +159,8 @@ msgid "Create a new goal or change the filter!"
 msgstr "Create a new goal or change the filter!"
 
 #: src/components/authForm/components/SignInForm.tsx:180
-msgid "Create account"
-msgstr "Create account"
+#~ msgid "Create account"
+#~ msgstr "Create account"
 
 #: src/components/DemoStart.tsx:48
 msgid "Create and track personal goals"
@@ -161,6 +170,10 @@ msgstr "Create and track personal goals"
 #: src/routes/_main/goals.new.tsx:169
 msgid "Create goal"
 msgstr "Create goal"
+
+#: src/routes/signup/index.lazy.tsx:41
+msgid "Create your account"
+msgstr "Create your account"
 
 #: src/components/NoGoalsPlaceholder.tsx:14
 msgid "Create your first goal!"
@@ -174,9 +187,14 @@ msgstr "Daily"
 msgid "Date"
 msgstr "Date"
 
-#: src/constants/setup.ts:36
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:40
 msgid "days"
 msgstr "days"
+
+#: src/constants/setup.ts:36
+#~ msgid "days"
+#~ msgstr "days"
 
 #: src/components/ui/number-input.tsx:287
 msgid "Decrease"
@@ -212,6 +230,10 @@ msgstr "Demo Mode"
 msgid "Did you achieve it?"
 msgstr "Did you achieve it?"
 
+#: src/components/authForm/components/SignInForm.tsx:171
+msgid "Don't have an account?"
+msgstr "Don't have an account?"
+
 #: src/components/GoalSorting.tsx:76
 msgid "Due later"
 msgstr "Due later"
@@ -232,15 +254,19 @@ msgstr "Edit goal"
 msgid "eg. 'Learn 1000 French words'"
 msgstr "eg. 'Learn 1000 French words'"
 
-#: src/components/authForm/components/SignInForm.tsx:46
-#: src/components/authForm/components/SignUpForm.tsx:86
+#: src/components/authForm/components/SignInForm.tsx:45
+#: src/components/authForm/components/SignUpForm.tsx:87
 msgid "Email"
 msgstr "Email"
 
-#: src/components/authForm/components/SignInForm.tsx:56
-#: src/components/authForm/components/SignUpForm.tsx:96
+#: src/components/authForm/components/SignInForm.tsx:55
+#: src/components/authForm/components/SignUpForm.tsx:97
 msgid "Email is required"
 msgstr "Email is required"
+
+#: src/routes/signin/index.lazy.tsx:45
+msgid "Enter your credentials to continue"
+msgstr "Enter your credentials to continue"
 
 #: src/components/StatusMenu.tsx:243
 msgid "Establishing a connection. This may take a moment."
@@ -287,16 +313,25 @@ msgstr "Failed to update goal"
 msgid "Filter goals..."
 msgstr "Filter goals..."
 
-#: src/constants/setup.ts:11
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:10
 msgid "Finish reading the 288-page book"
 msgstr "Finish reading the 288-page book"
 
-#: src/routes/index.lazy.tsx:81
+#: src/constants/setup.ts:11
+#~ msgid "Finish reading the 288-page book"
+#~ msgstr "Finish reading the 288-page book"
+
+#: src/routes/signup/index.lazy.tsx:38
+msgid "Get started"
+msgstr "Get started"
+
+#: src/routes/index.lazy.tsx:80
 msgid "Get Started"
 msgstr "Get Started"
 
-#: src/routes/signin/index.lazy.tsx:22
-#: src/routes/signup/index.lazy.tsx:21
+#: src/routes/signin/index.lazy.tsx:24
+#: src/routes/signup/index.lazy.tsx:23
 msgid "Go back"
 msgstr "Go back"
 
@@ -338,9 +373,14 @@ msgstr "Hide extra options"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "If you sign out now, this data will be permanently lost!"
 
+#. js-lingui-explicit-id
 #: src/constants/setup.ts:23
 msgid "Improve French vocabulary"
 msgstr "Improve French vocabulary"
+
+#: src/constants/setup.ts:23
+#~ msgid "Improve French vocabulary"
+#~ msgstr "Improve French vocabulary"
 
 #: src/components/DatePicker.tsx:35
 #: src/components/DatePicker.tsx:36
@@ -363,7 +403,7 @@ msgstr "Initial value"
 msgid "Install as a PWA and use offline"
 msgstr "Install as a PWA and use offline"
 
-#: src/components/authForm/components/SignInForm.tsx:110
+#: src/components/authForm/components/SignInForm.tsx:109
 msgid "Invalid credentials"
 msgstr "Invalid credentials"
 
@@ -371,11 +411,11 @@ msgstr "Invalid credentials"
 msgid "Invalid email address"
 msgstr "Invalid email address"
 
-#: src/components/authForm/components/SignInForm.tsx:134
+#: src/components/authForm/components/SignInForm.tsx:133
 msgid "It looks like you are offline!"
 msgstr "It looks like you are offline!"
 
-#: src/components/authForm/components/SignUpForm.tsx:171
+#: src/components/authForm/components/SignUpForm.tsx:172
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
@@ -396,15 +436,20 @@ msgstr "Last update: {0}"
 msgid "Last:"
 msgstr "Last:"
 
-#: src/constants/setup.ts:22
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:19
 msgid "Learn 1000 French words"
 msgstr "Learn 1000 French words"
+
+#: src/constants/setup.ts:22
+#~ msgid "Learn 1000 French words"
+#~ msgstr "Learn 1000 French words"
 
 #: src/components/StatusMenu.tsx:141
 msgid "Loading user status"
 msgstr "Loading user status"
 
-#: src/routes/index.lazy.tsx:62
+#: src/routes/index.lazy.tsx:61
 msgid "Make progress."
 msgstr "Make progress."
 
@@ -417,8 +462,8 @@ msgstr "Missing required fields"
 msgid "Monthly"
 msgstr "Monthly"
 
-#: src/components/authForm/components/SignUpForm.tsx:48
-#: src/components/authForm/components/SignUpForm.tsx:62
+#: src/components/authForm/components/SignUpForm.tsx:49
+#: src/components/authForm/components/SignUpForm.tsx:63
 msgid "Name"
 msgstr "Name"
 
@@ -430,7 +475,7 @@ msgstr "Name (A to Z)"
 msgid "Name (Z to A)"
 msgstr "Name (Z to A)"
 
-#: src/components/authForm/components/SignUpForm.tsx:58
+#: src/components/authForm/components/SignUpForm.tsx:59
 msgid "Name is required"
 msgstr "Name is required"
 
@@ -478,17 +523,22 @@ msgstr "Ongoing"
 msgid "Page Not Found"
 msgstr "Page Not Found"
 
-#: src/constants/setup.ts:12
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:14
 msgid "pages"
 msgstr "pages"
 
-#: src/components/authForm/components/SignInForm.tsx:88
-#: src/components/authForm/components/SignUpForm.tsx:128
+#: src/constants/setup.ts:12
+#~ msgid "pages"
+#~ msgstr "pages"
+
+#: src/components/authForm/components/SignInForm.tsx:87
+#: src/components/authForm/components/SignUpForm.tsx:129
 msgid "Password"
 msgstr "Password"
 
-#: src/components/authForm/components/SignInForm.tsx:98
-#: src/components/authForm/components/SignUpForm.tsx:138
+#: src/components/authForm/components/SignInForm.tsx:97
+#: src/components/authForm/components/SignUpForm.tsx:139
 msgid "Password is required"
 msgstr "Password is required"
 
@@ -502,9 +552,14 @@ msgstr "Pick a date"
 msgid "Progress"
 msgstr "Progress"
 
-#: src/constants/setup.ts:10
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:6
 msgid "Read \"Brave New World\""
 msgstr "Read \"Brave New World\""
+
+#: src/constants/setup.ts:10
+#~ msgid "Read \"Brave New World\""
+#~ msgstr "Read \"Brave New World\""
 
 #: src/components/UpdatePrompt.tsx:70
 msgid "Ready to update"
@@ -564,7 +619,7 @@ msgstr "Select sort..."
 msgid "Seon Demo Mode"
 msgstr "Seon Demo Mode"
 
-#: src/routes/index.lazy.tsx:67
+#: src/routes/index.lazy.tsx:66
 msgid "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 msgstr "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 
@@ -572,7 +627,7 @@ msgstr "Seon is a goal tracker that helps you stay focused and motivated on what
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
-#: src/routes/index.lazy.tsx:59
+#: src/routes/index.lazy.tsx:58
 msgid "Set goals."
 msgstr "Set goals."
 
@@ -585,9 +640,12 @@ msgstr "Set up your new goal. You can always edit it later."
 msgid "Show extra options"
 msgstr "Show extra options"
 
-#: src/components/authForm/components/SignInForm.tsx:164
-#: src/routes/index.lazy.tsx:89
-#: src/routes/signin/index.lazy.tsx:28
+#: src/components/authForm/components/SignUpForm.tsx:217
+msgid "Sign in"
+msgstr "Sign in"
+
+#: src/components/authForm/components/SignInForm.tsx:163
+#: src/routes/index.lazy.tsx:88
 msgid "Sign In"
 msgstr "Sign In"
 
@@ -599,7 +657,11 @@ msgstr "Sign in again to sync your data."
 msgid "Sign in to sync your data."
 msgstr "Sign in to sync your data."
 
-#: src/components/authForm/components/SignInForm.tsx:137
+#: src/routes/signin/index.lazy.tsx:42
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+#: src/components/authForm/components/SignInForm.tsx:136
 msgid "Sign in will not work."
 msgstr "Sign in will not work."
 
@@ -608,12 +670,15 @@ msgstr "Sign in will not work."
 msgid "Sign out"
 msgstr "Sign out"
 
-#: src/components/authForm/components/SignUpForm.tsx:201
-#: src/routes/signup/index.lazy.tsx:27
+#: src/components/authForm/components/SignInForm.tsx:178
+msgid "Sign up"
+msgstr "Sign up"
+
+#: src/components/authForm/components/SignUpForm.tsx:202
 msgid "Sign Up"
 msgstr "Sign Up"
 
-#: src/components/authForm/components/SignUpForm.tsx:174
+#: src/components/authForm/components/SignUpForm.tsx:175
 msgid "Sign up will not work."
 msgstr "Sign up will not work."
 
@@ -636,6 +701,10 @@ msgstr "Start Demo"
 #: src/components/DemoIndicator.tsx:30
 msgid "Start Over"
 msgstr "Start Over"
+
+#: src/routes/signup/index.lazy.tsx:44
+msgid "Start tracking your goals today"
+msgstr "Start tracking your goals today"
 
 #: src/components/goalForm/hooks/useGoalForm.ts:114
 msgid "Sucessfully added goal"
@@ -723,7 +792,7 @@ msgstr "Track how many times you complete something each day.<0/>E.g. '30 minute
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 
-#: src/routes/index.lazy.tsx:55
+#: src/routes/index.lazy.tsx:54
 msgid "Track your progress, achieve your goals"
 msgstr "Track your progress, achieve your goals"
 
@@ -773,20 +842,34 @@ msgstr "Value for goal completion (number)"
 msgid "View statistics and visualizations"
 msgstr "View statistics and visualizations"
 
-#: src/constants/setup.ts:34
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:32
 msgid "Wake up at 7 AM"
 msgstr "Wake up at 7 AM"
 
-#: src/constants/setup.ts:35
+#: src/constants/setup.ts:34
+#~ msgid "Wake up at 7 AM"
+#~ msgstr "Wake up at 7 AM"
+
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:36
 msgid "Wake up early every day"
 msgstr "Wake up early every day"
+
+#: src/constants/setup.ts:35
+#~ msgid "Wake up early every day"
+#~ msgstr "Wake up early every day"
 
 #: src/components/GoalLineGraph/logic.ts:43
 msgid "Weekly"
 msgstr "Weekly"
 
+#: src/routes/signin/index.lazy.tsx:39
+msgid "Welcome back"
+msgstr "Welcome back"
+
 #. placeholder {0}: user.name
-#: src/routes/signin/index.lazy.tsx:33
+#: src/routes/signin/index.lazy.tsx:52
 msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
@@ -795,7 +878,7 @@ msgid "Welcome back, {userName}!"
 msgstr "Welcome back, {userName}!"
 
 #. placeholder {0}: user.name
-#: src/components/authForm/components/SignUpForm.tsx:27
+#: src/components/authForm/components/SignUpForm.tsx:28
 msgid "Welcome, {0}!"
 msgstr "Welcome, {0}!"
 
@@ -803,9 +886,14 @@ msgstr "Welcome, {0}!"
 msgid "What you can do in demo mode:"
 msgstr "What you can do in demo mode:"
 
-#: src/constants/setup.ts:24
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:27
 msgid "words"
 msgstr "words"
+
+#: src/constants/setup.ts:24
+#~ msgid "words"
+#~ msgstr "words"
 
 #: src/components/entryForm/components/CreateEntryForm.tsx:200
 msgid "Yes"

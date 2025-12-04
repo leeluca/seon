@@ -67,6 +67,10 @@ msgstr "목표일 이후"
 msgid "All Goals"
 msgstr "모든 목표"
 
+#: src/components/authForm/components/SignUpForm.tsx:210
+msgid "Already have an account?"
+msgstr "이미 계정이 있으신가요?"
+
 #: src/components/entryForm/components/CreateEntryForm.tsx:64
 msgid "Amount"
 msgstr "개수"
@@ -98,6 +102,11 @@ msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 #: src/components/GoalStatusSummary.tsx:159
 msgid "Average Pace"
 msgstr "평균 진행 속도"
+
+#: src/routes/signin/index.lazy.tsx:27
+#: src/routes/signup/index.lazy.tsx:26
+msgid "Back"
+msgstr "뒤로"
 
 #: src/components/GoalCard.tsx:205
 msgid "Before goal's start date"
@@ -150,8 +159,8 @@ msgid "Create a new goal or change the filter!"
 msgstr "새 목표를 만들거나 필터를 변경해 보세요!"
 
 #: src/components/authForm/components/SignInForm.tsx:180
-msgid "Create account"
-msgstr "계정 만들기"
+#~ msgid "Create account"
+#~ msgstr "계정 만들기"
 
 #: src/components/DemoStart.tsx:48
 msgid "Create and track personal goals"
@@ -161,6 +170,10 @@ msgstr "개인 목표 생성 및 추적"
 #: src/routes/_main/goals.new.tsx:169
 msgid "Create goal"
 msgstr "목표 만들기"
+
+#: src/routes/signup/index.lazy.tsx:41
+msgid "Create your account"
+msgstr "계정 만들기"
 
 #: src/components/NoGoalsPlaceholder.tsx:14
 msgid "Create your first goal!"
@@ -174,9 +187,14 @@ msgstr "일별"
 msgid "Date"
 msgstr "날짜"
 
-#: src/constants/setup.ts:36
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:40
 msgid "days"
 msgstr "일"
+
+#: src/constants/setup.ts:36
+#~ msgid "days"
+#~ msgstr "일"
 
 #: src/components/ui/number-input.tsx:287
 msgid "Decrease"
@@ -212,6 +230,10 @@ msgstr "데모 모드"
 msgid "Did you achieve it?"
 msgstr "달성하셨나요?"
 
+#: src/components/authForm/components/SignInForm.tsx:171
+msgid "Don't have an account?"
+msgstr "계정이 없으신가요?"
+
 #: src/components/GoalSorting.tsx:76
 msgid "Due later"
 msgstr "목표일 늦은 순"
@@ -232,15 +254,19 @@ msgstr "목표 수정"
 msgid "eg. 'Learn 1000 French words'"
 msgstr "예: '프랑스어 단어 1000개 익히기'"
 
-#: src/components/authForm/components/SignInForm.tsx:46
-#: src/components/authForm/components/SignUpForm.tsx:86
+#: src/components/authForm/components/SignInForm.tsx:45
+#: src/components/authForm/components/SignUpForm.tsx:87
 msgid "Email"
 msgstr "이메일"
 
-#: src/components/authForm/components/SignInForm.tsx:56
-#: src/components/authForm/components/SignUpForm.tsx:96
+#: src/components/authForm/components/SignInForm.tsx:55
+#: src/components/authForm/components/SignUpForm.tsx:97
 msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
+
+#: src/routes/signin/index.lazy.tsx:45
+msgid "Enter your credentials to continue"
+msgstr "계속하려면 로그인 정보를 입력해 주세요"
 
 #: src/components/StatusMenu.tsx:243
 msgid "Establishing a connection. This may take a moment."
@@ -287,16 +313,25 @@ msgstr "목표 업데이트 실패"
 msgid "Filter goals..."
 msgstr "목표 필터링..."
 
-#: src/constants/setup.ts:11
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:10
 msgid "Finish reading the 288-page book"
 msgstr "288페이지 책 완독하기"
 
-#: src/routes/index.lazy.tsx:81
+#: src/constants/setup.ts:11
+#~ msgid "Finish reading the 288-page book"
+#~ msgstr "288페이지 책 완독하기"
+
+#: src/routes/signup/index.lazy.tsx:38
+msgid "Get started"
+msgstr "시작하기"
+
+#: src/routes/index.lazy.tsx:80
 msgid "Get Started"
 msgstr "시작하기"
 
-#: src/routes/signin/index.lazy.tsx:22
-#: src/routes/signup/index.lazy.tsx:21
+#: src/routes/signin/index.lazy.tsx:24
+#: src/routes/signup/index.lazy.tsx:23
 msgid "Go back"
 msgstr "뒤로 가기"
 
@@ -338,9 +373,14 @@ msgstr "추가 옵션 숨기기"
 msgid "If you sign out now, this data will be permanently lost!"
 msgstr "지금 로그아웃하면 이 데이터는 영구적으로 손실됩니다!"
 
+#. js-lingui-explicit-id
 #: src/constants/setup.ts:23
 msgid "Improve French vocabulary"
 msgstr "프랑스어 어휘력 향상하기"
+
+#: src/constants/setup.ts:23
+#~ msgid "Improve French vocabulary"
+#~ msgstr "프랑스어 어휘력 향상하기"
 
 #: src/components/DatePicker.tsx:35
 #: src/components/DatePicker.tsx:36
@@ -363,7 +403,7 @@ msgstr "초기값"
 msgid "Install as a PWA and use offline"
 msgstr "PWA로 설치하여 오프라인에서 사용하기"
 
-#: src/components/authForm/components/SignInForm.tsx:110
+#: src/components/authForm/components/SignInForm.tsx:109
 msgid "Invalid credentials"
 msgstr "잘못된 로그인 정보입니다"
 
@@ -371,11 +411,11 @@ msgstr "잘못된 로그인 정보입니다"
 msgid "Invalid email address"
 msgstr "유효하지 않은 이메일 주소입니다"
 
-#: src/components/authForm/components/SignInForm.tsx:134
+#: src/components/authForm/components/SignInForm.tsx:133
 msgid "It looks like you are offline!"
 msgstr "오프라인 상태인 것 같습니다!"
 
-#: src/components/authForm/components/SignUpForm.tsx:171
+#: src/components/authForm/components/SignUpForm.tsx:172
 msgid "It seems like you are not connected!"
 msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 
@@ -396,15 +436,20 @@ msgstr "마지막 업데이트: {0}"
 msgid "Last:"
 msgstr "이전:"
 
-#: src/constants/setup.ts:22
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:19
 msgid "Learn 1000 French words"
 msgstr "프랑스어 단어 1000개 익히기"
+
+#: src/constants/setup.ts:22
+#~ msgid "Learn 1000 French words"
+#~ msgstr "프랑스어 단어 1000개 익히기"
 
 #: src/components/StatusMenu.tsx:141
 msgid "Loading user status"
 msgstr "사용자 상태 로딩 중"
 
-#: src/routes/index.lazy.tsx:62
+#: src/routes/index.lazy.tsx:61
 msgid "Make progress."
 msgstr "진행하세요."
 
@@ -417,8 +462,8 @@ msgstr "필수 항목을 입력해 주세요"
 msgid "Monthly"
 msgstr "월별"
 
-#: src/components/authForm/components/SignUpForm.tsx:48
-#: src/components/authForm/components/SignUpForm.tsx:62
+#: src/components/authForm/components/SignUpForm.tsx:49
+#: src/components/authForm/components/SignUpForm.tsx:63
 msgid "Name"
 msgstr "이름"
 
@@ -430,7 +475,7 @@ msgstr "이름 (가나다순)"
 msgid "Name (Z to A)"
 msgstr "이름 (역순)"
 
-#: src/components/authForm/components/SignUpForm.tsx:58
+#: src/components/authForm/components/SignUpForm.tsx:59
 msgid "Name is required"
 msgstr "이름을 입력해주세요"
 
@@ -478,17 +523,22 @@ msgstr "진행 중"
 msgid "Page Not Found"
 msgstr "페이지를 찾을 수 없습니다"
 
-#: src/constants/setup.ts:12
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:14
 msgid "pages"
 msgstr "페이지"
 
-#: src/components/authForm/components/SignInForm.tsx:88
-#: src/components/authForm/components/SignUpForm.tsx:128
+#: src/constants/setup.ts:12
+#~ msgid "pages"
+#~ msgstr "페이지"
+
+#: src/components/authForm/components/SignInForm.tsx:87
+#: src/components/authForm/components/SignUpForm.tsx:129
 msgid "Password"
 msgstr "비밀번호"
 
-#: src/components/authForm/components/SignInForm.tsx:98
-#: src/components/authForm/components/SignUpForm.tsx:138
+#: src/components/authForm/components/SignInForm.tsx:97
+#: src/components/authForm/components/SignUpForm.tsx:139
 msgid "Password is required"
 msgstr "비밀번호를 입력해주세요"
 
@@ -502,9 +552,14 @@ msgstr "날짜 선택"
 msgid "Progress"
 msgstr "진행도"
 
-#: src/constants/setup.ts:10
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:6
 msgid "Read \"Brave New World\""
 msgstr "멋진 신세계 책 읽기"
+
+#: src/constants/setup.ts:10
+#~ msgid "Read \"Brave New World\""
+#~ msgstr "멋진 신세계 책 읽기"
 
 #: src/components/UpdatePrompt.tsx:70
 msgid "Ready to update"
@@ -564,7 +619,7 @@ msgstr "정렬 기준 선택..."
 msgid "Seon Demo Mode"
 msgstr "데모 모드"
 
-#: src/routes/index.lazy.tsx:67
+#: src/routes/index.lazy.tsx:66
 msgid "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 msgstr "가장 중요한 일에 집중하고 동기를 잃지 않도록 돕는 목표 관리 앱, Seon."
 
@@ -572,7 +627,7 @@ msgstr "가장 중요한 일에 집중하고 동기를 잃지 않도록 돕는 �
 msgid "Set a target value for your goal."
 msgstr "목표 달성 값을 설정해 주세요."
 
-#: src/routes/index.lazy.tsx:59
+#: src/routes/index.lazy.tsx:58
 msgid "Set goals."
 msgstr "목표를 설정하고"
 
@@ -585,9 +640,12 @@ msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 �
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
-#: src/components/authForm/components/SignInForm.tsx:164
-#: src/routes/index.lazy.tsx:89
-#: src/routes/signin/index.lazy.tsx:28
+#: src/components/authForm/components/SignUpForm.tsx:217
+msgid "Sign in"
+msgstr "로그인"
+
+#: src/components/authForm/components/SignInForm.tsx:163
+#: src/routes/index.lazy.tsx:88
 msgid "Sign In"
 msgstr "로그인"
 
@@ -599,7 +657,11 @@ msgstr "데이터 동기화를 위해 다시 로그인해주세요."
 msgid "Sign in to sync your data."
 msgstr "데이터 동기화를 위해 로그인해 주세요."
 
-#: src/components/authForm/components/SignInForm.tsx:137
+#: src/routes/signin/index.lazy.tsx:42
+msgid "Sign in to your account"
+msgstr "계정에 로그인하세요"
+
+#: src/components/authForm/components/SignInForm.tsx:136
 msgid "Sign in will not work."
 msgstr "로그인을 할 수 없습니다."
 
@@ -608,12 +670,15 @@ msgstr "로그인을 할 수 없습니다."
 msgid "Sign out"
 msgstr "로그아웃"
 
-#: src/components/authForm/components/SignUpForm.tsx:201
-#: src/routes/signup/index.lazy.tsx:27
+#: src/components/authForm/components/SignInForm.tsx:178
+msgid "Sign up"
+msgstr "회원 가입"
+
+#: src/components/authForm/components/SignUpForm.tsx:202
 msgid "Sign Up"
 msgstr "회원 가입"
 
-#: src/components/authForm/components/SignUpForm.tsx:174
+#: src/components/authForm/components/SignUpForm.tsx:175
 msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
@@ -636,6 +701,10 @@ msgstr "데모 시작하기"
 #: src/components/DemoIndicator.tsx:30
 msgid "Start Over"
 msgstr "다시 시작"
+
+#: src/routes/signup/index.lazy.tsx:44
+msgid "Start tracking your goals today"
+msgstr "오늘부터 목표를 추적하세요"
 
 #: src/components/goalForm/hooks/useGoalForm.ts:114
 msgid "Sucessfully added goal"
@@ -723,7 +792,7 @@ msgstr "매일 완료한 횟수를 기록하세요.<0/>예: '30분 운동하기'
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 읽기(현재 페이지) 또는 저축(총 저축액)"
 
-#: src/routes/index.lazy.tsx:55
+#: src/routes/index.lazy.tsx:54
 msgid "Track your progress, achieve your goals"
 msgstr "진행 상황을 추적하고 목표를 달성하세요"
 
@@ -773,20 +842,34 @@ msgstr "목표 달성 값 (숫자)"
 msgid "View statistics and visualizations"
 msgstr "통계 및 시각화 보기"
 
-#: src/constants/setup.ts:34
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:32
 msgid "Wake up at 7 AM"
 msgstr "아침 7시에 일어나기"
 
-#: src/constants/setup.ts:35
+#: src/constants/setup.ts:34
+#~ msgid "Wake up at 7 AM"
+#~ msgstr "아침 7시에 일어나기"
+
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:36
 msgid "Wake up early every day"
 msgstr "매일 일찍 일어나기"
+
+#: src/constants/setup.ts:35
+#~ msgid "Wake up early every day"
+#~ msgstr "매일 일찍 일어나기"
 
 #: src/components/GoalLineGraph/logic.ts:43
 msgid "Weekly"
 msgstr "주별"
 
+#: src/routes/signin/index.lazy.tsx:39
+msgid "Welcome back"
+msgstr "다시 오신 것을 환영합니다"
+
 #. placeholder {0}: user.name
-#: src/routes/signin/index.lazy.tsx:33
+#: src/routes/signin/index.lazy.tsx:52
 msgid "Welcome back, {0}!"
 msgstr "다시 오신 것을 환영합니다, {0}님!"
 
@@ -795,7 +878,7 @@ msgid "Welcome back, {userName}!"
 msgstr "다시 오신 것을 환영합니다, {userName}님!"
 
 #. placeholder {0}: user.name
-#: src/components/authForm/components/SignUpForm.tsx:27
+#: src/components/authForm/components/SignUpForm.tsx:28
 msgid "Welcome, {0}!"
 msgstr "환영합니다, {0}님!"
 
@@ -803,9 +886,14 @@ msgstr "환영합니다, {0}님!"
 msgid "What you can do in demo mode:"
 msgstr "데모 모드에서 할 수 있는 것:"
 
-#: src/constants/setup.ts:24
+#. js-lingui-explicit-id
+#: src/constants/setup.ts:27
 msgid "words"
 msgstr "단어"
+
+#: src/constants/setup.ts:24
+#~ msgid "words"
+#~ msgstr "단어"
 
 #: src/components/entryForm/components/CreateEntryForm.tsx:200
 msgid "Yes"

@@ -1,15 +1,53 @@
 import type { MessageDescriptor } from '@lingui/core';
-import { msg } from '@lingui/core/macro';
 
 const descriptorToString = (descriptor: MessageDescriptor) =>
   descriptor.message ?? descriptor.id ?? '';
 
+const PROGRESS_GOAL_TITLE: MessageDescriptor = /*i18n*/ {
+  id: 'Read "Brave New World"',
+  message: 'Read "Brave New World"',
+};
+const PROGRESS_GOAL_DESCRIPTION: MessageDescriptor = /*i18n*/ {
+  id: 'Finish reading the 288-page book',
+  message: 'Finish reading the 288-page book',
+};
+const PROGRESS_GOAL_UNIT: MessageDescriptor = /*i18n*/ {
+  id: 'pages',
+  message: 'pages',
+};
+
+const COUNT_GOAL_TITLE: MessageDescriptor = /*i18n*/ {
+  id: 'Learn 1000 French words',
+  message: 'Learn 1000 French words',
+};
+const COUNT_GOAL_DESCRIPTION: MessageDescriptor = /*i18n*/ {
+  id: 'Improve French vocabulary',
+  message: 'Improve French vocabulary',
+};
+const COUNT_GOAL_UNIT: MessageDescriptor = /*i18n*/ {
+  id: 'words',
+  message: 'words',
+};
+
+const BOOLEAN_GOAL_TITLE: MessageDescriptor = /*i18n*/ {
+  id: 'Wake up at 7 AM',
+  message: 'Wake up at 7 AM',
+};
+const BOOLEAN_GOAL_DESCRIPTION: MessageDescriptor = /*i18n*/ {
+  id: 'Wake up early every day',
+  message: 'Wake up early every day',
+};
+const BOOLEAN_GOAL_UNIT: MessageDescriptor = /*i18n*/ {
+  id: 'days',
+  message: 'days',
+};
+
 export const DEMO_GOAL_DATA = [
   // PROGRESS type
   {
-    title: msg`Read "Brave New World"`,
-    description: msg`Finish reading the 288-page book`,
-    unit: msg`pages`,
+    title: PROGRESS_GOAL_TITLE,
+    description: PROGRESS_GOAL_DESCRIPTION,
+    unit: PROGRESS_GOAL_UNIT,
     type: 'PROGRESS',
     target: 288,
     initialValue: 0,
@@ -19,9 +57,9 @@ export const DEMO_GOAL_DATA = [
   },
   // COUNT type
   {
-    title: msg`Learn 1000 French words`,
-    description: msg`Improve French vocabulary`,
-    unit: msg`words`,
+    title: COUNT_GOAL_TITLE,
+    description: COUNT_GOAL_DESCRIPTION,
+    unit: COUNT_GOAL_UNIT,
     type: 'COUNT',
     target: 1000,
     initialValue: 0,
@@ -31,9 +69,9 @@ export const DEMO_GOAL_DATA = [
   },
   // BOOLEAN type
   {
-    title: msg`Wake up at 7 AM`,
-    description: msg`Wake up early every day`,
-    unit: msg`days`,
+    title: BOOLEAN_GOAL_TITLE,
+    description: BOOLEAN_GOAL_DESCRIPTION,
+    unit: BOOLEAN_GOAL_UNIT,
     type: 'BOOLEAN',
     target: 30,
     initialValue: 0,
