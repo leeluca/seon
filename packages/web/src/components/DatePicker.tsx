@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
-import { t } from '@lingui/core/macro';
-import { Trans } from '@lingui/react/macro';
+import type { MessageDescriptor } from '@lingui/core';
+import { msg } from '@lingui/core/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { CalendarIcon } from '@radix-ui/react-icons';
 import {
   addDays,
@@ -27,25 +28,31 @@ import {
 } from '~/components/ui/select';
 import { cn } from '~/utils';
 
-function getDateDistanceNames(): Record<number, string> {
-  return {
-    0: t`Today`,
-    1: t`Tomorrow`,
-    7: t`In a week`,
-    30: t`In a month`,
-    31: t`In a month`,
-  };
+const dateDistanceNames = {
+  0: msg`Today`,
+  1: msg`Tomorrow`,
+  7: msg`In a week`,
+  30: msg`In a month`,
+  31: msg`In a month`,
+} as const;
+
+export function getPresetRelativeDateText(
+  d: Date,
+  translate: (msgDescriptor: MessageDescriptor) => string,
+) {
+  const differenceInDaysNumber = differenceInCalendarDays(d, new Date());
+  const msgDescriptor =
+    dateDistanceNames[differenceInDaysNumber as keyof typeof dateDistanceNames];
+  return msgDescriptor ? translate(msgDescriptor) : undefined;
 }
 
-function getPresetRelativeDateText(date: Date) {
-  const dateDistanceNames = getDateDistanceNames();
-  const differenceInDaysNumber = differenceInCalendarDays(date, new Date());
-  return dateDistanceNames[differenceInDaysNumber];
-}
-function getRelativeDistanceText(date: Date) {
+export function getRelativeDistanceText(
+  d: Date,
+  translate: (msgDescriptor: MessageDescriptor) => string,
+) {
   const distanceName =
-    getPresetRelativeDateText(date) ||
-    intlFormatDistance(startOfDay(date), startOfDay(new Date()));
+    getPresetRelativeDateText(d, translate) ||
+    intlFormatDistance(startOfDay(d), startOfDay(new Date()));
 
   return distanceName.charAt(0).toUpperCase() + distanceName.slice(1);
 }
@@ -78,6 +85,7 @@ export const DatePicker = React.forwardRef(
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
+    const { t } = useLingui();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [dateState, setDateState] = useState<Date | undefined>(defaultDate);
     const [month, setMonth] = useState<Date | undefined>(dateState);
@@ -114,7 +122,7 @@ export const DatePicker = React.forwardRef(
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? (
-              (useRelativeDistance && getPresetRelativeDateText(date)) ||
+              (useRelativeDistance && getPresetRelativeDateText(date, t)) ||
               formatDate(date, 'PP')
             ) : (
               <span>
@@ -132,21 +140,23 @@ export const DatePicker = React.forwardRef(
           {showPresetDates && (
             <Select
               onValueChange={(value) => {
-                const newDate = addDays(new Date(), Number.parseInt(value));
+                const newDate = addDays(new Date(), Number.parseInt(value, 10));
                 setDate(newDate);
                 setMonth(newDate);
               }}
             >
               <SelectTrigger>
                 <SelectValue
-                  placeholder={date ? getRelativeDistanceText(date) : t`Select`}
+                  placeholder={
+                    date ? getRelativeDistanceText(date, t) : t`Select`
+                  }
                 />
               </SelectTrigger>
               <SelectContent position="popper">
-                <SelectItem value="0">{getDateDistanceNames()[0]}</SelectItem>
-                <SelectItem value="1">{getDateDistanceNames()[1]}</SelectItem>
-                <SelectItem value="7">{getDateDistanceNames()[7]}</SelectItem>
-                <SelectItem value="30">{getDateDistanceNames()[30]}</SelectItem>
+                <SelectItem value="0">{t(dateDistanceNames[0])}</SelectItem>
+                <SelectItem value="1">{t(dateDistanceNames[1])}</SelectItem>
+                <SelectItem value="7">{t(dateDistanceNames[7])}</SelectItem>
+                <SelectItem value="30">{t(dateDistanceNames[30])}</SelectItem>
               </SelectContent>
             </Select>
           )}

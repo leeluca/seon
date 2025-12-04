@@ -1,3 +1,4 @@
+import { i18n } from '@lingui/core';
 import { addDays, addSeconds, subDays } from 'date-fns';
 
 import { DEMO_GOAL_DATA } from '~/constants/setup';
@@ -36,13 +37,13 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
 
   return DEMO_GOAL_DATA.map((goalData) =>
     createGoal({
-      title: goalData.title,
-      description: goalData.description,
+      title: i18n._(goalData.title),
+      description: i18n._(goalData.description),
       target: goalData.target,
       initialValue: goalData.initialValue,
       startDate: addDays(today, goalData.startDateOffset),
       targetDate: addDays(today, goalData.targetDateOffset),
-      unit: goalData.unit,
+      unit: i18n._(goalData.unit),
       type: goalData.type,
       userId,
       createdAt: addSeconds(new Date(), goalData.createdAtOffset),
