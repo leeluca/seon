@@ -8,7 +8,7 @@ import {
   NumberField,
   TextField,
 } from '~/components/form/Fields';
-import { handleSubmit as submitEntry } from '~/services/entry';
+import { recordEntry } from '~/data/domain/entryRepo';
 import { fieldContext, formContext } from '~/states/formContext';
 
 export const { useAppForm, withForm } = createFormHook({
@@ -58,20 +58,18 @@ export function useEntryForm(options: {
       if (inputtedValue === undefined) {
         return;
       }
-      await submitEntry(
-        {
+      try {
+        await recordEntry({
           value: inputtedValue,
           date,
           goalId,
           userId,
-        },
-        {
-          callback: onSubmitCallback,
-          onError: () => {
-            toast.error(t`Failed to add entry`);
-          },
-        },
-      );
+        });
+        onSubmitCallback();
+      } catch (error) {
+        console.error(error);
+        toast.error(t`Failed to add entry`);
+      }
     },
   });
 

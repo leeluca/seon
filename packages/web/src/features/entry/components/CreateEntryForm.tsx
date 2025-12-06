@@ -15,15 +15,15 @@ import { Button } from '~/components/ui/button';
 import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
-import { useIds } from '~/hooks/useIds';
 import type { Database } from '~/data/db/AppSchema';
-import { deleteEntry, getPreviousEntry } from '~/services/entry';
+import { deleteEntry, getPreviousEntry } from '~/data/domain/entryRepo';
+import type { GoalType } from '~/features/goal/model';
+import { useIds } from '~/hooks/useIds';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/features/goal/model';
 import { cn } from '~/utils';
-import { ENTRY_FIELD_SUFFIX } from '../constants';
 import { useEntryForm } from '../hooks/useEntryForm';
+import { ENTRY_FIELD_SUFFIX } from '../model/constants';
 
 interface CreateEntryFormProps {
   goalId: string;
@@ -222,12 +222,15 @@ const CreateEntryForm = ({
                           disabled={!entryId}
                           onClick={() =>
                             entryId &&
-                            void deleteEntry(entryId, goalId, {
-                              callback: onSubmitCallback,
-                              onError: () => {
+                            void (async () => {
+                              try {
+                                await deleteEntry(entryId, goalId);
+                                onSubmitCallback?.();
+                              } catch (error) {
+                                console.error(error);
                                 toast.error(t`Failed to delete entry`);
-                              },
-                            })
+                              }
+                            })()
                           }
                           aria-label={t`Delete entry`}
                         >
@@ -315,12 +318,15 @@ const CreateEntryForm = ({
                       disabled={!entryId}
                       onClick={() =>
                         entryId &&
-                        void deleteEntry(entryId, goalId, {
-                          callback: onSubmitCallback,
-                          onError: () => {
+                        void (async () => {
+                          try {
+                            await deleteEntry(entryId, goalId);
+                            onSubmitCallback?.();
+                          } catch (error) {
+                            console.error(error);
                             toast.error(t`Failed to delete entry`);
-                          },
-                        })
+                          }
+                        })()
                       }
                       size="responsive"
                       aria-label={t`Delete entry`}

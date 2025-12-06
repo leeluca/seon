@@ -1,4 +1,4 @@
-import { ENTRY_FIELD_SUFFIX } from '~/components/entryForm/constants';
+import { ENTRY_FIELD_SUFFIX } from '~/features/entry/model/constants';
 import { DEMO_GOALS } from './constants';
 import { expect, test } from './persistent-webkit-fixtures';
 import { ensureUserInitialized } from './testUtils';

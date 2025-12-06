@@ -4,6 +4,7 @@ import { Link } from '@tanstack/react-router';
 import { isBefore, startOfDay } from 'date-fns';
 import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 
+import { buttonVariants } from '~/components/ui/button';
 import {
   Card,
   CardContent,
@@ -12,10 +13,9 @@ import {
   CardTitle,
 } from '~/components/ui/card';
 import type { Database } from '~/data/db/AppSchema';
+import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
-import CalendarHeatmap from './CalendarHeatmap';
-import { buttonVariants } from '~/components/ui/button';
 
 interface ProgressBarProps {
   progressPercent: number;

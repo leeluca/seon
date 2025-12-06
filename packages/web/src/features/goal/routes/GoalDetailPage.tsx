@@ -36,4 +36,3 @@ export function GoalDetailPage({ goalId }: { goalId: string }) {
     </Sentry.ErrorBoundary>
   );
 }
-

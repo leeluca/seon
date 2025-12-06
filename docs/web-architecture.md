@@ -13,28 +13,33 @@ Defines the target structure for the web app with a local-first, feature-first l
 ## Target Directory Layout (packages/web/src)
 
 ```
-app/                     # App shell: providers, router config, root layout
-data/
-  db/                    # AppSchema, db factory, migrations/versioning
-  sync/                  # PowerSync connector, auth wiring, sync state
-  domain/                # Goal/Entry/User domain/data access (pure, typed)
-features/
-  goal/
-    routes/              # Feature-owned pages + loaders/actions/guards
-    components/          # Feature UI pieces (cards, panels, filters)
-    hooks/               # Feature hooks wrapping domain/query
-    model/               # Types, validation, mappers
-    index.ts             # Public exports for the feature
-  entry/
-  auth/
-shared/
-  components/
-    common/              # Cross-feature presentational pieces (AppLink, BackButton, ContentCard)
-    ui/                  # Design-system primitives (shadcn/Radix-based)
-    providers/           # App-wide providers (QueryProvider, I18nProvider)
-  utils/                 # Cross-cutting helpers
-  hooks/                 # Generic hooks (debounce, timeout, etc.)
-  constants/             # Cross-feature constants
+packages/web/src/
+
+├── app/                              # App shell: providers, router config, root layout
+│
+├── data/                             # Data infrastructure layer
+│   ├── db/                           # AppSchema, db factory, migrations/versioning
+│   ├── sync/                         # PowerSync connector, auth wiring, sync state
+│   └── domain/                       # Goal/Entry/User domain/data access (pure, typed)
+│
+├── features/                         # Domain feature modules
+│   ├── goal/
+│   │   ├── routes/                   # Feature-owned pages + loaders/actions/guards
+│   │   ├── components/               # Feature UI pieces (cards, panels, filters)
+│   │   ├── hooks/                    # Feature hooks wrapping domain/query
+│   │   ├── model/                    # Types, validation, mappers
+│   │   └── index.ts                  # Public exports for the feature
+│   ├── entry/
+│   └── auth/
+│
+├── shared/                           # Cross-cutting reusable modules
+│   ├── components/
+│   │   ├── common/                   # Presentational pieces (AppLink, BackButton, ContentCard)
+│   │   ├── ui/                       # Design-system primitives (shadcn/Radix-based)
+│   │   └── providers/                # App-wide providers (QueryProvider, I18nProvider)
+│   ├── utils/                        # Cross-cutting helpers
+│   ├── hooks/                        # Generic hooks (debounce, timeout, etc.)
+│   └── constants/                    # Cross-feature constants
 ```
 
 ## Layer Responsibilities
@@ -62,18 +67,21 @@ shared/
 
 - **Single file**: Use for small, self-contained components (<150–200 lines, one UI concern). Co-locate tests/stories next to it.
 - **Directory**: Use when the component has multiple internal parts, custom hooks, dedicated constants, or multiple entry points.
-  ```
-  Component/
-    Component.tsx        # main export
-    useComponent.ts      # component-only hook (optional)
-    parts/
-      Header.tsx
-      ItemRow.tsx
-    constants.ts
-    types.ts
-    Component.test.tsx
-    index.ts             # re-export main + public subparts
-  ```
+
+```
+Component/
+
+├── Component.tsx                     # main export
+├── Component.test.tsx                # component tests
+├── useComponent.ts                   # component-only hook (optional)
+├── constants.ts                      # component constants
+├── types.ts                          # component types
+├── parts/                            # internal subcomponents
+│   ├── Header.tsx
+│   └── ItemRow.tsx
+└── index.ts                          # re-export main + public subparts
+```
+
 - Keep only the public surface in `index.ts`; internal pieces stay unexported or in `parts/`.
 - **Feature vs. shared**: Feature-specific components live in `features/<feature>/components/`; cross-feature reusable pieces live in `shared/components/common/` or `ui/`.
 
