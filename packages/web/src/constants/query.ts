@@ -1,13 +1,13 @@
 import { sql } from '@powersync/kysely-driver';
 
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import type {
   GoalFilter,
   GoalSort,
   GoalSortDirection,
   GoalSortField,
   GoalType,
-} from '~/types/goal';
+} from '~/features/goal/model';
 
 /* api */
 export const AUTH_STATUS = {

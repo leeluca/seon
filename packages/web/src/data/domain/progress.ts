@@ -1,6 +1,6 @@
 import type { Kysely } from '@powersync/kysely-driver';
 
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 
 export async function updateGoalProgress(
   goalId: string,

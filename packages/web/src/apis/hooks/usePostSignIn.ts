@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
 import { AUTH_STATUS } from '~/constants/query';
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 import { syncLocalUserDataAfterSignIn } from '~/services/auth';
 import { useUserStore } from '~/states/stores/userStore';
 import type { Preferences } from '~/types/user';

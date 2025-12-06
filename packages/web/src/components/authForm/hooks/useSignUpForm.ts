@@ -1,6 +1,6 @@
 import usePostSignUp, { type SignUpParams } from '~/apis/hooks/usePostSignUp';
-import db from '~/lib/database';
-import type { Database } from '~/lib/powersync/AppSchema';
+import db from '~/data/db/database';
+import type { Database } from '~/data/db/AppSchema';
 import { useUserStore } from '~/states/stores/userStore';
 
 import { useAuthAppForm } from './useAuthForm';

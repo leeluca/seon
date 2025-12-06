@@ -5,7 +5,7 @@ import {
   WASQLiteVFS,
 } from '@powersync/web';
 
-import { AppSchema, type Database } from '~/lib/powersync/AppSchema';
+import { AppSchema, type Database } from '~/data/db/AppSchema';
 
 // NOTE: should be accessed through PowerSyncContext
 export const powerSyncDb = new PowerSyncDatabase({

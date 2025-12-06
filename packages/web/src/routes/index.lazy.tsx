@@ -6,7 +6,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import LanguageSelector from '~/components/LanguageSelector';
 import { Button, buttonVariants } from '~/components/ui/button';
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import { useUserStore } from '~/states/stores/userStore';
 
 export const Route = createLazyFileRoute('/')({

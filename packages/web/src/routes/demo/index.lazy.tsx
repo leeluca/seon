@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow';
 
 import DemoStart from '~/components/DemoStart';
 // import LanguageSelector from '~/components/LanguageSelector';
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import { useUserStore } from '~/states/stores/userStore';
 import { generateDemoData } from '~/utils/demo';
 

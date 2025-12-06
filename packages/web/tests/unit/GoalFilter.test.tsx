@@ -39,7 +39,7 @@ describe('GoalFilter', () => {
   });
 
   it('updates the database when an option is selected', async () => {
-    const dbMock = await import('~/lib/database');
+    const dbMock = await import('~/data/db/database');
     const userStoreMock = await import('~/states/stores/userStore');
 
     const setFilter = vi.fn();

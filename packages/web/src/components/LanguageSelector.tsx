@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from '~/components/ui/popover';
 import { LOCALES } from '~/constants/locales';
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils/';
 

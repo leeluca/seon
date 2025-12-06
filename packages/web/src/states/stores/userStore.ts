@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { create } from 'zustand';
 
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import type { Preferences, User } from '~/types/user';
 import { generateOfflineUser } from '~/utils';
 import { isOpfsAvailable } from '~/utils/storage';

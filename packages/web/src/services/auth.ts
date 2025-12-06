@@ -8,8 +8,8 @@ import {
   DB_TOKEN_KEY,
   SESSION_EXP_KEY,
 } from '~/constants/storage';
-import db, { powerSyncDb } from '~/lib/database';
-import type { Database } from '~/lib/powersync/AppSchema';
+import db, { powerSyncDb } from '~/data/db/database';
+import type { Database } from '~/data/db/AppSchema';
 
 type PowerSyncExecutor = {
   execute: (sql: string) => Promise<unknown>;

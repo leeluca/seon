@@ -1,5 +1,5 @@
 import type { LOCALES } from '~/constants/locales';
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 import type { GoalFilter, GoalSort } from './goal';
 
 export interface Preferences {

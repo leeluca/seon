@@ -44,7 +44,12 @@ const entry = new Table(
     updatedAt: column.timestamp,
     userId: column.text,
   },
-  { indexes: {} },
+  {
+    indexes: {
+      goalId_date: ['goalId', 'date'],
+      userId: ['userId'],
+    },
+  },
 );
 
 // TODO: test how timezone is handled
@@ -67,7 +72,12 @@ const goal = new Table(
     completionDate: column.optionalTimestamp,
     archivedAt: column.optionalTimestamp,
   },
-  { indexes: {} },
+  {
+    indexes: {
+      userId: ['userId'],
+      archivedAt: ['archivedAt'],
+    },
+  },
 );
 
 export const AppSchema = new Schema({
