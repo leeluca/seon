@@ -23,14 +23,14 @@ import {
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
+import CreateEntryForm from '~/components/entryForm/components/CreateEntryForm';
+import { Button } from '~/components/ui/button';
+import { ResponsivePopover } from '~/components/ui/responsive-popover';
+import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
 import { ENTRIES, GOALS } from '~/constants/query';
+import type { GoalType } from '~/features/goal/model';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/types/goal';
 import { cn } from '~/utils';
-import { CreateEntryForm } from './entryForm';
-import { Button } from './ui/button';
-import { ResponsivePopover } from './ui/responsive-popover';
-import { ResponsiveTooltip } from './ui/responsive-tooltip';
 
 interface GetButtonStylesArgs {
   entryValue: number | undefined;

@@ -4,17 +4,15 @@ import { Trans } from '@lingui/react/macro';
 import { useStatus, useSuspenseQuery } from '@powersync/react';
 import { useNavigate } from '@tanstack/react-router';
 
-import GoalCard from '~/components/GoalCard';
-import type { NoGoalsPlaceholderProps } from '~/components/NoGoalsPlaceholder';
 import { GOALS } from '~/constants/query';
-import db from '~/lib/database';
-import { updateGoalProgress } from '~/services/progress';
+import db from '~/data/db/database';
+import { updateGoalProgress } from '~/data/domain/progress';
+import type { GoalFilter, GoalSort } from '~/features/goal/model';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalFilter, GoalSort } from '~/types/goal';
+import GoalCard from './GoalCard';
+import type { NoGoalsPlaceholderProps } from './NoGoalsPlaceholder';
 
-const LazyNoGoalsPlaceholder = lazy(
-  () => import('~/components/NoGoalsPlaceholder'),
-);
+const LazyNoGoalsPlaceholder = lazy(() => import('./NoGoalsPlaceholder'));
 
 const NoGoalsPlaceholder = ({
   onClick,
@@ -46,9 +44,7 @@ export interface GoalsContentProps {
 export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const useSync = useUserStore((state) => state.user.useSync);
 
-  const { data: goals, refresh } = useSuspenseQuery(
-    GOALS.list(sort, filter).query,
-  );
+  const { data: goals } = useSuspenseQuery(GOALS.list(sort, filter).query);
   const navigate = useNavigate();
   const openNewGoalForm = useCallback(
     () => void navigate({ to: '/goals/new' }),
@@ -74,9 +70,9 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
 
   // FIXME: temporary workaround to refresh the goals list after deleting a goal
   // FIXME: also need to fix issue for archiving/unarchiving goals
-  const handleDeleteSuccess = useCallback(() => {
-    refresh?.();
-  }, [refresh]);
+  // const handleDeleteSuccess = useCallback(() => {
+  //   refresh?.();
+  // }, [refresh]);
 
   return (
     <section
@@ -97,7 +93,7 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
         <GoalCard
           key={goal.id}
           {...goal}
-          onDeleteSuccess={handleDeleteSuccess}
+          // onDeleteSuccess={handleDeleteSuccess}
         />
       ))}
     </section>

@@ -20,7 +20,7 @@ import {
 } from '~/components/ui/sheet';
 import { GOALS } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import { GoalControls } from './GoalControls';
 import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';

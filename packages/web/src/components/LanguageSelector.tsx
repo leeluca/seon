@@ -60,7 +60,6 @@ export default function LanguageSelector() {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          // biome-ignore lint/a11y/useSemanticElements: cannot use svg icon inside <select> element
           role="listbox"
           aria-expanded={open}
           className="-ml-2 justify-between p-2"

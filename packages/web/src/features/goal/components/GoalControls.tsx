@@ -5,10 +5,10 @@ import { ArchiveIcon, Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { GOALS } from '~/constants/query';
-import { archiveGoal, deleteGoal, unarchiveGoal } from '~/services/goal';
+import { archiveGoal, deleteGoal, unarchiveGoal } from '~/data/domain/goalRepo';
 import { cn } from '~/utils';
-import { Button } from './ui/button';
-import { ResponsivePopover } from './ui/responsive-popover';
+import { Button } from '~/components/ui/button';
+import { ResponsivePopover } from '~/components/ui/responsive-popover';
 
 interface GoalControlsProps {
   id: string;

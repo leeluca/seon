@@ -1,4 +1,4 @@
-import { GOAL_FIELD_SUFFIX } from '~/components/goalForm/constants';
+import { GOAL_FIELD_SUFFIX } from '~/features/goal/model';
 import { expect, test } from './persistent-webkit-fixtures';
 import { ensureUserInitialized } from './testUtils';
 

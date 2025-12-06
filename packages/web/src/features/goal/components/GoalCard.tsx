@@ -11,11 +11,11 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import CalendarHeatmap from './CalendarHeatmap';
-import { buttonVariants } from './ui/button';
+import { buttonVariants } from '~/components/ui/button';
 
 interface ProgressBarProps {
   progressPercent: number;

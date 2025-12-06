@@ -6,15 +6,15 @@ import { ChartLineIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import {
   buildGoalLineGraphOptions,
   getModeLabels,
   MODE_ORDER,
   type IntervalMode,
 } from './logic';
-import { LineGraph } from '../charts/LineGraph';
-import { Button } from '../ui/button';
+import { LineGraph } from '~/components/charts/LineGraph';
+import { Button } from '~/components/ui/button';
 
 interface GoalLineGraphProps {
   goalId: string;

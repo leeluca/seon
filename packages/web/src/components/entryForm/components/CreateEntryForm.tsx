@@ -20,7 +20,7 @@ import type { Database } from '~/data/db/AppSchema';
 import { deleteEntry, getPreviousEntry } from '~/services/entry';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import { cn } from '~/utils';
 import { ENTRY_FIELD_SUFFIX } from '../constants';
 import { useEntryForm } from '../hooks/useEntryForm';

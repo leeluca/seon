@@ -12,7 +12,7 @@ import {
 import type { LOCALES } from '~/constants/locales';
 import { ENTRIES, GOALS } from '~/constants/query';
 import { cn } from '~/utils';
-import { Separator } from './ui/separator';
+import { Separator } from '~/components/ui/separator';
 
 interface StatusItemProps {
   label: string;

@@ -7,7 +7,7 @@ import type { Database } from '~/data/db/AppSchema';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import { updateGoalProgress } from '~/data/domain/progress';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import { generateUUIDs } from '~/utils';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';

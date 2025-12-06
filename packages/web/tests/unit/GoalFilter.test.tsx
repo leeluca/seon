@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { GoalFilter } from '~/components/GoalFilter';
+import { GoalFilter } from '~/features/goal/components/GoalFilter';
 import { act, fireEvent, customRender as render, screen } from '../test-utils';
 
 describe('GoalFilter', () => {

@@ -15,9 +15,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
-import db from '~/lib/database';
+import db from '~/data/db/database';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalFilter as GoalFilterType } from '~/types/goal';
+import type { GoalFilter as GoalFilterType } from '~/features/goal/model';
 import { cn } from '~/utils';
 
 async function updateDefaultFilter(updatedFilter: GoalFilterType) {

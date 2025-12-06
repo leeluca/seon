@@ -11,9 +11,9 @@ import {
   isSameWeek,
 } from 'date-fns';
 
-import type { Database } from '~/lib/powersync/AppSchema';
-import type { GoalType } from '~/types/goal';
-import type { EChartsOption } from '../charts/echarts';
+import type { Database } from '~/data/db/AppSchema';
+import type { GoalType } from '~/features/goal/model';
+import type { EChartsOption } from '~/components/charts/echarts';
 
 export type IntervalMode = 'day' | 'week' | 'month';
 

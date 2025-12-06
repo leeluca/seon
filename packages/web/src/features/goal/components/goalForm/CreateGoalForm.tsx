@@ -22,11 +22,11 @@ import {
 } from '~/constants';
 import { useIds } from '~/hooks/useIds';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import { cn } from '~/utils';
 import { maxLengthValidator } from '~/utils/validation';
-import { GOAL_FIELD_SUFFIX, GOAL_FORM_ID } from '../constants';
-import { withForm } from '../hooks/useGoalForm';
+import { GOAL_FIELD_SUFFIX, GOAL_FORM_ID } from '../../model';
+import { withForm } from '../../hooks/useGoalForm';
 
 export interface NewGoal {
   title: string;

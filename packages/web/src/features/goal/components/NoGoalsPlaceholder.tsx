@@ -1,7 +1,7 @@
 import { Trans } from '@lingui/react/macro';
 
 import { CDN_URL } from '~/constants';
-import type { GoalFilter } from '~/types/goal';
+import type { GoalFilter } from '~/features/goal/model';
 import { cn } from '~/utils';
 
 const content: Record<

@@ -11,8 +11,8 @@ import {
   TextField,
 } from '~/components/form/Fields';
 import { GOALS } from '~/constants/query';
-import type { Database } from '~/lib/powersync/AppSchema';
-import { handleSave, handleUpdate } from '~/services/goal';
+import type { Database } from '~/data/db/AppSchema';
+import { createGoal, updateGoal } from '~/data/domain/goalRepo';
 import { fieldContext, formContext } from '~/states/formContext';
 
 // FIXME: add translations
@@ -106,18 +106,14 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
       };
 
       if (options.mode === 'create') {
-        await handleSave(
-          { ...payload, userId: options.userId },
-          {
-            callback: () => {
-              onSuccess?.();
-              toast.success(t`Sucessfully added goal`);
-            },
-            onError: () => {
-              toast.error(t`Failed to add goal`);
-            },
-          },
-        );
+        try {
+          await createGoal({ ...payload, userId: options.userId });
+          onSuccess?.();
+          toast.success(t`Sucessfully added goal`);
+        } catch (error) {
+          console.error(error);
+          toast.error(t`Failed to add goal`);
+        }
         return;
       }
       // edit mode
@@ -125,15 +121,16 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
         targetValue !== formApi.options.defaultValues?.targetValue ||
         initialValue !== formApi.options.defaultValues?.initialValue;
 
-      await handleUpdate(options.goal.id, payload, {
-        callback: () => {
-          toast.success(t`Sucessfully updated goal`);
-        },
-        onError: () => {
-          toast.error(t`Failed to update goal`);
-        },
-        completionCriteriaChanged,
-      });
+      try {
+        await updateGoal(options.goal.id, payload, {
+          completionCriteriaChanged,
+        });
+        toast.success(t`Sucessfully updated goal`);
+      } catch (error) {
+        console.error(error);
+        toast.error(t`Failed to update goal`);
+        return;
+      }
 
       await Promise.all([
         queryClient.invalidateQueries({

@@ -21,9 +21,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover';
-import db from '~/lib/database';
+import db from '~/data/db/database';
+import type { GoalSort } from '~/features/goal/model';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalSort } from '~/types/goal';
 import { cn } from '~/utils';
 
 async function updateDefaultSort(updatedSort: GoalSort) {
@@ -102,7 +102,6 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          // biome-ignore lint/a11y/useSemanticElements: cannot use svg icon inside <select> element
           role="listbox"
           aria-expanded={open}
           className="max-w-[200px] justify-normal"

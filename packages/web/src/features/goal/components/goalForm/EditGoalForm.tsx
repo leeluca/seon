@@ -9,11 +9,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/collapsible';
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 import { cn } from '~/utils';
 import CreateGoalForm from './CreateGoalForm';
-import { GOAL_FORM_ID } from '../constants';
-import { useGoalForm } from '../hooks/useGoalForm';
+import { GOAL_FORM_ID } from '../../model';
+import { useGoalForm } from '../../hooks/useGoalForm';
 
 interface GoalEditFormProps {
   goal: Database['goal'];

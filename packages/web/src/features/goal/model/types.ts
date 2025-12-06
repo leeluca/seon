@@ -1,4 +1,4 @@
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 
 export type GoalType = 'COUNT' | 'PROGRESS' | 'BOOLEAN';
 
