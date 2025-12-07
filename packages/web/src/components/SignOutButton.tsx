@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { usePowerSync } from '@powersync/react';
 
-import usePostSignOut from '~/apis/hooks/usePostSignOut';
+import usePostSignOut from '~/features/auth/hooks/usePostSignOut';
 import {
   AlertDialog,
   AlertDialogAction,

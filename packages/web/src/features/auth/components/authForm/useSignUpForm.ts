@@ -1,8 +1,9 @@
-import usePostSignUp, { type SignUpParams } from '~/apis/hooks/usePostSignUp';
-import db from '~/data/db/database';
 import type { Database } from '~/data/db/AppSchema';
+import db from '~/data/db/database';
+import usePostSignUp, {
+  type SignUpParams,
+} from '~/features/auth/hooks/usePostSignUp';
 import { useUserStore } from '~/states/stores/userStore';
-
 import { useAuthAppForm } from './useAuthForm';
 
 type SignUpFormValues = Omit<SignUpParams, 'uuid'>;

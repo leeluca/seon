@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { signOutLocally } from '~/services/auth';
+import fetcher from '~/apis/fetcher';
+import { signOutLocally } from '~/data/domain/authRepo';
 import { useUserStore } from '~/states/stores/userStore';
 import { useSupabase } from '~/states/syncContext';
 import type { APIError } from '~/utils/errors';
-import fetcher from '../fetcher';
 
 export const POST_SIGNOUT_KEY = '/api/auth/signout';
 

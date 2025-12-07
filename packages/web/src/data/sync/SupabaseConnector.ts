@@ -12,7 +12,7 @@ import {
   type SupabaseClient,
 } from '@supabase/supabase-js';
 
-import { fetchSyncCredentials, getDbAccessToken } from '~/apis/credential';
+import { fetchSyncCredentials, getDbAccessToken } from '~/data/sync/credential';
 import type { Preferences } from '~/types/user';
 
 export type SupabaseConfig = {

@@ -7,12 +7,12 @@ import * as Sentry from '@sentry/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
-import { useFetchAuthStatus } from './apis/hooks/useFetchAuthStatus';
 import { AppProviders } from './components/AppProviders';
 import ErrorFallback from './components/ErrorFallback';
 import NotFound from './components/NotFound';
 import { COMPATIBILITY_MESSAGE } from './constants/errors';
 import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
+import { useFetchAuthStatus } from './features/auth/hooks/useFetchAuthStatus';
 import { queryClient } from './lib/queryClient';
 import { defaultLocale } from './locales/i18n';
 import { routeTree } from './routeTree.gen';

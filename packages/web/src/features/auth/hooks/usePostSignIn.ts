@@ -3,13 +3,13 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
+import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
-import { syncLocalUserDataAfterSignIn } from '~/services/auth';
+import { syncLocalUserDataAfterSignIn } from '~/data/domain/authRepo';
 import { useUserStore } from '~/states/stores/userStore';
 import type { Preferences } from '~/types/user';
 import type { APIError } from '~/utils/errors';
-import fetcher from '../fetcher';
 
 export const POST_SIGNIN_KEY = '/api/auth/signin';
 

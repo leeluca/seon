@@ -1,8 +1,7 @@
 import usePostSignIn, {
   type PostSignInResponse,
   type SignInParams,
-} from '~/apis/hooks/usePostSignIn';
-
+} from '~/features/auth/hooks/usePostSignIn';
 import { useAuthAppForm } from './useAuthForm';
 
 export interface UseSignInFormOptions {

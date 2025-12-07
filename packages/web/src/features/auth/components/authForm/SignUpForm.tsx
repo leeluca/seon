@@ -12,8 +12,8 @@ import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { useIds } from '~/hooks/useIds';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { emailValidator, maxLengthValidator } from '~/utils/validation';
-import { SIGN_UP_FIELD_SUFFIX } from '../constants';
-import { useSignUpForm } from '../hooks/useSignUpForm';
+import { useSignUpForm } from './useSignUpForm';
+import { SIGN_UP_FIELD_SUFFIX } from '../../model/constants';
 
 interface SignUpFormProps {
   onSignUpCallback?: () => void;

@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
 import type { APIError } from '~/utils/errors';
-import fetcher from '../fetcher';
 
 export const POST_SIGNUP_KEY = '/api/auth/signup';
 

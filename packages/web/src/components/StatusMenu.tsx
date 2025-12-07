@@ -13,15 +13,15 @@ import {
 import { toast } from 'sonner';
 import { useShallow } from 'zustand/react/shallow';
 
-import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
-import type { PostSignInResponse } from '~/apis/hooks/usePostSignIn';
+import { SignInForm } from '~/features/auth/components/authForm';
+import { useFetchAuthStatus } from '~/features/auth/hooks/useFetchAuthStatus';
+import type { PostSignInResponse } from '~/features/auth/hooks/usePostSignIn';
 import { useDebounceValue } from '~/hooks/useDebounceValue';
 import { useTimeout } from '~/hooks/useTimeout';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
 import { APIError } from '~/utils/errors';
-import { SignInForm } from './authForm';
 import SignOutButton from './SignOutButton';
 import { Button, buttonVariants } from './ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
