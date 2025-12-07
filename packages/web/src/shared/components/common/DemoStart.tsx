@@ -1,14 +1,14 @@
 import { Trans } from '@lingui/react/macro';
 
-import LanguageSelector from '~/components/LanguageSelector';
-import { Button } from '~/components/ui/button';
+import LanguageSelector from '~/shared/components/common/LanguageSelector';
+import { Button } from '~/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-} from '~/components/ui/card';
+} from '~/shared/components/ui/card';
 
 interface DemoStartProps {
   onStart: () => void;

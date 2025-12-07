@@ -11,8 +11,8 @@ import {
 
 import type { LOCALES } from '~/constants/locales';
 import { ENTRIES, GOALS } from '~/constants/query';
+import { Separator } from '~/shared/components/ui/separator';
 import { cn } from '~/utils';
-import { Separator } from '~/components/ui/separator';
 
 interface StatusItemProps {
   label: string;

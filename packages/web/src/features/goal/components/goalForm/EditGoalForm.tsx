@@ -3,17 +3,17 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { format } from 'date-fns';
 import { ChevronRightIcon, SaveIcon, XIcon } from 'lucide-react';
 
-import { Button } from '~/components/ui/button';
+import type { Database } from '~/data/db/AppSchema';
+import { Button } from '~/shared/components/ui/button';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from '~/components/ui/collapsible';
-import type { Database } from '~/data/db/AppSchema';
+} from '~/shared/components/ui/collapsible';
 import { cn } from '~/utils';
 import CreateGoalForm from './CreateGoalForm';
-import { GOAL_FORM_ID } from '../../model';
 import { useGoalForm } from '../../hooks/useGoalForm';
+import { GOAL_FORM_ID } from '../../model';
 
 interface GoalEditFormProps {
   goal: Database['goal'];

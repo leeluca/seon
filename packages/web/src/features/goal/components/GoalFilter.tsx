@@ -3,21 +3,21 @@ import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Check, FilterIcon } from 'lucide-react';
 
-import { Button } from '~/components/ui/button';
+import db from '~/data/db/database';
+import type { GoalFilter as GoalFilterType } from '~/features/goal/model';
+import { Button } from '~/shared/components/ui/button';
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '~/components/ui/command';
+} from '~/shared/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '~/components/ui/popover';
-import db from '~/data/db/database';
+} from '~/shared/components/ui/popover';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalFilter as GoalFilterType } from '~/features/goal/model';
 import { cn } from '~/utils';
 
 async function updateDefaultFilter(updatedFilter: GoalFilterType) {

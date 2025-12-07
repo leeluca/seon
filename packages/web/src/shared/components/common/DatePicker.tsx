@@ -12,20 +12,20 @@ import {
   startOfDay,
 } from 'date-fns';
 
-import { Button } from '~/components/ui/button';
-import { Calendar } from '~/components/ui/calendar';
+import { Button } from '~/shared/components/ui/button';
+import { Calendar } from '~/shared/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '~/components/ui/popover';
+} from '~/shared/components/ui/popover';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '~/components/ui/select';
+} from '~/shared/components/ui/select';
 import { cn } from '~/utils';
 
 const dateDistanceNames = {

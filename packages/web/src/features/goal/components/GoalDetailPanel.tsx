@@ -2,6 +2,8 @@ import type { ReactElement } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
+import { GOALS } from '~/constants/query';
+import type { GoalType } from '~/features/goal/model';
 import {
   Drawer,
   DrawerClose,
@@ -10,17 +12,15 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '~/components/ui/drawer';
+} from '~/shared/components/ui/drawer';
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
   SheetTitle,
-} from '~/components/ui/sheet';
-import { GOALS } from '~/constants/query';
+} from '~/shared/components/ui/sheet';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import type { GoalType } from '~/features/goal/model';
 import { GoalControls } from './GoalControls';
 import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';

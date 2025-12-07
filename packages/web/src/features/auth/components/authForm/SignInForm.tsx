@@ -2,13 +2,17 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 
-import FormError from '~/components/form/FormError';
-import FormItem from '~/components/FormItem';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
 import type { PostSignInResponse } from '~/features/auth/hooks/usePostSignIn';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { useIds } from '~/hooks/useIds';
+import FormError from '~/shared/components/common/form/FormError';
+import FormItem from '~/shared/components/common/FormItem';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '~/shared/components/ui/alert';
+import { Button } from '~/shared/components/ui/button';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { emailValidator } from '~/utils/validation';
 import { useSignInForm } from './useSignInForm';

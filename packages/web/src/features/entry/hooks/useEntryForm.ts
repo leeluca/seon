@@ -2,13 +2,13 @@ import { t } from '@lingui/core/macro';
 import { createFormHook } from '@tanstack/react-form';
 import { toast } from 'sonner';
 
+import { recordEntry } from '~/data/domain/entryRepo';
 import {
   DateField,
   ErrorInfo,
   NumberField,
   TextField,
-} from '~/components/form/Fields';
-import { recordEntry } from '~/data/domain/entryRepo';
+} from '~/shared/components/common/form/Fields';
 import { fieldContext, formContext } from '~/states/formContext';
 
 export const { useAppForm, withForm } = createFormHook({

@@ -6,9 +6,9 @@ import { toast } from 'sonner';
 
 import { GOALS } from '~/constants/query';
 import { archiveGoal, deleteGoal, unarchiveGoal } from '~/data/domain/goalRepo';
+import { Button } from '~/shared/components/ui/button';
+import { ResponsivePopover } from '~/shared/components/ui/responsive-popover';
 import { cn } from '~/utils';
-import { Button } from '~/components/ui/button';
-import { ResponsivePopover } from '~/components/ui/responsive-popover';
 
 interface GoalControlsProps {
   id: string;

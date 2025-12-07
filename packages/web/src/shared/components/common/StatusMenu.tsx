@@ -23,9 +23,9 @@ import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
 import { APIError } from '~/utils/errors';
 import SignOutButton from './SignOutButton';
-import { Button, buttonVariants } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import UpdatePrompt from './UpdatePrompt';
+import { Button, buttonVariants } from '../ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 interface NotSignedInContentProps {
   isSyncEnabledUser: boolean;

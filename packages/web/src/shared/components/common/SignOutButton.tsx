@@ -12,8 +12,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './ui/alert-dialog';
-import { Button, buttonVariants } from './ui/button';
+} from '../ui/alert-dialog';
+import { Button, buttonVariants } from '../ui/button';
 
 function SignOutButton() {
   const { mutate: signOut, isPending } = usePostSignOut();

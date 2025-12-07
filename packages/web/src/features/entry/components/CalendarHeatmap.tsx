@@ -23,11 +23,11 @@ import {
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
 
-import { Button } from '~/components/ui/button';
-import { ResponsivePopover } from '~/components/ui/responsive-popover';
-import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
 import { ENTRIES, GOALS } from '~/constants/query';
 import type { GoalType } from '~/features/goal/model';
+import { Button } from '~/shared/components/ui/button';
+import { ResponsivePopover } from '~/shared/components/ui/responsive-popover';
+import { ResponsiveTooltip } from '~/shared/components/ui/responsive-tooltip';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import CreateEntryForm from './CreateEntryForm';

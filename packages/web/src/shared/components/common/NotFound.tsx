@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { HomeIcon } from 'lucide-react';
 
 import { cn } from '~/utils';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 interface NotFoundProps {
   className?: string;

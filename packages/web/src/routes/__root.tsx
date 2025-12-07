@@ -2,8 +2,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
-import ErrorFallback from '~/components/ErrorFallback';
-import NotFound from '~/components/NotFound';
+import ErrorFallback from '~/shared/components/common/ErrorFallback';
+import NotFound from '~/shared/components/common/NotFound';
 import type { AuthStatus } from '~/types/user';
 
 export interface RouterContext {

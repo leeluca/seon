@@ -4,16 +4,16 @@ import { Link } from '@tanstack/react-router';
 import { isBefore, startOfDay } from 'date-fns';
 import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 
-import { buttonVariants } from '~/components/ui/button';
+import type { Database } from '~/data/db/AppSchema';
+import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+import { buttonVariants } from '~/shared/components/ui/button';
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from '~/components/ui/card';
-import type { Database } from '~/data/db/AppSchema';
-import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+} from '~/shared/components/ui/card';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 

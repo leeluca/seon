@@ -3,20 +3,20 @@ import { useLingui } from '@lingui/react';
 import { CheckIcon, GlobeIcon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { Button } from '~/components/ui/button';
+import { LOCALES } from '~/constants/locales';
+import db from '~/data/db/database';
+import { Button } from '~/shared/components/ui/button';
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '~/components/ui/command';
+} from '~/shared/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '~/components/ui/popover';
-import { LOCALES } from '~/constants/locales';
-import db from '~/data/db/database';
+} from '~/shared/components/ui/popover';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils/';
 

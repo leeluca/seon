@@ -4,29 +4,29 @@ import { InfoCircledIcon } from '@radix-ui/react-icons';
 import { isSameDay } from 'date-fns';
 import { ChevronRightIcon } from 'lucide-react';
 
-import FormError from '~/components/form/FormError';
-import FormItem from '~/components/FormItem';
-import { Button } from '~/components/ui/button';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '~/components/ui/collapsible';
-import { Label } from '~/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
-import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
 import {
   MAX_GOAL_NAME_LENGTH,
   MAX_INPUT_NUMBER,
   MAX_UNIT_LENGTH,
 } from '~/constants';
-import { useIds } from '~/hooks/useIds';
-import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/features/goal/model';
+import { useIds } from '~/hooks/useIds';
+import FormError from '~/shared/components/common/form/FormError';
+import FormItem from '~/shared/components/common/FormItem';
+import { Button } from '~/shared/components/ui/button';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/shared/components/ui/collapsible';
+import { Label } from '~/shared/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '~/shared/components/ui/radio-group';
+import { ResponsiveTooltip } from '~/shared/components/ui/responsive-tooltip';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import { maxLengthValidator } from '~/utils/validation';
-import { GOAL_FIELD_SUFFIX, GOAL_FORM_ID } from '../../model';
 import { withForm } from '../../hooks/useGoalForm';
+import { GOAL_FIELD_SUFFIX, GOAL_FORM_ID } from '../../model';
 
 export interface NewGoal {
   title: string;

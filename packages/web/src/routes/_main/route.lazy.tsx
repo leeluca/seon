@@ -1,9 +1,9 @@
 import * as Sentry from '@sentry/react';
 import { createLazyFileRoute, Outlet } from '@tanstack/react-router';
 
-import ErrorFallback from '~/components/ErrorFallback';
-import LanguageSelector from '~/components/LanguageSelector';
-import AppStatusMenu from '~/components/StatusMenu';
+import ErrorFallback from '~/shared/components/common/ErrorFallback';
+import LanguageSelector from '~/shared/components/common/LanguageSelector';
+import AppStatusMenu from '~/shared/components/common/StatusMenu';
 
 export const Route = createLazyFileRoute('/_main')({
   component: Dashboard,

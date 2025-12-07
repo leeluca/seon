@@ -4,15 +4,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import { add, startOfDay } from 'date-fns';
 import { toast } from 'sonner';
 
+import { GOALS } from '~/constants/query';
+import type { Database } from '~/data/db/AppSchema';
+import { createGoal, updateGoal } from '~/data/domain/goalRepo';
 import {
   DateField,
   ErrorInfo,
   NumberField,
   TextField,
-} from '~/components/form/Fields';
-import { GOALS } from '~/constants/query';
-import type { Database } from '~/data/db/AppSchema';
-import { createGoal, updateGoal } from '~/data/domain/goalRepo';
+} from '~/shared/components/common/form/Fields';
 import { fieldContext, formContext } from '~/states/formContext';
 
 // FIXME: add translations

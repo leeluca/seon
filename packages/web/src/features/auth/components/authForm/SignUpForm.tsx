@@ -3,13 +3,17 @@ import { Link } from '@tanstack/react-router';
 import { CircleAlertIcon, LoaderCircleIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import FormError from '~/components/form/FormError';
-import FormItem from '~/components/FormItem';
-import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
-import { Button } from '~/components/ui/button';
 import { MAX_USER_NAME_LENGTH } from '~/constants';
 import useDelayedExecution from '~/hooks/useDelayedExecution';
 import { useIds } from '~/hooks/useIds';
+import FormError from '~/shared/components/common/form/FormError';
+import FormItem from '~/shared/components/common/FormItem';
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from '~/shared/components/ui/alert';
+import { Button } from '~/shared/components/ui/button';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { emailValidator, maxLengthValidator } from '~/utils/validation';
 import { useSignUpForm } from './useSignUpForm';

@@ -13,7 +13,7 @@ import {
 
 import type { Database } from '~/data/db/AppSchema';
 import type { GoalType } from '~/features/goal/model';
-import type { EChartsOption } from '~/components/charts/echarts';
+import type { EChartsOption } from '~/shared/components/common/charts/echarts';
 
 export type IntervalMode = 'day' | 'week' | 'month';
 

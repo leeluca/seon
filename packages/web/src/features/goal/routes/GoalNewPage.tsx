@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useNavigate } from '@tanstack/react-router';
 
-import { Button } from '~/components/ui/button';
+import {
+  CreateGoalForm,
+  GOAL_FORM_ID,
+} from '~/features/goal/components/goalForm';
+import { useGoalForm } from '~/features/goal/hooks/useGoalForm';
+import useDelayedExecution from '~/hooks/useDelayedExecution';
+import { Button } from '~/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +16,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '~/components/ui/dialog';
+} from '~/shared/components/ui/dialog';
 import {
   Drawer,
   DrawerClose,
@@ -19,13 +25,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-} from '~/components/ui/drawer';
-import {
-  CreateGoalForm,
-  GOAL_FORM_ID,
-} from '~/features/goal/components/goalForm';
-import { useGoalForm } from '~/features/goal/hooks/useGoalForm';
-import useDelayedExecution from '~/hooks/useDelayedExecution';
+} from '~/shared/components/ui/drawer';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';

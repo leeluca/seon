@@ -4,15 +4,15 @@ import { Trans } from '@lingui/react/macro';
 import { FlaskConicalIcon, RotateCcwIcon } from 'lucide-react';
 
 import { purgeStorage } from '~/utils/storage';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+} from '../ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
 function ResetDemo() {
   const [isResetting, setIsResetting] = useState(false);
@@ -68,21 +68,21 @@ export default function DemoIndicator() {
           </div>
         </PopoverTrigger>
         <PopoverContent
-          className="mr-3 min-w-[200px] max-w-fit sm:mr-8"
+          className="mr-3 max-w-fit min-w-[200px] sm:mr-8"
           sideOffset={5}
         >
           <div className="space-y-2">
-            <h3 className="text-pretty font-medium leading-none">
+            <h3 className="leading-none font-medium text-pretty">
               <Trans>Demo Mode</Trans>
             </h3>
-            <p className="text-muted-foreground break-keep text-sm">
+            <p className="text-muted-foreground text-sm break-keep">
               <Trans>
                 Syncing features are disabled.
                 <br />
                 All data is stored locally.
               </Trans>
             </p>
-            <p className="text-muted-foreground break-keep text-sm">
+            <p className="text-muted-foreground text-sm break-keep">
               <Trans>
                 Sample data has been created for you to explore the app's
                 functionality.

@@ -5,7 +5,7 @@ import { BadgePlusIcon, Loader2Icon, RefreshCcwIcon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 import { cn } from '~/utils';
-import { Button } from './ui/button';
+import { Button } from '../ui/button';
 
 function UpdateButton({ text }: { text?: React.ReactNode }) {
   const [isUpdating, setIsUpdating] = useState(false);

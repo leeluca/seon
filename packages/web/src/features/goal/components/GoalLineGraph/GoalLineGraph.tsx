@@ -5,16 +5,16 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { ChartLineIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
-import { useViewportStore } from '~/states/stores/viewportStore';
 import type { GoalType } from '~/features/goal/model';
+import { LineGraph } from '~/shared/components/common/charts/LineGraph';
+import { Button } from '~/shared/components/ui/button';
+import { useViewportStore } from '~/states/stores/viewportStore';
 import {
   buildGoalLineGraphOptions,
   getModeLabels,
   MODE_ORDER,
   type IntervalMode,
 } from './logic';
-import { LineGraph } from '~/components/charts/LineGraph';
-import { Button } from '~/components/ui/button';
 
 interface GoalLineGraphProps {
   goalId: string;

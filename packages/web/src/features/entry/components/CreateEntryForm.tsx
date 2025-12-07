@@ -9,16 +9,16 @@ import {
 import { Trash2Icon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import FormError from '~/components/form/FormError';
-import FormItem from '~/components/FormItem';
-import { Button } from '~/components/ui/button';
-import { NumberInput } from '~/components/ui/number-input';
 import { MAX_INPUT_NUMBER } from '~/constants';
 import { ENTRIES, GOALS } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
 import { deleteEntry, getPreviousEntry } from '~/data/domain/entryRepo';
 import type { GoalType } from '~/features/goal/model';
 import { useIds } from '~/hooks/useIds';
+import FormError from '~/shared/components/common/form/FormError';
+import FormItem from '~/shared/components/common/FormItem';
+import { Button } from '~/shared/components/ui/button';
+import { NumberInput } from '~/shared/components/ui/number-input';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';

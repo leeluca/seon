@@ -2,12 +2,12 @@ import { Suspense, useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
-import { PlusIcon } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
+import { PlusIcon } from 'lucide-react';
 
-import ErrorFallback from '~/components/ErrorFallback';
-import { buttonVariants } from '~/components/ui/button';
-import { ResponsiveTooltip } from '~/components/ui/responsive-tooltip';
+import ErrorFallback from '~/shared/components/common/ErrorFallback';
+import { buttonVariants } from '~/shared/components/ui/button';
+import { ResponsiveTooltip } from '~/shared/components/ui/responsive-tooltip';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 import { GoalFilter } from '../components/GoalFilter';

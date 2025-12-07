@@ -2,9 +2,9 @@ import { Trans, useLingui } from '@lingui/react/macro';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowLeftIcon, TrendingUpIcon } from 'lucide-react';
 
-import LanguageSelector from '~/components/LanguageSelector';
-import { buttonVariants } from '~/components/ui/button';
 import { SignUpForm } from '~/features/auth/components/authForm';
+import LanguageSelector from '~/shared/components/common/LanguageSelector';
+import { buttonVariants } from '~/shared/components/ui/button';
 
 export function SignUpPage() {
   const navigate = useNavigate();

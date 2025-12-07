@@ -6,9 +6,9 @@ import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
-import { Button } from './ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Button } from '../ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 function ReloadPrompt() {
   const [isUpdating, setIsUpdating] = useState(false);
@@ -51,7 +51,7 @@ function ReloadPrompt() {
               </PopoverTrigger>
             </TooltipTrigger>
             <TooltipContent
-              onPointerDownOutside={(e) => {
+              onPointerDownOutside={(e: Event) => {
                 e.preventDefault();
               }}
               sideOffset={-2}

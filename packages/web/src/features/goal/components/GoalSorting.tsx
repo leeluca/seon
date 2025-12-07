@@ -9,20 +9,20 @@ import {
   Check,
 } from 'lucide-react';
 
-import { Button } from '~/components/ui/button';
+import db from '~/data/db/database';
+import type { GoalSort } from '~/features/goal/model';
+import { Button } from '~/shared/components/ui/button';
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
-} from '~/components/ui/command';
+} from '~/shared/components/ui/command';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '~/components/ui/popover';
-import db from '~/data/db/database';
-import type { GoalSort } from '~/features/goal/model';
+} from '~/shared/components/ui/popover';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 

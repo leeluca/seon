@@ -2,10 +2,10 @@ import { useEffect, type ReactNode } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
 
-import { Toaster } from '~/components/ui/sonner';
-import { TooltipProvider } from '~/components/ui/tooltip';
-import { ViewportHandler } from '~/components/ViewportHandler';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
+import { ViewportHandler } from '~/shared/components/common/ViewportHandler';
+import { Toaster } from '~/shared/components/ui/sonner';
+import { TooltipProvider } from '~/shared/components/ui/tooltip';
 import OnlineStatusProvider from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import SyncProvider from '~/states/syncContext';

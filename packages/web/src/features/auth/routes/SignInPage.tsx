@@ -3,9 +3,9 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import { ArrowLeftIcon, UserIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
-import LanguageSelector from '~/components/LanguageSelector';
-import { buttonVariants } from '~/components/ui/button';
 import { SignInForm } from '~/features/auth/components/authForm';
+import LanguageSelector from '~/shared/components/common/LanguageSelector';
+import { buttonVariants } from '~/shared/components/ui/button';
 
 export function SignInPage() {
   const navigate = useNavigate();
@@ -57,4 +57,3 @@ export function SignInPage() {
     </div>
   );
 }
-
