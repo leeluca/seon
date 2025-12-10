@@ -7,9 +7,9 @@ import * as Sentry from '@sentry/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
+import { AppProviders } from '~/app/providers';
 import ErrorFallback from '~/shared/components/common/ErrorFallback';
 import NotFound from '~/shared/components/common/NotFound';
-import { AppProviders } from './components/AppProviders';
 import { COMPATIBILITY_MESSAGE } from './constants/errors';
 import { AUTH_CONTEXT_INITIAL_STATE } from './constants/state';
 import { useFetchAuthStatus } from './features/auth/hooks/useFetchAuthStatus';

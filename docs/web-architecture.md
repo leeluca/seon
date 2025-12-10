@@ -4,7 +4,7 @@ Defines the target structure for the web app with a local-first, feature-first l
 
 ## Principles
 
-- Local-first first: client DB is source of truth; sync is optional and recoverable.
+- Local-first: client DB is source of truth; sync is optional and recoverable.
 - Feature-first ownership: UI, routes, hooks, and feature logic live together.
 - Separation of concerns: data/domain is side-effect free; UI handles toasts/navigation.
 - Explicit public surfaces: barrels only export what is meant to be shared.
@@ -15,7 +15,7 @@ Defines the target structure for the web app with a local-first, feature-first l
 ```
 packages/web/src/
 
-├── app/                              # App shell: providers, router config, root layout
+├── app/                              # App shell: providers, router config, root/main layouts
 │
 ├── data/                             # Data infrastructure layer
 │   ├── db/                           # AppSchema, db factory, migrations/versioning
@@ -34,17 +34,16 @@ packages/web/src/
 │
 ├── shared/                           # Cross-cutting reusable modules
 │   ├── components/
-│   │   ├── common/                   # Presentational pieces (AppLink, BackButton, ContentCard)
-│   │   ├── ui/                       # Design-system primitives (shadcn/Radix-based)
-│   │   └── providers/                # App-wide providers (QueryProvider, I18nProvider)
-│   ├── utils/                        # Cross-cutting helpers
+│   │   ├── common/                   # Presentational pieces (fallbacks, language switcher, menus)
+│   │   └── ui/                       # Design-system primitives (shadcn/Radix-based)
 │   ├── hooks/                        # Generic hooks (debounce, timeout, etc.)
+│   ├── utils/                        # Cross-cutting helpers
 │   └── constants/                    # Cross-feature constants
 ```
 
 ## Layer Responsibilities
 
-- `app/`: composition only (providers, router, global error boundaries).
+- `app/`: composition only (providers, router, global error boundaries, root/main layouts).
 - `data/`: infrastructure; owns PowerSync/Kysely setup, migrations, sync orchestration, and domain/data access; no UI side effects.
 - `features/*`: end-user behavior; routes + UI + feature hooks + validation; imports repositories via feature hooks.
 - `shared/`: reusable primitives that have no feature knowledge.
@@ -57,7 +56,7 @@ packages/web/src/
 
 ## Feature Module Anatomy (example: goal)
 
-- `routes/` own goal pages and load data via feature hooks. The file-based TanStack router still uses `src/routes/*` as entrypoints; those files should be thin adapters that import the feature-owned page/loader/guards from `features/goal/routes/*` and re-export them.
+- `routes/` own goal pages and load data via feature hooks. The file-based TanStack router still uses `src/routes/*` as entrypoints; those files should be thin adapters that import the feature-owned page/loader/guards from `features/goal/routes/*` and re-export them. Root and main layouts are defined in `app/` but routes are created in `src/routes/*` for file-based routing.
 - `hooks/` translate domain operations into TanStack Query mutations/queries and wire UI concerns (toasts, navigation, invalidations).
 - `components/` contains feature-specific components only used by goal.
 - `model/` holds types, validation, constants, and mappers to/from repository DTOs.
@@ -91,3 +90,15 @@ Component/
 - Avoid `export *`; use named exports to keep tree-shaking effective.
 - Keep barrels side-effect free to avoid accidental bundle impact.
 - Import internal files within a feature via relative paths; cross-feature imports go through the barrel.
+
+## Path Aliases (packages/web/tsconfig.json)
+
+```
+"paths": {
+  "~/*": ["./src/*"],
+  "~/app/*": ["./src/app/*"],
+  "~/data/*": ["./src/data/*"],
+  "~/features/*": ["./src/features/*"],
+  "~/shared/*": ["./src/shared/*"]
+}
+```

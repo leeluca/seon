@@ -4,14 +4,13 @@
   "rsc": false,
   "tsx": true,
   "tailwind": {
-    "config": "",
     "css": "src/tailwind.css",
     "baseColor": "slate",
     "cssVariables": true,
     "prefix": ""
   },
   "aliases": {
-    "components": "~/components",
+    "components": "~/shared/components/ui",
     "utils": "~/utils"
   },
   "iconLibrary": "lucide"
