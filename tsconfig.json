@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "exclude": ["dist", "**/dist/**"],
   "references": [
     {
       "path": "./packages/server"

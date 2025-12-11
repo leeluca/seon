@@ -1,11 +1,10 @@
-import { Hono } from 'hono';
-import { env, getRuntimeKey } from 'hono/adapter';
-import { cors } from 'hono/cors';
+import { getRuntimeKey } from 'hono/adapter';
 
-import auth from './routes/auth.js';
-import type { Env } from './types/context.js';
+import { createApp } from './app.js';
 
-if (getRuntimeKey() === 'node') {
+const runtime = getRuntimeKey();
+
+if (runtime === 'node') {
   // NOTE: some runtimes inject env variables without .env file
   try {
     process.loadEnvFile();
@@ -14,25 +13,9 @@ if (getRuntimeKey() === 'node') {
   }
 }
 
-const app = new Hono<{ Bindings: Env }>();
+const app = createApp();
 
-app.use('/api/*', async (c, next) => {
-  const corsMiddleware = cors({
-    origin: env(c).ORIGIN_URL?.split(',') || '',
-    allowHeaders: ['Origin', 'X-Requested-With', 'User-Agent', 'Content-Type'],
-    allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
-    maxAge: 7200,
-    credentials: true,
-  });
-
-  return corsMiddleware(c, next);
-});
-
-app.get('/ping', (c) => c.text('pong'));
-
-app.route('/api/auth', auth);
-
-if (getRuntimeKey() === 'node') {
+if (runtime === 'node') {
   const { serve } = await import('@hono/node-server');
   const port = Number(process.env.PORT) || 3000;
 

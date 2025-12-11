@@ -12,11 +12,12 @@ import {
   refreshToken as refreshTokensTable,
   user as usersTable,
 } from '../db/schema.js';
+import type { Env } from '../env.js';
 import { validateAccess } from '../middlewares/auth.js';
 import { useAuthService } from '../services/index.js';
 import type { JWTConfigEnv } from '../services/jwt.js';
 import { hashPW } from '../services/password.js';
-import type { AuthRouteVariables, Env } from '../types/context.js';
+import type { AuthRouteVariables } from '../types/context.js';
 import { signInSchema, signUpSchema } from '../types/validation.js';
 import { validateUuidV7 } from '../utils/id.js';
 

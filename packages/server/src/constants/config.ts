@@ -15,7 +15,7 @@ export const IS_DEV = process.env.NODE_ENV === 'development';
 
 // export const SYNC_URL = parseType(Type.String(), process.env.SYNC_URL);
 
-// const originUrlArray = process.env.ORIGIN_URL?.split(',');
+// const originUrlArray = process.env.ORIGIN_URLS?.split(',');
 // export const ORIGIN_URLS = parseType(Type.Array(Type.String()), originUrlArray);
 
 // export const JWT_PRIVATE_PEM = parseType(

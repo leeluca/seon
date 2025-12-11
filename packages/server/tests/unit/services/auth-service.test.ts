@@ -162,7 +162,7 @@ vi.mock('hono/cookie', () => ({
     mockCookies.set(name, value);
     c.res.headers.set = vi.fn();
   }),
-  getCookie: vi.fn().mockImplementation((c, name) => {
+  getCookie: vi.fn().mockImplementation((_c, name) => {
     return mockCookies.get(name);
   }),
 }));
@@ -184,12 +184,12 @@ function createTestMockContext(
   return {
     req: {
       raw: new Request('https://example.com'),
-      header: (name: string) => null,
+      header: (_name: string) => null,
       headers: new Headers(),
     },
     env: (key: string) => options.env?.[key] || '',
     get: (key: string) => ({})[key],
-    set: (key: string, value: unknown) => {},
+    set: (_key: string, _value: unknown) => {},
     var: {},
     res: {
       headers: {

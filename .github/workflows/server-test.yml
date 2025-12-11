@@ -37,7 +37,7 @@ jobs:
           JWT_REFRESH_EXPIRATION: ${{ vars.JWT_REFRESH_EXPIRATION }}
           JWT_DB_ACCESS_EXPIRATION: ${{ vars.JWT_DB_ACCESS_EXPIRATION }}
           SYNC_URL: ${{ vars.SYNC_URL }}
-          ORIGIN_URL: ${{ vars.ORIGIN_URL }}
+          ORIGIN_URLS: ${{ vars.ORIGIN_URLS }}
           DB_URL: ${{ vars.DB_URL }}
         id: test
         run: |
