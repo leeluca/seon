@@ -18,7 +18,7 @@ export async function createTestApp() {
 
   app.use('/api/*', async (c, next) => {
     const corsMiddleware = cors({
-      origin: process.env.ORIGIN_URL?.split(',') || '',
+      origin: process.env.ORIGIN_URLS?.split(',') || '',
       allowHeaders: [
         'Origin',
         'X-Requested-With',

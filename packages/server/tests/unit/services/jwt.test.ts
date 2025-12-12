@@ -28,7 +28,7 @@ function createCookieMockContext(): Context {
       headers,
     },
     env: () => '',
-    get: (key: string) => undefined,
+    get: (_key: string) => undefined,
     set: () => {},
     var: {},
     res: {

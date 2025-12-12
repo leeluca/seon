@@ -12,6 +12,8 @@ dist
 dev-dist
 coverage
 .docs
+tsconfig.tsbuildinfo
+.cache
 
 # Playwright
 /test-results/

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": ".cache/tsbuild",
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -17,7 +17,8 @@
       "~/features/*": ["./src/features/*"],
       "~/shared/*": ["./src/shared/*"]
     },
-    "composite": true
+    "composite": true,
+    "emitDeclarationOnly": true
   },
   "include": [
     "src/**/*",
@@ -27,6 +28,5 @@
     "lingui.config.ts",
     "tests/**/*",
     "playwright.config.ts"
-  ],
-  "noEmit": true
+  ]
 }

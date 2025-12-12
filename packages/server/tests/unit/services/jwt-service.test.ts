@@ -1,10 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  getOrInitJwtConfigs,
-  getOrInitJwtKeys,
-  resetJwtStore,
-} from '../../../src/services/jwt-store.js';
 import { MOCK_JWT_CONFIGS, TEST_DB_URL } from '../../utils/constants.js';
 import { createMockContext, mockJwtConfig } from '../../utils/mock.js';
 
@@ -12,7 +7,7 @@ vi.mock('../../../src/services/jwt.js', () => {
   let callCount = 0;
 
   return {
-    initJWTKeys: vi.fn().mockImplementation(() => {
+    initJWTKeys: vi.fn().mockImplementation(async () => {
       callCount++;
       return {
         jwtPrivateKey: `mocked-private-key-${callCount}`,
@@ -57,17 +52,31 @@ vi.mock('../../../src/services/jwt.js', () => {
         },
       };
     }),
+    signJWT: vi.fn().mockResolvedValue('mocked-token'),
+    signJWTWithPayload: vi.fn().mockResolvedValue({
+      token: 'mocked-token',
+      payload: { sub: 'test-user-id' },
+    }),
+    verifyJWT: vi.fn().mockResolvedValue({ sub: 'test-user-id' }),
+    getCookieConfig: vi.fn().mockReturnValue({
+      name: 'access_token',
+      options: { maxAge: 900 },
+    }),
+    setJWTCookie: vi.fn(),
   };
 });
 
-describe('JWT Store Service', () => {
+const { createJWTService, resetJWTCache } = await import(
+  '../../../src/services/jwt.service.js'
+);
+
+describe('JWT Service', () => {
   beforeEach(() => {
-    // Reset the JWT store before each test
-    resetJwtStore();
+    resetJWTCache();
   });
 
-  describe('getOrInitJwtKeys', () => {
-    it('should initialize JWT keys from context environment', async () => {
+  describe('createJWTService', () => {
+    it('should create a JWT service with all required methods', async () => {
       const mockContext = createMockContext({
         env: {
           JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
@@ -81,17 +90,19 @@ describe('JWT Store Service', () => {
         },
       });
 
-      const keys = await getOrInitJwtKeys(mockContext);
+      const jwtService = await createJWTService(mockContext);
 
-      expect(keys).toHaveProperty('jwtPrivateKey');
-      expect(keys).toHaveProperty('jwtPublicKey');
-      expect(keys).toHaveProperty('jwtRefreshSecret');
-      expect(keys).toHaveProperty('jwtDbPrivateKey');
-      expect(keys).toHaveProperty('publicKeyJWK');
-      expect(keys).toHaveProperty('publicKeyKid');
+      expect(jwtService).toHaveProperty('signToken');
+      expect(jwtService).toHaveProperty('signTokenWithPayload');
+      expect(jwtService).toHaveProperty('verifyToken');
+      expect(jwtService).toHaveProperty('getCookieConfig');
+      expect(jwtService).toHaveProperty('setJWTCookie');
+      expect(jwtService).toHaveProperty('getJWTConfigs');
+      expect(jwtService).toHaveProperty('getJWTKeys');
+      expect(jwtService).toHaveProperty('getJWKS');
     });
 
-    it('should return the same keys on subsequent calls', async () => {
+    it('should cache JWT keys globally across multiple calls', async () => {
       const mockContext = createMockContext({
         env: {
           JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
@@ -105,68 +116,18 @@ describe('JWT Store Service', () => {
         },
       });
 
-      const keys1 = await getOrInitJwtKeys(mockContext);
-      const keys2 = await getOrInitJwtKeys(mockContext);
+      const service1 = await createJWTService(mockContext);
+      const service2 = await createJWTService(mockContext);
 
-      expect(keys1).toBe(keys2); // Should be the same object reference
-    });
-  });
-
-  describe('getOrInitJwtConfigs', () => {
-    it('should throw an error if keys are not initialized', () => {
-      const mockContext = createMockContext();
-
-      expect(() => getOrInitJwtConfigs(mockContext)).toThrow(
-        'JWT keys must be initialized before configs',
-      );
-    });
-
-    it('should create JWT configs after keys are initialized', async () => {
-      const mockContext = createMockContext({
-        env: {
-          JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
-          JWT_PUBLIC_KEY: mockJwtConfig.publicKey,
-          JWT_REFRESH_SECRET: mockJwtConfig.refreshSecret,
-          JWT_DB_PRIVATE_KEY: mockJwtConfig.dbPrivateKey,
-          JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
-          JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
-          JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: TEST_DB_URL,
-        },
-      });
-
-      await getOrInitJwtKeys(mockContext);
-      const configs = getOrInitJwtConfigs(mockContext);
-
-      expect(configs).toHaveProperty('access');
-      expect(configs).toHaveProperty('refresh');
-      expect(configs).toHaveProperty('db_access');
-    });
-
-    it('should return the same configs on subsequent calls', async () => {
-      const mockContext = createMockContext({
-        env: {
-          JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
-          JWT_PUBLIC_KEY: mockJwtConfig.publicKey,
-          JWT_REFRESH_SECRET: mockJwtConfig.refreshSecret,
-          JWT_DB_PRIVATE_KEY: mockJwtConfig.dbPrivateKey,
-          JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
-          JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
-          JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
-          DB_URL: TEST_DB_URL,
-        },
-      });
-
-      await getOrInitJwtKeys(mockContext);
-      const configs1 = getOrInitJwtConfigs(mockContext);
-      const configs2 = getOrInitJwtConfigs(mockContext);
-
-      expect(configs1).toBe(configs2); // Should be the same object reference
+      // Keys should be the same (cached)
+      const keys1 = service1.getJWTKeys();
+      const keys2 = service2.getJWTKeys();
+      expect(keys1).toBe(keys2);
     });
   });
 
-  describe('resetJwtStore', () => {
-    it('should reset the JWT store', async () => {
+  describe('resetJWTCache', () => {
+    it('should reset the JWT cache and create new keys on next call', async () => {
       const mockContext = createMockContext({
         env: {
           JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
@@ -180,24 +141,45 @@ describe('JWT Store Service', () => {
         },
       });
 
-      // Initialize keys and configs
-      const keys1 = await getOrInitJwtKeys(mockContext);
-      const configs1 = getOrInitJwtConfigs(mockContext);
+      // Create service and get keys
+      const service1 = await createJWTService(mockContext);
+      const keys1 = service1.getJWTKeys();
 
-      // Reset the store
-      resetJwtStore();
+      // Reset cache
+      resetJWTCache();
 
-      // Get new keys and configs
-      const keys2 = await getOrInitJwtKeys(mockContext);
-      const configs2 = getOrInitJwtConfigs(mockContext);
+      // Create new service - should have different keys due to counter in mock
+      const service2 = await createJWTService(mockContext);
+      const keys2 = service2.getJWTKeys();
 
-      // Should be different object references and values
       expect(keys1).not.toBe(keys2);
-      expect(configs1).not.toBe(configs2);
-
-      // Check that the values are different due to the counter in our mock
       expect(keys1.jwtPrivateKey).not.toBe(keys2.jwtPrivateKey);
-      expect(configs1.access.signingKey).not.toBe(configs2.access.signingKey);
+    });
+  });
+
+  describe('getJWKS', () => {
+    it('should return JWKS with correct structure', async () => {
+      const mockContext = createMockContext({
+        env: {
+          JWT_PRIVATE_KEY: mockJwtConfig.privateKey,
+          JWT_PUBLIC_KEY: mockJwtConfig.publicKey,
+          JWT_REFRESH_SECRET: mockJwtConfig.refreshSecret,
+          JWT_DB_PRIVATE_KEY: mockJwtConfig.dbPrivateKey,
+          JWT_ACCESS_EXPIRATION: mockJwtConfig.accessExpiration,
+          JWT_REFRESH_EXPIRATION: mockJwtConfig.refreshExpiration,
+          JWT_DB_ACCESS_EXPIRATION: mockJwtConfig.dbAccessExpiration,
+          DB_URL: TEST_DB_URL,
+        },
+      });
+
+      const jwtService = await createJWTService(mockContext);
+      const jwks = jwtService.getJWKS();
+
+      expect(jwks).toHaveProperty('keys');
+      expect(Array.isArray(jwks.keys)).toBe(true);
+      expect(jwks.keys.length).toBeGreaterThan(0);
+      expect(jwks.keys[0]).toHaveProperty('kid');
+      expect(jwks.keys[0]).toHaveProperty('alg');
     });
   });
 });

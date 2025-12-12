@@ -43,7 +43,7 @@ export function createMockContext(
       headers,
       json: async () => options.body || {},
       valid: () => options.body || {},
-      cookie: (name: string) => '', // Will be overridden below
+      cookie: (_name: string) => '', // Will be overridden below
     },
     env: (key: string) => options.env?.[key] || '',
     get: (key: string) => c.var[key],
@@ -55,7 +55,7 @@ export function createMockContext(
       headers: new Headers(),
     },
     json: (data: unknown) => ({ json: () => data }),
-    status: (code: number) => c,
+    status: (_code: number) => c,
     text: (text: string) => ({ text: () => text }),
   } as unknown as Context;
 
