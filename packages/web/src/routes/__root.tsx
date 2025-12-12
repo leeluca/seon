@@ -1,17 +1,11 @@
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { createRootRouteWithContext } from '@tanstack/react-router';
 
-import ErrorFallback from '~/components/ErrorFallback';
-import NotFound from '~/components/NotFound';
-import type { AuthStatus } from '~/types/user';
+import { RootLayout, type RouterContext } from '~/app/root';
+import ErrorFallback from '~/shared/components/common/ErrorFallback';
+import NotFound from '~/shared/components/common/NotFound';
 
-export interface RouterContext {
-  authStatus: AuthStatus;
-  isUserInitialized: boolean;
-}
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: Root,
+  component: RootLayout,
   errorComponent: ({ error }) => {
     return <ErrorFallback error={error} />;
   },
@@ -20,12 +14,4 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   },
 });
 
-function Root() {
-  return (
-    <>
-      <Outlet />
-      <TanStackRouterDevtools position="bottom-right" />
-      <ReactQueryDevtools position="bottom" buttonPosition="bottom-left" />
-    </>
-  );
-}
+export type { RouterContext };

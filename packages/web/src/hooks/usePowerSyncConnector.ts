@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useFetchAuthStatus } from '~/apis/hooks/useFetchAuthStatus';
-import { powerSyncDb } from '~/lib/database';
-import { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
+import { powerSyncDb } from '~/data/db/database';
+import { SupabaseConnector } from '~/data/sync/SupabaseConnector';
+import { useFetchAuthStatus } from '~/features/auth/hooks/useFetchAuthStatus';
 
 export function usePowerSyncConnector() {
   const { data, isLoading } = useFetchAuthStatus();

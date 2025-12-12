@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import short from 'short-uuid';
 import { v7 as uuidv7 } from 'uuid';
 
-import type { Database } from '~/lib/powersync/AppSchema';
+import type { Database } from '~/data/db/AppSchema';
 import { defaultLocale } from '~/locales/i18n';
 
 export function cn(...inputs: ClassValue[]) {

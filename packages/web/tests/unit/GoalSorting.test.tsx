@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { GoalSorting } from '~/components/GoalSorting';
-import type { GoalSort } from '~/types/goal';
+import { GoalSorting } from '~/features/goal/components/GoalSorting';
+import type { GoalSort } from '~/features/goal/model';
 import { act, fireEvent, customRender as render, screen } from '../test-utils';
 
 describe('GoalSorting', () => {
@@ -40,7 +40,7 @@ describe('GoalSorting', () => {
   });
 
   it('updates the database when an option is selected', async () => {
-    const dbMock = await import('~/lib/database');
+    const dbMock = await import('~/data/db/database');
     const userStoreMock = await import('~/states/stores/userStore');
 
     const setSort = vi.fn();

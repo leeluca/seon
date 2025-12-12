@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { PowerSyncContext } from '@powersync/react';
 
 import { usePowerSyncConnector } from '~/hooks/usePowerSyncConnector';
-import type { SupabaseConnector } from '~/lib/powersync/SupabaseConnector';
+import type { SupabaseConnector } from '~/data/sync/SupabaseConnector';
 
 interface SupabaseConnectorContext {
   connector: SupabaseConnector;

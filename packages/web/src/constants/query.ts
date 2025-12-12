@@ -1,13 +1,40 @@
+import type { CompilableQuery } from '@powersync/common';
 import { sql } from '@powersync/kysely-driver';
 
-import db from '~/lib/database';
+import type { Database } from '~/data/db/AppSchema';
+import db from '~/data/db/database';
 import type {
   GoalFilter,
   GoalSort,
   GoalSortDirection,
   GoalSortField,
   GoalType,
-} from '~/types/goal';
+} from '~/features/goal/model';
+
+type GoalRow = Database['goal'];
+type GoalListQueryKey = ['goal', { sort: GoalSort }, { filter: GoalFilter }];
+type GoalDetailQueryKey = [
+  'goal',
+  'detail',
+  { id: string; isShortId: boolean },
+];
+
+type GoalListQuery = {
+  queryKey: GoalListQueryKey;
+  query: CompilableQuery<GoalRow>;
+};
+
+type GoalDetailQuery = {
+  queryKey: GoalDetailQueryKey;
+  queryFn: () => Promise<GoalRow>;
+};
+
+type GoalQueries = {
+  all: { queryKey: ['goal'] };
+  list: (sort: GoalSort, filter: GoalFilter) => GoalListQuery;
+  detail: (goalId: string) => GoalDetailQuery;
+  detailShortId: (shortId: string) => GoalDetailQuery;
+};
 
 /* api */
 export const AUTH_STATUS = {
@@ -15,10 +42,10 @@ export const AUTH_STATUS = {
 };
 
 /* sqlite */
-export const GOALS = {
-  all: { queryKey: ['goal'] },
+export const GOALS: GoalQueries = {
+  all: { queryKey: ['goal'] as ['goal'] },
   list: (sort: GoalSort, filter: GoalFilter) => {
-    const queryKey = ['goal', { sort }, { filter }];
+    const queryKey: GoalListQueryKey = ['goal', { sort }, { filter }];
     let query = db.selectFrom('goal').selectAll();
 
     if (filter === 'archived') {
@@ -53,24 +80,40 @@ export const GOALS = {
 
     return { queryKey, query };
   },
-  detail: (goalId: string) => ({
-    queryKey: ['goal', 'detail', { id: goalId, isShortId: false }],
-    queryFn: () =>
-      db
-        .selectFrom('goal')
-        .selectAll()
-        .where('id', '=', goalId)
-        .executeTakeFirstOrThrow(),
-  }),
-  detailShortId: (shortId: string) => ({
-    queryKey: ['goal', 'detail', { id: shortId, isShortId: true }],
-    queryFn: () =>
-      db
-        .selectFrom('goal')
-        .selectAll()
-        .where('shortId', '=', shortId)
-        .executeTakeFirstOrThrow(),
-  }),
+  detail: (goalId: string) => {
+    const queryKey: GoalDetailQueryKey = [
+      'goal',
+      'detail',
+      { id: goalId, isShortId: false },
+    ];
+
+    return {
+      queryKey,
+      queryFn: () =>
+        db
+          .selectFrom('goal')
+          .selectAll()
+          .where('id', '=', goalId)
+          .executeTakeFirstOrThrow(),
+    };
+  },
+  detailShortId: (shortId: string) => {
+    const queryKey: GoalDetailQueryKey = [
+      'goal',
+      'detail',
+      { id: shortId, isShortId: true },
+    ];
+
+    return {
+      queryKey,
+      queryFn: () =>
+        db
+          .selectFrom('goal')
+          .selectAll()
+          .where('shortId', '=', shortId)
+          .executeTakeFirstOrThrow(),
+    };
+  },
 };
 
 export const ENTRIES = {

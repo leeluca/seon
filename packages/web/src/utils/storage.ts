@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 
-import { powerSyncDb } from '~/lib/database';
+import { powerSyncDb } from '~/data/db/database';
 
 /**
  * Checks if Origin Private File System (OPFS) is available in the current browser

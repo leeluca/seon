@@ -2,12 +2,12 @@ import { i18n } from '@lingui/core';
 import { addDays, addSeconds, subDays } from 'date-fns';
 
 import { DEMO_GOAL_DATA } from '~/constants/setup';
-import db from '~/lib/database';
-import type { Database } from '~/lib/powersync/AppSchema';
+import db from '~/data/db/database';
+import type { Database } from '~/data/db/AppSchema';
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
-import { updateGoalProgress } from '~/services/progress';
+import { updateGoalProgress } from '~/data/domain/progress';
 import { useUserStore } from '~/states/stores/userStore';
-import type { GoalType } from '~/types/goal';
+import type { GoalType } from '~/features/goal/model';
 import { generateUUIDs } from '~/utils';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';

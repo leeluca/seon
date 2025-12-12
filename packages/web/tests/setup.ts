@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 
 import { cleanup } from './test-utils';
 
-vi.mock('~/lib/database', () => ({
+vi.mock('~/data/db/database', () => ({
   default: {
     updateTable: vi.fn().mockImplementation(() => ({
       set: vi.fn().mockImplementation(() => ({

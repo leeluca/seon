@@ -4,9 +4,9 @@ import { createLazyFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ArrowRightIcon, GoalIcon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
-import LanguageSelector from '~/components/LanguageSelector';
-import { Button, buttonVariants } from '~/components/ui/button';
-import db from '~/lib/database';
+import db from '~/data/db/database';
+import LanguageSelector from '~/shared/components/common/LanguageSelector';
+import { Button, buttonVariants } from '~/shared/components/ui/button';
 import { useUserStore } from '~/states/stores/userStore';
 
 export const Route = createLazyFileRoute('/')({

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { GoalFilter } from '~/components/GoalFilter';
+import { GoalFilter } from '~/features/goal/components/GoalFilter';
 import { act, fireEvent, customRender as render, screen } from '../test-utils';
 
 describe('GoalFilter', () => {
@@ -39,7 +39,7 @@ describe('GoalFilter', () => {
   });
 
   it('updates the database when an option is selected', async () => {
-    const dbMock = await import('~/lib/database');
+    const dbMock = await import('~/data/db/database');
     const userStoreMock = await import('~/states/stores/userStore');
 
     const setFilter = vi.fn();
