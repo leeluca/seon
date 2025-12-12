@@ -22,7 +22,7 @@ COPY tsconfig.json .
 RUN cd packages/server && pnpm build
 
 # Create a clean production deployment using pnpm deploy
-RUN pnpm deploy --legacy --filter=seon-server --prod /prod/server
+RUN pnpm deploy --legacy --filter=server --prod /prod/server
 
 FROM base AS runner
 WORKDIR /app
