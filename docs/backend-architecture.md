@@ -74,14 +74,14 @@ packages/server/src/
 - Use TypeBox validators (`tbValidator`) for request validation.
 - Return consistent response shapes.
 - Delegate all business logic and DB access to services.
-- Access services via Hono context (`c.get('authService')`).
+- Create services directly via factory functions (`createJWTService(c)`, `createAuthService(c)`).
 
 ## Service Initialization
 
-- Services initialized in middleware, stored in Hono context variables.
+- Services created directly in handlers/middleware via factory functions.
 - JWT service created first (async, requires key init on cold start).
-- Auth service receives JWT service as dependency.
-- Per-request instantiation enables context access without global state for service logic.
+- Auth service receives JWT service as dependency: `createAuthService(c, { jwtService })`.
+- Factory functions are cheap after first call (keys/configs cached globally).
 
 ## Multi-Runtime Guidelines
 
@@ -99,5 +99,5 @@ packages/server/src/
 ## Testing Conventions
 
 - `resetJWTCache()` available for test isolation (clears global key cache).
-- Mock services by setting context variables directly in tests.
+- Mock services by mocking factory functions (`vi.mock('../services/jwt.service.js')`).
 - Integration tests use real middleware chain with test database.

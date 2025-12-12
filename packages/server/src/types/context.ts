@@ -1,7 +1,13 @@
 import type { Env } from '../env.js';
-import type { JWTConfigEnv } from '../services/jwt';
+import type { AuthService } from '../services/auth.service.js';
+import type { JWTConfigEnv, JWTService } from '../services/jwt.service.js';
 
-export interface AuthRouteVariables {
+export interface AppVariables {
+  jwtService: JWTService;
+  authService: AuthService;
+}
+
+export interface AuthRouteVariables extends AppVariables {
   jwtConfigEnv: JWTConfigEnv;
 }
 
