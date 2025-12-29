@@ -348,7 +348,9 @@ export const buildGoalLineGraphOptions = ({
         mode,
       });
 
-      const labels = points.map((point) => point.label);
+      const labels = points.map(
+        (point) => point.label.charAt(0).toUpperCase() + point.label.slice(1),
+      );
 
       const baselineSeries = points.map((point) => point.baseline);
       // Combined progress for the slider data shadow (all progress values)
