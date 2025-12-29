@@ -19,6 +19,7 @@ export async function dynamicallyImportLocale(locale: keyof typeof LOCALES) {
   const dateFnslocaleMap = {
     en: async () => (await import('date-fns/locale/en-US')).enUS,
     ko: async () => (await import('date-fns/locale/ko')).ko,
+    pt: async () => (await import('date-fns/locale/pt-BR')).ptBR,
   };
 
   const [importedMessages, dfnsLocale] = await Promise.all([
