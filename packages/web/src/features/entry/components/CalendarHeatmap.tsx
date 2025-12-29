@@ -121,8 +121,10 @@ const CalendarHeatmap = ({
   const days = Array.from({ length: 7 }).map((_, index) =>
     addDays(currentWeekStart, index),
   );
-  const startMonth = format(days[0], 'MMM');
-  const endMonth = format(days[days.length - 1], 'MMM');
+  const capitalize = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1);
+  const startMonth = capitalize(format(days[0], 'MMM'));
+  const endMonth = capitalize(format(days[days.length - 1], 'MMM'));
   const isSameWeek = checkIsSameWeek(new Date(), currentWeekStart);
 
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -394,7 +396,7 @@ const CalendarHeatmap = ({
       <div className="mb-2 flex w-full items-center justify-between">
         <p className="ml-2 text-xs font-medium">
           {startMonth === endMonth
-            ? format(days[0], 'MMMM')
+            ? capitalize(format(days[0], 'MMMM'))
             : `${startMonth} • ${endMonth}`}
         </p>
         <Button
