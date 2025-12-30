@@ -20,7 +20,7 @@ The name Seon, Korean for "line" (선), relates to the trajectory shown in the p
 - ⚡ Instant UI responses with local CRUD
 - 🔄 Optional sync capabilities
 - 📊 Visual goal tracking
-- 🌐 Multi-language support (English, Korean)
+- 🌐 Multi-language support (English, Korean, Portuguese)
 
 ## Architecture
 

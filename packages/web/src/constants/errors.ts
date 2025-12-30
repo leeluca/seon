@@ -19,4 +19,12 @@ export const COMPATIBILITY_MESSAGE = {
   <p class="text-sm mt-2">프라이빗 브라우징 모드는 이 애플리케이션에 필요한 저장 공간에 제한을 둘 수 있습니다.</p>
 </div>
 `,
+  pt: `
+<div class="flex flex-col items-center justify-center p-4 text-center text-balance">
+  <h2 class="text-2xl font-bold mb-4">Problema de Compatibilidade do Navegador</h2>
+  <p class="mb-4">Este aplicativo requer recursos que não estão disponíveis no seu navegador atual ou modo de navegação.</p>
+  <p class="text-sm">Tente usar um navegador moderno (Chrome, Edge, Firefox, etc.) no modo de navegação normal.</p>
+  <p class="text-sm mt-2">Os modos de navegação privada geralmente restringem o acesso ao armazenamento necessário para este aplicativo.</p>
+</div>
+`,
 };
