@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from 'react';
 import { i18n } from '@lingui/core';
 import { I18nProvider } from '@lingui/react';
+import { domAnimation, LazyMotion } from 'motion/react';
 
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import { ViewportHandler } from '~/shared/components/common/ViewportHandler';
@@ -24,18 +25,20 @@ export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <SyncProvider>
       <I18nProvider i18n={i18n}>
-        <TooltipProvider delayDuration={300}>
-          <Toaster
-            position="top-right"
-            duration={2500}
-            closeButton
-            className="mt-6"
-          />
-          <OnlineStatusProvider>
-            <ViewportHandler />
-            {children}
-          </OnlineStatusProvider>
-        </TooltipProvider>
+        <LazyMotion features={domAnimation}>
+          <TooltipProvider delayDuration={300}>
+            <Toaster
+              position="top-right"
+              duration={2500}
+              closeButton
+              className="mt-6"
+            />
+            <OnlineStatusProvider>
+              <ViewportHandler />
+              {children}
+            </OnlineStatusProvider>
+          </TooltipProvider>
+        </LazyMotion>
       </I18nProvider>
     </SyncProvider>
   );
