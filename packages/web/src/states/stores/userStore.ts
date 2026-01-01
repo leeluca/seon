@@ -2,9 +2,9 @@ import * as Sentry from '@sentry/react';
 import { create } from 'zustand';
 
 import db from '~/data/db/database';
+import { isLocalDbAvailable } from '~/data/db/storage';
 import type { Preferences, User } from '~/types/user';
 import { generateOfflineUser } from '~/utils';
-import { isOpfsAvailable } from '~/utils/storage';
 import { parseUserPreferences } from '~/utils/validation';
 
 type UserState = {
@@ -21,7 +21,7 @@ type UserActions = {
 
 async function getUserFromDb() {
   try {
-    if (!(await isOpfsAvailable())) {
+    if (!(await isLocalDbAvailable())) {
       return undefined;
     }
 

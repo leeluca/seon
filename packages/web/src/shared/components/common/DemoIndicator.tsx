@@ -3,7 +3,7 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { FlaskConicalIcon, RotateCcwIcon } from 'lucide-react';
 
-import { purgeStorage } from '~/utils/storage';
+import { resetLocalDatabase } from '~/data/db/reset';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -19,7 +19,7 @@ function ResetDemo() {
 
   const resetDemo = async () => {
     setIsResetting(true);
-    await purgeStorage();
+    await resetLocalDatabase();
     location.reload();
   };
 

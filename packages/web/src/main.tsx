@@ -8,6 +8,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { createRouter, RouterProvider } from '@tanstack/react-router';
 
 import { AppProviders } from '~/app/providers';
+import { isLocalDbAvailable } from '~/data/db/storage';
 import ErrorFallback from '~/shared/components/common/ErrorFallback';
 import NotFound from '~/shared/components/common/NotFound';
 import { COMPATIBILITY_MESSAGE } from './constants/errors';
@@ -17,7 +18,6 @@ import { queryClient } from './lib/queryClient';
 import { defaultLocale } from './locales/i18n';
 import { routeTree } from './routeTree.gen';
 import { useUserStore } from './states/stores/userStore';
-import { isOpfsAvailable } from './utils/storage';
 
 const router = createRouter({
   routeTree,
@@ -52,7 +52,7 @@ function App() {
 
   useEffect(() => {
     async function checkCompatibility() {
-      const isSupported = await isOpfsAvailable();
+      const isSupported = await isLocalDbAvailable();
       setIsCompatible(isSupported);
 
       const loadingContainer = document.querySelector('#loading-container');
