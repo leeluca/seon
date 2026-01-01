@@ -22,6 +22,7 @@ import {
   startOfWeek,
 } from 'date-fns';
 import { ArrowBigLeftIcon, ArrowBigRightIcon } from 'lucide-react';
+import { animate, motion, useDragControls, useMotionValue } from 'motion/react';
 
 import { ENTRIES, GOALS } from '~/constants/query';
 import type { GoalType } from '~/features/goal/model';
@@ -108,14 +109,18 @@ const CalendarHeatmap = ({
     startOfWeek(new Date(), { weekStartsOn: 0 }),
   );
   const handlePrevWeek = () => {
-    animateWeekChange(-1);
+    void animateWeekChange(-1);
   };
   const handleNextWeek = () => {
-    animateWeekChange(1);
+    void animateWeekChange(1);
   };
 
   const goBackToCurrentWeek = () => {
     setCurrentWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }));
+    const width = getSliderWidth();
+    if (width) {
+      trackX.set(-width);
+    }
   };
 
   const days = Array.from({ length: 7 }).map((_, index) =>
@@ -134,20 +139,26 @@ const CalendarHeatmap = ({
   ]);
   const popoverAnchorRef = useRef<Element | null>(null);
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
-  const pointerIdRef = useRef<number | null>(null);
-  const pointerStartXRef = useRef(0);
-  const dragOffsetRef = useRef(0);
-  const hasActivePointerRef = useRef(false);
-  const isDraggingRef = useRef(false);
+  const dragControls = useDragControls();
+  const trackX = useMotionValue(0);
   const shouldBlockClickRef = useRef(false);
+  const isDraggingSliderRef = useRef(false);
+  const isSnappingRef = useRef(false);
   const [sliderWidth, setSliderWidth] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
+
+  useEffect(() => {
+    isDraggingSliderRef.current = isDraggingSlider;
+  }, [isDraggingSlider]);
+
+  useEffect(() => {
+    isSnappingRef.current = isSnapping;
+  }, [isSnapping]);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -174,7 +185,14 @@ const CalendarHeatmap = ({
     }
 
     const updateWidth = () => {
-      setSliderWidth(node.offsetWidth);
+      const width = node.offsetWidth;
+      setSliderWidth(width);
+
+      // Keep centered on the current week when resizing/layout changes.
+      // Avoid interfering with an active drag or snap animation.
+      if (!isDraggingSliderRef.current && !isSnappingRef.current) {
+        trackX.set(-width);
+      }
     };
 
     updateWidth();
@@ -182,7 +200,11 @@ const CalendarHeatmap = ({
     if (typeof ResizeObserver !== 'undefined') {
       const observer = new ResizeObserver((entries) => {
         if (entries[0]) {
-          setSliderWidth(entries[0].contentRect.width);
+          const width = entries[0].contentRect.width;
+          setSliderWidth(width);
+          if (!isDraggingSliderRef.current && !isSnappingRef.current) {
+            trackX.set(-width);
+          }
         }
       });
       observer.observe(node);
@@ -193,7 +215,7 @@ const CalendarHeatmap = ({
     return () => {
       window.removeEventListener('resize', updateWidth);
     };
-  }, []);
+  }, [trackX]);
 
   const getSliderWidth = () => {
     if (sliderWidth) {
@@ -203,18 +225,9 @@ const CalendarHeatmap = ({
     return node ? node.offsetWidth : 0;
   };
 
-  const clampOffset = (value: number) => {
-    const width = getSliderWidth();
-    if (!width) {
-      return 0;
-    }
-    const limit = width;
-    return Math.max(Math.min(value, limit), -limit);
-  };
-
   const TRANSITION_DURATION_MS = 300;
 
-  const animateWeekChange = (weeksDelta: number) => {
+  const animateWeekChange = async (weeksDelta: number) => {
     // Prevent multiple animations at once or no change
     if (isSnapping || weeksDelta === 0) {
       return;
@@ -227,78 +240,28 @@ const CalendarHeatmap = ({
     }
 
     setIsSnapping(true); // Lock input
-    setIsDraggingSlider(false); // Ensure transitions are ON
+    setIsDraggingSlider(false); // Ensure the track isn't stuck in a drag-only state
 
-    // Animate to the target (the adjacent week)
-    // -1 (prev) -> slide right (to +width)
-    // +1 (next) -> slide left (to -width)
-    const snapTargetOffset = weeksDelta > 0 ? -width : width;
-    setDragOffset(snapTargetOffset);
+    // Track positions (px) for the 3-page strip:
+    // prev: 0, current: -width, next: -2*width
+    const snapTargetX = weeksDelta > 0 ? -2 * width : 0;
 
-    setTimeout(() => {
-      // Disable transitions for the instant content swap
-      setIsDraggingSlider(true);
+    const controls = animate(trackX, snapTargetX, {
+      duration: TRANSITION_DURATION_MS / 1000,
+      ease: 'easeOut',
+    });
+    await controls.finished;
 
-      // Change the week
-      setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
+    setCurrentWeekStart((prev) => addWeeks(prev, weeksDelta));
+    trackX.set(-width);
 
-      setDragOffset(0);
-
-      requestAnimationFrame(() => {
-        setIsDraggingSlider(false);
-        setIsSnapping(false);
-
-        shouldBlockClickRef.current = false;
-      });
-    }, TRANSITION_DURATION_MS);
+    setIsSnapping(false);
+    shouldBlockClickRef.current = false;
   };
 
-  // TODO: change to use animation library
-  const finalizeDrag = (shouldSnap: boolean) => {
-    const container = sliderContainerRef.current;
-    const pointerId = pointerIdRef.current;
-    const wasDragging = isDraggingRef.current;
-
-    if (pointerId !== null && container?.hasPointerCapture?.(pointerId)) {
-      container.releasePointerCapture(pointerId);
-    }
-
-    // Reset pointer-tracking refs
-    pointerIdRef.current = null;
-    hasActivePointerRef.current = false;
-    isDraggingRef.current = false;
-    dragOffsetRef.current = 0;
-    pointerStartXRef.current = 0;
-
-    if (shouldSnap && wasDragging) {
-      const width = getSliderWidth();
-      const offset = dragOffset;
-      const threshold = width * 0.2;
-      let weeksDelta = 0;
-
-      if (Math.abs(offset) > threshold) {
-        weeksDelta = offset < 0 ? 1 : -1;
-      }
-
-      if (weeksDelta !== 0) {
-        animateWeekChange(weeksDelta);
-        return;
-      }
-    }
-
-    setDragOffset(0);
-    setIsDraggingSlider(false);
-
-    if (wasDragging) {
-      setTimeout(() => {
-        shouldBlockClickRef.current = false;
-      }, 0);
-    } else {
-      shouldBlockClickRef.current = false;
-    }
-  };
-
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+  const handleSliderPointerDown = (
+    event: ReactPointerEvent<HTMLDivElement>,
+  ) => {
     if (isSnapping || (event.pointerType === 'mouse' && event.button !== 0)) {
       return;
     }
@@ -311,72 +274,43 @@ const CalendarHeatmap = ({
       }
     }
 
-    pointerIdRef.current = event.pointerId;
-    pointerStartXRef.current = event.clientX;
-    dragOffsetRef.current = 0;
-    hasActivePointerRef.current = true;
-    shouldBlockClickRef.current = false;
+    // Start a Motion-controlled drag. It won't be recognized until the pointer
+    // moves at least `distanceThreshold` pixels.
+    dragControls.start(event, { distanceThreshold: 10 });
   };
 
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (
-      !hasActivePointerRef.current ||
-      pointerIdRef.current === null ||
-      pointerIdRef.current !== event.pointerId
-    ) {
+  const handleSliderDragEnd = async () => {
+    const width = getSliderWidth();
+    if (!width) {
+      setIsDraggingSlider(false);
+      shouldBlockClickRef.current = false;
       return;
     }
 
-    const delta = event.clientX - pointerStartXRef.current;
+    const threshold = width * 0.2;
+    const restX = -width;
+    const offsetFromRest = trackX.get() - restX;
 
-    if (!isDraggingRef.current) {
-      const DRAG_ACTIVATION_THRESHOLD = 10;
-      if (Math.abs(delta) < DRAG_ACTIVATION_THRESHOLD) {
-        return;
-      }
-      isDraggingRef.current = true;
-      shouldBlockClickRef.current = true;
-      setIsDraggingSlider(true);
-      const container = sliderContainerRef.current;
-      if (container && pointerIdRef.current !== null) {
-        container.setPointerCapture?.(pointerIdRef.current);
-      }
+    let weeksDelta = 0;
+    if (Math.abs(offsetFromRest) > threshold) {
+      weeksDelta = offsetFromRest < 0 ? 1 : -1;
     }
 
-    event.preventDefault();
-    const clamped = clampOffset(delta);
-    dragOffsetRef.current = clamped;
-    setDragOffset(clamped);
-  };
+    setIsDraggingSlider(false);
 
-  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!hasActivePointerRef.current) {
+    if (weeksDelta !== 0) {
+      await animateWeekChange(weeksDelta);
       return;
     }
 
-    if (isDraggingRef.current) {
-      event.preventDefault();
-    }
+    animate(trackX, restX, {
+      duration: TRANSITION_DURATION_MS / 1000,
+      ease: 'easeOut',
+    });
 
-    finalizeDrag(isDraggingRef.current);
-  };
-
-  const handlePointerCancel = () => {
-    if (!hasActivePointerRef.current) {
-      return;
-    }
-    finalizeDrag(false);
-  };
-
-  const handlePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (
-      !hasActivePointerRef.current ||
-      pointerIdRef.current !== event.pointerId
-    ) {
-      return;
-    }
-
-    finalizeDrag(isDraggingRef.current);
+    setTimeout(() => {
+      shouldBlockClickRef.current = false;
+    }, 0);
   };
 
   const handleClickCapture = (event: ReactMouseEvent<HTMLDivElement>) => {
@@ -416,11 +350,7 @@ const CalendarHeatmap = ({
             'relative w-full touch-pan-y overflow-hidden',
             isDraggingSlider ? 'cursor-grabbing select-none' : 'cursor-grab',
           )}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerCancel}
-          onPointerLeave={handlePointerLeave}
+          onPointerDown={handleSliderPointerDown}
           onClickCapture={handleClickCapture}
         >
           {/* NOTE: left/right gradient overlays to indicate horizontal scrollability. */}
@@ -441,14 +371,25 @@ const CalendarHeatmap = ({
             <div className="h-full w-full bg-linear-to-l from-white/90 to-transparent dark:from-black/70" />
           </div>
 
-          <div
+          <motion.div
             className="flex items-stretch py-px"
-            style={{
-              transform: `translateX(calc(-100% + ${dragOffset}px))`,
-              transition: isDraggingSlider
-                ? 'none'
-                : 'transform 300ms ease-out',
-              willChange: 'transform',
+            style={{ x: trackX, willChange: 'transform' }}
+            drag={isSnapping ? false : 'x'}
+            dragControls={dragControls}
+            dragListener={false}
+            dragConstraints={
+              sliderWidth
+                ? { left: -2 * sliderWidth, right: 0 }
+                : { left: 0, right: 0 }
+            }
+            dragElastic={0}
+            dragMomentum={false}
+            onDragStart={() => {
+              setIsDraggingSlider(true);
+              shouldBlockClickRef.current = true;
+            }}
+            onDragEnd={() => {
+              void handleSliderDragEnd();
             }}
           >
             {weeksToRender.map((weekOffset) => {
@@ -571,7 +512,7 @@ const CalendarHeatmap = ({
                 </div>
               );
             })}
-          </div>
+          </motion.div>
         </div>
         <Button
           variant="ghost"

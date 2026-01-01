@@ -51,21 +51,21 @@ const MainGoalsLazyRoute = MainGoalsLazyRouteImport.update({
   getParentRoute: () => MainRouteRoute,
 } as any).lazy(() => import('./routes/_main/goals.lazy').then((d) => d.Route))
 const MainGoalsIdLazyRoute = MainGoalsIdLazyRouteImport.update({
-  id: '/goals/$id',
-  path: '/goals/$id',
-  getParentRoute: () => MainRouteRoute,
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => MainGoalsLazyRoute,
 } as any).lazy(() =>
   import('./routes/_main/goals.$id.lazy').then((d) => d.Route),
 )
 const MainGoalsNewRoute = MainGoalsNewRouteImport.update({
-  id: '/goals/new',
-  path: '/goals/new',
-  getParentRoute: () => MainRouteRoute,
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => MainGoalsLazyRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/goals': typeof MainGoalsLazyRoute
+  '/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo': typeof DemoIndexRoute
   '/signin': typeof SigninIndexRoute
   '/signup': typeof SignupIndexRoute
@@ -74,7 +74,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/goals': typeof MainGoalsLazyRoute
+  '/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo': typeof DemoIndexRoute
   '/signin': typeof SigninIndexRoute
   '/signup': typeof SignupIndexRoute
@@ -85,7 +85,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_main': typeof MainRouteRouteWithChildren
-  '/_main/goals': typeof MainGoalsLazyRoute
+  '/_main/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo/': typeof DemoIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/signup/': typeof SignupIndexRoute
@@ -177,31 +177,41 @@ declare module '@tanstack/react-router' {
     }
     '/_main/goals/$id': {
       id: '/_main/goals/$id'
-      path: '/goals/$id'
+      path: '/$id'
       fullPath: '/goals/$id'
       preLoaderRoute: typeof MainGoalsIdLazyRouteImport
-      parentRoute: typeof MainRouteRoute
+      parentRoute: typeof MainGoalsLazyRoute
     }
     '/_main/goals/new': {
       id: '/_main/goals/new'
-      path: '/goals/new'
+      path: '/new'
       fullPath: '/goals/new'
       preLoaderRoute: typeof MainGoalsNewRouteImport
-      parentRoute: typeof MainRouteRoute
+      parentRoute: typeof MainGoalsLazyRoute
     }
   }
 }
 
-interface MainRouteRouteChildren {
-  MainGoalsLazyRoute: typeof MainGoalsLazyRoute
+interface MainGoalsLazyRouteChildren {
   MainGoalsNewRoute: typeof MainGoalsNewRoute
   MainGoalsIdLazyRoute: typeof MainGoalsIdLazyRoute
 }
 
-const MainRouteRouteChildren: MainRouteRouteChildren = {
-  MainGoalsLazyRoute: MainGoalsLazyRoute,
+const MainGoalsLazyRouteChildren: MainGoalsLazyRouteChildren = {
   MainGoalsNewRoute: MainGoalsNewRoute,
   MainGoalsIdLazyRoute: MainGoalsIdLazyRoute,
+}
+
+const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
+  MainGoalsLazyRouteChildren,
+)
+
+interface MainRouteRouteChildren {
+  MainGoalsLazyRoute: typeof MainGoalsLazyRouteWithChildren
+}
+
+const MainRouteRouteChildren: MainRouteRouteChildren = {
+  MainGoalsLazyRoute: MainGoalsLazyRouteWithChildren,
 }
 
 const MainRouteRouteWithChildren = MainRouteRoute._addFileChildren(
