@@ -37,6 +37,7 @@ const buttonVariants = cva(
   },
 );
 
+// biome-ignore format: conflicts with prettier
 export interface ButtonProps
   extends
     React.ButtonHTMLAttributes<HTMLButtonElement>,
