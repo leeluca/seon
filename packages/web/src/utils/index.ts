@@ -1,6 +1,6 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import short from 'short-uuid';
+import { createTranslator } from 'short-uuid';
 import { v7 as uuidv7 } from 'uuid';
 
 import type { Database } from '~/data/db/AppSchema';
@@ -11,7 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const generateUUIDs = () => {
-  const translator = short();
+  const translator = createTranslator();
 
   const uuid = uuidv7();
   const shortUuid = translator.fromUUID(uuid);

@@ -1,4 +1,4 @@
-import short from 'short-uuid';
+import { createTranslator } from 'short-uuid';
 import {
   v7 as uuidv7,
   validate as uuidValidate,
@@ -6,7 +6,7 @@ import {
 } from 'uuid';
 
 export const generateUUIDs = () => {
-  const translator = short();
+  const translator = createTranslator();
 
   const uuid = uuidv7();
   const shortUuid = translator.fromUUID(uuid);

@@ -5,7 +5,7 @@ import { env } from 'hono/adapter';
 import { contextStorage } from 'hono/context-storage';
 import { deleteCookie, getCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
-import short from 'short-uuid';
+import { createTranslator } from 'short-uuid';
 
 import { getDb } from '../db/db.js';
 import {
@@ -104,7 +104,7 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
   }
 
   const hashedPassword = await hashPW(password);
-  const shortUuid = short().fromUUID(uuid);
+  const shortUuid = createTranslator().fromUUID(uuid);
 
   type NewUser = typeof usersTable.$inferInsert;
 
