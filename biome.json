@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -14,6 +14,7 @@
       "!**/routeTree.gen.ts",
       "!**/messages.ts",
       "!**/migrations/**/*",
+      "!**/public/favicon.svg",
       "!**/tailwind.css"
     ]
   },
@@ -32,31 +33,14 @@
   "linter": {
     "enabled": true,
     "domains": {
-      "react": "all"
+      "react": "recommended"
     },
     "rules": {
-      "recommended": true,
-      "a11y": {
-        "recommended": true
-      },
-      "complexity": {
-        "recommended": true
-      },
-      "nursery": {
-        "recommended": true
-      },
+      "preset": "recommended",
       "correctness": {
-        "recommended": true,
         "noUnusedImports": "warn"
       },
-      "performance": {
-        "recommended": true
-      },
-      "security": {
-        "recommended": true
-      },
       "style": {
-        "recommended": true,
         "noParameterAssign": "error",
         "useAsConstAssertion": "error",
         "useDefaultParameterLast": "error",
@@ -68,14 +52,12 @@
         "noInferrableTypes": "error",
         "noUselessElse": "error",
         "useComponentExportOnlyModules": {
+          "level": "warn",
           "options": {
             "allowConstantExport": true,
             "allowExportNames": ["Route"]
           }
         }
-      },
-      "suspicious": {
-        "recommended": true
       }
     }
   },

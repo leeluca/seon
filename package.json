@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "ci:biome": "biome check --changed",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "test": "pnpm --recursive --filter './packages/**' --if-present run test",
     "typecheck": "tsc -b"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.10",
+    "@biomejs/biome": "2.5.4",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.7.4",
