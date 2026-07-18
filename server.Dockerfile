@@ -15,7 +15,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # Copy source files
 COPY packages/server/src ./packages/server/src
-COPY packages/server/tsconfig.json ./packages/server/
+COPY packages/server/tsconfig.json packages/server/tsconfig.build.json ./packages/server/
 COPY tsconfig.json .
 
 # Build the application

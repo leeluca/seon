@@ -1,17 +1,16 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["**/*.ts"],
-  "exclude": ["dist"],
   "compilerOptions": {
-    "outDir": "dist",
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "strict": true,
-    "skipLibCheck": true,
-    "types": ["node"],
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "composite": true
-  }
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "lib": ["ES2024"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "outDir": ".cache/tsbuild",
+    "target": "ES2024",
+    "tsBuildInfoFile": ".cache/tsbuild/tsconfig.tsbuildinfo",
+    "types": ["node"]
+  },
+  "include": ["src", "tests", "*.config.ts"],
+  "exclude": ["dist", ".cache"]
 }

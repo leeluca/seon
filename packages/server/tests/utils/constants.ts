@@ -1,5 +1,5 @@
 import type { JWK } from 'jose';
-import type { KeyObject } from 'node:crypto';
+import type { KeyObject, webcrypto } from 'node:crypto';
 
 // User constants
 export const TEST_USER = {
@@ -72,8 +72,8 @@ export const MOCK_TOKENS = {
 
 // Type definitions for JWT related objects
 export interface JWTKeys {
-  jwtPrivateKey: string | CryptoKey;
-  jwtPublicKey: string | CryptoKey;
+  jwtPrivateKey: string | webcrypto.CryptoKey;
+  jwtPublicKey: string | webcrypto.CryptoKey;
   jwtRefreshSecret: string | KeyObject;
   jwtDbPrivateKey: string | KeyObject;
   publicKeyJWK: JWK;

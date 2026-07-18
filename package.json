@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "ci:biome": "biome check --changed",
+    "test": "pnpm --recursive --filter './packages/**' --if-present run test",
     "typecheck": "tsc -b"
   },
   "devDependencies": {
@@ -12,7 +13,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "prettier": "^3.9.5",
     "prettier-plugin-tailwindcss": "^0.7.4",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "wrangler": "^4.112.0"
   },
   "engines": {

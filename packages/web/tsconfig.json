@@ -1,32 +1,21 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": ".cache/tsbuild",
-    "target": "ESNext",
+    "composite": true,
+    "emitDeclarationOnly": true,
+    "jsx": "react-jsx",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
-    "strict": true,
-    "skipLibCheck": true,
-    "jsx": "react-jsx",
-    "baseUrl": ".",
+    "outDir": ".cache/tsbuild",
     "paths": {
-      "~/*": ["./src/*"],
-      "~/app/*": ["./src/app/*"],
-      "~/data/*": ["./src/data/*"],
-      "~/features/*": ["./src/features/*"],
-      "~/shared/*": ["./src/shared/*"]
+      "~/*": ["./src/*"]
     },
-    "composite": true,
-    "emitDeclarationOnly": true
+    "target": "ESNext",
+    "tsBuildInfoFile": ".cache/tsbuild/tsconfig.tsbuildinfo",
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
+    "useDefineForClassFields": true
   },
-  "include": [
-    "src/**/*",
-    "postcss.config.js",
-    "vite.config.ts",
-    "tailwind.config.ts",
-    "lingui.config.ts",
-    "tests/**/*",
-    "playwright.config.ts"
-  ]
+  "include": ["src", "tests", "*.config.ts"],
+  "exclude": ["dist", ".cache"]
 }
