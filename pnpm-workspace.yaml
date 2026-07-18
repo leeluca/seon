@@ -3,6 +3,9 @@ packages:
 catalog:
   short-uuid: ^6.0.3
   uuid: ^14.0.1
+minimumReleaseAgeExclude:
+  - '@tanstack/router-generator@1.167.21'
+  - '@tanstack/router-plugin@1.168.22'
 allowBuilds:
   '@journeyapps/wa-sqlite': true
   '@sentry/cli': false

@@ -1,8 +1,9 @@
+import { defineConfig } from '@lingui/cli';
 import type { LinguiConfig } from '@lingui/conf';
 
 import { LOCALES } from './src/constants/locales';
 
-const config: LinguiConfig = {
+const config: LinguiConfig = defineConfig({
   locales: Object.keys(LOCALES),
   catalogs: [
     {
@@ -10,6 +11,6 @@ const config: LinguiConfig = {
       include: ['src'],
     },
   ],
-};
+});
 
 export default config;
