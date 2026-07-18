@@ -1,9 +1,13 @@
 packages:
   - packages/*
-ignoredBuiltDependencies:
-  - '@sentry/cli'
-onlyBuiltDependencies:
-  - '@journeyapps/wa-sqlite'
-  - '@tailwindcss/oxide'
-  - '@swc/core'
-  - esbuild
+catalog:
+  short-uuid: ^6.0.3
+  uuid: ^14.0.1
+allowBuilds:
+  '@journeyapps/wa-sqlite': true
+  '@sentry/cli': false
+  '@swc/core': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  sharp: true
+  workerd: true

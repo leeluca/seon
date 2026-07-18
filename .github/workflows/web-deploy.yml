@@ -43,8 +43,6 @@ jobs:
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT || secrets.SENTRY_PROJECT }}
         #   VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO || secrets.VITE_IS_DEMO }}
 
-      - run: echo "ignore-workspace-root-check=true" >> .npmrc
-
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:

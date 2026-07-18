@@ -27,7 +27,9 @@
     "drizzle-orm": "^0.44.7",
     "hono": "^4.12.30",
     "jose": "^6.2.3",
-    "postgres": "^3.4.9"
+    "postgres": "^3.4.9",
+    "short-uuid": "catalog:",
+    "uuid": "catalog:"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.4",
