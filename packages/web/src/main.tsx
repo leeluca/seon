@@ -86,7 +86,10 @@ if (!rootElement) {
 }
 
 if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
+  const root = ReactDOM.createRoot(rootElement, {
+    onUncaughtError: Sentry.reactErrorHandler(),
+    onRecoverableError: Sentry.reactErrorHandler(),
+  });
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>

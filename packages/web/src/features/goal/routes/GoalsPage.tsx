@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
@@ -54,9 +54,7 @@ export function GoalsPage() {
           </div>
         </div>
         <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-          <Suspense>
-            <GoalsContent sort={sort} filter={filter} />
-          </Suspense>
+          <GoalsContent sort={sort} filter={filter} />
         </Sentry.ErrorBoundary>
       </div>
 

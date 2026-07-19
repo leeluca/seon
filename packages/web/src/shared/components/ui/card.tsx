@@ -2,18 +2,17 @@ import * as React from 'react';
 
 import { cn } from '~/utils/';
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & { as?: keyof React.ReactHTML }
->(({ className, as = 'article', ...props }, ref) =>
-  React.createElement(as, {
-    ref,
-    className: cn(
-      'bg-card text-card-foreground rounded-xl border shadow-sm',
-      className,
-    ),
-    ...props,
-  }),
+const Card = React.forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>(
+  ({ className, ...props }, ref) => (
+    <article
+      ref={ref}
+      className={cn(
+        'bg-card text-card-foreground rounded-xl border shadow-sm',
+        className,
+      )}
+      {...props}
+    />
+  ),
 );
 Card.displayName = 'Card';
 

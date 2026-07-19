@@ -28,7 +28,7 @@ interface ResponsivePopoverProps {
   onOpenChange?: (open: boolean) => void;
   /** Virtual ref for anchor positioning */
   virtualRef?:
-    | React.RefObject<Element>
+    | React.RefObject<Element | null>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
   drawerTitle: ReactNode;
@@ -50,6 +50,9 @@ export function ResponsivePopover({
   handleOnly,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
+  const popoverVirtualRef = virtualRef?.current
+    ? { current: virtualRef.current }
+    : undefined;
 
   if (isMobile) {
     return (
@@ -74,7 +77,7 @@ export function ResponsivePopover({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {virtualRef && <PopoverAnchor virtualRef={virtualRef} />}
+      {popoverVirtualRef && <PopoverAnchor virtualRef={popoverVirtualRef} />}
       <PopoverTrigger asChild className={className}>
         {trigger}
       </PopoverTrigger>

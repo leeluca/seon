@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactElement } from 'react';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { GOALS } from '~/constants/query';
 import type { GoalType } from '~/features/goal/model';
@@ -101,13 +101,21 @@ export function GoalDetailPanel({
   selectedGoalId,
   isShortId,
 }: GoalDetailPanelProps) {
-  const { data: selectedGoal } = useSuspenseQuery(
+  const { data: selectedGoal, error } = useQuery(
     isShortId
       ? GOALS.detailShortId(selectedGoalId)
       : GOALS.detail(selectedGoalId),
   );
 
   const isMobile = useViewportStore((state) => state.isMobile);
+
+  if (error) {
+    throw error;
+  }
+
+  if (!selectedGoal) {
+    return null;
+  }
 
   const {
     title,

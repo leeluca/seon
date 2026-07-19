@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { ChartLineIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
@@ -65,7 +65,11 @@ function GoalLineGraph({
   goalType,
 }: GoalLineGraphProps) {
   const { i18n } = useLingui();
-  const { data: entries } = useSuspenseQuery(ENTRIES.goalId(goalId));
+  const {
+    data: entries = [],
+    error,
+    isPending,
+  } = useQuery(ENTRIES.goalId(goalId));
   const isMobileViewport = useViewportStore((state) => state.isMobile);
   const resolvedMobile = isMobile ?? isMobileViewport;
 
@@ -98,6 +102,14 @@ function GoalLineGraph({
   useEffect(() => {
     setMode(graphConfig.defaultMode);
   }, [graphConfig.defaultMode]);
+
+  if (error) {
+    throw error;
+  }
+
+  if (isPending) {
+    return null;
+  }
 
   if (!entries.length) {
     return (
