@@ -17,10 +17,5 @@ export default defineConfig({
     sequence: {
       hooks: 'list',
     },
-    poolOptions: {
-      threads: {
-        // singleThread: true, // Run tests in single thread to avoid DB conflicts
-      },
-    },
   },
 });

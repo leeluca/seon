@@ -18,6 +18,13 @@ import {
   type TestJWTData,
 } from '../../utils/jwt-test-utils.js';
 
+vi.mock('hono/cookie', () => ({
+  setCookie: vi.fn().mockImplementation((ctx, name, value, options) => {
+    const cookieValue = `${name}=${value}; Max-Age=${options.maxAge}`;
+    ctx.res.headers.set('Set-Cookie', cookieValue);
+  }),
+}));
+
 function createCookieMockContext(): Context {
   const headers = new Headers();
 
@@ -155,13 +162,6 @@ describe('JWT Service', () => {
       const token = await signJWT(TEST_USER.id, 'access', jwtConfigs);
 
       const c = createCookieMockContext();
-
-      vi.mock('hono/cookie', () => ({
-        setCookie: vi.fn().mockImplementation((ctx, name, value, options) => {
-          const cookieValue = `${name}=${value}; Max-Age=${options.maxAge}`;
-          ctx.res.headers.set('Set-Cookie', cookieValue);
-        }),
-      }));
 
       setJWTCookie(c, 'access', token, jwtConfigs);
 

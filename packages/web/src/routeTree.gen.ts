@@ -11,45 +11,45 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as MainRouteRouteImport } from './routes/_main/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SignupIndexRouteImport } from './routes/signup/index'
-import { Route as SigninIndexRouteImport } from './routes/signin/index'
+import { Route as MainRouteRouteImport } from './routes/_main/route'
 import { Route as DemoIndexRouteImport } from './routes/demo/index'
+import { Route as SigninIndexRouteImport } from './routes/signin/index'
+import { Route as SignupIndexRouteImport } from './routes/signup/index'
 import { Route as MainGoalsNewRouteImport } from './routes/_main/goals.new'
 
 const MainGoalsLazyRouteImport = createFileRoute('/_main/goals')()
 const MainGoalsIdLazyRouteImport = createFileRoute('/_main/goals/$id')()
 
-const MainRouteRoute = MainRouteRouteImport.update({
-  id: '/_main',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/_main/route.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
-const SignupIndexRoute = SignupIndexRouteImport.update({
-  id: '/signup/',
-  path: '/signup/',
+const MainRouteRoute = MainRouteRouteImport.update({
+  id: '/_main',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/signup/index.lazy').then((d) => d.Route))
-const SigninIndexRoute = SigninIndexRouteImport.update({
-  id: '/signin/',
-  path: '/signin/',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/signin/index.lazy').then((d) => d.Route))
-const DemoIndexRoute = DemoIndexRouteImport.update({
-  id: '/demo/',
-  path: '/demo/',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/demo/index.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/_main/route.lazy').then((d) => d.Route))
 const MainGoalsLazyRoute = MainGoalsLazyRouteImport.update({
   id: '/goals',
   path: '/goals',
   getParentRoute: () => MainRouteRoute,
 } as any).lazy(() => import('./routes/_main/goals.lazy').then((d) => d.Route))
+const DemoIndexRoute = DemoIndexRouteImport.update({
+  id: '/demo/',
+  path: '/demo/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/demo/index.lazy').then((d) => d.Route))
+const SigninIndexRoute = SigninIndexRouteImport.update({
+  id: '/signin/',
+  path: '/signin/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/signin/index.lazy').then((d) => d.Route))
+const SignupIndexRoute = SignupIndexRouteImport.update({
+  id: '/signup/',
+  path: '/signup/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/signup/index.lazy').then((d) => d.Route))
 const MainGoalsIdLazyRoute = MainGoalsIdLazyRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -66,9 +66,9 @@ const MainGoalsNewRoute = MainGoalsNewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
-  '/demo': typeof DemoIndexRoute
-  '/signin': typeof SigninIndexRoute
-  '/signup': typeof SignupIndexRoute
+  '/demo/': typeof DemoIndexRoute
+  '/signin/': typeof SigninIndexRoute
+  '/signup/': typeof SignupIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
   '/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -97,9 +97,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/goals'
-    | '/demo'
-    | '/signin'
-    | '/signup'
+    | '/demo/'
+    | '/signin/'
+    | '/signup/'
     | '/goals/new'
     | '/goals/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -133,13 +133,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/_main': {
-      id: '/_main'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof MainRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -147,25 +140,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/signup/': {
-      id: '/signup/'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/signin/': {
-      id: '/signin/'
-      path: '/signin'
-      fullPath: '/signin'
-      preLoaderRoute: typeof SigninIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/demo/': {
-      id: '/demo/'
-      path: '/demo'
-      fullPath: '/demo'
-      preLoaderRoute: typeof DemoIndexRouteImport
+    '/_main': {
+      id: '/_main'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MainRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_main/goals': {
@@ -174,6 +153,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/goals'
       preLoaderRoute: typeof MainGoalsLazyRouteImport
       parentRoute: typeof MainRouteRoute
+    }
+    '/demo/': {
+      id: '/demo/'
+      path: '/demo'
+      fullPath: '/demo/'
+      preLoaderRoute: typeof DemoIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signin/': {
+      id: '/signin/'
+      path: '/signin'
+      fullPath: '/signin/'
+      preLoaderRoute: typeof SigninIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup/': {
+      id: '/signup/'
+      path: '/signup'
+      fullPath: '/signup/'
+      preLoaderRoute: typeof SignupIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_main/goals/$id': {
       id: '/_main/goals/$id'

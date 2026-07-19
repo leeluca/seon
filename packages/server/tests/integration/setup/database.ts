@@ -2,7 +2,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { migrate } from 'drizzle-orm/pglite/migrator';
 
-import { testClient, testDb } from './mock-db';
+import { testClient, testDb } from './mock-db.js';
 
 export async function setupTestDatabase() {
   // FIXME: use same migrations directory as production

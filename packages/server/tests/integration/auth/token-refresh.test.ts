@@ -26,11 +26,11 @@ describe('Token Refresh Flow', async () => {
 
     const signupResponse = await client.post('/api/auth/signup', userData);
 
-    const signupData: {
+    const signupData = (await signupResponse.json()) as {
       result: boolean;
       expiresAt: number;
       user: Record<string, unknown>;
-    } = await signupResponse.json();
+    };
 
     expect(signupResponse.status).toBe(200);
 

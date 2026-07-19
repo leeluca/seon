@@ -1,14 +1,13 @@
 /// <reference types="vitest/config" />
 
-import { lingui } from '@lingui/vite-plugin';
+import { lingui, linguiTransformerBabelPreset } from '@lingui/vite-plugin';
+import babel from '@rolldown/plugin-babel';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import topLevelAwait from 'vite-plugin-top-level-await';
 import wasm from 'vite-plugin-wasm';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 try {
   process.loadEnvFile('.env.local');
@@ -56,17 +55,17 @@ export default defineConfig({
     exclude: ['@journeyapps/wa-sqlite', '@powersync/web'],
     include: [],
   },
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
-    viteReact({
-      babel: {
-        plugins: ['macros'],
-      },
-    }),
+    viteReact(),
     lingui(),
-    tsconfigPaths(),
+    babel({
+      presets: [linguiTransformerBabelPreset()],
+    }),
     wasm(),
-    topLevelAwait(),
     VitePWA({
       injectRegister: 'script-defer',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
@@ -92,7 +91,7 @@ export default defineConfig({
   ],
   worker: {
     format: 'es',
-    plugins: () => [wasm(), topLevelAwait()] as Plugin[],
+    plugins: () => [wasm()] as Plugin[],
   },
   test: {
     environment: 'happy-dom',

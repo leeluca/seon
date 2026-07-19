@@ -5,6 +5,18 @@ import { TestClient } from '../setup/client.js';
 import { setupTestDatabase } from '../setup/database.js';
 import { setupTestServer } from '../setup/server.js';
 
+interface AuthResponse {
+  result: boolean;
+  user: {
+    email: string;
+    id: string;
+  };
+}
+
+interface StatusResponse {
+  result: boolean;
+}
+
 // TODO: test signin after registration
 describe('User Authentication Flow', async () => {
   const { cleanup } = await setupTestDatabase();
@@ -28,7 +40,7 @@ describe('User Authentication Flow', async () => {
     const signupResponse = await client.post('/api/auth/signup', userData);
     expect(signupResponse.status).toBe(200);
 
-    const signupData = await signupResponse.json();
+    const signupData = (await signupResponse.json()) as AuthResponse;
     expect(signupData.result).toBe(true);
     expect(signupData.user.email).toBe(userData.email);
     expect(signupData.user.id).toBe(userData.uuid);
@@ -50,7 +62,7 @@ describe('User Authentication Flow', async () => {
 
     const statusResponse = await client.get('/api/auth/status');
     expect(statusResponse.status).toBe(200);
-    const statusData = await statusResponse.json();
+    const statusData = (await statusResponse.json()) as StatusResponse;
     expect(statusData.result).toBe(true);
   });
 

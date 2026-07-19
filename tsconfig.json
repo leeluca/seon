@@ -1,14 +1,13 @@
 {
+  "files": [],
   "compilerOptions": {
-    "isolatedModules": true,
     "esModuleInterop": true,
-    "target": "ESNext",
-    "strict": true,
-    "allowJs": false,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "strict": true,
+    "verbatimModuleSyntax": true
   },
-  "exclude": ["dist", "**/dist/**"],
   "references": [
     {
       "path": "./packages/server"
