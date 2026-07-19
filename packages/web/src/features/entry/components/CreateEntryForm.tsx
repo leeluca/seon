@@ -1,28 +1,27 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import {
   isPast as checkIsPast,
   isToday as checkIsToday,
   differenceInCalendarDays,
 } from 'date-fns';
 import { Trash2Icon } from 'lucide-react';
-import { toast } from 'sonner';
 
 import { MAX_INPUT_NUMBER } from '~/constants';
-import { ENTRIES, GOALS } from '~/constants/query';
+import { GOALS } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
-import { deleteEntry, getPreviousEntry } from '~/data/domain/entryRepo';
+import { getPreviousEntry } from '~/data/domain/entryRepo';
 import type { GoalType } from '~/features/goal/model';
 import { useIds } from '~/hooks/useIds';
-import FormError from '~/shared/components/common/form/FormError';
-import FormItem from '~/shared/components/common/FormItem';
+import { FormField } from '~/shared/components/common/form/FormField';
 import { Button } from '~/shared/components/ui/button';
 import { NumberInput } from '~/shared/components/ui/number-input';
 import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import { useEntryForm } from '../hooks/useEntryForm';
+import { useEntryMutations } from '../hooks/useEntryMutations';
 import { ENTRY_FIELD_SUFFIX } from '../model/constants';
 
 interface CreateEntryFormProps {
@@ -38,7 +37,7 @@ interface CreateEntryFormProps {
 const CreateEntryForm = ({
   goalId,
   entryId,
-  date = new Date(),
+  date: dateProp,
   value,
   goalType,
   orderedEntries,
@@ -47,9 +46,12 @@ const CreateEntryForm = ({
 }: CreateEntryFormProps) => {
   const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
-  const queryClient = useQueryClient();
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
+  const ids = useIds(ENTRY_FIELD_SUFFIX);
+  const booleanGroupId = `${ids.entryValue}-group`;
+  const [defaultDate] = useState(() => new Date());
+  const date = dateProp ?? defaultDate;
 
   const previousValue = useMemo(() => {
     return (
@@ -68,25 +70,17 @@ const CreateEntryForm = ({
     [t],
   );
 
-  const onSubmitCallback = () => {
-    queryClient.invalidateQueries({
-      queryKey: ENTRIES.goalId(goalId).queryKey,
-    });
-    queryClient.invalidateQueries({
-      queryKey: GOALS.detail(goalId).queryKey,
-    });
-    onSubmitCallbackProp?.();
-  };
-
-  const ids = useIds(ENTRY_FIELD_SUFFIX);
-
-  const form = useEntryForm({
+  const { save, remove } = useEntryMutations({
     goalId,
     userId,
+    onSuccess: onSubmitCallbackProp,
+  });
+
+  const form = useEntryForm({
     date,
     value,
     previousValue,
-    onSubmitCallback,
+    onSubmit: (entry) => save.mutateAsync(entry),
   });
 
   // FIXME: repeated logic from GoalStatusSummary.tsx
@@ -128,65 +122,55 @@ const CreateEntryForm = ({
     return Math.ceil(averageNeeded);
   }, [goal, goalType, orderedEntries]);
 
-  // TODO: refactor to separate goal type components
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        void form.handleSubmit();
-      }}
-    >
-      <div className={cn('grid gap-4', className)}>
-        <div className="grid gap-4 sm:gap-2">
-          <FormItem
-            label={t`Date`}
-            labelFor={ids.entryDate}
-            className="grid items-center gap-4 sm:grid-cols-3"
-            labelClassName="text-start"
-          >
+    <form.AppForm>
+      <form.FormRoot>
+        <div className={cn('grid gap-4', className)}>
+          <div className="grid gap-4 sm:gap-2">
             <form.AppField name="date">
-              {(field) => {
-                const {
-                  meta: { errors },
-                } = field.state;
-                return (
-                  <FormError.Wrapper
-                    errors={errors}
-                    errorClassName="col-span-2 col-start-2"
-                  >
-                    <div className="col-span-2">
-                      <field.DateField
-                        id={ids.entryDate}
-                        defaultDate={field.state.value}
-                        readOnly
-                      />
-                    </div>
-                  </FormError.Wrapper>
-                );
-              }}
+              {(field) => (
+                <field.DateField
+                  id={ids.entryDate}
+                  label={t`Date`}
+                  itemClassName="grid items-center gap-4 sm:grid-cols-3"
+                  labelClassName="text-start"
+                  controlClassName="col-span-2"
+                  errorClassName="col-span-2 col-start-2"
+                  defaultDate={field.state.value}
+                  readOnly
+                />
+              )}
             </form.AppField>
-          </FormItem>
-          {goalType === 'BOOLEAN' ? (
-            <FormItem
-              label={goalTypeTitle[goalType]}
-              labelFor="entry-value"
-              className="mt-2 flex w-full flex-col items-start gap-y-2"
-              labelClassName="text-start col-span-2"
-              required
-            >
-              <form.Field name="value">
+            {goalType === 'BOOLEAN' ? (
+              <form.AppField
+                name="value"
+                validators={{
+                  onChange: ({ value }) =>
+                    value === undefined ? t`Choose yes or no.` : undefined,
+                }}
+              >
                 {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
+                  const { value, meta } = field.state;
                   return (
-                    <FormError.Wrapper errors={errors}>
-                      <div className="mt-1 flex w-full items-center gap-1">
+                    <FormField
+                      id={booleanGroupId}
+                      label={goalTypeTitle[goalType]}
+                      required
+                      errors={meta.errors}
+                      itemClassName="mt-2 flex w-full flex-col items-start gap-y-2"
+                      labelClassName="text-start"
+                    >
+                      <fieldset
+                        id={booleanGroupId}
+                        aria-label={goalTypeTitle[goalType]}
+                        className="mt-1 flex w-full items-center gap-1"
+                      >
                         <div className="flex w-full items-center gap-1">
                           <Button
+                            id={ids.entryValue}
+                            type="submit"
                             variant="outline"
+                            disabled={save.isPending}
                             onClick={() => {
                               field.handleChange(1);
                             }}
@@ -200,7 +184,9 @@ const CreateEntryForm = ({
                             <Trans>Yes</Trans>
                           </Button>
                           <Button
+                            type="submit"
                             variant="outline"
+                            disabled={save.isPending}
                             onClick={() => {
                               field.handleChange(0);
                             }}
@@ -219,136 +205,93 @@ const CreateEntryForm = ({
                           variant="ghost"
                           className="hover:bg-destructive/90 hover:text-destructive-foreground shrink-0 justify-self-end"
                           size="icon"
-                          disabled={!entryId}
-                          onClick={() =>
-                            entryId &&
-                            void (async () => {
-                              try {
-                                await deleteEntry(entryId, goalId);
-                                onSubmitCallback?.();
-                              } catch (error) {
-                                console.error(error);
-                                toast.error(t`Failed to delete entry`);
-                              }
-                            })()
-                          }
+                          disabled={!entryId || remove.isPending}
+                          onClick={() => entryId && remove.mutate(entryId)}
                           aria-label={t`Delete entry`}
                         >
                           <Trash2Icon size={18} />
                         </Button>
-                      </div>
-                    </FormError.Wrapper>
-                  );
-                }}
-              </form.Field>
-            </FormItem>
-          ) : (
-            <FormItem
-              label={goalTypeTitle[goalType]}
-              labelFor="entry-value"
-              className="grid items-center gap-4 sm:grid-cols-3"
-              labelClassName="text-start"
-              required
-            >
-              <form.AppField name="value">
-                {(field) => {
-                  const {
-                    value,
-                    meta: { errors },
-                  } = field.state;
-                  const showPreviousValueHelper =
-                    !entryId && value === previousValue && !!previousValue;
-                  return (
-                    <FormError.Wrapper
-                      errors={errors}
-                      errorClassName="col-span-2 col-start-2"
-                    >
-                      <div className="col-span-2">
-                        <field.NumberField
-                          id={ids.entryValue}
-                          min={0}
-                          max={MAX_INPUT_NUMBER}
-                          buttonStacked={!isMobile}
-                          autoFocus={!isMobile && !isTouchScreen}
-                          autoComplete="off"
-                          helperText={
-                            showPreviousValueHelper ? `${t`Last:`} ` : undefined
-                          }
-                          customButton={
-                            averageNeededPerDay > 0 ? (
-                              <NumberInput.CustomButton
-                                amount={averageNeededPerDay}
-                                label={`+${averageNeededPerDay}`}
-                                className="h-7 rounded-md px-2 text-xs"
-                                aria-label={t`Suggested amount`}
-                              />
-                            ) : null
-                          }
-                        />
-                      </div>
-                    </FormError.Wrapper>
+                      </fieldset>
+                    </FormField>
                   );
                 }}
               </form.AppField>
-            </FormItem>
-          )}
-          {goalType !== 'BOOLEAN' && (
-            <form.Subscribe
-              selector={(state) => [
-                state.isSubmitting,
-                !state.canSubmit || state.isSubmitting,
-              ]}
-            >
-              {([isSubmitting, isSubmitDisabled]) => (
+            ) : (
+              <form.AppField
+                name="value"
+                validators={{
+                  onChange: ({ value }) =>
+                    value === undefined ? t`Enter a value.` : undefined,
+                }}
+              >
+                {(field) => {
+                  const { value } = field.state;
+                  const showPreviousValueHelper =
+                    !entryId && value === previousValue && !!previousValue;
+                  return (
+                    <field.NumberField
+                      id={ids.entryValue}
+                      label={goalTypeTitle[goalType]}
+                      required
+                      itemClassName="grid items-center gap-4 sm:grid-cols-3"
+                      labelClassName="text-start"
+                      controlClassName="col-span-2"
+                      errorClassName="col-span-2 col-start-2"
+                      min={0}
+                      max={MAX_INPUT_NUMBER}
+                      buttonStacked={!isMobile}
+                      autoFocus={!isMobile && !isTouchScreen}
+                      autoComplete="off"
+                      helperText={
+                        showPreviousValueHelper ? `${t`Last:`} ` : undefined
+                      }
+                      customButton={
+                        averageNeededPerDay > 0 ? (
+                          <NumberInput.CustomButton
+                            amount={averageNeededPerDay}
+                            label={`+${averageNeededPerDay}`}
+                            className="h-7 rounded-md px-2 text-xs"
+                            aria-label={t`Suggested amount`}
+                          />
+                        ) : null
+                      }
+                    />
+                  );
+                }}
+              </form.AppField>
+            )}
+            {goalType !== 'BOOLEAN' && (
+              <div
+                className={cn('mt-1 grid grid-cols-4 gap-2', {
+                  'mt-2': isMobile,
+                })}
+              >
                 <div
-                  className={cn('mt-1 grid grid-cols-4 gap-2', {
-                    'cursor-not-allowed': !isSubmitting && isSubmitDisabled,
-                    'mt-2': isMobile,
+                  className={cn('col-span-1', {
+                    'cursor-not-allowed': !entryId || remove.isPending,
                   })}
                 >
-                  <div
-                    className={cn('col-span-1', {
-                      'cursor-not-allowed': !entryId,
-                    })}
-                  >
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      className="w-full"
-                      disabled={!entryId}
-                      onClick={() =>
-                        entryId &&
-                        void (async () => {
-                          try {
-                            await deleteEntry(entryId, goalId);
-                            onSubmitCallback?.();
-                          } catch (error) {
-                            console.error(error);
-                            toast.error(t`Failed to delete entry`);
-                          }
-                        })()
-                      }
-                      size="responsive"
-                      aria-label={t`Delete entry`}
-                    >
-                      <Trash2Icon size={18} />
-                    </Button>
-                  </div>
                   <Button
-                    type="submit"
-                    disabled={isSubmitDisabled}
-                    className="col-span-3"
+                    type="button"
+                    variant="destructive"
+                    className="w-full"
+                    disabled={!entryId || remove.isPending}
+                    onClick={() => entryId && remove.mutate(entryId)}
                     size="responsive"
+                    aria-label={t`Delete entry`}
                   >
-                    <Trans>Save</Trans>
+                    <Trash2Icon size={18} />
                   </Button>
                 </div>
-              )}
-            </form.Subscribe>
-          )}
+                <form.SubmitButton className="col-span-3" size="responsive">
+                  <Trans>Save</Trans>
+                </form.SubmitButton>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </form>
+      </form.FormRoot>
+    </form.AppForm>
   );
 };
 

@@ -1,14 +1,15 @@
+import type { ReactNode } from 'react';
 import { Label } from '@radix-ui/react-label';
 
 import { cn } from '~/utils';
 
 interface FormMessageProps {
-  label: string;
+  label: ReactNode;
   labelFor: string;
   required?: boolean;
   className?: string;
   labelClassName?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 function FormItem({

@@ -72,71 +72,54 @@ function useNumberInput({
     }
   }, [controlledValue]);
 
-  const handleIncrement = useCallback(() => {
-    setValue((prev) => {
-      const newVal =
-        prev === undefined
-          ? Math.min(stepper ?? 1, max)
-          : Math.min(prev + (stepper ?? 1), max);
+  const updateValue = useCallback(
+    (newValue: number) => {
+      setValue(newValue);
+
       if (internalRef.current) {
-        internalRef.current.value = String(newVal ?? '');
+        internalRef.current.value = String(newValue);
         onChange?.({
           target: internalRef.current,
           currentTarget: internalRef.current,
         } as React.ChangeEvent<HTMLInputElement>);
       }
-      return newVal;
-    });
-  }, [stepper, max, onChange]);
+    },
+    [onChange],
+  );
+
+  const handleIncrement = useCallback(() => {
+    const newValue =
+      value === undefined
+        ? Math.min(stepper ?? 1, max)
+        : Math.min(value + (stepper ?? 1), max);
+
+    updateValue(newValue);
+  }, [max, stepper, updateValue, value]);
 
   const handleDecrement = useCallback(() => {
-    setValue((prev) => {
-      const newVal =
-        prev === undefined
-          ? Math.max(-(stepper ?? 1), min)
-          : Math.max(prev - (stepper ?? 1), min);
-      if (internalRef.current) {
-        internalRef.current.value = String(newVal ?? '');
-        onChange?.({
-          target: internalRef.current,
-          currentTarget: internalRef.current,
-        } as React.ChangeEvent<HTMLInputElement>);
-      }
-      return newVal;
-    });
-  }, [stepper, min, onChange]);
+    const newValue =
+      value === undefined
+        ? Math.max(-(stepper ?? 1), min)
+        : Math.max(value - (stepper ?? 1), min);
+
+    updateValue(newValue);
+  }, [min, stepper, updateValue, value]);
 
   const handleBlur = useCallback(() => {
     if (value !== undefined) {
       if (value < min) {
-        setValue(min);
-        if (internalRef.current) {
-          internalRef.current.value = String(min);
-        }
+        updateValue(min);
       } else if (value > max) {
-        setValue(max);
-        if (internalRef.current) {
-          internalRef.current.value = String(max);
-        }
+        updateValue(max);
       }
     }
-  }, [min, max, value]);
+  }, [max, min, updateValue, value]);
 
   const handleCustomIncrement = useCallback(
     (amount: number) => {
-      setValue((prev) => {
-        const newVal = Math.min((prev ?? 0) + amount, max);
-        if (internalRef.current) {
-          internalRef.current.value = String(newVal ?? '');
-          onChange?.({
-            target: internalRef.current,
-            currentTarget: internalRef.current,
-          } as React.ChangeEvent<HTMLInputElement>);
-        }
-        return newVal;
-      });
+      updateValue(Math.min((value ?? 0) + amount, max));
     },
-    [max, onChange],
+    [max, updateValue, value],
   );
 
   return {
@@ -173,6 +156,8 @@ export interface NumberInputFieldProps
 export function NumberInputField({
   inputRef,
   className,
+  onBlur,
+  onKeyDown,
   ...props
 }: NumberInputFieldProps) {
   const context = useContext(NumberInputContext);
@@ -223,13 +208,17 @@ export function NumberInputField({
     } else {
       blockNonNumberInput(e);
     }
+    onKeyDown?.(e);
   };
 
   return (
     <Input
       value={value ?? ''}
       onChange={handleChange}
-      onBlur={handleBlur}
+      onBlur={(event) => {
+        handleBlur?.();
+        onBlur?.(event);
+      }}
       onKeyDown={handleKeyDown}
       ref={combinedRef}
       className={cn(
@@ -332,6 +321,7 @@ export function NumberInputCustomButton({
   );
 }
 
+// biome-ignore lint/style/useComponentExportOnlyModules: compound component namespace
 export const NumberInput = {
   Root: NumberInputRoot,
   Field: NumberInputField,
