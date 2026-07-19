@@ -4,7 +4,7 @@ import usePostSignUp, {
   type SignUpParams,
 } from '~/features/auth/hooks/usePostSignUp';
 import { useUserStore } from '~/states/stores/userStore';
-import { useAuthAppForm } from './useAuthForm';
+import { useAuthAppForm, validateRequiredAuthFields } from './useAuthForm';
 
 type SignUpFormValues = Omit<SignUpParams, 'uuid'>;
 
@@ -52,12 +52,7 @@ export function useSignUpForm(options: UseSignUpFormOptions) {
   const form = useAuthAppForm({
     defaultValues,
     validators: {
-      onChange({ value }: { value: SignUpFormValues }) {
-        const { name, email, password } = value;
-        if (!name.trim() || !email.trim() || !password.trim()) {
-          return 'Missing required fields';
-        }
-      },
+      onChange: ({ value }) => validateRequiredAuthFields(value),
     },
     onSubmit: async ({ value }: { value: SignUpFormValues }) => {
       const { name, email, password } = value;

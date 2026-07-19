@@ -1,4 +1,11 @@
-import type { InputHTMLAttributes } from 'react';
+import {
+  useId,
+  type ChangeEventHandler,
+  type FocusEventHandler,
+  type InputHTMLAttributes,
+  type ReactNode,
+} from 'react';
+import type { ValidationError } from '@tanstack/react-form';
 
 import { DatePicker } from '~/shared/components/common/DatePicker';
 import FormError from '~/shared/components/common/form/FormError';
@@ -7,45 +14,79 @@ import { NumberInput } from '~/shared/components/ui/number-input';
 import { useFieldContext } from '~/states/formContext';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
+import { FormField, type FormLayoutProps } from './FormField';
 
-interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {}
+interface FieldPresentationProps extends FormLayoutProps {
+  label?: ReactNode;
+  required?: boolean;
+  additionalErrors?: (ValidationError | null | undefined)[];
+}
+
+interface TextFieldProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue'>,
+    FieldPresentationProps {}
 
 export function TextField(props: TextFieldProps) {
   const field = useFieldContext<string>();
+  const generatedId = useId();
   const {
-    id,
-    placeholder,
-    autoFocus,
-    maxLength,
-    type = 'text',
-    autoComplete,
-    inputMode,
+    id: idProp,
+    label,
+    required,
+    additionalErrors = [],
+    itemClassName,
+    labelClassName,
+    controlClassName,
+    errorClassName,
+    onChange,
     onBlur,
-    disabled,
-    readOnly,
-    className,
+    type = 'text',
+    ...inputProps
   } = props;
-  return (
+  const id = idProp ?? generatedId;
+  const errors = [...field.state.meta.errors, ...additionalErrors];
+  const input = (
     <Input
+      {...inputProps}
       id={id}
+      name={field.name}
       type={type}
+      required={required}
       value={field.state.value}
-      onChange={(e) => field.handleChange(e.target.value)}
-      onBlur={onBlur}
-      placeholder={placeholder}
-      autoFocus={autoFocus}
-      maxLength={maxLength}
-      autoComplete={autoComplete}
-      inputMode={inputMode}
-      disabled={disabled}
-      readOnly={readOnly}
-      className={className}
-      {...props}
+      onChange={(event) => {
+        field.handleChange(event.target.value);
+        onChange?.(event);
+      }}
+      onBlur={(event) => {
+        field.handleBlur();
+        onBlur?.(event);
+      }}
+      aria-invalid={errors.some(Boolean) || undefined}
+      aria-describedby={errors.some(Boolean) ? `${id}-error` : undefined}
     />
+  );
+
+  if (label === undefined) {
+    return input;
+  }
+
+  return (
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      errors={errors}
+      itemClassName={itemClassName}
+      labelClassName={labelClassName}
+      controlClassName={controlClassName}
+      errorClassName={errorClassName}
+    >
+      {input}
+    </FormField>
   );
 }
 
-export function NumberField(props: {
+interface NumberFieldProps extends FieldPresentationProps {
   id?: string;
   placeholder?: string;
   min?: number;
@@ -56,11 +97,23 @@ export function NumberField(props: {
   className?: string;
   helperText?: string;
   customButton?: React.ReactNode;
-}) {
+  onBlur?: FocusEventHandler<HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLInputElement>;
+}
+
+export function NumberField(props: NumberFieldProps) {
   const field = useFieldContext<number | undefined>();
+  const generatedId = useId();
   const isMobile = useViewportStore((state) => state.isMobile);
   const {
-    id,
+    id: idProp,
+    label,
+    required,
+    additionalErrors = [],
+    itemClassName,
+    labelClassName,
+    controlClassName,
+    errorClassName,
     placeholder,
     min,
     max,
@@ -70,9 +123,13 @@ export function NumberField(props: {
     className,
     helperText,
     customButton,
+    onBlur,
+    onChange,
   } = props;
+  const id = idProp ?? generatedId;
+  const errors = [...field.state.meta.errors, ...additionalErrors];
 
-  return (
+  const input = (
     <div className="relative">
       {helperText && (
         <span
@@ -87,7 +144,10 @@ export function NumberField(props: {
       <NumberInput.Root
         value={field.state.value}
         onChange={(e) => {
-          field.handleChange(Number(e.target.value));
+          field.handleChange(
+            e.target.value === '' ? undefined : Number(e.target.value),
+          );
+          onChange?.(e);
         }}
         min={min}
         max={max}
@@ -98,9 +158,19 @@ export function NumberField(props: {
             <div className="relative flex-1">
               <NumberInput.Field
                 id={id}
+                name={field.name}
+                required={required}
                 autoFocus={autoFocus}
                 autoComplete={autoComplete}
                 placeholder={placeholder}
+                onBlur={(event) => {
+                  field.handleBlur();
+                  onBlur?.(event);
+                }}
+                aria-invalid={errors.some(Boolean) || undefined}
+                aria-describedby={
+                  errors.some(Boolean) ? `${id}-error` : undefined
+                }
                 className={cn(
                   helperText && 'pl-[39px]',
                   customButton && 'pr-[52px]',
@@ -124,9 +194,19 @@ export function NumberField(props: {
             <div className="relative flex-1">
               <NumberInput.Field
                 id={id}
+                name={field.name}
+                required={required}
                 autoFocus={autoFocus}
                 autoComplete={autoComplete}
                 placeholder={placeholder}
+                onBlur={(event) => {
+                  field.handleBlur();
+                  onBlur?.(event);
+                }}
+                aria-invalid={errors.some(Boolean) || undefined}
+                aria-describedby={
+                  errors.some(Boolean) ? `${id}-error` : undefined
+                }
                 className={cn(
                   'rounded-none',
                   helperText && 'pl-[39px]',
@@ -146,17 +226,53 @@ export function NumberField(props: {
       </NumberInput.Root>
     </div>
   );
+
+  if (label === undefined) {
+    return input;
+  }
+
+  return (
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      errors={errors}
+      itemClassName={itemClassName}
+      labelClassName={labelClassName}
+      controlClassName={controlClassName}
+      errorClassName={errorClassName}
+    >
+      {input}
+    </FormField>
+  );
 }
 
-export function DateField(props: {
+interface DateFieldProps extends FieldPresentationProps {
   id?: string;
   defaultDate?: Date;
   readOnly?: boolean;
   showPresetDates?: boolean;
-}) {
+}
+
+export function DateField(props: DateFieldProps) {
   const field = useFieldContext<Date | undefined>();
-  const { id, defaultDate, readOnly, showPresetDates } = props;
-  return (
+  const generatedId = useId();
+  const {
+    id: idProp,
+    label,
+    required,
+    additionalErrors = [],
+    itemClassName,
+    labelClassName,
+    controlClassName,
+    errorClassName,
+    defaultDate,
+    readOnly,
+    showPresetDates,
+  } = props;
+  const id = idProp ?? generatedId;
+  const errors = [...field.state.meta.errors, ...additionalErrors];
+  const input = (
     <DatePicker
       id={id}
       defaultDate={defaultDate}
@@ -164,7 +280,28 @@ export function DateField(props: {
       setDate={(date) => date && field.handleChange(date)}
       readOnly={readOnly}
       showPresetDates={showPresetDates}
+      ariaInvalid={errors.some(Boolean) || undefined}
+      ariaDescribedBy={errors.some(Boolean) ? `${id}-error` : undefined}
     />
+  );
+
+  if (label === undefined) {
+    return input;
+  }
+
+  return (
+    <FormField
+      id={id}
+      label={label}
+      required={required}
+      errors={errors}
+      itemClassName={itemClassName}
+      labelClassName={labelClassName}
+      controlClassName={controlClassName}
+      errorClassName={errorClassName}
+    >
+      {input}
+    </FormField>
   );
 }
 

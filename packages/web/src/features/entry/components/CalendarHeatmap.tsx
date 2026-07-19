@@ -137,7 +137,11 @@ const CalendarHeatmap = ({
     new Date(),
     undefined,
   ]);
-  const popoverAnchorRef = useRef<Element | null>(null);
+  const [popoverAnchor, setPopoverAnchor] = useState<Element | null>(null);
+  const popoverVirtualRef = useMemo(
+    () => ({ current: popoverAnchor }),
+    [popoverAnchor],
+  );
   const sliderContainerRef = useRef<HTMLDivElement | null>(null);
   const dragControls = useDragControls();
   const trackX = useMotionValue(0);
@@ -166,10 +170,10 @@ const CalendarHeatmap = ({
     }
 
     if (!isPopoverOpen && selectedDateValue[0]) {
-      timeoutRef.current = setTimeout(
-        () => setSelectedDateValue([undefined, undefined]),
-        150,
-      );
+      timeoutRef.current = setTimeout(() => {
+        setSelectedDateValue([undefined, undefined]);
+        setPopoverAnchor(null);
+      }, 150);
     }
     return () => {
       if (timeoutRef.current) {
@@ -323,6 +327,16 @@ const CalendarHeatmap = ({
     shouldBlockClickRef.current = false;
   };
 
+  const openEntryPopover = (
+    event: ReactMouseEvent<HTMLButtonElement>,
+    day: Date,
+    entryValue?: number,
+  ) => {
+    setPopoverAnchor(event.currentTarget);
+    setSelectedDateValue([day, entryValue]);
+    setIsPopoverOpen(true);
+  };
+
   const weeksToRender = [-1, 0, 1];
 
   return (
@@ -422,17 +436,7 @@ const CalendarHeatmap = ({
                       (!isDraggingSlider || !isSnapping);
 
                     return (
-                      <div
-                        key={stringDate}
-                        className="flex flex-col"
-                        ref={(el) => {
-                          if (
-                            day.getTime() === selectedDateValue[0]?.getTime()
-                          ) {
-                            popoverAnchorRef.current = el;
-                          }
-                        }}
-                      >
+                      <div key={stringDate} className="flex flex-col">
                         <p className="mb-2 text-xs font-light select-none">
                           {format(day, 'EEEEE')}
                         </p>
@@ -464,12 +468,13 @@ const CalendarHeatmap = ({
                                   isAfter(day, new Date(goal?.completionDate)),
                               })}
                               disabled={isBlocked}
+                              data-calendar-heatmap-day
+                              data-goal-id={goalId}
                               aria-label={t`Add entry for ${format(day, 'do')}`}
                               aria-current={isToday ? 'date' : undefined}
-                              onClick={() => {
-                                setSelectedDateValue(() => [day, entryValue]);
-                                setIsPopoverOpen(true);
-                              }}
+                              onClick={(event) =>
+                                openEntryPopover(event, day, entryValue)
+                              }
                             >
                               <div className="text-center text-xs">
                                 {format(day, 'd')}
@@ -493,12 +498,13 @@ const CalendarHeatmap = ({
                                 isAfter(day, new Date(goal?.completionDate)),
                             })}
                             disabled={isBlocked}
+                            data-calendar-heatmap-day
+                            data-goal-id={goalId}
                             aria-label={t`Add entry for ${format(day, 'do')}`}
                             aria-current={isToday ? 'date' : undefined}
-                            onClick={() => {
-                              setSelectedDateValue(() => [day, entryValue]);
-                              setIsPopoverOpen(true);
-                            }}
+                            onClick={(event) =>
+                              openEntryPopover(event, day, entryValue)
+                            }
                           >
                             <div className="text-center text-xs">
                               {format(day, 'd')}
@@ -535,9 +541,22 @@ const CalendarHeatmap = ({
       <ResponsivePopover
         open={isPopoverOpen}
         onOpenChange={setIsPopoverOpen}
-        virtualRef={popoverAnchorRef}
+        virtualRef={popoverAnchor ? popoverVirtualRef : null}
         trigger={null}
         contentClassName={isMobile ? '' : 'w-fit max-w-72'}
+        contentProps={{
+          onInteractOutside: (event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+
+            const dayButton = target.closest<HTMLElement>(
+              '[data-calendar-heatmap-day]',
+            );
+            if (dayButton?.dataset.goalId === goalId) {
+              event.preventDefault();
+            }
+          },
+        }}
         overlayClassName={isMobile ? 'bg-black/50' : ''}
         drawerTitle={
           <span>
@@ -548,6 +567,7 @@ const CalendarHeatmap = ({
         }
       >
         <CreateEntryForm
+          key={selectedDateValue[0]?.getTime()}
           goalId={goalId}
           entryId={
             selectedDateValue[0] &&

@@ -2,7 +2,7 @@ import usePostSignIn, {
   type PostSignInResponse,
   type SignInParams,
 } from '~/features/auth/hooks/usePostSignIn';
-import { useAuthAppForm } from './useAuthForm';
+import { useAuthAppForm, validateRequiredAuthFields } from './useAuthForm';
 
 export interface UseSignInFormOptions {
   onSuccess: (user: PostSignInResponse['user']) => void;
@@ -27,12 +27,7 @@ export function useSignInForm(options: UseSignInFormOptions) {
   const form = useAuthAppForm({
     defaultValues,
     validators: {
-      onChange({ value }: { value: SignInParams }) {
-        const { email, password } = value;
-        if (!email.trim() || !password.trim()) {
-          return 'Missing required fields';
-        }
-      },
+      onChange: ({ value }) => validateRequiredAuthFields(value),
     },
     onSubmit: async ({ value }: { value: SignInParams }) => {
       const { email, password } = value;

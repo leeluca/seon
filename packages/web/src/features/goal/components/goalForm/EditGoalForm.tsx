@@ -44,103 +44,107 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
   }, [isOpen]);
 
   return (
-    <section className={cn('scroll-mt-24', className)}>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="flex h-[60px] items-start justify-between">
-          <div className="flex items-start sm:items-center">
-            <CollapsibleTrigger asChild className="mt-0.5 mr-4 sm:mt-0">
-              <Button id={toggleId} size="icon-sm" variant="secondary">
-                <ChevronRightIcon
-                  size={18}
-                  className={`transform transition-transform duration-300 ${
-                    isOpen ? 'rotate-90' : 'rotate-0'
-                  }`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-            <header>
-              <label htmlFor={toggleId}>
-                <p className="text-foreground text-xl font-semibold">
-                  <Trans>Edit goal</Trans>
-                </p>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  <Trans>Last update: {format(updatedAt, 'PPp')}</Trans>
-                </p>
-              </label>
-            </header>
-          </div>
+    <form.AppForm>
+      <section className={cn('scroll-mt-24', className)}>
+        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+          <div className="flex h-[60px] items-start justify-between">
+            <div className="flex items-start sm:items-center">
+              <CollapsibleTrigger asChild className="mt-0.5 mr-4 sm:mt-0">
+                <Button id={toggleId} size="icon-sm" variant="secondary">
+                  <ChevronRightIcon
+                    size={18}
+                    className={`transform transition-transform duration-300 ${
+                      isOpen ? 'rotate-90' : 'rotate-0'
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <header>
+                <label htmlFor={toggleId}>
+                  <span className="text-foreground block text-xl font-semibold">
+                    <Trans>Edit goal</Trans>
+                  </span>
+                  <span className="text-muted-foreground mt-1 block text-xs">
+                    <Trans>Last update: {format(updatedAt, 'PPp')}</Trans>
+                  </span>
+                </label>
+              </header>
+            </div>
 
-          <form.Subscribe
-            selector={(state) => [
-              state.isSubmitting,
-              !state.isDirty || state.isSubmitting,
-              !state.isDirty || !state.canSubmit || state.isSubmitting,
-            ]}
-          >
-            {([isSubmitting, isCancelDisabled, isSubmitDisabled]) =>
-              isOpen && (
-                <div className="animate-fade-in flex gap-2">
-                  <div
-                    className={cn('flex flex-col items-center gap-1', {
-                      'cursor-not-allowed': isCancelDisabled,
-                    })}
-                  >
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      onClick={() => {
-                        form.reset();
-                      }}
-                      aria-label={t`Cancel editing`}
-                      disabled={isCancelDisabled}
-                    >
-                      <XIcon />
-                    </Button>
-                    <span
-                      className={cn('text-xs font-medium', {
-                        'text-muted-foreground': isCancelDisabled,
+            <form.Subscribe
+              selector={(state) => [
+                state.isSubmitting,
+                !state.isDirty || state.isSubmitting,
+                !state.isDirty || !state.canSubmit || state.isSubmitting,
+              ]}
+            >
+              {([isSubmitting, isCancelDisabled, isSubmitDisabled]) =>
+                isOpen && (
+                  <div className="animate-fade-in flex gap-2">
+                    <div
+                      className={cn('flex flex-col items-center gap-1', {
+                        'cursor-not-allowed': isCancelDisabled,
                       })}
                     >
-                      <Trans>Cancel</Trans>
-                    </span>
-                  </div>
-                  <div
-                    className={cn('flex flex-col items-center gap-1', {
-                      'cursor-not-allowed': isSubmitDisabled,
-                    })}
-                  >
-                    <Button
-                      size="icon"
-                      variant="outline"
-                      aria-label={t`Save`}
-                      form={GOAL_FORM_ID}
-                      disabled={isSubmitDisabled || isSubmitting}
-                    >
-                      <SaveIcon />
-                    </Button>
-                    <span
-                      className={cn('text-xs font-medium', {
-                        'text-muted-foreground': isSubmitDisabled,
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        onClick={() => {
+                          form.reset();
+                        }}
+                        aria-label={t`Cancel editing`}
+                        disabled={isCancelDisabled}
+                      >
+                        <XIcon />
+                      </Button>
+                      <span
+                        className={cn('text-xs font-medium', {
+                          'text-muted-foreground': isCancelDisabled,
+                        })}
+                      >
+                        <Trans>Cancel</Trans>
+                      </span>
+                    </div>
+                    <div
+                      className={cn('flex flex-col items-center gap-1', {
+                        'cursor-not-allowed': isSubmitDisabled,
                       })}
                     >
-                      <Trans>Save</Trans>
-                    </span>
+                      <Button
+                        type="submit"
+                        size="icon"
+                        variant="outline"
+                        aria-label={t`Save`}
+                        form={GOAL_FORM_ID}
+                        disabled={isSubmitDisabled || isSubmitting}
+                      >
+                        <SaveIcon />
+                      </Button>
+                      <span
+                        className={cn('text-xs font-medium', {
+                          'text-muted-foreground': isSubmitDisabled,
+                        })}
+                      >
+                        <Trans>Save</Trans>
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )
-            }
-          </form.Subscribe>
-        </div>
-        <CollapsibleContent>
-          <div ref={contentRef}>
-            <CreateGoalForm
-              form={form}
-              formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
-              className="py-3"
-            />
+                )
+              }
+            </form.Subscribe>
           </div>
-        </CollapsibleContent>
-      </Collapsible>
-    </section>
+          <CollapsibleContent>
+            <div ref={contentRef}>
+              <CreateGoalForm
+                form={form}
+                formItemClassName="grid-cols-1 items-start gap-y-2 px-1"
+                className="py-3"
+              />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </section>
+    </form.AppForm>
   );
 }

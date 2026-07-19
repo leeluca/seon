@@ -6,6 +6,7 @@ import { cn } from '~/utils';
 interface FormErrorProps {
   errors: (ValidationError | null | undefined)[];
   textClassName?: string;
+  id?: string;
 }
 
 const normalizeErrors = (
@@ -23,6 +24,7 @@ const normalizeErrors = (
 
 function FormError({
   errors,
+  id,
   className,
   textClassName,
 }: FormErrorProps & { className?: string }) {
@@ -33,7 +35,7 @@ function FormError({
   }
 
   return (
-    <div className={className}>
+    <div id={id} className={className} role="alert">
       {normalizedErrors.map((message, index) => (
         <p
           key={`${message}-${

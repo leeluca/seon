@@ -68,6 +68,8 @@ interface DatePickerProps {
   disabled?: boolean;
   readOnly?: boolean;
   useRelativeDistance?: boolean;
+  ariaInvalid?: boolean;
+  ariaDescribedBy?: string;
 }
 export const DatePicker = React.forwardRef(
   (
@@ -82,6 +84,8 @@ export const DatePicker = React.forwardRef(
       disabled,
       readOnly,
       useRelativeDistance = false,
+      ariaInvalid,
+      ariaDescribedBy,
     }: DatePickerProps,
     ref: React.Ref<{ value: Date | undefined }>,
   ) => {
@@ -110,7 +114,11 @@ export const DatePicker = React.forwardRef(
       >
         <PopoverTrigger asChild disabled={disabled}>
           <Button
+            id={id}
+            type="button"
             variant={'outline'}
+            aria-invalid={ariaInvalid}
+            aria-describedby={ariaDescribedBy}
             className={cn(
               'w-full justify-start text-left font-normal',
               {
@@ -134,7 +142,6 @@ export const DatePicker = React.forwardRef(
         <PopoverContent
           align="start"
           className="flex w-auto flex-col space-y-2 p-2"
-          id={id}
           collisionPadding={{ bottom: 40 }}
         >
           {showPresetDates && (

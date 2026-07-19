@@ -1,15 +1,13 @@
-import { createFormHook } from '@tanstack/react-form';
+export {
+  useAppForm as useAuthAppForm,
+  withForm as withAuthForm,
+  withFieldGroup as withAuthFieldGroup,
+} from '~/shared/components/common/form/appForm';
 
-import { ErrorInfo, TextField } from '~/shared/components/common/form/Fields';
-import { fieldContext, formContext } from '~/states/formContext';
-
-export const { useAppForm: useAuthAppForm, withForm: withAuthForm } =
-  createFormHook({
-    fieldContext,
-    formContext,
-    fieldComponents: {
-      TextField,
-      ErrorInfo,
-    },
-    formComponents: {},
-  });
+export function validateRequiredAuthFields(values: object) {
+  return Object.values(values).some(
+    (value) => typeof value === 'string' && !value.trim(),
+  )
+    ? 'Missing required fields'
+    : undefined;
+}
