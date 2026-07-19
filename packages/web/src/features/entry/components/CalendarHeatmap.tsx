@@ -1,7 +1,6 @@
 import {
   memo,
   useEffect,
-  useEffectEvent,
   useMemo,
   useRef,
   useState,
@@ -143,6 +142,8 @@ const CalendarHeatmap = ({
   const dragControls = useDragControls();
   const trackX = useMotionValue(0);
   const shouldBlockClickRef = useRef(false);
+  const isDraggingSliderRef = useRef(false);
+  const isSnappingRef = useRef(false);
   const [sliderWidth, setSliderWidth] = useState(0);
   const [isDraggingSlider, setIsDraggingSlider] = useState(false);
   const [isSnapping, setIsSnapping] = useState(false);
@@ -151,15 +152,13 @@ const CalendarHeatmap = ({
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
 
-  const updateSliderWidth = useEffectEvent((width: number) => {
-    setSliderWidth(width);
+  useEffect(() => {
+    isDraggingSliderRef.current = isDraggingSlider;
+  }, [isDraggingSlider]);
 
-    // Keep centered on the current week when resizing/layout changes.
-    // Avoid interfering with an active drag or snap animation.
-    if (!isDraggingSlider && !isSnapping) {
-      trackX.set(-width);
-    }
-  });
+  useEffect(() => {
+    isSnappingRef.current = isSnapping;
+  }, [isSnapping]);
 
   useEffect(() => {
     if (timeoutRef.current) {
@@ -186,7 +185,14 @@ const CalendarHeatmap = ({
     }
 
     const updateWidth = () => {
-      updateSliderWidth(node.offsetWidth);
+      const width = node.offsetWidth;
+      setSliderWidth(width);
+
+      // Keep centered on the current week when resizing/layout changes.
+      // Avoid interfering with an active drag or snap animation.
+      if (!isDraggingSliderRef.current && !isSnappingRef.current) {
+        trackX.set(-width);
+      }
     };
 
     updateWidth();
@@ -194,7 +200,11 @@ const CalendarHeatmap = ({
     if (typeof ResizeObserver !== 'undefined') {
       const observer = new ResizeObserver((entries) => {
         if (entries[0]) {
-          updateSliderWidth(entries[0].contentRect.width);
+          const width = entries[0].contentRect.width;
+          setSliderWidth(width);
+          if (!isDraggingSliderRef.current && !isSnappingRef.current) {
+            trackX.set(-width);
+          }
         }
       });
       observer.observe(node);
@@ -205,7 +215,7 @@ const CalendarHeatmap = ({
     return () => {
       window.removeEventListener('resize', updateWidth);
     };
-  }, []);
+  }, [trackX]);
 
   const getSliderWidth = () => {
     if (sliderWidth) {

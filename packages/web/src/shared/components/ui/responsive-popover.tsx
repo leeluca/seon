@@ -50,9 +50,6 @@ export function ResponsivePopover({
   handleOnly,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
-  const popoverVirtualRef = virtualRef?.current
-    ? { current: virtualRef.current }
-    : undefined;
 
   if (isMobile) {
     return (
@@ -77,7 +74,17 @@ export function ResponsivePopover({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {popoverVirtualRef && <PopoverAnchor virtualRef={popoverVirtualRef} />}
+      {virtualRef && (
+        <PopoverAnchor
+          // NOTE: Radix reads this ref after commit, when React has assigned the newly
+          // selected calendar cell. Keep the live ref instead of snapshotting it.
+          virtualRef={
+            virtualRef as NonNullable<
+              ComponentProps<typeof PopoverAnchor>['virtualRef']
+            >
+          }
+        />
+      )}
       <PopoverTrigger asChild className={className}>
         {trigger}
       </PopoverTrigger>
