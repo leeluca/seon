@@ -62,8 +62,6 @@
 
   --animate-fade-in: fade-in 0.25s ease-in-out;
   --animate-delayed-fade-in: fade-in 0.25s ease-in-out 0.4s forwards;
-  --animate-collapsible-down: collapsible-down 0.2s ease-out;
-  --animate-collapsible-up: collapsible-up 0.25s ease-out;
 
   @keyframes fade-in {
     from {
@@ -74,24 +72,8 @@
     }
   }
 
-  /* Retained until the Radix Collapsible component migrates to Base UI. */
-  @keyframes collapsible-down {
-    from {
-      height: 0;
-    }
-    to {
-      height: var(--radix-collapsible-content-height);
-    }
-  }
-
-  @keyframes collapsible-up {
-    from {
-      height: var(--radix-collapsible-content-height);
-    }
-    to {
-      height: 0;
-    }
-  }
+  --font-heading: var(--font-sans);
+  --font-sans: 'Inter Variable', sans-serif;
 }
 
 @utility container {
@@ -108,7 +90,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
   --background: oklch(0.981 0.0062 255.482);
   --foreground: oklch(0.373 0.0306 259.728);
   --card: oklch(1 0 0);
@@ -192,5 +174,9 @@
   button:not(:disabled),
   [role='button']:not(:disabled) {
     cursor: pointer;
+  }
+
+  html {
+    @apply font-sans;
   }
 }
