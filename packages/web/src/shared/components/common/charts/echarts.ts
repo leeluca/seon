@@ -1,4 +1,4 @@
-import * as echarts from 'echarts/core';
+import ReactEChartsCore from 'echarts-for-react/esm/core.js';
 import {
   BarChart,
   LineChart,
@@ -19,8 +19,8 @@ import {
   type TitleComponentOption,
   type TooltipComponentOption,
 } from 'echarts/components';
+import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
-import ReactEChartsCore from 'echarts-for-react/lib/core';
 
 echarts.use([
   BarChart,
