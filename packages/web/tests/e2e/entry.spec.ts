@@ -98,6 +98,45 @@ test.describe('Goal Entry Management', () => {
     expect(Number(newValue)).toBeGreaterThan(Number(currentValue));
   });
 
+  test('keeps the desktop entry popover open when selecting another day', async ({
+    page,
+  }, testInfo) => {
+    test.skip(testInfo.project.name !== 'chromium');
+
+    const goalCard = page
+      .getByTestId(/goal-card/i)
+      .filter({ hasText: DEMO_GOALS[0].title });
+    await expect(goalCard).toBeVisible();
+
+    const todayButton = goalCard.locator('button[aria-current="date"]');
+    const otherDayButton = goalCard
+      .locator(
+        'button[data-calendar-heatmap-day]:not([aria-current="date"]):not([disabled])',
+      )
+      .last();
+
+    await todayButton.click();
+
+    const popover = page.getByRole('dialog');
+    const dateButton = popover.locator('button[id$="-entry-date"]');
+    await expect(popover).toBeVisible();
+
+    const initialDate = await dateButton.textContent();
+    const initialPosition = await popover.boundingBox();
+
+    await otherDayButton.click();
+
+    await expect(popover).toBeVisible();
+    await expect(dateButton).not.toHaveText(initialDate ?? '');
+
+    const nextPosition = await popover.boundingBox();
+    expect(initialPosition).not.toBeNull();
+    expect(nextPosition).not.toBeNull();
+    expect(
+      Math.abs((nextPosition?.x ?? 0) - (initialPosition?.x ?? 0)),
+    ).toBeGreaterThan(10);
+  });
+
   test('should delete an existing entry for today', async ({ page }) => {
     const goalCard = page
       .getByTestId(/goal-card/i)
