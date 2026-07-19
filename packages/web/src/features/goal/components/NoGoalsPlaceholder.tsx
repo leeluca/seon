@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Trans } from '@lingui/react/macro';
 
 import { CDN_URL } from '~/constants';
@@ -6,7 +7,7 @@ import { cn } from '~/utils';
 
 const content: Record<
   GoalFilter,
-  { image: string; title: JSX.Element; description: JSX.Element }
+  { image: string; title: ReactNode; description: ReactNode }
 > = {
   all: {
     image: 'hatching_chick.webp',
@@ -75,9 +76,7 @@ function NoGoalsPlaceholder({
         alt="Hatching Chick"
         width="200"
         height="200"
-        // FIXME: change spelling to `fetchPriority` after upgrading to React 19
-        // @ts-expect-error -- fetchpriority attribute is not yet available in React 18 types
-        fetchpriority="high"
+        fetchPriority="high"
       />
       <h4 className="mb-2 text-3xl">{title}</h4>
       <p className="text-muted-foreground text-center">{description}</p>

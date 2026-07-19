@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 
 interface UseTimeoutOptions {
   /**
@@ -24,6 +24,10 @@ export function useTimeout({
   onTimeout,
 }: UseTimeoutOptions): boolean {
   const [hasTimedOut, setHasTimedOut] = useState(false);
+  const handleTimeout = useEffectEvent(() => {
+    setHasTimedOut(true);
+    onTimeout?.();
+  });
 
   useEffect(() => {
     if (!enabled) {
@@ -32,12 +36,11 @@ export function useTimeout({
     }
 
     const timeoutId = setTimeout(() => {
-      setHasTimedOut(true);
-      onTimeout?.();
+      handleTimeout();
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [enabled, delay, onTimeout]);
+  }, [enabled, delay]);
 
   return hasTimedOut;
 }

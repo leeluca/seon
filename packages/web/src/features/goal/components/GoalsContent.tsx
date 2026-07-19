@@ -1,7 +1,7 @@
-import { lazy, Suspense, useCallback, useEffect } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { useStatus, useSuspenseQuery } from '@powersync/react';
+import { useQuery, useStatus } from '@powersync/react';
 import { useNavigate } from '@tanstack/react-router';
 
 import { GOALS } from '~/constants/query';
@@ -44,7 +44,11 @@ export interface GoalsContentProps {
 export function GoalsContent({ sort, filter }: GoalsContentProps) {
   const useSync = useUserStore((state) => state.user.useSync);
 
-  const { data: goals } = useSuspenseQuery(GOALS.list(sort, filter).query);
+  const {
+    data: goals,
+    error,
+    isLoading,
+  } = useQuery(GOALS.list(sort, filter).query);
   const navigate = useNavigate();
   const openNewGoalForm = useCallback(
     () => void navigate({ to: '/goals/new' }),
@@ -52,10 +56,13 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   );
 
   const { hasSynced } = useStatus();
+  const hasUpdatedGoalProgress = useRef(false);
 
   // FIXME: to be removed
-  // biome-ignore lint/correctness/useExhaustiveDependencies: should only run once
   useEffect(() => {
+    if (isLoading || error || hasUpdatedGoalProgress.current) return;
+
+    hasUpdatedGoalProgress.current = true;
     const isNotMigrated = goals.some((goal) => !goal.currentValue);
 
     if (isNotMigrated) {
@@ -63,9 +70,13 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
         await Promise.all(goals.map((goal) => updateGoalProgress(goal.id, tx)));
       });
     }
-  }, []);
+  }, [error, goals, isLoading]);
 
-  const showNoGoals = !goals.length;
+  if (error) {
+    throw error;
+  }
+
+  const showNoGoals = !isLoading && !goals.length;
   const isSyncing = useSync && !hasSynced;
 
   // FIXME: temporary workaround to refresh the goals list after deleting a goal

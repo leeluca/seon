@@ -28,7 +28,7 @@ interface ResponsivePopoverProps {
   onOpenChange?: (open: boolean) => void;
   /** Virtual ref for anchor positioning */
   virtualRef?:
-    | React.RefObject<Element>
+    | React.RefObject<Element | null>
     | { current: { getBoundingClientRect: () => DOMRect } }
     | null;
   drawerTitle: ReactNode;
@@ -74,7 +74,17 @@ export function ResponsivePopover({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {virtualRef && <PopoverAnchor virtualRef={virtualRef} />}
+      {virtualRef && (
+        <PopoverAnchor
+          // NOTE: Radix reads this ref after commit, when React has assigned the newly
+          // selected calendar cell. Keep the live ref instead of snapshotting it.
+          virtualRef={
+            virtualRef as NonNullable<
+              ComponentProps<typeof PopoverAnchor>['virtualRef']
+            >
+          }
+        />
+      )}
       <PopoverTrigger asChild className={className}>
         {trigger}
       </PopoverTrigger>

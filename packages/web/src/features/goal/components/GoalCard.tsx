@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
 import { isBefore, startOfDay } from 'date-fns';
@@ -150,7 +150,6 @@ export default function GoalCard({
   currentValue: baseCurrentValue,
 }: Database['goal']) {
   const { t } = useLingui();
-  const cardRef = useRef<HTMLDivElement>(null);
   const currentValue = baseCurrentValue ?? initialValue;
   const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
@@ -166,7 +165,6 @@ export default function GoalCard({
   return (
     <Card
       className="w-full max-w-[600px] rounded-2xl text-center shadow-xs"
-      ref={cardRef}
       data-testid={`goal-card-${id}`}
     >
       <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">

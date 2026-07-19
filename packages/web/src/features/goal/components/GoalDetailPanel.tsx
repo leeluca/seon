@@ -1,6 +1,7 @@
-import type { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { Trans } from '@lingui/react/macro';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import * as Sentry from '@sentry/react';
+import { useQuery } from '@tanstack/react-query';
 
 import { GOALS } from '~/constants/query';
 import type { GoalType } from '~/features/goal/model';
@@ -25,6 +26,31 @@ import { GoalControls } from './GoalControls';
 import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';
 import { GoalStatusSummary } from './GoalStatusSummary';
+
+const GoalLineGraphErrorFallback = () => (
+  <div
+    role="alert"
+    className="flex flex-col items-center justify-center gap-2 text-center"
+  >
+    <p className="text-lg font-medium">
+      <Trans>Something went wrong</Trans>
+    </p>
+    <p className="text-muted-foreground">
+      <Trans>Please try again later.</Trans>
+    </p>
+  </div>
+);
+
+const GoalLineGraphWithErrorBoundary = (
+  props: ComponentProps<typeof GoalLineGraph>,
+) => (
+  <Sentry.ErrorBoundary
+    key={`${props.goalId}-graph-${props.isMobile}`}
+    fallback={<GoalLineGraphErrorFallback />}
+  >
+    <GoalLineGraph {...props} />
+  </Sentry.ErrorBoundary>
+);
 
 interface SheetProps {
   open: boolean;
@@ -75,13 +101,21 @@ export function GoalDetailPanel({
   selectedGoalId,
   isShortId,
 }: GoalDetailPanelProps) {
-  const { data: selectedGoal } = useSuspenseQuery(
+  const { data: selectedGoal, error } = useQuery(
     isShortId
       ? GOALS.detailShortId(selectedGoalId)
       : GOALS.detail(selectedGoalId),
   );
 
   const isMobile = useViewportStore((state) => state.isMobile);
+
+  if (error) {
+    throw error;
+  }
+
+  if (!selectedGoal) {
+    return null;
+  }
 
   const {
     title,
@@ -105,8 +139,7 @@ export function GoalDetailPanel({
           </DrawerHeader>
           <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4">
             <section className="relative flex min-h-[365px] items-center justify-center overflow-x-hidden">
-              <GoalLineGraph
-                key={`${id}-graph-${isMobile}`}
+              <GoalLineGraphWithErrorBoundary
                 goalId={id}
                 targetDate={targetDate}
                 target={target}
@@ -147,10 +180,9 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex flex-1 flex-col gap-6 overflow-auto [scrollbar-gutter:stable_both-edges] [scrollbar-width:thin]">
+        <article className="flex flex-1 [scrollbar-width:thin] [scrollbar-gutter:stable_both-edges] flex-col gap-6 overflow-auto">
           <section className="relative mt-4 flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
-            <GoalLineGraph
-              key={`${id}-graph-${isMobile}`}
+            <GoalLineGraphWithErrorBoundary
               goalId={id}
               targetDate={targetDate}
               target={target}

@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -25,14 +25,12 @@ export function GoalDetailPage({ goalId }: { goalId: string }) {
         />
       }
     >
-      <Suspense>
-        <GoalDetailPanel
-          open={isOpen}
-          onOpenChange={() => close()}
-          selectedGoalId={goalId}
-          isShortId={goalId.length < UUID_LENGTH}
-        />
-      </Suspense>
+      <GoalDetailPanel
+        open={isOpen}
+        onOpenChange={() => close()}
+        selectedGoalId={goalId}
+        isShortId={goalId.length < UUID_LENGTH}
+      />
     </Sentry.ErrorBoundary>
   );
 }

@@ -27,6 +27,8 @@ import UpdatePrompt from './UpdatePrompt';
 import { Button, buttonVariants } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 
+const LazyDemoIndicator = lazy(() => import('./DemoIndicator'));
+
 interface NotSignedInContentProps {
   isSyncEnabledUser: boolean;
   onSignInCallback: (userData: PostSignInResponse['user']) => void;
@@ -129,9 +131,11 @@ function StatusMenu() {
 
   // NOTE: fix for delay in the connecting state to become true when the component is mounted
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       setIsFirstConnecting(false);
     }, 200);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   if (isLoading) {
@@ -148,7 +152,6 @@ function StatusMenu() {
   }
 
   if (isDemo) {
-    const LazyDemoIndicator = lazy(() => import('./DemoIndicator'));
     return (
       <div className="mb-1 ml-auto flex min-h-[40px] items-center gap-2">
         <UpdatePrompt />
