@@ -7,6 +7,7 @@ import ErrorFallback from '~/shared/components/common/ErrorFallback';
 import LanguageSelector from '~/shared/components/common/LanguageSelector';
 import AppStatusMenu from '~/shared/components/common/StatusMenu';
 import type { AuthStatus } from '~/types/user';
+import { AppTitle } from './metadata';
 
 export interface RouterContext {
   authStatus: AuthStatus;
@@ -16,6 +17,7 @@ export interface RouterContext {
 export function RootLayout() {
   return (
     <>
+      <AppTitle />
       <Outlet />
       <TanStackRouterDevtools position="bottom-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="bottom-left" />
