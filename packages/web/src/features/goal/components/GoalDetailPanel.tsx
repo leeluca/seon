@@ -98,7 +98,7 @@ const ErrorFallback = ({
       onOpenChangeComplete={onOpenChangeComplete}
     >
       <SheetContent
-        className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!"
+        className="max-h-full w-full! max-w-full! overflow-y-auto p-6 sm:max-w-3xl!"
         side="right"
       >
         <SheetTitle className="text-2xl">
@@ -217,7 +217,7 @@ export function GoalDetailPanel({
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex flex-1 [scrollbar-width:thin] [scrollbar-gutter:stable_both-edges] flex-col gap-6 overflow-auto">
+        <article className="flex flex-1 scrollbar-thin scrollbar-gutter-both flex-col gap-6 overflow-auto px-6 pb-6">
           <section className="relative mt-4 flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
             <GoalLineGraphWithErrorBoundary
               goalId={id}
