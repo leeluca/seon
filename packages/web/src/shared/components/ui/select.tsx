@@ -1,4 +1,4 @@
-import * as React from 'react';
+import type * as React from 'react';
 import { Select as SelectPrimitive } from '@base-ui/react/select';
 import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 
@@ -190,6 +190,7 @@ function SelectScrollDownButton({
 }
 
 export {
+  // biome-ignore lint/style/useComponentExportOnlyModules: Select is a Base UI component alias.
   Select,
   SelectContent,
   SelectGroup,

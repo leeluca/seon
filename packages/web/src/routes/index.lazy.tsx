@@ -10,10 +10,10 @@ import { Button, buttonVariants } from '~/shared/components/ui/button';
 import { useUserStore } from '~/states/stores/userStore';
 
 export const Route = createLazyFileRoute('/')({
-  component: Index,
+  component: IndexRouteComponent,
 });
 
-function Index() {
+export function IndexRouteComponent() {
   const [isUserInitialized, user, fetchUser] = useUserStore(
     useShallow((state) => [state.isInitialized, state.user, state.fetch]),
   );

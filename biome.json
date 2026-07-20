@@ -55,12 +55,24 @@
           "level": "warn",
           "options": {
             "allowConstantExport": true,
-            "allowExportNames": ["Route"]
+            "allowExportNames": ["Route", "buttonVariants"]
           }
         }
       }
     }
   },
+  "overrides": [
+    {
+      "includes": ["packages/web/tests/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useComponentExportOnlyModules": "off"
+          }
+        }
+      }
+    }
+  ],
   "javascript": {
     "formatter": {
       "jsxQuoteStyle": "double",
