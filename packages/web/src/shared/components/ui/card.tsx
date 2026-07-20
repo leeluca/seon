@@ -1,4 +1,4 @@
-import * as React from 'react';
+import type * as React from 'react';
 
 import { cn } from '~/utils/index';
 
@@ -6,9 +6,9 @@ function Card({
   className,
   size = 'default',
   ...props
-}: React.ComponentProps<'div'> & { size?: 'default' | 'sm' }) {
+}: React.ComponentProps<'article'> & { size?: 'default' | 'sm' }) {
   return (
-    <div
+    <article
       data-slot="card"
       data-size={size}
       className={cn(
@@ -33,9 +33,9 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
+function CardTitle({ className, ...props }: React.ComponentProps<'h3'>) {
   return (
-    <div
+    <h3
       data-slot="card-title"
       className={cn('font-heading text-base font-medium', className)}
       {...props}
@@ -43,9 +43,9 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   );
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
+function CardDescription({ className, ...props }: React.ComponentProps<'p'>) {
   return (
-    <div
+    <p
       data-slot="card-description"
       className={cn('text-muted-foreground text-sm', className)}
       {...props}

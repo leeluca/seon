@@ -4,6 +4,7 @@ import { Drawer as DrawerPrimitive } from '@base-ui/react/drawer';
 import { cn } from '~/utils/index';
 
 type DrawerContextProps = {
+  handleOnly: boolean;
   hasSnapPoints: boolean;
   modal: DrawerPrimitive.Root.Props['modal'];
   showSwipeHandle: boolean;
@@ -23,18 +24,26 @@ function useDrawer() {
 }
 
 function Drawer({
+  handleOnly = false,
   modal = true,
-  showSwipeHandle = false,
+  showSwipeHandle = true,
   snapPoints,
   swipeDirection = 'down',
   ...props
 }: DrawerPrimitive.Root.Props & {
+  handleOnly?: boolean;
   showSwipeHandle?: boolean;
 }) {
   const hasSnapPoints = snapPoints != null && snapPoints.length > 0;
   const contextValue = React.useMemo(
-    () => ({ hasSnapPoints, modal, showSwipeHandle, swipeDirection }),
-    [hasSnapPoints, modal, showSwipeHandle, swipeDirection],
+    () => ({
+      handleOnly,
+      hasSnapPoints,
+      modal,
+      showSwipeHandle,
+      swipeDirection,
+    }),
+    [handleOnly, hasSnapPoints, modal, showSwipeHandle, swipeDirection],
   );
 
   return (
@@ -98,16 +107,23 @@ function DrawerSwipeHandle({
 function DrawerContent({
   className,
   children,
+  overlayClassName,
   ...props
-}: DrawerPrimitive.Popup.Props) {
-  const { hasSnapPoints, modal, showSwipeHandle, swipeDirection } = useDrawer();
+}: DrawerPrimitive.Popup.Props & {
+  overlayClassName?: string;
+}) {
+  const { handleOnly, hasSnapPoints, modal, showSwipeHandle, swipeDirection } =
+    useDrawer();
   const swipeAxis =
     swipeDirection === 'down' || swipeDirection === 'up' ? 'y' : 'x';
 
   return (
     <DrawerPortal data-slot="drawer-portal">
       {modal === true && (
-        <DrawerOverlay data-snap-points={hasSnapPoints ? '' : undefined} />
+        <DrawerOverlay
+          data-snap-points={hasSnapPoints ? '' : undefined}
+          className={overlayClassName}
+        />
       )}
       <DrawerPrimitive.Viewport
         data-slot="drawer-viewport"
@@ -150,6 +166,7 @@ function DrawerContent({
           {showSwipeHandle && <DrawerSwipeHandle />}
           <DrawerPrimitive.Content
             data-slot="drawer-content"
+            data-base-ui-swipe-ignore={handleOnly ? '' : undefined}
             className={cn(
               'flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain rounded-[inherit] transition-opacity duration-300 ease-[cubic-bezier(0.45,1.005,0,1.005)] select-text group-data-nested-drawer-open/drawer-popup:opacity-0 group-data-nested-drawer-swiping/drawer-popup:opacity-100 group-data-swiping/drawer-popup:select-none',
             )}
