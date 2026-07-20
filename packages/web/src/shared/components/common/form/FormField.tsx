@@ -2,6 +2,7 @@ import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { ValidationError } from '@tanstack/react-form';
 
 import FormItem from '~/shared/components/common/FormItem';
+import { cn } from '~/utils';
 import FormError from './FormError';
 
 export interface FormLayoutProps {
@@ -71,7 +72,7 @@ export function FormField({
       label={label}
       labelFor={id}
       required={required}
-      className={itemClassName ?? layout.itemClassName}
+      className={cn(layout.itemClassName, itemClassName)}
       labelClassName={labelClassName ?? layout.labelClassName}
     >
       <div className={controlClassName ?? layout.controlClassName}>

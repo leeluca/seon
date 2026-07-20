@@ -62,8 +62,8 @@ export function GoalNewPage() {
           onOpenChange={setIsOpen}
           onOpenChangeComplete={handleOpenChangeComplete}
         >
-          <DrawerContent className="px-4 pb-6">
-            <DrawerHeader className="text-left">
+          <DrawerContent className="max-h-[97%] px-4 pb-6">
+            <DrawerHeader className="text-left!">
               <DrawerTitle>
                 <Trans>Add new goal</Trans>
               </DrawerTitle>
@@ -73,12 +73,14 @@ export function GoalNewPage() {
                 </Trans>
               </DrawerDescription>
             </DrawerHeader>
-            <CreateGoalForm
-              form={form}
-              collapseOptionalFields
-              autoFocus={!isTouchScreen}
-              formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
-            />
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <CreateGoalForm
+                form={form}
+                collapseOptionalFields
+                autoFocus={!isTouchScreen}
+                formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
+              />
+            </div>
             <DrawerFooter className="gap-3 pt-2 [&_button]:w-full">
               <form.SubmitButton form={GOAL_FORM_ID} size="lg" requireDirty>
                 <Trans>Create goal</Trans>

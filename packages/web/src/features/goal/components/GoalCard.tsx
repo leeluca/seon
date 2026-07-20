@@ -10,7 +10,6 @@ import { buttonVariants } from '~/shared/components/ui/button';
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '~/shared/components/ui/card';
@@ -164,39 +163,38 @@ export default function GoalCard({
 
   return (
     <Card
-      className="w-full max-w-[600px] rounded-2xl text-center shadow-xs"
+      size="sm"
+      className="w-full max-w-[600px] rounded-2xl pb-6 text-center shadow-xs"
       data-testid={`goal-card-${id}`}
     >
-      <CardHeader className="p-3 pb-1 sm:p-4 sm:pb-2">
-        <div className="flex h-12 items-center sm:h-14">
-          <CardTitle className="mr-3 w-60 grow text-center text-xl font-medium sm:text-2xl">
-            <Link
-              to="/goals/$id"
-              params={{ id }}
-              mask={{
-                to: '/goals/$id',
-                params: { id: shortId },
-              }}
-              aria-label={t`Toggle goal details`}
-              className={cn(
-                buttonVariants({
-                  variant: 'ghost',
-                  size: 'lg',
-                }),
-                'relative flex w-full items-center text-xl font-medium sm:text-2xl',
-              )}
-            >
-              <span className="flex-1 text-center">{title}</span>
-              {isMobile ? (
-                <ChevronUpIcon className="absolute right-2" />
-              ) : (
-                <ChevronRightIcon className="absolute right-2" />
-              )}
-            </Link>
-          </CardTitle>
-        </div>
+      <CardHeader>
+        <CardTitle className="w-full text-center text-xl font-medium sm:text-2xl">
+          <Link
+            to="/goals/$id"
+            params={{ id }}
+            mask={{
+              to: '/goals/$id',
+              params: { id: shortId },
+            }}
+            aria-label={t`Toggle goal details`}
+            className={cn(
+              buttonVariants({
+                variant: 'ghost',
+                size: 'lg',
+              }),
+              'relative flex w-full items-center text-xl font-medium sm:text-2xl',
+            )}
+          >
+            <span className="flex-1 text-center">{title}</span>
+            {isMobile ? (
+              <ChevronUpIcon className="absolute right-2" />
+            ) : (
+              <ChevronRightIcon className="absolute right-2" />
+            )}
+          </Link>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-5 px-5 pb-5 sm:gap-6 sm:px-6 sm:pb-6">
+      <CardContent className="flex flex-col gap-4">
         <CalendarHeatmap
           goalId={id}
           checkBlockedDateFn={checkBlockedDateFn}
@@ -211,7 +209,6 @@ export default function GoalCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="px-4 pb-4 sm:px-6 sm:pb-6" />
     </Card>
   );
 }

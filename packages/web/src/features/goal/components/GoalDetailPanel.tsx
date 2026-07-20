@@ -170,10 +170,10 @@ export function GoalDetailPanel({
       >
         <DrawerContent className="flex max-h-[98%] flex-col">
           <DrawerHeader>
-            <DrawerTitle className="text-2xl">{title}</DrawerTitle>
+            <DrawerTitle className="pb-4 text-2xl">{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4">
+          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4 pb-4">
             <section className="relative flex min-h-[365px] items-center justify-center overflow-x-hidden">
               <GoalLineGraphWithErrorBoundary
                 goalId={id}
