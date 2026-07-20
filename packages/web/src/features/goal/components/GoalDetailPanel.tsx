@@ -1,4 +1,9 @@
-import type { ComponentProps, ReactElement } from 'react';
+import {
+  useEffect,
+  useRef,
+  type ComponentProps,
+  type ReactElement,
+} from 'react';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
 import { useQuery } from '@tanstack/react-query';
@@ -7,10 +12,8 @@ import { GOALS } from '~/constants/query';
 import type { GoalType } from '~/features/goal/model';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from '~/shared/components/ui/drawer';
@@ -55,14 +58,29 @@ const GoalLineGraphWithErrorBoundary = (
 interface SheetProps {
   open: boolean;
   onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
+  onOpenChangeComplete: (open: boolean) => void;
+  onReady: () => void;
 }
-const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
+const ErrorFallback = ({
+  open,
+  onOpenChange,
+  onOpenChangeComplete,
+  onReady,
+}: SheetProps) => {
   const isMobile = useViewportStore((state) => state.isMobile);
+
+  useEffect(() => {
+    onReady();
+  }, [onReady]);
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!">
+      <Drawer
+        open={open}
+        onOpenChange={onOpenChange}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <DrawerContent className="overflow-y-auto">
           <DrawerTitle className="text-2xl">
             <div>
               <Trans>Goal not found</Trans>
@@ -74,9 +92,13 @@ const ErrorFallback = ({ open, onOpenChange }: SheetProps) => {
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={onOpenChangeComplete}
+    >
       <SheetContent
-        className="max-h-full w-full! max-w-full! overflow-y-auto sm:max-w-3xl!"
+        className="max-h-full w-full! max-w-full! overflow-y-auto p-6 sm:max-w-3xl!"
         side="right"
       >
         <SheetTitle className="text-2xl">
@@ -98,6 +120,8 @@ interface GoalDetailPanelProps extends SheetProps {
 export function GoalDetailPanel({
   open,
   onOpenChange,
+  onOpenChangeComplete,
+  onReady,
   selectedGoalId,
   isShortId,
 }: GoalDetailPanelProps) {
@@ -106,6 +130,14 @@ export function GoalDetailPanel({
       ? GOALS.detailShortId(selectedGoalId)
       : GOALS.detail(selectedGoalId),
   );
+  const readyGoalIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (selectedGoal && readyGoalIdRef.current !== selectedGoal.id) {
+      readyGoalIdRef.current = selectedGoal.id;
+      onReady();
+    }
+  }, [onReady, selectedGoal]);
 
   const isMobile = useViewportStore((state) => state.isMobile);
 
@@ -131,13 +163,17 @@ export function GoalDetailPanel({
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="flex max-h-full w-full! max-w-full! flex-col rounded-t-none">
+      <Drawer
+        open={open}
+        onOpenChange={onOpenChange}
+        onOpenChangeComplete={onOpenChangeComplete}
+      >
+        <DrawerContent className="flex max-h-[98%] flex-col">
           <DrawerHeader>
-            <DrawerTitle className="text-2xl">{title}</DrawerTitle>
+            <DrawerTitle className="pb-4 text-2xl">{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4">
+          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4 pb-4">
             <section className="relative flex min-h-[365px] items-center justify-center overflow-x-hidden">
               <GoalLineGraphWithErrorBoundary
                 goalId={id}
@@ -165,22 +201,23 @@ export function GoalDetailPanel({
               onDeleteSuccess={() => onOpenChange(false)}
             />
           </article>
-          <DrawerFooter>
-            <DrawerClose asChild />
-          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     );
   }
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      onOpenChangeComplete={onOpenChangeComplete}
+    >
       <SheetContent className="flex max-h-full w-full! max-w-full! flex-col overflow-hidden sm:max-w-3xl!">
         <SheetHeader className="mb-4">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
-        <article className="flex flex-1 [scrollbar-width:thin] [scrollbar-gutter:stable_both-edges] flex-col gap-6 overflow-auto">
+        <article className="flex flex-1 scrollbar-thin scrollbar-gutter-both flex-col gap-6 overflow-auto px-6 pb-6">
           <section className="relative mt-4 flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
             <GoalLineGraphWithErrorBoundary
               goalId={id}
@@ -206,9 +243,6 @@ export function GoalDetailPanel({
             className="mt-auto"
           />
         </article>
-        {/* <SheetFooter>
-          <SheetClose asChild />
-        </SheetFooter> */}
       </SheetContent>
     </Sheet>
   );

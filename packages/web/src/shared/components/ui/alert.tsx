@@ -1,20 +1,18 @@
-import type { VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
+import type * as React from 'react';
 
-import { cva } from 'class-variance-authority';
-import React from 'react';
-
-import { cn } from '~/utils';
+import { cn } from '~/utils/index';
 
 const alertVariants = cva(
-  'relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7',
+  "group/alert relative grid w-full gap-0.5 rounded-2xl border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: 'bg-background text-foreground',
+        default: 'bg-card text-card-foreground',
         destructive:
-          'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
+          'bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current',
         warning:
-          'border-warning/50 text-warning dark:border-warning [&>svg]:text-warning',
+          'bg-card text-warning *:data-[slot=alert-description]:text-warning/90 *:[svg]:text-current',
       },
     },
     defaultVariants: {
@@ -23,54 +21,66 @@ const alertVariants = cva(
   },
 );
 
-interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  icon?: React.ReactNode;
+function Alert({
+  className,
+  variant,
+  icon,
+  children,
+  ...props
+}: React.ComponentProps<'div'> &
+  VariantProps<typeof alertVariants> & {
+    icon?: React.ReactNode;
+  }) {
+  return (
+    <div
+      data-slot="alert"
+      role="alert"
+      className={cn(alertVariants({ variant }), className)}
+      {...props}
+    >
+      {icon}
+      {children}
+    </div>
+  );
 }
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  AlertProps & VariantProps<typeof alertVariants>
->(({ className, variant, icon, children, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(
-      alertVariants({ variant }),
-      icon && 'flex items-center space-x-3',
-      className,
-    )}
-    {...props}
-  >
-    {icon && <div className="shrink-0">{icon}</div>}
-    <div>{children}</div>
-  </div>
-));
-Alert.displayName = 'Alert';
+function AlertTitle({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="alert-title"
+      className={cn(
+        '[&_a]:hover:text-foreground font-medium group-has-[>svg]/alert:col-start-2 [&_a]:underline [&_a]:underline-offset-3',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const AlertTitle = React.forwardRef<
-  HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
->(({ className, children, ...props }, ref) => (
-  <h5
-    ref={ref}
-    className={cn('mb-1 font-medium leading-none tracking-tight', className)}
-    {...props}
-  >
-    {children}
-  </h5>
-));
-AlertTitle.displayName = 'AlertTitle';
+function AlertDescription({
+  className,
+  ...props
+}: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="alert-description"
+      className={cn(
+        'text-muted-foreground [&_a]:hover:text-foreground text-sm text-balance md:text-pretty [&_a]:underline [&_a]:underline-offset-3 [&_p:not(:last-child)]:mb-4',
+        className,
+      )}
+      {...props}
+    />
+  );
+}
 
-const AlertDescription = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn('text-sm [&_p]:leading-relaxed', className)}
-    {...props}
-  />
-));
-AlertDescription.displayName = 'AlertDescription';
+function AlertAction({ className, ...props }: React.ComponentProps<'div'>) {
+  return (
+    <div
+      data-slot="alert-action"
+      className={cn('absolute top-2.5 right-3', className)}
+      {...props}
+    />
+  );
+}
 
-export { Alert, AlertTitle, AlertDescription };
+export { Alert, AlertTitle, AlertDescription, AlertAction };

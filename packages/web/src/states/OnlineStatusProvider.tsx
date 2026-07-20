@@ -1,10 +1,8 @@
-import React, { createContext, useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
-export const OnlineStatusContext = createContext<boolean>(navigator.onLine);
+import { OnlineStatusContext } from './isOnlineContext';
 
-export const useIsOnline = () => React.useContext(OnlineStatusContext);
-
-const OnlineStatusProvider = ({ children }: { children: React.ReactNode }) => {
+export function OnlineStatusProvider({ children }: { children: ReactNode }) {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
   useEffect(() => {
@@ -25,6 +23,4 @@ const OnlineStatusProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </OnlineStatusContext.Provider>
   );
-};
-
-export default OnlineStatusProvider;
+}

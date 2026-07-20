@@ -1,62 +1,20 @@
-import * as React from 'react';
-import * as TooltipPrimitive from '@radix-ui/react-tooltip';
+import { useState, type ReactNode } from 'react';
 
-import { cn } from '~/utils';
-
-const TooltipProvider = TooltipPrimitive.Provider;
-
-const Tooltip = TooltipPrimitive.Root;
-
-const TooltipTrigger = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Trigger>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger> & {
-    onTooltipOpenChange?: (open: boolean) => void;
-  }
->(({ className, onTooltipOpenChange, ...props }, ref) => {
-  const handleTouchStart = (e: React.TouchEvent<HTMLButtonElement>) => {
-    if (onTooltipOpenChange) {
-      onTooltipOpenChange(true);
-    }
-    props.onTouchStart?.(e);
-  };
-
-  return (
-    <TooltipPrimitive.Trigger
-      ref={ref}
-      className={className}
-      {...props}
-      onTouchStart={handleTouchStart}
-    />
-  );
-});
-TooltipTrigger.displayName = 'TooltipTrigger';
-
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        'bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs',
-        className,
-      )}
-      {...props}
-    />
-  </TooltipPrimitive.Portal>
-));
-TooltipContent.displayName = 'TooltipContent';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './tooltip';
 
 interface ResponsiveTipProps {
-  content: string | React.ReactNode;
-  children: React.ReactNode;
+  content: ReactNode;
+  children: ReactNode;
   className?: string;
   side?: 'top' | 'right' | 'bottom' | 'left';
   align?: 'start' | 'center' | 'end';
   contentClassName?: string;
-  delayDuration?: number;
+  delay?: number;
 }
 
 export const ResponsiveTooltip = ({
@@ -66,18 +24,15 @@ export const ResponsiveTooltip = ({
   contentClassName,
   side = 'top',
   align = 'center',
-  delayDuration = 200,
+  delay = 200,
 }: ResponsiveTipProps) => {
-  const [open, setOpen] = React.useState(false);
-  const toggleOpen = React.useCallback(() => {
-    setOpen((prev) => !prev);
-  }, []);
+  const [open, setOpen] = useState(false);
 
   return (
-    <TooltipProvider delayDuration={delayDuration}>
+    <TooltipProvider delay={delay}>
       <Tooltip open={open} onOpenChange={setOpen}>
-        <TooltipTrigger asChild onTooltipOpenChange={toggleOpen}>
-          <span className={className}>{children}</span>
+        <TooltipTrigger render={<span className={className} />}>
+          {children}
         </TooltipTrigger>
         <TooltipContent side={side} align={align} className={contentClassName}>
           <span className="inline-block">{content}</span>

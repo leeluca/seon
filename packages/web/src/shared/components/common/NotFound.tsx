@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import { HomeIcon } from 'lucide-react';
 
 import { cn } from '~/utils';
-import { Button } from '../ui/button';
+import { buttonVariants } from '../ui/button';
 
 interface NotFoundProps {
   className?: string;
@@ -27,12 +27,10 @@ function NotFound({ className }: NotFoundProps) {
       </p>
 
       <div className="flex w-64 flex-col gap-4 *:w-full">
-        <Button asChild>
-          <Link to="/" replace>
-            <HomeIcon className="mr-2 h-4 w-4" />
-            <Trans>Return to Home</Trans>
-          </Link>
-        </Button>
+        <Link to="/" replace className={buttonVariants()}>
+          <HomeIcon className="mr-2 h-4 w-4" />
+          <Trans>Return to Home</Trans>
+        </Link>
       </div>
     </div>
   );

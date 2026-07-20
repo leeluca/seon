@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
 
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
@@ -9,28 +9,30 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from './drawer';
-import {
-  Popover,
-  PopoverAnchor,
-  PopoverContent,
-  PopoverTrigger,
-} from './popover';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
+
+type ResponsivePopoverContentProps = ComponentProps<typeof PopoverContent> &
+  ComponentProps<typeof DrawerContent>;
+
+type PopoverOpenChange = NonNullable<
+  ComponentProps<typeof Popover>['onOpenChange']
+>;
+type PopoverOpenChangeEventDetails = Parameters<PopoverOpenChange>[1];
 
 interface ResponsivePopoverProps {
-  trigger: ReactNode;
+  trigger: ReactElement | null;
   children: ReactNode;
   className?: string;
   contentClassName?: string;
   /** Optional props to pass to the Popover/Drawer content */
-  contentProps?: ComponentProps<typeof PopoverContent> &
-    ComponentProps<typeof DrawerContent>;
+  contentProps?: ResponsivePopoverContentProps;
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (
+    open: boolean,
+    eventDetails?: PopoverOpenChangeEventDetails,
+  ) => void;
   /** Virtual ref for anchor positioning */
-  virtualRef?:
-    | React.RefObject<Element | null>
-    | { current: { getBoundingClientRect: () => DOMRect } }
-    | null;
+  virtualRef?: ComponentProps<typeof PopoverContent>['anchor'];
   drawerTitle: ReactNode;
   overlayClassName?: string;
   handleOnly?: boolean;
@@ -50,18 +52,29 @@ export function ResponsivePopover({
   handleOnly,
 }: ResponsivePopoverProps) {
   const isMobile = useViewportStore((state) => state.isMobile);
+  const {
+    align,
+    alignOffset,
+    anchor,
+    collisionPadding,
+    side,
+    sideOffset,
+    ...sharedContentProps
+  } = contentProps ?? {};
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange} handleOnly={handleOnly}>
-        <DrawerTrigger asChild className={className}>
-          {trigger}
-        </DrawerTrigger>
+      <Drawer
+        open={open}
+        onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
+        handleOnly={handleOnly}
+      >
+        {trigger && <DrawerTrigger className={className} render={trigger} />}
         <DrawerContent
           className={cn('px-8 pb-6', contentClassName)}
           overlayClassName={overlayClassName}
           aria-describedby={undefined}
-          {...contentProps}
+          {...sharedContentProps}
         >
           <DrawerHeader className="mb-2">
             <DrawerTitle>{drawerTitle}</DrawerTitle>
@@ -74,21 +87,17 @@ export function ResponsivePopover({
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
-      {virtualRef && (
-        <PopoverAnchor
-          // NOTE: Radix reads this ref after commit, when React has assigned the newly
-          // selected calendar cell. Keep the live ref instead of snapshotting it.
-          virtualRef={
-            virtualRef as NonNullable<
-              ComponentProps<typeof PopoverAnchor>['virtualRef']
-            >
-          }
-        />
-      )}
-      <PopoverTrigger asChild className={className}>
-        {trigger}
-      </PopoverTrigger>
-      <PopoverContent className={contentClassName} {...contentProps}>
+      {trigger && <PopoverTrigger className={className} render={trigger} />}
+      <PopoverContent
+        align={align}
+        alignOffset={alignOffset}
+        anchor={virtualRef ?? anchor}
+        collisionPadding={collisionPadding}
+        side={side}
+        sideOffset={sideOffset}
+        className={contentClassName}
+        {...sharedContentProps}
+      >
         {children}
       </PopoverContent>
     </Popover>

@@ -8,10 +8,10 @@ import { useUserStore } from '~/states/stores/userStore';
 import { generateDemoData } from '~/utils/demo';
 
 export const Route = createLazyFileRoute('/demo/')({
-  component: Index,
+  component: IndexRouteComponent,
 });
 
-function Index() {
+export function IndexRouteComponent() {
   const [isUserInitialized, user, fetchUser] = useUserStore(
     useShallow((state) => [state.isInitialized, state.user, state.fetch]),
   );

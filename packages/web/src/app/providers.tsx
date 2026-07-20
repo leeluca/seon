@@ -7,9 +7,9 @@ import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
 import { ViewportHandler } from '~/shared/components/common/ViewportHandler';
 import { Toaster } from '~/shared/components/ui/sonner';
 import { TooltipProvider } from '~/shared/components/ui/tooltip';
-import OnlineStatusProvider from '~/states/isOnlineContext';
+import { OnlineStatusProvider } from '~/states/OnlineStatusProvider';
 import { useUserStore } from '~/states/stores/userStore';
-import SyncProvider from '~/states/syncContext';
+import { SyncProvider } from '~/states/SyncProvider';
 
 export function AppProviders({ children }: { children: ReactNode }) {
   const languagePreference = useUserStore(
@@ -26,7 +26,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
     <SyncProvider>
       <I18nProvider i18n={i18n}>
         <LazyMotion features={domAnimation}>
-          <TooltipProvider delayDuration={300}>
+          <TooltipProvider delay={300}>
             <Toaster
               position="top-right"
               duration={2500}

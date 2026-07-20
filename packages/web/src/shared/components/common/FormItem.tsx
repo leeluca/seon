@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Label } from '@radix-ui/react-label';
 
+import { Label } from '~/shared/components/ui/label';
 import { cn } from '~/utils';
 
 interface FormMessageProps {

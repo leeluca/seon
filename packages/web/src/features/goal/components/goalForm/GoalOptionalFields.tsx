@@ -39,21 +39,24 @@ export const GoalOptionalFields = withForm({
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         {collapsed && (
           <div className="my-2 flex items-center gap-1">
-            <CollapsibleTrigger asChild className="mr-2">
-              <Button
-                size="icon-responsive"
-                variant="ghost"
-                type="button"
-                id={resolvedToggleId}
-                className="sm:-ml-2"
-              >
-                <ChevronRightIcon
-                  size={18}
-                  className={`transform transition-transform duration-300 ${
-                    isOpen ? 'rotate-90' : 'rotate-0'
-                  }`}
+            <CollapsibleTrigger
+              className="mr-2"
+              render={
+                <Button
+                  size="icon-responsive"
+                  variant="ghost"
+                  type="button"
+                  id={resolvedToggleId}
+                  className="sm:-ml-2"
                 />
-              </Button>
+              }
+            >
+              <ChevronRightIcon
+                size={18}
+                className={`transform transition-transform duration-300 ${
+                  isOpen ? 'rotate-90' : 'rotate-0'
+                }`}
+              />
             </CollapsibleTrigger>
             <label
               className="flex text-right text-sm font-medium sm:text-xs"

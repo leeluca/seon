@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -32,18 +32,25 @@ export function GoalNewPage() {
   const navigate = useNavigate();
   const userId = useUserStore((state) => state.user.id);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
 
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
 
-  const handleClose = () => {
-    setIsOpen(false);
-    setTimeout(() => {
+  const handleOpenChangeComplete = (open: boolean) => {
+    if (!open) {
       void navigate({ from: '/goals/new', to: '/goals', replace: true });
-    }, 250);
+    }
   };
 
-  const form = useGoalForm({ mode: 'create', userId, onSuccess: handleClose });
+  const form = useGoalForm({
+    mode: 'create',
+    userId,
+    onSuccess: () => setIsOpen(false),
+  });
 
   const isMobile = useViewportStore((state) => state.isMobile);
 
@@ -52,12 +59,11 @@ export function GoalNewPage() {
       <form.AppForm>
         <Drawer
           open={isOpen}
-          onOpenChange={() => setIsOpen((prev) => !prev)}
-          onAnimationEnd={() => handleClose()}
-          repositionInputs={false}
+          onOpenChange={setIsOpen}
+          onOpenChangeComplete={handleOpenChangeComplete}
         >
-          <DrawerContent className="px-4 pb-6">
-            <DrawerHeader className="text-left">
+          <DrawerContent className="max-h-[97%] px-4 pb-6">
+            <DrawerHeader className="text-left!">
               <DrawerTitle>
                 <Trans>Add new goal</Trans>
               </DrawerTitle>
@@ -67,20 +73,20 @@ export function GoalNewPage() {
                 </Trans>
               </DrawerDescription>
             </DrawerHeader>
-            <CreateGoalForm
-              form={form}
-              collapseOptionalFields
-              autoFocus={!isTouchScreen}
-              formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
-            />
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+              <CreateGoalForm
+                form={form}
+                collapseOptionalFields
+                autoFocus={!isTouchScreen}
+                formItemClassName="grid-cols-1 items-start gap-y-2 px-4"
+              />
+            </div>
             <DrawerFooter className="gap-3 pt-2 [&_button]:w-full">
               <form.SubmitButton form={GOAL_FORM_ID} size="lg" requireDirty>
                 <Trans>Create goal</Trans>
               </form.SubmitButton>
-              <DrawerClose asChild>
-                <Button variant="outline" type="button">
-                  <Trans>Cancel</Trans>
-                </Button>
+              <DrawerClose render={<Button variant="outline" type="button" />}>
+                <Trans>Cancel</Trans>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
@@ -93,14 +99,10 @@ export function GoalNewPage() {
     <form.AppForm>
       <Dialog
         open={isOpen}
-        onOpenChange={() => {
-          handleClose();
-        }}
+        onOpenChange={setIsOpen}
+        onOpenChangeComplete={handleOpenChangeComplete}
       >
-        <DialogContent
-          className="p-4 sm:max-w-lg sm:p-6"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
+        <DialogContent className="p-4 sm:max-w-lg sm:p-6" initialFocus={false}>
           <DialogHeader>
             <DialogTitle>
               <Trans>Add new goal</Trans>

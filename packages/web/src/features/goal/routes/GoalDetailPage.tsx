@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import * as Sentry from '@sentry/react';
 import { useNavigate } from '@tanstack/react-router';
 
@@ -7,13 +7,16 @@ import { GoalDetailPanel } from '../components/GoalDetailPanel';
 
 export function GoalDetailPage({ goalId }: { goalId: string }) {
   const navigate = useNavigate();
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const close = () => {
-    setIsOpen(false);
-    setTimeout(() => {
+  const handleReady = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleOpenChangeComplete = (open: boolean) => {
+    if (!open) {
       void navigate({ to: '/goals', replace: true });
-    }, 350);
+    }
   };
 
   return (
@@ -21,13 +24,17 @@ export function GoalDetailPage({ goalId }: { goalId: string }) {
       fallback={
         <GoalDetailPanel.ErrorFallback
           open={isOpen}
-          onOpenChange={() => close()}
+          onOpenChange={setIsOpen}
+          onOpenChangeComplete={handleOpenChangeComplete}
+          onReady={handleReady}
         />
       }
     >
       <GoalDetailPanel
         open={isOpen}
-        onOpenChange={() => close()}
+        onOpenChange={setIsOpen}
+        onOpenChangeComplete={handleOpenChangeComplete}
+        onReady={handleReady}
         selectedGoalId={goalId}
         isShortId={goalId.length < UUID_LENGTH}
       />

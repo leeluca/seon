@@ -73,17 +73,19 @@ export function GoalFilter({ filter, setFilter }: GoalFilterProps) {
   // FIXME: change to dropdown component for accessibility
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          aria-expanded={open}
-          className="max-w-[200px] justify-normal"
-        >
-          <FilterIcon className="opacity-80" size={16} />
-          {filter
-            ? filterOptions.find((option) => option.value === filter)?.label
-            : t(msg`Filter goals...`)}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            aria-expanded={open}
+            className="max-w-[200px] justify-normal"
+          />
+        }
+      >
+        <FilterIcon className="opacity-80" size={16} />
+        {filter
+          ? filterOptions.find((option) => option.value === filter)?.label
+          : t(msg`Filter goals...`)}
       </PopoverTrigger>
       <PopoverContent className="w-fit min-w-[110px] p-0">
         <Command>

@@ -443,7 +443,7 @@ const CalendarHeatmap = ({
 
                         {showTooltip ? (
                           <ResponsiveTooltip
-                            delayDuration={300}
+                            delay={300}
                             content={
                               isBlocked && blockedDateFeedback ? (
                                 <p>{blockedDateFeedback}</p>
@@ -540,23 +540,25 @@ const CalendarHeatmap = ({
       </div>
       <ResponsivePopover
         open={isPopoverOpen}
-        onOpenChange={setIsPopoverOpen}
+        onOpenChange={(nextOpen, eventDetails) => {
+          if (!nextOpen && eventDetails?.reason === 'outside-press') {
+            const target = eventDetails.event.target;
+            if (target instanceof Element) {
+              const dayButton = target.closest<HTMLElement>(
+                '[data-calendar-heatmap-day]',
+              );
+              if (dayButton?.dataset.goalId === goalId) {
+                eventDetails.cancel();
+                return;
+              }
+            }
+          }
+
+          setIsPopoverOpen(nextOpen);
+        }}
         virtualRef={popoverAnchor ? popoverVirtualRef : null}
         trigger={null}
         contentClassName={isMobile ? '' : 'w-fit max-w-72'}
-        contentProps={{
-          onInteractOutside: (event) => {
-            const target = event.target;
-            if (!(target instanceof Element)) return;
-
-            const dayButton = target.closest<HTMLElement>(
-              '[data-calendar-heatmap-day]',
-            );
-            if (dayButton?.dataset.goalId === goalId) {
-              event.preventDefault();
-            }
-          },
-        }}
         overlayClassName={isMobile ? 'bg-black/50' : ''}
         drawerTitle={
           <span>

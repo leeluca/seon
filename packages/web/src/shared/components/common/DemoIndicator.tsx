@@ -25,10 +25,8 @@ function ResetDemo() {
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="secondary">
-          <RotateCcwIcon size={18} /> <Trans>Start Over</Trans>
-        </Button>
+      <DialogTrigger render={<Button variant="secondary" />}>
+        <RotateCcwIcon size={18} /> <Trans>Start Over</Trans>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>
@@ -53,19 +51,19 @@ export default function DemoIndicator() {
   return (
     <>
       <Popover>
-        <PopoverTrigger asChild>
-          <div className="ml-auto flex items-center gap-2 rounded-xl bg-amber-100">
+        <PopoverTrigger
+          render={
             <Button
               variant="secondary"
               aria-label={t`Demo Mode`}
-              className="bg-amber-100 hover:bg-amber-200/50"
-            >
-              <FlaskConicalIcon size={18} className="text-amber-600" />
-              <span className="text-sm font-medium text-amber-800">
-                <Trans>Demo Mode</Trans>
-              </span>
-            </Button>
-          </div>
+              className="ml-auto bg-amber-100 hover:bg-amber-200/50"
+            />
+          }
+        >
+          <FlaskConicalIcon size={18} className="text-amber-600" />
+          <span className="text-sm font-medium text-amber-800">
+            <Trans>Demo Mode</Trans>
+          </span>
         </PopoverTrigger>
         <PopoverContent
           className="mr-3 max-w-fit min-w-[200px] sm:mr-8"

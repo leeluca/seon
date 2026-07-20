@@ -412,6 +412,7 @@ export const buildGoalLineGraphOptions = ({
             ...(hasAfterTargetData ? [afterTargetLabel] : []),
           ],
           left: 8,
+          top: 0,
           selected: {
             _allProgress: false,
           },

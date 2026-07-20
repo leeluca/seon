@@ -13,7 +13,10 @@ interface BaseRouterLinkProps
 }
 
 // FIXME: navigate if there's a popover open (should close the popover first)
-const BaseRouterLink = React.forwardRef<HTMLDivElement, BaseRouterLinkProps>(
+export const BaseRouterLink = React.forwardRef<
+  HTMLDivElement,
+  BaseRouterLinkProps
+>(
   (
     {
       className,
@@ -107,6 +110,7 @@ const BaseRouterLink = React.forwardRef<HTMLDivElement, BaseRouterLinkProps>(
 );
 BaseRouterLink.displayName = 'BaseRouterLink';
 
+// biome-ignore lint/style/useComponentExportOnlyModules: createLink returns a React component.
 export const RouterLink = createLink(BaseRouterLink);
 
 export type RouterLinkProps = React.ComponentProps<typeof RouterLink>;

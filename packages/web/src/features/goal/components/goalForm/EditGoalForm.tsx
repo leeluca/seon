@@ -49,15 +49,18 @@ export function GoalEditForm({ goal, className }: GoalEditFormProps) {
         <Collapsible open={isOpen} onOpenChange={setIsOpen}>
           <div className="flex h-[60px] items-start justify-between">
             <div className="flex items-start sm:items-center">
-              <CollapsibleTrigger asChild className="mt-0.5 mr-4 sm:mt-0">
-                <Button id={toggleId} size="icon-sm" variant="secondary">
-                  <ChevronRightIcon
-                    size={18}
-                    className={`transform transition-transform duration-300 ${
-                      isOpen ? 'rotate-90' : 'rotate-0'
-                    }`}
-                  />
-                </Button>
+              <CollapsibleTrigger
+                className="mt-0.5 mr-4 sm:mt-0"
+                render={
+                  <Button id={toggleId} size="icon-sm" variant="secondary" />
+                }
+              >
+                <ChevronRightIcon
+                  size={18}
+                  className={`transform transition-transform duration-300 ${
+                    isOpen ? 'rotate-90' : 'rotate-0'
+                  }`}
+                />
               </CollapsibleTrigger>
               <header>
                 <label htmlFor={toggleId}>

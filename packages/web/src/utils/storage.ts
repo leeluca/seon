@@ -7,7 +7,7 @@ import { powerSyncDb } from '~/data/db/database';
  */
 export async function isOpfsAvailable(): Promise<boolean> {
   try {
-    if (!navigator.storage || !navigator.storage.getDirectory) {
+    if (!navigator.storage?.getDirectory) {
       return false;
     }
 
