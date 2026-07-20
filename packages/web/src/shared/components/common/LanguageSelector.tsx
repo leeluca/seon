@@ -57,16 +57,18 @@ export default function LanguageSelector() {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          role="listbox"
-          aria-expanded={open}
-          className="-ml-2 justify-between p-2"
-        >
-          <GlobeIcon size={18} className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-          <p>{LOCALES[locale]}</p>
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="ghost"
+            role="listbox"
+            aria-expanded={open}
+            className="-ml-2 justify-between p-2"
+          />
+        }
+      >
+        <GlobeIcon size={18} className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+        <p>{LOCALES[locale]}</p>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>

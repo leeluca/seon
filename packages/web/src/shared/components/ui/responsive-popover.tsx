@@ -12,9 +12,12 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 type ResponsivePopoverContentProps = ComponentProps<typeof PopoverContent> &
-  ComponentProps<typeof DrawerContent> & {
-    onInteractOutside?: (event: Event) => void;
-  };
+  ComponentProps<typeof DrawerContent>;
+
+type PopoverOpenChange = NonNullable<
+  ComponentProps<typeof Popover>['onOpenChange']
+>;
+type PopoverOpenChangeEventDetails = Parameters<PopoverOpenChange>[1];
 
 interface ResponsivePopoverProps {
   trigger: ReactElement | null;
@@ -24,7 +27,10 @@ interface ResponsivePopoverProps {
   /** Optional props to pass to the Popover/Drawer content */
   contentProps?: ResponsivePopoverContentProps;
   open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  onOpenChange?: (
+    open: boolean,
+    eventDetails?: PopoverOpenChangeEventDetails,
+  ) => void;
   /** Virtual ref for anchor positioning */
   virtualRef?: ComponentProps<typeof PopoverContent>['anchor'];
   drawerTitle: ReactNode;
@@ -51,7 +57,6 @@ export function ResponsivePopover({
     alignOffset,
     anchor,
     collisionPadding,
-    onInteractOutside,
     side,
     sideOffset,
     ...sharedContentProps
@@ -59,7 +64,11 @@ export function ResponsivePopover({
 
   if (isMobile) {
     return (
-      <Drawer open={open} onOpenChange={onOpenChange} handleOnly={handleOnly}>
+      <Drawer
+        open={open}
+        onOpenChange={(nextOpen) => onOpenChange?.(nextOpen)}
+        handleOnly={handleOnly}
+      >
         {trigger && <DrawerTrigger className={className} render={trigger} />}
         <DrawerContent
           className={cn('px-8 pb-6', contentClassName)}
@@ -77,21 +86,7 @@ export function ResponsivePopover({
   }
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(nextOpen, eventDetails) => {
-        if (!nextOpen && eventDetails.reason === 'outside-press') {
-          onInteractOutside?.(eventDetails.event);
-
-          if (eventDetails.event.defaultPrevented) {
-            eventDetails.cancel();
-            return;
-          }
-        }
-
-        onOpenChange?.(nextOpen);
-      }}
-    >
+    <Popover open={open} onOpenChange={onOpenChange}>
       {trigger && <PopoverTrigger className={className} render={trigger} />}
       <PopoverContent
         align={align}

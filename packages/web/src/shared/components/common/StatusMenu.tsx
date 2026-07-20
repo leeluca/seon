@@ -116,8 +116,6 @@ function StatusMenu() {
     enabled: !isSyncConnected && isSignedIn && isOnline,
   });
 
-  const togglePopover = () => setOpen((prev) => !prev);
-
   const display: SyncStatusDisplay = (() => {
     if (!isOnline) return 'offline';
     if (isError && (!(error instanceof APIError) || error.status !== 401))
@@ -181,23 +179,25 @@ function StatusMenu() {
         </output>
       )}
       <UpdatePrompt />
-      <Popover open={open} onOpenChange={togglePopover}>
-        <PopoverTrigger asChild>
-          <Button
-            size="icon-responsive"
-            variant="ghost"
-            aria-label={t`Check sync status`}
-          >
-            {display === 'offline' ? (
-              <PlaneIcon size={18} />
-            ) : display === 'connecting' ? (
-              <CableIcon size={18} />
-            ) : display === 'synced' ? (
-              <CloudIcon size={18} />
-            ) : (
-              <CloudOffIcon size={18} />
-            )}
-          </Button>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label={t`Check sync status`}
+            />
+          }
+        >
+          {display === 'offline' ? (
+            <PlaneIcon size={18} />
+          ) : display === 'connecting' ? (
+            <CableIcon size={18} />
+          ) : display === 'synced' ? (
+            <CloudIcon size={18} />
+          ) : (
+            <CloudOffIcon size={18} />
+          )}
         </PopoverTrigger>
         <PopoverContent
           className={
@@ -265,14 +265,16 @@ function StatusMenu() {
       </Popover>
       {(isSignedIn || Boolean(useSync)) && (
         <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              size="icon-responsive"
-              variant="ghost"
-              aria-label={t`User info`}
-            >
-              <CircleUserIcon size={18} />
-            </Button>
+          <PopoverTrigger
+            render={
+              <Button
+                size="icon-responsive"
+                variant="ghost"
+                aria-label={t`User info`}
+              />
+            }
+          >
+            <CircleUserIcon size={18} />
           </PopoverTrigger>
           <PopoverContent
             className="mr-3 w-min max-w-96 sm:mr-8"

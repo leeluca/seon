@@ -99,16 +99,18 @@ export function GoalSorting({ sort, setSort }: GoalSortingProps) {
   // FIXME: change to dropdown component for accessibility
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="listbox"
-          aria-expanded={open}
-          className="max-w-[200px] justify-normal"
-        >
-          {selectedSort?.icon}
-          {selectedSort?.label || t(msg`Select sort...`)}
-        </Button>
+      <PopoverTrigger
+        render={
+          <Button
+            variant="outline"
+            role="listbox"
+            aria-expanded={open}
+            className="max-w-[200px] justify-normal"
+          />
+        }
+      >
+        {selectedSort?.icon}
+        {selectedSort?.label || t(msg`Select sort...`)}
       </PopoverTrigger>
       <PopoverContent className="w-fit p-0">
         <Command>

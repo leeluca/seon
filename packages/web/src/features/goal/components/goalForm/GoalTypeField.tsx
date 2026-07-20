@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { InfoIcon } from 'lucide-react';
 
 import type { GoalType } from '~/features/goal/model';
 import { goalFormOptions } from '~/features/goal/model/form';
@@ -75,7 +75,7 @@ export const GoalTypeField = withForm({
           >
             <RadioGroup
               id={groupId}
-              orientation="horizontal"
+              aria-orientation="horizontal"
               className="flex flex-row flex-wrap gap-4 sm:gap-2"
               value={field.state.value}
               onValueChange={(value) => field.handleChange(value as GoalType)}
@@ -107,9 +107,8 @@ export const GoalTypeField = withForm({
                       }
                       side={isMobile ? 'top' : 'bottom'}
                     >
-                      <InfoCircledIcon
-                        height={isMobile ? 18 : 16}
-                        width={isMobile ? 18 : 16}
+                      <InfoIcon
+                        size={isMobile ? 18 : 16}
                         className="ml-1 sm:mb-2"
                       />
                     </ResponsiveTooltip>

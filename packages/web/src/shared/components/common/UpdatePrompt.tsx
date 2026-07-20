@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
-import { TooltipArrow } from '@radix-ui/react-tooltip';
 import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon } from 'lucide-react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
@@ -38,25 +37,31 @@ function ReloadPrompt() {
     <>
       {needRefresh && (
         <Popover>
-          <Tooltip defaultOpen>
-            <TooltipTrigger asChild className="disabled:pointer-events-auto">
-              <PopoverTrigger asChild>
-                <Button
-                  size="icon-responsive"
-                  variant="ghost"
-                  aria-label={t`Update available`}
-                >
-                  <BadgePlusIcon size={18} />
-                </Button>
-              </PopoverTrigger>
-            </TooltipTrigger>
-            <TooltipContent
-              onPointerDownOutside={(e: Event) => {
-                e.preventDefault();
-              }}
-              sideOffset={-2}
+          <Tooltip
+            defaultOpen
+            onOpenChange={(open, eventDetails) => {
+              if (!open && eventDetails.reason === 'outside-press') {
+                eventDetails.cancel();
+              }
+            }}
+          >
+            <TooltipTrigger
+              className="disabled:pointer-events-auto"
+              render={
+                <PopoverTrigger
+                  render={
+                    <Button
+                      size="icon-responsive"
+                      variant="ghost"
+                      aria-label={t`Update available`}
+                    />
+                  }
+                />
+              }
             >
-              <TooltipArrow height={8} width={10} />
+              <BadgePlusIcon size={18} />
+            </TooltipTrigger>
+            <TooltipContent sideOffset={-2}>
               <p>
                 <Trans>Update available</Trans>
               </p>

@@ -1,5 +1,5 @@
 import './lib/logging/instrument';
-import '@fontsource-variable/inter';
+import '@fontsource-variable/inter/index.css';
 import './tailwind.css';
 
 import { StrictMode, useEffect, useState } from 'react';

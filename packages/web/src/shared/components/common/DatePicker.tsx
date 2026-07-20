@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import type { Matcher, SelectSingleEventHandler } from 'react-day-picker';
+import type { Matcher, OnSelectHandler } from 'react-day-picker';
 import type { MessageDescriptor } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { CalendarIcon } from '@radix-ui/react-icons';
 import {
   addDays,
   differenceInCalendarDays,
@@ -11,6 +10,7 @@ import {
   intlFormatDistance,
   startOfDay,
 } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
 
 import { Button } from '~/shared/components/ui/button';
 import { Calendar } from '~/shared/components/ui/calendar';
@@ -96,8 +96,17 @@ export const DatePicker = React.forwardRef(
 
     const date = dateProp ?? dateState;
     const setDate = setDateProp ?? setDateState;
+    const presetDateItems = React.useMemo(
+      () => ({
+        '0': t(dateDistanceNames[0]),
+        '1': t(dateDistanceNames[1]),
+        '7': t(dateDistanceNames[7]),
+        '30': t(dateDistanceNames[30]),
+      }),
+      [t],
+    );
 
-    const handleOnSelect: SelectSingleEventHandler = (date?: Date) => {
+    const handleOnSelect: OnSelectHandler<Date | undefined> = (date) => {
       setDate(date);
       setIsPopoverOpen(false);
     };
@@ -112,54 +121,60 @@ export const DatePicker = React.forwardRef(
         open={isPopoverOpen}
         onOpenChange={readOnly ? undefined : setIsPopoverOpen}
       >
-        <PopoverTrigger asChild disabled={disabled}>
-          <Button
-            id={id}
-            type="button"
-            variant={'outline'}
-            aria-invalid={ariaInvalid}
-            aria-describedby={ariaDescribedBy}
-            className={cn(
-              'w-full justify-start text-left font-normal',
-              {
-                'text-muted-foreground': !date,
-                'hover:bg-background cursor-default': readOnly,
-              },
-              className,
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date ? (
-              (useRelativeDistance && getPresetRelativeDateText(date, t)) ||
-              formatDate(date, 'PP')
-            ) : (
-              <span>
-                <Trans>Pick a date</Trans>
-              </span>
-            )}
-          </Button>
+        <PopoverTrigger
+          disabled={disabled}
+          render={
+            <Button
+              id={id}
+              type="button"
+              variant="outline"
+              aria-invalid={ariaInvalid}
+              aria-describedby={ariaDescribedBy}
+              className={cn(
+                'w-full justify-start text-left font-normal',
+                {
+                  'text-muted-foreground': !date,
+                  'hover:bg-background cursor-default': readOnly,
+                },
+                className,
+              )}
+            />
+          }
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {date ? (
+            (useRelativeDistance && getPresetRelativeDateText(date, t)) ||
+            formatDate(date, 'PP')
+          ) : (
+            <span>
+              <Trans>Pick a date</Trans>
+            </span>
+          )}
         </PopoverTrigger>
         <PopoverContent
           align="start"
-          className="flex w-auto flex-col space-y-2 p-2"
+          className="flex w-auto flex-col gap-2 rounded-md border p-2 shadow-md ring-0"
           collisionPadding={{ bottom: 40 }}
         >
           {showPresetDates && (
             <Select
+              items={presetDateItems}
               onValueChange={(value) => {
+                if (typeof value !== 'string') return;
+
                 const newDate = addDays(new Date(), Number.parseInt(value, 10));
                 setDate(newDate);
                 setMonth(newDate);
               }}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full rounded-md border-input bg-background shadow-xs">
                 <SelectValue
                   placeholder={
                     date ? getRelativeDistanceText(date, t) : t`Select`
                   }
                 />
               </SelectTrigger>
-              <SelectContent position="popper">
+              <SelectContent>
                 <SelectItem value="0">{t(dateDistanceNames[0])}</SelectItem>
                 <SelectItem value="1">{t(dateDistanceNames[1])}</SelectItem>
                 <SelectItem value="7">{t(dateDistanceNames[7])}</SelectItem>
@@ -170,6 +185,8 @@ export const DatePicker = React.forwardRef(
           <div className="rounded-md border">
             <Calendar
               mode="single"
+              buttonVariant="outline"
+              className="[--cell-radius:var(--radius-md)]"
               selected={date}
               onSelect={onSelect}
               disabled={disabledDates}
