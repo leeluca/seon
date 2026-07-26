@@ -65,13 +65,13 @@ const getButtonStyles = ({
     'bg-primary/60': hasValue && isSelected,
 
     // Skipped states
-    'bg-orange-300/90 hover:bg-orange-300/80': isEmptyPastDay,
-    'bg-orange-300/60': isEmptyPastDay && isSelected,
+    'bg-warning/60 hover:bg-warning/50': isEmptyPastDay,
+    'bg-warning/40': isEmptyPastDay && isSelected,
 
     // Neutral states
     'bg-accent text-accent-foreground': isNeutralDay && isSelected,
-    'border-2 border-cyan-500/30': isToday,
-    'bg-gray-300 cursor-not-allowed border-none hover:bg-gray-300': isBlocked,
+    'border-2 border-primary/40': isToday,
+    'bg-muted cursor-not-allowed border-none hover:bg-muted': isBlocked,
   });
 };
 
