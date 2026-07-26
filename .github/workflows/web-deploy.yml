@@ -34,9 +34,6 @@ jobs:
       - name: Build Web App for Production
         run: pnpm --filter web build
         env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_API_URL: ${{ vars.VITE_API_URL || secrets.VITE_API_URL }}
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
           SENTRY_AUTH_TOKEN: ${{ vars.SENTRY_AUTH_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ vars.SENTRY_DSN || secrets.SENTRY_DSN }}
@@ -48,6 +45,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy packages/web/dist --project-name=${{vars.CLOUDFLARE_PAGES_PROJECT_NAME}} --commit-dirty=true
+          workingDirectory: packages/web
+          command: pages deploy dist --project-name=${{vars.CLOUDFLARE_PAGES_PROJECT_NAME}} --commit-dirty=true
           packageManager: pnpm
         #   gitHubToken: ${{ secrets.GITHUB_TOKEN }}
