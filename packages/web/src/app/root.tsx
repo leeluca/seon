@@ -3,6 +3,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
+import BottomTabBar from '~/shared/components/common/BottomTabBar';
 import ErrorFallback from '~/shared/components/common/ErrorFallback';
 import LanguageSelector from '~/shared/components/common/LanguageSelector';
 import AppStatusMenu from '~/shared/components/common/StatusMenu';
@@ -42,9 +43,10 @@ export function MainLayout() {
         </div>
       </main>
       {/* TODO: add common footer to all pages at __root.tsx? */}
-      <div className="absolute bottom-0 mb-1 px-4 py-2 sm:px-6 sm:py-4 xl:p-8">
+      <div className="absolute bottom-14 mb-1 px-4 py-2 sm:bottom-0 sm:px-6 sm:py-4 xl:p-8">
         <LanguageSelector />
       </div>
+      <BottomTabBar />
     </div>
   );
 }
