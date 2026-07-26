@@ -1,15 +1,26 @@
 import {
+  useCallback,
   useEffect,
   useRef,
   type ComponentProps,
   type ReactElement,
 } from 'react';
-import { Trans } from '@lingui/react/macro';
+import { Trans, useLingui } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
 import { useQuery } from '@tanstack/react-query';
+import { isBefore, startOfDay } from 'date-fns';
+import { ChevronsUpDownIcon } from 'lucide-react';
 
 import { GOALS } from '~/constants/query';
+import type { Database } from '~/data/db/AppSchema';
+import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+import { EntryHistory } from '~/features/entry/components/EntryHistory';
 import type { GoalType } from '~/features/goal/model';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/shared/components/ui/collapsible';
 import {
   Drawer,
   DrawerContent,
@@ -26,9 +37,9 @@ import {
 } from '~/shared/components/ui/sheet';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { GoalControls } from './GoalControls';
+import { GoalDetailStats } from './GoalDetailStats';
 import { GoalEditForm } from './goalForm';
 import GoalLineGraph from './GoalLineGraph';
-import { GoalStatusSummary } from './GoalStatusSummary';
 
 const GoalLineGraphErrorFallback = () => (
   <div
@@ -54,6 +65,59 @@ const GoalLineGraphWithErrorBoundary = (
     <GoalLineGraph {...props} />
   </Sentry.ErrorBoundary>
 );
+
+interface GoalDetailBodyProps {
+  goal: NonNullable<Database['goal']>;
+  isMobile: boolean;
+  onClose: () => void;
+}
+
+function GoalDetailBody({ goal, isMobile, onClose }: GoalDetailBodyProps) {
+  const { t } = useLingui();
+  const checkBlockedDateFn = useCallback(
+    (date: Date) => isBefore(startOfDay(date), startOfDay(goal.startDate)),
+    [goal.startDate],
+  );
+
+  return (
+    <>
+      <GoalDetailStats goal={goal} />
+      <section className="relative flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
+        <GoalLineGraphWithErrorBoundary
+          goalId={goal.id}
+          targetDate={goal.targetDate}
+          target={goal.target}
+          startDate={goal.startDate}
+          initialValue={goal.initialValue}
+          isMobile={isMobile}
+          goalType={goal.type as GoalType}
+        />
+      </section>
+      <CalendarHeatmap
+        goalId={goal.id}
+        checkBlockedDateFn={checkBlockedDateFn}
+        blockedDateFeedback={t`Before goal's start date`}
+      />
+      <EntryHistory goalId={goal.id} goalType={goal.type} />
+      <Collapsible>
+        <CollapsibleTrigger className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between gap-2 py-2 text-xs font-semibold tracking-widest uppercase transition-colors">
+          <Trans>Edit goal</Trans>
+          <ChevronsUpDownIcon size={14} aria-hidden="true" />
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <GoalEditForm goal={goal} className="my-4" />
+        </CollapsibleContent>
+      </Collapsible>
+      <GoalControls
+        id={goal.id}
+        title={goal.title}
+        archivedAt={goal.archivedAt}
+        onArchiveToggle={onClose}
+        onDeleteSuccess={onClose}
+      />
+    </>
+  );
+}
 
 interface SheetProps {
   open: boolean;
@@ -149,17 +213,7 @@ export function GoalDetailPanel({
     return null;
   }
 
-  const {
-    title,
-    description,
-    id,
-    targetDate,
-    target,
-    startDate,
-    initialValue,
-    type,
-    archivedAt,
-  } = selectedGoal;
+  const { title, description } = selectedGoal;
 
   if (isMobile) {
     return (
@@ -170,35 +224,14 @@ export function GoalDetailPanel({
       >
         <DrawerContent className="flex max-h-[98%] flex-col">
           <DrawerHeader>
-            <DrawerTitle className="pb-4 text-2xl">{title}</DrawerTitle>
+            <DrawerTitle className="pb-2 text-2xl">{title}</DrawerTitle>
             <DrawerDescription>{description}</DrawerDescription>
           </DrawerHeader>
-          <article className="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden px-4 pb-4">
-            <section className="relative flex min-h-[365px] items-center justify-center overflow-x-hidden">
-              <GoalLineGraphWithErrorBoundary
-                goalId={id}
-                targetDate={targetDate}
-                target={target}
-                startDate={startDate}
-                initialValue={initialValue}
-                isMobile={isMobile}
-                goalType={type as GoalType}
-              />
-            </section>
-            <GoalStatusSummary
-              goalId={id}
-              className="mt-4 mb-2 sm:mt-3 sm:mb-5"
-            />
-            <GoalEditForm
+          <article className="flex min-h-0 flex-1 flex-col gap-5 overflow-x-hidden overflow-y-auto px-4 pb-4">
+            <GoalDetailBody
               goal={selectedGoal}
-              className="my-7 sm:mx-2 sm:my-4"
-            />
-            <GoalControls
-              id={id}
-              title={title}
-              archivedAt={archivedAt}
-              onArchiveToggle={() => onOpenChange(false)}
-              onDeleteSuccess={() => onOpenChange(false)}
+              isMobile={isMobile}
+              onClose={() => onOpenChange(false)}
             />
           </article>
         </DrawerContent>
@@ -213,34 +246,15 @@ export function GoalDetailPanel({
       onOpenChangeComplete={onOpenChangeComplete}
     >
       <SheetContent className="flex max-h-full w-full! max-w-full! flex-col overflow-hidden sm:max-w-3xl!">
-        <SheetHeader className="mb-4">
+        <SheetHeader className="mb-2">
           <SheetTitle className="text-2xl">{title}</SheetTitle>
           <SheetDescription>{description}</SheetDescription>
         </SheetHeader>
         <article className="flex flex-1 scrollbar-thin scrollbar-gutter-both flex-col gap-6 overflow-auto px-6 pb-6">
-          <section className="relative mt-4 flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
-            <GoalLineGraphWithErrorBoundary
-              goalId={id}
-              targetDate={targetDate}
-              target={target}
-              startDate={startDate}
-              initialValue={initialValue}
-              isMobile={isMobile}
-              goalType={type as GoalType}
-            />
-          </section>
-          <GoalStatusSummary
-            goalId={id}
-            className="mt-6 mb-2 sm:mt-1 sm:mb-5"
-          />
-          <GoalEditForm goal={selectedGoal} />
-          <GoalControls
-            id={id}
-            title={title}
-            archivedAt={archivedAt}
-            onArchiveToggle={() => onOpenChange(false)}
-            onDeleteSuccess={() => onOpenChange(false)}
-            className="mt-auto"
+          <GoalDetailBody
+            goal={selectedGoal}
+            isMobile={isMobile}
+            onClose={() => onOpenChange(false)}
           />
         </article>
       </SheetContent>

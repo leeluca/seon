@@ -96,6 +96,35 @@ export function getPaceStatus(
 }
 
 /**
+ * The target date that would put a behind goal back on pace, derived from
+ * the pace actually demonstrated so far ("at your rate, this lands on…").
+ * Returns null when the goal isn't behind, when there's no progress yet to
+ * project from, or when the computed date wouldn't extend the current one.
+ */
+export function getReplanDate(
+  goal: PaceGoalInput,
+  today: Date = new Date(),
+): Date | null {
+  if (getPaceStatus(goal, today).kind !== 'behind') return null;
+
+  const progress = goal.currentValue - goal.initialValue;
+  if (progress <= 0) return null;
+
+  const span = goal.target - goal.initialValue;
+  const start = toDayStart(goal.startDate);
+  const elapsed = Math.max(
+    differenceInCalendarDays(startOfDay(today), start),
+    1,
+  );
+
+  // Smallest plan length whose expectation at today rounds to "on pace".
+  const minTotalDays = Math.floor((span * (elapsed - 0.5)) / progress) + 1;
+  const newEnd = addDays(start, minTotalDays - 1);
+
+  return newEnd > toDayStart(goal.targetDate) ? newEnd : null;
+}
+
+/**
  * The amount to log today to stay on track, spreading any accumulated gap
  * over the remaining days (self-correcting: it never demands the whole gap
  * at once).

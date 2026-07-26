@@ -6,6 +6,7 @@ import {
   getPaceStatus,
   getPercentComplete,
   getProjectedFinish,
+  getReplanDate,
   getSparklineSeries,
   getStreak,
   getSuggestedToday,
@@ -89,6 +90,38 @@ describe('getPaceStatus', () => {
       kind: 'behind',
       days: 2,
     });
+  });
+});
+
+describe('getReplanDate', () => {
+  it('suggests the date implied by the demonstrated rate, landing on pace', () => {
+    // Day 15 (elapsed 14), 150 of 900 done → ~10.7/day → 82-day plan.
+    const goal = {
+      initialValue: 0,
+      target: 900,
+      startDate: day(2026, 7, 12).toISOString(),
+      targetDate: day(2026, 8, 26).toISOString(),
+      currentValue: 150,
+    };
+    const today = day(2026, 7, 26);
+    const replanned = getReplanDate(goal, today);
+
+    expect(replanned).toEqual(new Date(2026, 9, 1)); // Oct 1
+    expect(
+      getPaceStatus({ ...goal, targetDate: replanned as Date }, today),
+    ).toEqual({ kind: 'onPace' });
+  });
+
+  it('returns null when not behind', () => {
+    expect(
+      getReplanDate({ ...paceGoal, currentValue: 30 }, day(2026, 1, 4)),
+    ).toBeNull();
+  });
+
+  it('returns null with no progress to project from', () => {
+    expect(
+      getReplanDate({ ...paceGoal, currentValue: 0 }, day(2026, 1, 4)),
+    ).toBeNull();
   });
 });
 
