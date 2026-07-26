@@ -1,6 +1,14 @@
 import { relations } from 'drizzle-orm/relations';
 
-import { entry, goal, refreshToken, user } from './schema.js';
+import {
+  account,
+  entry,
+  goal,
+  profile,
+  session,
+  syncTransaction,
+  user,
+} from './schema.js';
 
 export const goalRelations = relations(goal, ({ one, many }) => ({
   user: one(user, {
@@ -10,10 +18,13 @@ export const goalRelations = relations(goal, ({ one, many }) => ({
   entries: many(entry),
 }));
 
-export const userRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ many, one }) => ({
   goals: many(goal),
   entries: many(entry),
-  refreshTokens: many(refreshToken),
+  sessions: many(session),
+  accounts: many(account),
+  profile: one(profile),
+  syncTransactions: many(syncTransaction),
 }));
 
 export const entryRelations = relations(entry, ({ one }) => ({
@@ -27,9 +38,33 @@ export const entryRelations = relations(entry, ({ one }) => ({
   }),
 }));
 
-export const refreshTokenRelations = relations(refreshToken, ({ one }) => ({
+export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, {
-    fields: [refreshToken.userId],
+    fields: [session.userId],
     references: [user.id],
   }),
 }));
+
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
+  }),
+}));
+
+export const profileRelations = relations(profile, ({ one }) => ({
+  user: one(user, {
+    fields: [profile.userId],
+    references: [user.id],
+  }),
+}));
+
+export const syncTransactionRelations = relations(
+  syncTransaction,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [syncTransaction.userId],
+      references: [user.id],
+    }),
+  }),
+);

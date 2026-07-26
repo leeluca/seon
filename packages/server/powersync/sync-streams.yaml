@@ -1,0 +1,49 @@
+# Apply this through the PowerSync dashboard/CLI; it is not deployed by this
+# repository. The JWT `sub` is the Better Auth user UUID.
+config:
+  edition: 3
+
+streams:
+  account_data:
+    auto_subscribe: true
+    queries:
+      - |
+        SELECT
+          id::text AS id,
+          "shortId" AS "shortId",
+          title,
+          description,
+          "initialValue" AS "initialValue",
+          "currentValue" AS "currentValue",
+          target,
+          unit,
+          "startDate" AS "startDate",
+          "targetDate" AS "targetDate",
+          "createdAt" AS "createdAt",
+          "updatedAt" AS "updatedAt",
+          "completionDate" AS "completionDate",
+          "archivedAt" AS "archivedAt",
+          type
+        FROM goal
+        WHERE "userId" = auth.user_id()
+      - |
+        SELECT
+          id::text AS id,
+          "shortId" AS "shortId",
+          "goalId"::text AS "goalId",
+          value,
+          date,
+          "createdAt" AS "createdAt",
+          "updatedAt" AS "updatedAt"
+        FROM entry
+        WHERE "userId" = auth.user_id()
+      - |
+        SELECT
+          "userId"::text AS id,
+          name,
+          email,
+          preferences::text AS preferences,
+          "createdAt" AS "createdAt",
+          "updatedAt" AS "updatedAt"
+        FROM profile
+        WHERE "userId" = auth.user_id()

@@ -25,17 +25,14 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         env:
-          JWT_PRIVATE_KEY: ${{ vars.JWT_PRIVATE_KEY }}
-          JWT_PUBLIC_KEY: ${{ vars.JWT_PUBLIC_KEY }}
-          JWT_REFRESH_SECRET: ${{ vars.JWT_REFRESH_SECRET }}
-          JWT_DB_PRIVATE_KEY: ${{ vars.JWT_DB_PRIVATE_KEY }}
-          JWT_ACCESS_EXPIRATION: ${{ vars.JWT_ACCESS_EXPIRATION }}
-          JWT_REFRESH_EXPIRATION: ${{ vars.JWT_REFRESH_EXPIRATION }}
-          JWT_DB_ACCESS_EXPIRATION: ${{ vars.JWT_DB_ACCESS_EXPIRATION }}
+          BETTER_AUTH_SECRET: ${{ vars.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
+          POWERSYNC_AUDIENCE: ${{ vars.POWERSYNC_AUDIENCE }}
+          AUTH_EMAIL_DELIVERY: noop
           SYNC_URL: ${{ vars.SYNC_URL }}
           ORIGIN_URLS: ${{ vars.ORIGIN_URLS }}
           DB_URL: ${{ vars.DB_URL }}

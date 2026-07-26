@@ -4,13 +4,18 @@ import { cors } from 'hono/cors';
 
 import type { Env } from './env.js';
 import auth from './routes/auth.js';
+import sync from './routes/sync.js';
 
 export function createApp() {
   const app = new Hono<{ Bindings: Env }>();
 
   app.use('/api/*', async (c, next) => {
+    const allowedOrigins = (env(c).ORIGIN_URLS ?? '')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean);
     const corsMiddleware = cors({
-      origin: env(c).ORIGIN_URLS?.split(',') || '',
+      origin: allowedOrigins,
       allowHeaders: [
         'Origin',
         'X-Requested-With',
@@ -28,6 +33,7 @@ export function createApp() {
   app.get('/ping', (c) => c.text('pong'));
 
   app.route('/api/auth', auth);
+  app.route('/api/sync', sync);
 
   return app;
 }

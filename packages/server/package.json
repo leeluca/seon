@@ -24,11 +24,10 @@
     "@hono/node-server": "^1.19.14",
     "@hono/typebox-validator": "^0.3.3",
     "@sinclair/typebox": "^0.34.52",
-    "drizzle-orm": "^0.44.7",
+    "better-auth": "1.6.23",
+    "drizzle-orm": "^0.45.2",
     "hono": "^4.12.30",
-    "jose": "^6.2.3",
     "postgres": "^3.4.9",
-    "short-uuid": "catalog:",
     "uuid": "catalog:"
   },
   "devDependencies": {

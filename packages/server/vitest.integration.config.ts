@@ -1,19 +1,15 @@
 import { defineConfig } from 'vitest/config';
 
-if (process.loadEnvFile) {
-  process.loadEnvFile();
-} else {
-  console.warn('process.loadEnvFile not available, skipping .env loading');
-}
-
 export default defineConfig({
   test: {
-    include: ['tests/integration/**/*.test.ts'],
+    include: [
+      'tests/unit/auth/auth-flow.test.ts',
+      'tests/unit/services/sync-service.test.ts',
+    ],
     environment: 'node',
     globals: true,
     testTimeout: 30000,
     hookTimeout: 30000,
-    setupFiles: ['test/integration/setup/mock-db.ts'],
     sequence: {
       hooks: 'list',
     },
