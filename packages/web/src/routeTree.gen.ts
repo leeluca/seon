@@ -14,8 +14,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MainRouteRouteImport } from './routes/_main/route'
 import { Route as DemoIndexRouteImport } from './routes/demo/index'
+import { Route as ForgotPasswordIndexRouteImport } from './routes/forgot-password/index'
+import { Route as ResetPasswordIndexRouteImport } from './routes/reset-password/index'
 import { Route as SigninIndexRouteImport } from './routes/signin/index'
 import { Route as SignupIndexRouteImport } from './routes/signup/index'
+import { Route as VerifyEmailIndexRouteImport } from './routes/verify-email/index'
 import { Route as MainGoalsNewRouteImport } from './routes/_main/goals.new'
 
 const MainGoalsLazyRouteImport = createFileRoute('/_main/goals')()
@@ -40,6 +43,20 @@ const DemoIndexRoute = DemoIndexRouteImport.update({
   path: '/demo/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/demo/index.lazy').then((d) => d.Route))
+const ForgotPasswordIndexRoute = ForgotPasswordIndexRouteImport.update({
+  id: '/forgot-password/',
+  path: '/forgot-password/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/forgot-password/index.lazy').then((d) => d.Route),
+)
+const ResetPasswordIndexRoute = ResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/reset-password/index.lazy').then((d) => d.Route),
+)
 const SigninIndexRoute = SigninIndexRouteImport.update({
   id: '/signin/',
   path: '/signin/',
@@ -50,6 +67,13 @@ const SignupIndexRoute = SignupIndexRouteImport.update({
   path: '/signup/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/signup/index.lazy').then((d) => d.Route))
+const VerifyEmailIndexRoute = VerifyEmailIndexRouteImport.update({
+  id: '/verify-email/',
+  path: '/verify-email/',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/verify-email/index.lazy').then((d) => d.Route),
+)
 const MainGoalsIdLazyRoute = MainGoalsIdLazyRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -67,8 +91,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo/': typeof DemoIndexRoute
+  '/forgot-password/': typeof ForgotPasswordIndexRoute
+  '/reset-password/': typeof ResetPasswordIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/verify-email/': typeof VerifyEmailIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
   '/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -76,8 +103,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo': typeof DemoIndexRoute
+  '/forgot-password': typeof ForgotPasswordIndexRoute
+  '/reset-password': typeof ResetPasswordIndexRoute
   '/signin': typeof SigninIndexRoute
   '/signup': typeof SignupIndexRoute
+  '/verify-email': typeof VerifyEmailIndexRoute
   '/goals/new': typeof MainGoalsNewRoute
   '/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -87,8 +117,11 @@ export interface FileRoutesById {
   '/_main': typeof MainRouteRouteWithChildren
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
   '/demo/': typeof DemoIndexRoute
+  '/forgot-password/': typeof ForgotPasswordIndexRoute
+  '/reset-password/': typeof ResetPasswordIndexRoute
   '/signin/': typeof SigninIndexRoute
   '/signup/': typeof SignupIndexRoute
+  '/verify-email/': typeof VerifyEmailIndexRoute
   '/_main/goals/new': typeof MainGoalsNewRoute
   '/_main/goals/$id': typeof MainGoalsIdLazyRoute
 }
@@ -98,8 +131,11 @@ export interface FileRouteTypes {
     | '/'
     | '/goals'
     | '/demo/'
+    | '/forgot-password/'
+    | '/reset-password/'
     | '/signin/'
     | '/signup/'
+    | '/verify-email/'
     | '/goals/new'
     | '/goals/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -107,8 +143,11 @@ export interface FileRouteTypes {
     | '/'
     | '/goals'
     | '/demo'
+    | '/forgot-password'
+    | '/reset-password'
     | '/signin'
     | '/signup'
+    | '/verify-email'
     | '/goals/new'
     | '/goals/$id'
   id:
@@ -117,8 +156,11 @@ export interface FileRouteTypes {
     | '/_main'
     | '/_main/goals'
     | '/demo/'
+    | '/forgot-password/'
+    | '/reset-password/'
     | '/signin/'
     | '/signup/'
+    | '/verify-email/'
     | '/_main/goals/new'
     | '/_main/goals/$id'
   fileRoutesById: FileRoutesById
@@ -127,8 +169,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   MainRouteRoute: typeof MainRouteRouteWithChildren
   DemoIndexRoute: typeof DemoIndexRoute
+  ForgotPasswordIndexRoute: typeof ForgotPasswordIndexRoute
+  ResetPasswordIndexRoute: typeof ResetPasswordIndexRoute
   SigninIndexRoute: typeof SigninIndexRoute
   SignupIndexRoute: typeof SignupIndexRoute
+  VerifyEmailIndexRoute: typeof VerifyEmailIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -161,6 +206,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forgot-password/': {
+      id: '/forgot-password/'
+      path: '/forgot-password'
+      fullPath: '/forgot-password/'
+      preLoaderRoute: typeof ForgotPasswordIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password/': {
+      id: '/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof ResetPasswordIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signin/': {
       id: '/signin/'
       path: '/signin'
@@ -173,6 +232,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup/'
       preLoaderRoute: typeof SignupIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verify-email/': {
+      id: '/verify-email/'
+      path: '/verify-email'
+      fullPath: '/verify-email/'
+      preLoaderRoute: typeof VerifyEmailIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_main/goals/$id': {
@@ -222,8 +288,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   MainRouteRoute: MainRouteRouteWithChildren,
   DemoIndexRoute: DemoIndexRoute,
+  ForgotPasswordIndexRoute: ForgotPasswordIndexRoute,
+  ResetPasswordIndexRoute: ResetPasswordIndexRoute,
   SigninIndexRoute: SigninIndexRoute,
   SignupIndexRoute: SignupIndexRoute,
+  VerifyEmailIndexRoute: VerifyEmailIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

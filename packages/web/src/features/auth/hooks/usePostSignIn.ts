@@ -1,104 +1,83 @@
-import { usePowerSync } from '@powersync/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useShallow } from 'zustand/react/shallow';
 
-import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
-import type { Database } from '~/data/db/AppSchema';
-import { syncLocalUserDataAfterSignIn } from '~/data/domain/authRepo';
-import { useUserStore } from '~/states/stores/userStore';
-import type { Preferences } from '~/types/user';
-import type { APIError } from '~/utils/errors';
+import {
+  flushPendingSignOut,
+  hasPendingSignOut,
+} from '~/data/workspace/pendingSignOut';
+import {
+  authCallbackUrl,
+  authClient,
+  AuthClientError,
+  type BetterAuthUser,
+  toAuthClientError,
+} from '~/lib/auth-client';
 
-export const POST_SIGNIN_KEY = '/api/auth/signin';
+export const POST_SIGNIN_KEY = 'sign-in/email';
 
 export interface SignInParams {
   email: string;
   password: string;
-}
-export interface PostSignInResponse {
-  result: boolean;
-  expiresAt: number;
-  user: {
-    name: string;
-    email: string;
-    id: string;
-    shortId: string;
-    useSync: true;
-    createdAt: string;
-    updatedAt: string;
-    preferences?: Preferences;
-  };
+  rememberMe?: boolean;
 }
 
-interface usePostSignInProps {
-  onSuccess?: (data: PostSignInResponse) => void;
-  onError?: (error: APIError) => void;
+export interface PostSignInResponse {
+  result: true;
+  user: BetterAuthUser;
 }
-const usePostSignIn = ({ onSuccess, onError }: usePostSignInProps = {}) => {
-  const [localUserId, setUser, setIsUserInitialized, setPreferences] =
-    useUserStore(
-      useShallow((state) => [
-        state.user.id,
-        state.setUser,
-        state.setIsInitialized,
-        state.setPreferences,
-      ]),
-    );
-  const powerSync = usePowerSync();
+
+interface UsePostSignInProps {
+  onSuccess?: (data: PostSignInResponse) => void;
+  onError?: (error: AuthClientError) => void;
+}
+
+const usePostSignIn = ({ onSuccess, onError }: UsePostSignInProps = {}) => {
   const queryClient = useQueryClient();
 
-  return useMutation<PostSignInResponse, APIError, SignInParams>({
+  return useMutation<PostSignInResponse, AuthClientError, SignInParams>({
     mutationKey: [POST_SIGNIN_KEY],
-    mutationFn: (credentials) =>
-      fetcher<PostSignInResponse>(POST_SIGNIN_KEY, {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-      }),
+    mutationFn: async ({ email, password, rememberMe = true }) => {
+      if (hasPendingSignOut() && !(await flushPendingSignOut())) {
+        throw new AuthClientError({
+          message: 'Unable to finish the previous sign out',
+        });
+      }
+
+      let response: Awaited<ReturnType<typeof authClient.signIn.email>>;
+
+      try {
+        response = await authClient.signIn.email({
+          email,
+          password,
+          rememberMe,
+          callbackURL: authCallbackUrl('/verify-email'),
+        });
+      } catch (error) {
+        throw toAuthClientError(error, 'Unable to sign in');
+      }
+
+      if (response.error || !response.data) {
+        throw toAuthClientError(response.error, 'Unable to sign in');
+      }
+
+      // Better Auth also returns a token for non-cookie clients. The browser
+      // deliberately ignores it and relies exclusively on the HttpOnly cookie.
+      return { result: true, user: response.data.user };
+    },
     onSuccess: async (data) => {
-      if (data.result) {
-        await queryClient.invalidateQueries({
-          queryKey: AUTH_STATUS.all.queryKey,
-        });
-      }
-
-      const updateUserState = () => {
-        const stringifiedPreferences = JSON.stringify(data.user.preferences);
-        setUser({
-          ...data.user,
-          useSync: Number(data.user.useSync),
-          preferences: stringifiedPreferences,
-        });
-        setPreferences(stringifiedPreferences);
-        setIsUserInitialized(true);
-      };
-
-      if (localUserId !== data.user.id) {
-        const databaseUser: Database['user'] = {
-          ...data.user,
-          useSync: Number(data.user.useSync),
-          preferences: JSON.stringify(data.user.preferences || {}),
-        };
-        await syncLocalUserDataAfterSignIn({
-          localUserId,
-          newUserId: data.user.id,
-          user: databaseUser,
-          updateUserState,
-          powerSync,
-        });
-      } else {
-        updateUserState();
-      }
-
+      await queryClient.invalidateQueries({
+        queryKey: AUTH_STATUS.all.queryKey,
+      });
       onSuccess?.(data);
     },
-    onError: (err) => {
-      if (err.status !== 401) {
+    onError: (error) => {
+      if (error.status !== 401 && error.status !== 403) {
         toast.error('Failed to sign in, please try again later.');
       }
-      onError?.(err);
+      onError?.(error);
     },
   });
 };
+
 export default usePostSignIn;

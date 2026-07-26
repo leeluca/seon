@@ -10,15 +10,10 @@ import {
 
 interface EntryMutationOptions {
   goalId: string;
-  userId: string;
   onSuccess?: () => void;
 }
 
-export function useEntryMutations({
-  goalId,
-  userId,
-  onSuccess,
-}: EntryMutationOptions) {
+export function useEntryMutations({ goalId, onSuccess }: EntryMutationOptions) {
   const queryClient = useQueryClient();
 
   const invalidateEntryQueries = async () => {
@@ -35,7 +30,7 @@ export function useEntryMutations({
 
   const save = useMutation({
     mutationFn: ({ value, date }: { value: number; date: Date }) =>
-      recordEntry({ value, date, goalId, userId }),
+      recordEntry({ value, date, goalId }),
     onSuccess: invalidateEntryQueries,
     onError: (error) => {
       console.error(error);

@@ -1,53 +1,63 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
-import { powerSyncDb } from '~/data/db/database';
-import { SupabaseConnector } from '~/data/sync/SupabaseConnector';
+import { activeWorkspace, powerSyncDb } from '~/data/db/database';
+import { PowerSyncConnector } from '~/data/sync/PowerSyncConnector';
 import { useFetchAuthStatus } from '~/features/auth/hooks/useFetchAuthStatus';
 
 export function usePowerSyncConnector() {
-  const { data, isLoading } = useFetchAuthStatus();
+  const { data, authState } = useFetchAuthStatus();
+  const queryClient = useQueryClient();
+  const powerSync = powerSyncDb;
+  const connector = useMemo(
+    () =>
+      new PowerSyncConnector({
+        workspace: activeWorkspace,
+        onAuthenticationRequired: () => {
+          void powerSync.disconnect();
+          void queryClient.invalidateQueries({ queryKey: ['auth', 'session'] });
+        },
+      }),
+    [queryClient],
+  );
+  const accountMatchesWorkspace =
+    activeWorkspace.kind === 'account' &&
+    activeWorkspace.syncBinding.ownerAccountId === data.user?.id;
+  const usesPowerSync =
+    activeWorkspace.kind === 'account' &&
+    activeWorkspace.syncBinding.provider === 'powersync';
+  const syncEnabled =
+    authState === 'authenticated' &&
+    Boolean(data.user?.emailVerified) &&
+    accountMatchesWorkspace &&
+    usesPowerSync;
 
-  const isSignInVerified = data?.result && !isLoading;
-
-  const [connector, setConnector] = useState(new SupabaseConnector());
-  const [powerSync] = useState(powerSyncDb);
-
-  // FIXME: run powerSync.disconnect() when isSignInVerified is false
   useEffect(() => {
-    if (!isSignInVerified) return;
-
-    // For console testing, to be removed
-    window._powersync = powerSync;
-
-    const initializePowerSync = async () => {
+    let cancelled = false;
+    const updateConnection = async () => {
       await powerSync.init();
+      if (cancelled) return;
+      if (syncEnabled) {
+        connector.markAuthenticated();
+        await powerSync.connect(connector);
+      } else {
+        await powerSync.disconnect();
+      }
     };
-    const initializeConnector = () => {
-      connector.init();
+
+    void updateConnection();
+    return () => {
+      cancelled = true;
     };
-
-    void initializePowerSync();
-
-    const listener = connector.registerListener({
-      initialized: () => {
-        void powerSync.connect(connector);
-      },
-      sessionStarted: () => {},
-    });
-    initializeConnector();
-    return () => listener();
-  }, [isSignInVerified, connector, powerSync]);
-
-  const resetConnector = useCallback(() => {
-    setConnector(new SupabaseConnector());
-  }, []);
+  }, [connector, syncEnabled]);
 
   return useMemo(
     () => ({
       connector,
       powerSync,
-      resetConnector,
+      syncEnabled,
+      accountMatchesWorkspace,
     }),
-    [connector, powerSync, resetConnector],
+    [connector, syncEnabled, accountMatchesWorkspace],
   );
 }

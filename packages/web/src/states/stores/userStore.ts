@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/react';
 import { create } from 'zustand';
 
-import db from '~/data/db/database';
+import db, { activeWorkspace } from '~/data/db/database';
 import { isLocalDbAvailable } from '~/data/db/storage';
 import type { Preferences, User } from '~/types/user';
-import { generateOfflineUser } from '~/utils';
+import { generateOfflineUser, profileToUser } from '~/utils';
 import { parseUserPreferences } from '~/utils/validation';
 
 type UserState = {
@@ -19,26 +19,32 @@ type UserActions = {
   setPreferences: (preferences: string | null) => void;
 };
 
-async function getUserFromDb() {
+async function getUserFromDb(): Promise<User | undefined> {
   try {
     if (!(await isLocalDbAvailable())) {
       return undefined;
     }
 
-    return await db.selectFrom('user').selectAll().executeTakeFirst();
+    const profile = await db
+      .selectFrom('profile')
+      .selectAll()
+      .executeTakeFirst();
+    return profile
+      ? profileToUser(profile, activeWorkspace.kind === 'account')
+      : undefined;
   } catch (error) {
     Sentry.captureException(error, {
-      extra: { message: 'Failed to fetch user from database' },
-      tags: { storage_error: 'fetch_user' },
+      extra: { message: 'Failed to fetch profile from database' },
+      tags: { storage_error: 'fetch_profile' },
     });
 
-    console.error('Failed to fetch user from database', error);
+    console.error('Failed to fetch profile from database', error);
     return undefined;
   }
 }
 
 const prefetchedUser = await getUserFromDb();
-const initialUser = prefetchedUser || generateOfflineUser();
+const initialUser = prefetchedUser || generateOfflineUser(activeWorkspace.id);
 
 export const useUserStore = create<UserState & UserActions>()((set, get) => ({
   user: initialUser,

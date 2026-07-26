@@ -31,7 +31,6 @@ describe('goal form values', () => {
       description: null,
       target: 12,
       unit: 'books',
-      userId: 'user-id',
       startDate: '2026-07-01T00:00:00.000Z',
       targetDate: '2026-12-31T00:00:00.000Z',
       createdAt: '2026-07-01T00:00:00.000Z',

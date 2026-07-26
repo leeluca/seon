@@ -10,9 +10,8 @@ export async function createGoal({
   startDate,
   targetDate,
   initialValue,
-  userId,
   type,
-}: GoalEditableFields & { userId: string }) {
+}: GoalEditableFields) {
   const { uuid, shortUuid } = generateUUIDs();
 
   await db
@@ -24,7 +23,6 @@ export async function createGoal({
       initialValue,
       target,
       unit,
-      userId,
       startDate,
       targetDate,
       createdAt: new Date().toISOString(),

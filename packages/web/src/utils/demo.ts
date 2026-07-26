@@ -12,7 +12,7 @@ import { generateUUIDs } from '~/utils';
 
 export const isDemo = import.meta.env.VITE_IS_DEMO === 'true';
 
-export const generateDemoData = async (userId: string) => {
+export const generateDemoData = async () => {
   const preferredLocale =
     useUserStore.getState().userPreferences.language ?? defaultLocale;
 
@@ -20,7 +20,7 @@ export const generateDemoData = async (userId: string) => {
     await dynamicallyImportLocale(preferredLocale);
   }
 
-  const goalsData = createSampleGoals(userId);
+  const goalsData = createSampleGoals();
 
   await Promise.all(
     goalsData.map((goal) => {
@@ -29,7 +29,7 @@ export const generateDemoData = async (userId: string) => {
   );
 
   const allEntries = goalsData.flatMap((goal) =>
-    createSampleEntries(goal.id, userId, goal.type as GoalType),
+    createSampleEntries(goal.id, goal.type as GoalType),
   );
 
   await Promise.all(
@@ -41,7 +41,7 @@ export const generateDemoData = async (userId: string) => {
   });
 };
 
-const createSampleGoals = (userId: string): Database['goal'][] => {
+const createSampleGoals = (): Database['goal'][] => {
   const today = new Date();
 
   return DEMO_GOAL_DATA.map((goalData) =>
@@ -54,7 +54,6 @@ const createSampleGoals = (userId: string): Database['goal'][] => {
       targetDate: addDays(today, goalData.targetDateOffset),
       unit: i18n._(goalData.unit),
       type: goalData.type,
-      userId,
       createdAt: addSeconds(new Date(), goalData.createdAtOffset),
     }),
   );
@@ -69,7 +68,6 @@ const createGoal = (data: {
   targetDate: Date;
   unit: string;
   type: string;
-  userId: string;
   createdAt?: Date;
 }): Database['goal'] => {
   const { uuid, shortUuid } = generateUUIDs();
@@ -88,7 +86,6 @@ const createGoal = (data: {
     unit: data.unit,
     createdAt: createdAt,
     updatedAt: createdAt,
-    userId: data.userId,
     type: data.type,
     completionDate: null,
     archivedAt: null,
@@ -97,7 +94,6 @@ const createGoal = (data: {
 
 const createSampleEntries = (
   goalId: string,
-  userId: string,
   goalType: GoalType,
 ): Database['entry'][] => {
   const today = new Date();
@@ -120,7 +116,6 @@ const createSampleEntries = (
           goalId,
           date,
           value: currentProgress,
-          userId,
         }),
       );
     });
@@ -138,7 +133,6 @@ const createSampleEntries = (
             goalId,
             date,
             value,
-            userId,
           }),
         );
       }
@@ -156,7 +150,6 @@ const createSampleEntries = (
           goalId,
           date,
           value,
-          userId,
         }),
       );
     });
@@ -169,7 +162,6 @@ const createEntry = (data: {
   goalId: string;
   date: Date;
   value: number;
-  userId: string;
 }): Database['entry'] => {
   const { uuid, shortUuid } = generateUUIDs();
   const now = new Date().toISOString();
@@ -182,6 +174,5 @@ const createEntry = (data: {
     date: data.date.toISOString(),
     createdAt: now,
     updatedAt: now,
-    userId: data.userId,
   };
 };

@@ -1,103 +1,59 @@
 import { describe, expect, it, vi } from 'vitest';
 
-function mockResetModule(options: {
-  storageBackend: 'opfs' | 'indexeddb';
-  purgeOpfsError?: unknown;
-  purgeIdbError?: unknown;
-}) {
+const workspace = {
+  version: 1 as const,
+  id: 'workspace-1',
+  clientId: 'client-1',
+  databaseFilename: 'seon-workspace-workspace-1.db',
+  storageBackend: 'indexeddb' as const,
+  kind: 'local' as const,
+  syncBinding: null,
+  createdAt: '2026-07-20T00:00:00.000Z',
+  updatedAt: '2026-07-20T00:00:00.000Z',
+};
+
+function mockResetModule(removeError?: unknown) {
   vi.resetModules();
-
   const captureException = vi.fn();
-  vi.doMock('@sentry/react', () => ({
-    default: {},
-    captureException,
-  }));
+  const remove = removeError
+    ? vi.fn().mockRejectedValue(removeError)
+    : vi.fn().mockResolvedValue(undefined);
 
-  const disconnect = vi.fn().mockResolvedValue(undefined);
-  const close = vi.fn().mockResolvedValue(undefined);
-
+  vi.doMock('@sentry/react', () => ({ captureException }));
   vi.doMock('~/data/db/database', () => ({
-    DB_NAME: 'seon-goals.db',
-    powerSyncDb: {
-      disconnect,
-      close,
-    },
-    storageBackend: options.storageBackend,
+    activeWorkspace: workspace,
+    workspaceDatabaseFactory: { remove },
   }));
 
-  const purgeOpfsStorage = vi
-    .fn()
-    .mockImplementation(() =>
-      options.purgeOpfsError
-        ? Promise.reject(options.purgeOpfsError)
-        : Promise.resolve(),
-    );
-  const purgeIndexedDbStorage = vi
-    .fn()
-    .mockImplementation(() =>
-      options.purgeIdbError
-        ? Promise.reject(options.purgeIdbError)
-        : Promise.resolve(),
-    );
-
-  vi.doMock('~/data/db/storage', () => ({
-    purgeOpfsStorage,
-    purgeIndexedDbStorage,
-  }));
-
-  return {
-    captureException,
-    disconnect,
-    close,
-    purgeOpfsStorage,
-    purgeIndexedDbStorage,
-  };
+  return { captureException, remove };
 }
 
 describe('resetLocalDatabase', () => {
-  it('purges OPFS when storageBackend=opfs', async () => {
-    const mocks = mockResetModule({ storageBackend: 'opfs' });
+  it('removes only the explicitly active workspace', async () => {
+    const mocks = mockResetModule();
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
     await expect(resetLocalDatabase()).resolves.toBeUndefined();
-
-    expect(mocks.disconnect).toHaveBeenCalledTimes(1);
-    expect(mocks.close).toHaveBeenCalledTimes(1);
-    expect(mocks.purgeOpfsStorage).toHaveBeenCalledTimes(1);
-    expect(mocks.purgeIndexedDbStorage).not.toHaveBeenCalled();
+    expect(mocks.remove).toHaveBeenCalledWith(workspace);
   });
 
-  it('purges IndexedDB when storageBackend=indexeddb', async () => {
-    const mocks = mockResetModule({ storageBackend: 'indexeddb' });
-    const { resetLocalDatabase } = await import('~/data/db/reset');
-
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
-
-    expect(mocks.disconnect).toHaveBeenCalledTimes(1);
-    expect(mocks.close).toHaveBeenCalledTimes(1);
-    expect(mocks.purgeOpfsStorage).not.toHaveBeenCalled();
-    expect(mocks.purgeIndexedDbStorage).toHaveBeenCalledTimes(1);
-    expect(mocks.purgeIndexedDbStorage).toHaveBeenCalledWith('seon-goals.db');
-  });
-
-  it('does not throw when purge fails (private-mode behavior)', async () => {
+  it('reports storage failures without crashing the current UI', async () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {});
-
-    const purgeError = new DOMException('blocked', 'UnknownError');
-    const mocks = mockResetModule({
-      storageBackend: 'indexeddb',
-      purgeIdbError: purgeError,
-    });
-
+    const error = new DOMException('blocked', 'UnknownError');
+    const mocks = mockResetModule(error);
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
     await expect(resetLocalDatabase()).resolves.toBeUndefined();
-    expect(mocks.purgeIndexedDbStorage).toHaveBeenCalledTimes(1);
-
-    expect(mocks.captureException).toHaveBeenCalled();
-
+    expect(mocks.captureException).toHaveBeenCalledWith(error, {
+      tags: { storage_error: 'reset_db_purge_failed' },
+      extra: {
+        workspaceId: workspace.id,
+        storageBackend: workspace.storageBackend,
+        dbFilename: workspace.databaseFilename,
+      },
+    });
     consoleErrorSpy.mockRestore();
   });
 });

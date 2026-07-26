@@ -21,11 +21,12 @@ import { useTimeout } from '~/hooks/useTimeout';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
-import { APIError } from '~/utils/errors';
 import SignOutButton from './SignOutButton';
 import UpdatePrompt from './UpdatePrompt';
+import { WorkspaceDataControls } from './WorkspaceDataControls';
 import { Button, buttonVariants } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Separator } from '../ui/separator';
 
 const LazyDemoIndicator = lazy(() => import('./DemoIndicator'));
 
@@ -94,14 +95,15 @@ function StatusMenu() {
     connecting,
   } = useStatus();
 
-  const [userName, useSync] = useUserStore(
+  const [localUserName, useSync] = useUserStore(
     useShallow((state) => [state.user.name, state.user.useSync]),
   );
   const [isFirstConnecting, setIsFirstConnecting] = useState(true);
 
-  const { data, isLoading, isError, error } = useFetchAuthStatus();
+  const { data, authState } = useFetchAuthStatus();
 
-  const isSignedIn = !!data?.result;
+  const isSignedIn = authState === 'authenticated';
+  const userName = data.user?.name ?? localUserName;
   const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;
@@ -117,9 +119,7 @@ function StatusMenu() {
   });
 
   const display: SyncStatusDisplay = (() => {
-    if (!isOnline) return 'offline';
-    if (isError && (!(error instanceof APIError) || error.status !== 401))
-      return 'error';
+    if (!isOnline || authState === 'offline') return 'offline';
     if (!isSignedIn) return 'notSignedIn';
     if (hasTimedOut) return 'error';
     if (isFirstConnecting || debouncedConnecting) return 'connecting';
@@ -136,7 +136,7 @@ function StatusMenu() {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  if (isLoading) {
+  if (authState === 'checking') {
     return (
       <output
         className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1"
@@ -261,6 +261,8 @@ function StatusMenu() {
           )}
 
           {display === 'error' && <SyncErrorContent />}
+          <Separator className="my-3" />
+          <WorkspaceDataControls />
         </PopoverContent>
       </Popover>
       {(isSignedIn || Boolean(useSync)) && (

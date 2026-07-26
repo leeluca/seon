@@ -41,7 +41,14 @@ export function SignUpPage() {
             </p>
           </div>
 
-          <SignUpForm onSignUpCallback={() => void navigate({ to: '/' })} />
+          <SignUpForm
+            onSignUpCallback={({ user }) =>
+              void navigate({
+                to: '/verify-email',
+                search: { email: user.email, error: undefined },
+              })
+            }
+          />
         </div>
       </main>
 

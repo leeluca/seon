@@ -20,26 +20,26 @@ import {
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils/';
 
-interface UpdateUserLanguageArgs {
-  userId: string;
+interface UpdateProfileLanguageArgs {
+  profileId: string;
   updatedLanguage: keyof typeof LOCALES;
 }
 
-async function updateUserLanguage({
-  userId,
+async function updateProfileLanguage({
+  profileId,
   updatedLanguage,
-}: UpdateUserLanguageArgs) {
+}: UpdateProfileLanguageArgs) {
   const updatedPreferences = JSON.stringify({
     ...useUserStore.getState().userPreferences,
     language: updatedLanguage,
   });
 
   await db
-    .updateTable('user')
+    .updateTable('profile')
     .set({
       preferences: updatedPreferences,
     })
-    .where('id', '=', userId)
+    .where('id', '=', profileId)
     .execute();
 
   useUserStore.getState().setPreferences(updatedPreferences);
@@ -81,8 +81,8 @@ export default function LanguageSelector() {
                     // FIXME: remove type assertion and validate on runtime
                     setValue(key as keyof typeof LOCALES);
                     user &&
-                      (await updateUserLanguage({
-                        userId: user.id,
+                      (await updateProfileLanguage({
+                        profileId: user.id,
                         updatedLanguage: key as keyof typeof LOCALES,
                       }));
                     refetchUser();

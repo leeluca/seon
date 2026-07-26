@@ -1,55 +1,82 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
-import type { APIError } from '~/utils/errors';
+import {
+  flushPendingSignOut,
+  hasPendingSignOut,
+} from '~/data/workspace/pendingSignOut';
+import {
+  authCallbackUrl,
+  authClient,
+  AuthClientError,
+  type BetterAuthUser,
+  toAuthClientError,
+} from '~/lib/auth-client';
 
-export const POST_SIGNUP_KEY = '/api/auth/signup';
+export const POST_SIGNUP_KEY = 'sign-up/email';
 
 export interface SignUpParams {
   email: string;
   password: string;
   name: string;
-  uuid: string;
-}
-export interface PostSignUpResponse {
-  result: boolean;
-  expiresAt: number;
-  user: {
-    name: string;
-    email: string;
-    id: string;
-    shortId: string;
-    useSync: true;
-  };
-}
-interface usePostSignUpProps {
-  onSuccess?: (data: PostSignUpResponse) => void;
-  onError?: (error: APIError) => void;
 }
 
-const usePostSignUp = ({ onSuccess, onError }: usePostSignUpProps = {}) => {
+export interface PostSignUpResponse {
+  result: true;
+  requiresEmailVerification: true;
+  user: BetterAuthUser;
+}
+
+interface UsePostSignUpProps {
+  onSuccess?: (data: PostSignUpResponse) => void;
+  onError?: (error: AuthClientError) => void;
+}
+
+const usePostSignUp = ({ onSuccess, onError }: UsePostSignUpProps = {}) => {
   const queryClient = useQueryClient();
-  return useMutation<PostSignUpResponse, APIError, SignUpParams>({
+
+  return useMutation<PostSignUpResponse, AuthClientError, SignUpParams>({
     mutationKey: [POST_SIGNUP_KEY],
-    mutationFn: (payload) =>
-      fetcher<PostSignUpResponse>(POST_SIGNUP_KEY, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-      }),
-    onSuccess: async (data) => {
-      if (data.result) {
-        await queryClient.invalidateQueries({
-          queryKey: AUTH_STATUS.all.queryKey,
+    mutationFn: async (payload) => {
+      if (hasPendingSignOut() && !(await flushPendingSignOut())) {
+        throw new AuthClientError({
+          message: 'Unable to finish the previous sign out',
         });
       }
+
+      let response: Awaited<ReturnType<typeof authClient.signUp.email>>;
+
+      try {
+        response = await authClient.signUp.email({
+          ...payload,
+          callbackURL: authCallbackUrl('/verify-email'),
+        });
+      } catch (error) {
+        throw toAuthClientError(error, 'Unable to create the account');
+      }
+
+      if (response.error || !response.data) {
+        throw toAuthClientError(response.error, 'Unable to create the account');
+      }
+
+      return {
+        result: true,
+        requiresEmailVerification: true,
+        user: response.data.user,
+      };
+    },
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({
+        queryKey: AUTH_STATUS.all.queryKey,
+      });
       onSuccess?.(data);
     },
-    onError: (err) => {
+    onError: (error) => {
       toast.error('Failed to sign up, please try again later.');
-      onError?.(err);
+      onError?.(error);
     },
   });
 };
+
 export default usePostSignUp;

@@ -1,20 +1,23 @@
 import { createContext, useContext } from 'react';
+import type { PowerSyncDatabase } from '@powersync/web';
 
-import type { SupabaseConnector } from '~/data/sync/SupabaseConnector';
+import type { PowerSyncConnector } from '~/data/sync/PowerSyncConnector';
 
-interface SupabaseConnectorContext {
-  connector: SupabaseConnector;
-  resetConnector: () => void;
+interface SyncEngineContextValue {
+  connector: PowerSyncConnector;
+  powerSync: PowerSyncDatabase;
+  syncEnabled: boolean;
+  accountMatchesWorkspace: boolean;
 }
 
-export const SupabaseContext = createContext<
-  SupabaseConnectorContext | undefined
+export const SyncEngineContext = createContext<
+  SyncEngineContextValue | undefined
 >(undefined);
 
-export const useSupabase = () => {
-  const context = useContext(SupabaseContext);
+export const useSyncEngine = () => {
+  const context = useContext(SyncEngineContext);
   if (!context) {
-    throw new Error('useSupabase must be used within a SupabaseProvider');
+    throw new Error('useSyncEngine must be used within SyncProvider');
   }
   return context;
 };

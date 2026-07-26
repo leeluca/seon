@@ -2,24 +2,27 @@ import { useMemo, type ReactNode } from 'react';
 import { PowerSyncContext } from '@powersync/react';
 
 import { usePowerSyncConnector } from '~/hooks/usePowerSyncConnector';
-import { SupabaseContext } from './syncContext';
+import { SyncEngineContext } from './syncContext';
 
 export function SyncProvider({ children }: { children: ReactNode }) {
-  const { connector, powerSync, resetConnector } = usePowerSyncConnector();
+  const { connector, powerSync, syncEnabled, accountMatchesWorkspace } =
+    usePowerSyncConnector();
 
   const connectorValue = useMemo(
     () => ({
       connector,
-      resetConnector,
+      powerSync,
+      syncEnabled,
+      accountMatchesWorkspace,
     }),
-    [connector, resetConnector],
+    [connector, powerSync, syncEnabled, accountMatchesWorkspace],
   );
 
   return (
     <PowerSyncContext.Provider value={powerSync}>
-      <SupabaseContext.Provider value={connectorValue}>
+      <SyncEngineContext.Provider value={connectorValue}>
         {children}
-      </SupabaseContext.Provider>
+      </SyncEngineContext.Provider>
     </PowerSyncContext.Provider>
   );
 }

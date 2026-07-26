@@ -5,6 +5,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 import type { Database } from '~/data/db/AppSchema';
 import { defaultLocale } from '~/locales/i18n';
+import type { User } from '~/types/user';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,18 +19,33 @@ export const generateUUIDs = () => {
   return { uuid, shortUuid };
 };
 
-export const generateOfflineUser = () => {
-  const { uuid, shortUuid } = generateUUIDs();
+export const profileToUser = (
+  profile: Database['profile'],
+  useSync = false,
+): User => {
+  const translator = createTranslator();
   return {
-    id: uuid,
-    shortId: shortUuid,
+    ...profile,
+    shortId: translator.fromUUID(profile.id),
+    useSync: Number(useSync),
+  };
+};
+
+export const generateOfflineProfile = (
+  id = generateUUIDs().uuid,
+): Database['profile'] => {
+  const timestamp = new Date().toISOString();
+  return {
+    id,
     name: 'randomName',
     email: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    useSync: Number(false),
+    createdAt: timestamp,
+    updatedAt: timestamp,
     preferences: JSON.stringify({
       language: defaultLocale,
     }),
-  } satisfies Database['user'];
+  };
 };
+
+export const generateOfflineUser = (id?: string): User =>
+  profileToUser(generateOfflineProfile(id));

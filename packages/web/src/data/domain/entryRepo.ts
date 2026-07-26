@@ -7,12 +7,10 @@ export async function recordEntry({
   value,
   date,
   goalId,
-  userId,
 }: {
   value: number;
   date: Date;
   goalId: string;
-  userId: string;
 }) {
   const startOfDay = new Date(date.setHours(0, 0, 0, 0));
   const endOfDay = new Date(date.setHours(23, 59, 59, 999));
@@ -48,7 +46,6 @@ export async function recordEntry({
           date: date.toISOString(),
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          userId,
         })
         .execute();
     }

@@ -1,51 +1,53 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import fetcher from '~/apis/fetcher';
-import { signOutLocally } from '~/data/domain/authRepo';
-import { useUserStore } from '~/states/stores/userStore';
-import { useSupabase } from '~/states/syncContext';
-import type { APIError } from '~/utils/errors';
+import { AUTH_STATUS } from '~/constants/query';
+import {
+  authClient,
+  type AuthClientError,
+  toAuthClientError,
+} from '~/lib/auth-client';
+import { createUnauthenticatedAuthStatus } from './useFetchAuthStatus';
 
-export const POST_SIGNOUT_KEY = '/api/auth/signout';
+export const POST_SIGNOUT_KEY = 'sign-out';
 
-interface PostSignOutResponse {
-  result: boolean;
+export interface PostSignOutResponse {
+  result: true;
 }
-interface usePostSignOutProps {
+
+interface UsePostSignOutProps {
   onSuccess?: (data: PostSignOutResponse) => void;
-  onError?: (error: APIError) => void;
+  onError?: (error: AuthClientError) => void;
 }
 
-// FIXME: should work offline
-const usePostSignOut = ({ onSuccess, onError }: usePostSignOutProps = {}) => {
-  const setUserIsInitialized = useUserStore((state) => state.setIsInitialized);
-  const { resetConnector } = useSupabase();
+const usePostSignOut = ({ onSuccess, onError }: UsePostSignOutProps = {}) => {
   const queryClient = useQueryClient();
 
-  return useMutation<PostSignOutResponse, APIError, void>({
+  return useMutation<PostSignOutResponse, AuthClientError, void>({
     mutationKey: [POST_SIGNOUT_KEY],
-    mutationFn: () =>
-      fetcher<PostSignOutResponse>(POST_SIGNOUT_KEY, {
-        method: 'POST',
-      }),
-    onSuccess: async (data) => {
-      if (data.result) {
-        onSuccess?.(data);
-        await signOutLocally({
-          resetConnector,
-          resetLocalUser: () => setUserIsInitialized(false),
-          queryClient,
-        });
+    mutationFn: async () => {
+      let response: Awaited<ReturnType<typeof authClient.signOut>>;
+
+      try {
+        response = await authClient.signOut();
+      } catch (error) {
+        throw toAuthClientError(error, 'Unable to sign out');
       }
+
+      if (response.error || !response.data?.success) {
+        throw toAuthClientError(response.error, 'Unable to sign out');
+      }
+
+      return { result: true };
     },
-    onError: async (err) => {
-      onError?.(err);
-      await signOutLocally({
-        resetConnector,
-        resetLocalUser: () => setUserIsInitialized(false),
-        queryClient,
-      });
+    onSuccess: (data) => {
+      queryClient.setQueryData(
+        AUTH_STATUS.all.queryKey,
+        createUnauthenticatedAuthStatus(),
+      );
+      onSuccess?.(data);
     },
+    onError,
   });
 };
+
 export default usePostSignOut;

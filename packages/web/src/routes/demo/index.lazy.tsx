@@ -22,17 +22,18 @@ export function IndexRouteComponent() {
 
   const initializeUser = async () => {
     setIsLoading(true);
+    const { id, name, email, preferences, createdAt, updatedAt } = user;
     await db
-      .insertInto('user')
-      .values(user)
+      .insertInto('profile')
+      .values({ id, name, email, preferences, createdAt, updatedAt })
       .returningAll()
       .executeTakeFirstOrThrow();
-    fetchUser();
+    await fetchUser();
 
     const existingGoals = await db.selectFrom('goal').selectAll().execute();
 
     if (existingGoals.length === 0) {
-      await generateDemoData(user.id);
+      await generateDemoData();
     }
   };
 

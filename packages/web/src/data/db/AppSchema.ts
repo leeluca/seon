@@ -19,16 +19,14 @@ const column = {
   >,
 };
 
-const user = new Table(
+const profile = new Table(
   {
     // id column (text) is automatically included
-    shortId: column.text,
     name: column.text,
     email: column.optionalText,
+    preferences: column.optionalText,
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
-    useSync: column.boolean,
-    preferences: column.optionalText,
   },
   { indexes: {} },
 );
@@ -42,12 +40,10 @@ const entry = new Table(
     date: column.text,
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
-    userId: column.text,
   },
   {
     indexes: {
       goalId_date: ['goalId', 'date'],
-      userId: ['userId'],
     },
   },
 );
@@ -61,7 +57,6 @@ const goal = new Table(
     description: column.optionalText,
     target: column.integer,
     unit: column.text,
-    userId: column.text,
     startDate: column.timestamp,
     targetDate: column.timestamp,
     createdAt: column.timestamp,
@@ -74,16 +69,47 @@ const goal = new Table(
   },
   {
     indexes: {
-      userId: ['userId'],
       archivedAt: ['archivedAt'],
     },
   },
 );
 
+const workspaceMeta = new Table(
+  {
+    value: column.text,
+    updatedAt: column.timestamp,
+  },
+  { localOnly: true, indexes: {} },
+);
+
+const syncError = new Table(
+  {
+    transactionId: column.text,
+    operationIndex: column.integer,
+    entity: column.text,
+    entityId: column.text,
+    operation: column.text,
+    code: column.text,
+    message: column.text,
+    payload: column.optionalText,
+    createdAt: column.timestamp,
+    resolvedAt: column.optionalTimestamp,
+  },
+  {
+    localOnly: true,
+    indexes: {
+      unresolved: ['resolvedAt'],
+      transactionId: ['transactionId'],
+    },
+  },
+);
+
 export const AppSchema = new Schema({
-  user,
+  profile,
   entry,
   goal,
+  workspace_meta: workspaceMeta,
+  sync_error: syncError,
 });
 
 export type Database = (typeof AppSchema)['types'];
