@@ -20,16 +20,22 @@ Seon(선)이라는 이름은 '선(線)'을 뜻하며, 진행 차트에 표시되
 - ⚡ 로컬 CRUD를 통한 즉각적인 UI 반응
 - 🔄 선택적 동기화 기능
 - 📊 시각적 목표 추적
-- 🌐 다국어 지원 (한국어, 영어)
+- 🌐 다국어 지원 (한국어, 영어, 포르투갈어)
 
 ## 아키텍처
 
-Seon은 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 아키텍처로 개발되었습니다. 모든 CRUD 작업은 먼저 클라이언트 SQLite 인스턴스에서 실행되며, 이는 클라이언트 애플리케이션의 진실 공급원 역할을 합니다. 변경 사항은 백엔드 PostgreSQL 데이터베이스와의 선택적 복제를 위해 대기열에 추가됩니다. 데이터베이스는 클라이언트와 DB 사이에 중간 서버 없이 RLS(Row-Level Security)로 보호됩니다.
+Seon은 워크스페이스별 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 앱입니다. 모든 CRUD 작업은 먼저 브라우저에서 실행되므로 서버 없이도 사용할 수 있으며, 로그인은 선택적 동기화만 활성화합니다.
 
-백엔드는 변경 스트림 메커니즘을 사용하여 수정 사항을 감지하고 관련 클라이언트에 전파하여, 로컬 데이터베이스가 독립적으로 작동하면서도 최신 상태를 유지할 수 있도록 합니다. 클라이언트의 데이터는 개발자가 정의한 동기화 규칙에 따라 분할되어 각 클라이언트에 복제될 데이터 하위 집합을 결정합니다(PowerSync를 통해 중재됨).<br><br>
+인증은 HttpOnly 쿠키 기반의 취소 가능한 Better Auth 데이터베이스 세션을 사용하며, 15분 서명 쿠키 캐시로 서버 조회를 줄입니다. 브라우저는 액세스 토큰, 리프레시 토큰, 데이터베이스 자격 증명을 저장하지 않습니다. 업로드는 공급자 중립적인 Seon 동기화 API를 거치고, PowerSync는 현재 사용자별 변경 사항 다운로드를 담당합니다. 브라우저에는 로컬 또는 계정 연결 워크스페이스 하나만 활성화됩니다.<br><br>
 
-![Architecture Diagram](https://github.com/user-attachments/assets/94693c6d-df97-456f-861a-de76a2a8c1a2)
-<br>
+```mermaid
+flowchart LR
+  UI[웹 앱] --> SQLite[(워크스페이스 SQLite)]
+  SQLite -->|업로드 대기열| API[Seon 인증 + 동기화 API]
+  API --> PG[(Postgres)]
+  PG --> PS[PowerSync]
+  PS -->|사용자별 다운로드| SQLite
+```
 
 ## 기술 스택
 
@@ -55,11 +61,12 @@ Seon은 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 아키�
     • Hono<br>
     • PostgreSQL<br>
     • Drizzle ORM<br>
-    • jose (인증)
+    • Better Auth<br>
+    • Resend 이메일 어댑터
   </td>
   <td>
-    • PowerSync<br>
-    • Supabase SDK
+    • Seon 동기화 API<br>
+    • PowerSync
   </td>
 </tr>
 </table>
@@ -68,8 +75,8 @@ Seon은 SQLite를 주 데이터 저장소로 사용하는 로컬 우선 아키�
 
 ### 필수 조건
 
-- Node.js 20.12.0 이상
-- pnpm 패키지 매니저
+- Node.js 24
+- pnpm 11
 
 ### 설치
 
@@ -88,8 +95,11 @@ pnpm install
 3. 애플리케이션 실행:
 
 ```sh
-pnpm -filter seon-web build
-pnpm -filter seon-web serve
+pnpm --filter web build
+pnpm --filter web serve
 ```
 
-→ 서버 설정 방법 안내는 곧 제공될 예정입니다.
+개발 환경에서는 `packages/server/.env.example`과
+`packages/web/.env.local.example`을 복사해 설정하세요. 운영 환경에는
+Cloudflare Pages의 `API_ORIGIN` 런타임 변수와
+`packages/server/powersync/README.md`에 설명된 PowerSync 설정도 필요합니다.

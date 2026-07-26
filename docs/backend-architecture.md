@@ -1,103 +1,56 @@
-# Backend Architecture (Server)
+# Backend architecture
 
-Defines the target structure for the server package with multi-runtime support and clear service boundaries.
+The server is intentionally narrow: identity, email-based account recovery,
+sync authorization, and atomic upload persistence.
 
-## Principles
+## Authentication
 
-- Thin server: auth and sync only; client DB is source of truth.
-- Multi-runtime: works on Node.js and Cloudflare Workers without code changes.
-- Service-oriented: routes delegate to services; services own business logic.
-- Hybrid caching: expensive operations (JWT keys) cached globally; service instances per-request.
-- Explicit dependencies: services receive dependencies via factory functions.
+- Better Auth is mounted at `/api/auth/*` through Hono.
+- Sessions are revocable database records with a 90-day rolling lifetime and a
+  maximum daily renewal.
+- A signed 15-minute cookie cache avoids a session-table read on every request.
+  Revocation on another device can therefore take up to 15 minutes to become
+  visible; the current device's signout cookie is cleared immediately.
+- Browser credentials are HttpOnly, secure, same-site cookies. Browser code
+  does not persist access or refresh tokens.
+- Email verification is required before sync. Verification and password reset
+  emails use the provider-neutral `EmailSender`; Resend is the production
+  adapter. Delivery runs outside the response path so provider timing and
+  failures cannot reveal whether an email address is registered.
+- The JWT plugin issues a separate minimal 15-minute RS256 token only when an
+  authenticated PowerSync connection requests `/api/sync/credentials`.
 
-## Target Directory Layout (packages/server/src)
+The identity tables (`user`, `session`, `account`, `verification`, `jwks`) are
+owned by Better Auth. Application preferences live in `profile`, not in the
+identity model.
 
-```
-packages/server/src/
+## Sync API
 
-├── index.ts                  # Entry point (Node.js startup, Workers export)
-├── app.ts                    # Hono app factory, middleware registration
-├── env.ts                    # Typed env schema + validation
-│
-├── routes/
-│   └── auth.ts               # Thin route handlers (delegate to services)
-│
-├── services/
-│   ├── auth.service.ts       # Auth business logic (signin, signup, tokens)
-│   ├── jwt.service.ts        # JWT operations (sign, verify, cookies)
-│   └── password.ts           # Password hashing (stateless utilities)
-│
-├── middleware/
-│   └── auth.ts               # Access validation middleware
-│
-├── db/
-│   ├── db.ts                 # Database connection factory
-│   ├── schema.ts             # Drizzle table definitions
-│   └── relations.ts          # Drizzle relations
-│
-├── types/
-│   ├── context.ts            # Hono context types (Variables, service types)
-│   └── validation.ts         # Request validation schemas (TypeBox)
-│
-├── constants/
-│   └── config.ts             # Cookie settings, feature flags
-│
-└── utils/
-    ├── id.ts                 # UUID generation/validation
-    └── validation.ts         # TypeBox parsing helpers
-```
+The browser never has database credentials. `POST /api/sync/transactions`:
 
-## Layer Responsibilities
+1. derives the owner from the Better Auth session;
+2. validates a strict goal/entry/profile allowlist;
+3. checks row and relationship ownership without revealing foreign records;
+4. claims `(userId, workspaceClientId, transactionId)` for idempotency;
+5. applies the whole local transaction or none of it;
+6. records semantic rejections so the browser can move them into its local
+   `sync_error` table rather than blocking the queue. Because uploads are
+   atomic, valid sibling operations are also recorded instead of being silently
+   discarded when one operation is rejected.
 
-- `index.ts` / `app.ts`: composition only (runtime detection, middleware wiring, route registration).
-- `services/*`: business logic; own auth flows, token management, credential validation; no HTTP concerns.
-- `routes/*`: thin handlers; validate input, call services, return responses.
-- `middleware/*`: cross-cutting concerns (auth validation, context setup).
-- `db/*`: data access; schema definitions, connection management.
+Server arrival order is the conflict rule: the last successfully committed
+upload wins. Client-provided `userId` and `updatedAt` values are never trusted.
 
-## Service Layer Details
+PowerSync is a download adapter, configured in
+`packages/server/powersync/sync-streams.yaml`. Replacing it does not change the
+upload or auth contracts.
 
-- `jwt.service.ts`: owns JWT signing, verification, cookie management; caches keys globally; service instance created per-request.
-- `auth.service.ts`: owns signin/signup flows, refresh token rotation, credential validation; receives JWT service as dependency.
-- `password.ts`: stateless utilities for hashing and comparison; no service wrapper needed.
+## Schema changes
 
-## Caching Strategy
+`0002_auth_sync_reset.sql` intentionally clears pre-launch custom-auth users,
+goals, entries, and refresh tokens. `0003_auth_sync_schema.sql` installs the
+Better Auth/profile/idempotency schema. They are generated artifacts only:
+neither development nor deployment runs them automatically.
 
-- JWT keys (RSA import): cached globally; expensive (~50ms), immutable after init.
-- JWT configs: cached globally; derived from keys, immutable.
-- Service instances: created per-request; lightweight objects, allows context access.
-- DB connection: global singleton with lazy init; connection pooling handled by driver.
-
-## Route Handler Guidelines
-
-- Keep handlers thin: validate, delegate, respond.
-- Use TypeBox validators (`tbValidator`) for request validation.
-- Return consistent response shapes.
-- Delegate all business logic and DB access to services.
-- Create services directly via factory functions (`createJWTService(c)`, `createAuthService(c)`).
-
-## Service Initialization
-
-- Services created directly in handlers/middleware via factory functions.
-- JWT service created first (async, requires key init on cold start).
-- Auth service receives JWT service as dependency: `createAuthService(c, { jwtService })`.
-- Factory functions are cheap after first call (keys/configs cached globally).
-
-## Multi-Runtime Guidelines
-
-- Use `getRuntimeKey()` from `hono/adapter` for runtime detection.
-- Access env vars via `env(c)` for Workers compatibility.
-- Conditional imports for Node.js-specific code (`@hono/node-server`).
-- Export default fetch handler for Workers entry.
-
-## Environment Configuration
-
-- All env vars defined in `env.ts` with TypeBox schema.
-- Access via `env(c)` from `hono/adapter`, never `process.env` directly.
-- Validation runs at app startup; fails fast on missing/invalid vars.
-
-## Testing Conventions
-
-- `resetJWTCache()` available for test isolation (clears global key cache).
-- Mock services by mocking factory functions (`vi.mock('../services/jwt.service.js')`).
-- Integration tests use real middleware chain with test database.
+Apply and validate them manually against disposable staging Postgres before
+cutover, then reconfigure PowerSync publication/streams and JWKS settings.
