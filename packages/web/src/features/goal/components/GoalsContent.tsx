@@ -10,6 +10,7 @@ import { updateGoalProgress } from '~/data/domain/progress';
 import type { GoalFilter, GoalSort } from '~/features/goal/model';
 import { useUserStore } from '~/states/stores/userStore';
 import GoalCard from './GoalCard';
+import { HabitRow } from './HabitRow';
 import type { NoGoalsPlaceholderProps } from './NoGoalsPlaceholder';
 
 const LazyNoGoalsPlaceholder = lazy(() => import('./NoGoalsPlaceholder'));
@@ -85,28 +86,41 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
   //   refresh?.();
   // }, [refresh]);
 
+  const habits = goals.filter((goal) => goal.type === 'BOOLEAN');
+  const pacedGoals = goals.filter((goal) => goal.type !== 'BOOLEAN');
+
   return (
-    <section
-      className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6"
-      aria-label={t`Goals list`}
-    >
-      {showNoGoals &&
-        (isSyncing ? (
-          <SyncingPlaceholder />
-        ) : (
-          <NoGoalsPlaceholder
-            onClick={openNewGoalForm}
-            className="mt-5"
-            filter={filter}
-          />
+    <>
+      <section
+        className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-4 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-6"
+        aria-label={t`Goals list`}
+      >
+        {showNoGoals &&
+          (isSyncing ? (
+            <SyncingPlaceholder />
+          ) : (
+            <NoGoalsPlaceholder
+              onClick={openNewGoalForm}
+              className="mt-5"
+              filter={filter}
+            />
+          ))}
+        {pacedGoals.map((goal) => (
+          <GoalCard key={goal.id} goal={goal} />
         ))}
-      {goals.map((goal) => (
-        <GoalCard
-          key={goal.id}
-          {...goal}
-          // onDeleteSuccess={handleDeleteSuccess}
-        />
-      ))}
-    </section>
+      </section>
+      {habits.length > 0 && (
+        <section className="mt-10" aria-label={t`Daily practices`}>
+          <h2 className="text-muted-foreground mb-3 text-xs font-semibold tracking-widest uppercase">
+            <Trans>Daily practices</Trans>
+          </h2>
+          <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-3 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-x-6 sm:gap-y-4">
+            {habits.map((goal) => (
+              <HabitRow key={goal.id} goal={goal} />
+            ))}
+          </div>
+        </section>
+      )}
+    </>
   );
 }

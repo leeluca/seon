@@ -6,6 +6,7 @@ import {
   getPaceStatus,
   getPercentComplete,
   getProjectedFinish,
+  getSparklineSeries,
   getStreak,
   getSuggestedToday,
   hasEntryOnDay,
@@ -234,6 +235,57 @@ describe('getStreak', () => {
 
   it('is zero after a full missed day', () => {
     expect(getStreak([entry(day(2026, 3, 27), 1)], day(2026, 3, 30))).toBe(0);
+  });
+});
+
+describe('getSparklineSeries', () => {
+  const goal = {
+    type: 'COUNT',
+    initialValue: 0,
+    target: 100,
+    startDate: day(2026, 1, 1).toISOString(),
+    targetDate: day(2026, 1, 10).toISOString(),
+  };
+
+  it('accumulates COUNT entries per day, seeding pre-window history', () => {
+    const today = day(2026, 1, 8);
+    const entries = [
+      entry(day(2026, 1, 2), 10), // before the 5-day window
+      entry(day(2026, 1, 5), 5),
+      entry(day(2026, 1, 7), 5),
+    ];
+    const series = getSparklineSeries(goal, entries, today, 5);
+
+    // Window: Jan 4–8. Baseline 10, +5 on the 5th, +5 on the 7th.
+    expect(series.values).toEqual([10, 15, 15, 20, 20]);
+  });
+
+  it('carries the latest PROGRESS reading forward', () => {
+    const today = day(2026, 1, 8);
+    const entries = [entry(day(2026, 1, 2), 40), entry(day(2026, 1, 6), 55)];
+    const series = getSparklineSeries(
+      { ...goal, type: 'PROGRESS' },
+      entries,
+      today,
+      5,
+    );
+    expect(series.values).toEqual([40, 40, 55, 55, 55]);
+  });
+
+  it('exposes the pace line endpoints over the same window', () => {
+    // 10/day; expectation at start-of-day: Jan 4 → 30, Jan 8 → 70.
+    const series = getSparklineSeries(goal, [], day(2026, 1, 8), 5);
+    expect(series.ideal).toEqual({ start: 30, end: 70 });
+  });
+
+  it('has no pace line for degenerate targets', () => {
+    const series = getSparklineSeries(
+      { ...goal, target: 0 },
+      [],
+      day(2026, 1, 8),
+      5,
+    );
+    expect(series.ideal).toBeNull();
   });
 });
 

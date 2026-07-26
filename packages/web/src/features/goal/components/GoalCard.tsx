@@ -1,276 +1,151 @@
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type PointerEvent as ReactPointerEvent,
-} from 'react';
-import { msg, plural, type MacroMessageDescriptor } from '@lingui/core/macro';
-import { useLingui } from '@lingui/react/macro';
+import { useMemo, useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
+import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { differenceInCalendarDays, isBefore, startOfDay } from 'date-fns';
-import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
+import { format, isSameYear, isToday } from 'date-fns';
+import { ChevronRightIcon, PlusIcon } from 'lucide-react';
 
+import { ENTRIES } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
-import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
 import {
-  getProgressStatus,
-  type ProgressStatus,
-} from '~/features/goal/goalProgress';
-import { buttonVariants } from '~/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '~/shared/components/ui/card';
+  getGoalMetrics,
+  getSparklineSeries,
+  type GoalMetrics,
+} from '~/data/domain/goalMetrics';
+import CreateEntryForm from '~/features/entry/components/CreateEntryForm';
+import type { GoalType } from '~/features/goal/model';
+import { Button } from '~/shared/components/ui/button';
+import { Card, CardContent, CardHeader } from '~/shared/components/ui/card';
+import { ResponsivePopover } from '~/shared/components/ui/responsive-popover';
 import { useViewportStore } from '~/states/stores/viewportStore';
-import { cn } from '~/utils';
+import { GoalSparkline } from './GoalSparkline';
+import { PaceChip } from './StatChips';
 
-const HOLD_REVEAL_DELAY_MS = 100;
+const formatDay = (value: string, today: Date) => {
+  const date = new Date(value);
+  return format(date, isSameYear(date, today) ? 'MMM d' : 'MMM d, yyyy');
+};
 
-interface ProgressBarProps {
-  progressPercent: number;
-  target: number;
-  currentValue: number;
-  isRevealed: boolean;
-}
-
-function ProgressBar({
-  progressPercent,
-  target,
-  currentValue,
-  isRevealed,
-}: ProgressBarProps) {
-  const isLabelInsideFill = progressPercent > 85;
-
-  return (
-    <div
-      role="progressbar"
-      aria-valuenow={currentValue}
-      aria-valuemin={0}
-      aria-valuemax={target}
-      aria-valuetext={`${currentValue.toFixed(0)}/${target}`}
-      tabIndex={-1}
-      data-interactive
-      className="bg-muted relative h-5 w-full cursor-default overflow-hidden rounded-md"
-    >
-      <div
-        className="relative h-full rounded-md bg-cyan-500/30 transition-all group-hover/progress:bg-cyan-500/50"
-        style={{ width: `${Math.max(progressPercent, 2)}%` }}
-      >
-        <span
-          className={cn(
-            'text-foreground/70 absolute inset-y-0 flex items-center text-xs font-medium whitespace-nowrap tabular-nums',
-            'opacity-0 transition-opacity group-hover/progress:opacity-100',
-            isLabelInsideFill ? 'right-1.5' : 'left-full ml-1.5',
-            isRevealed && 'opacity-100',
-          )}
-        >
-          {`${progressPercent.toFixed(0)}%`}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function getProgressIconAndMessage(
-  status: ProgressStatus,
-  t: (descriptor: MacroMessageDescriptor) => string,
-) {
-  switch (status) {
-    case 'behind':
-      return {
-        icon: '😟',
-        message: t(msg`Behind schedule!`),
-        progressStatus: status,
-      };
-    case 'onTrack':
-      return {
-        icon: '🙂',
-        message: t(msg`Right on track!`),
-        progressStatus: status,
-      };
-    case 'ahead':
-      return {
-        icon: '😎',
-        message: t(msg`Ahead of schedule!`),
-        progressStatus: status,
-      };
-    case 'complete':
-      return {
-        icon: '🥳',
-        message: t(msg`Goal achieved!`),
-        progressStatus: status,
-      };
-    default:
-      return { icon: '', message: '', progressStatus: status };
+function CardFooterStatus({
+  goal,
+  metrics,
+}: {
+  goal: Database['goal'];
+  metrics: GoalMetrics;
+}) {
+  if (metrics.pace.kind === 'completed') {
+    return <Trans>Goal achieved</Trans>;
   }
+  if (metrics.pace.kind === 'notStarted') {
+    return <Trans>Starts {formatDay(goal.startDate, new Date())}</Trans>;
+  }
+
+  const suggested = (
+    <span className="text-foreground font-medium tabular-nums">
+      {metrics.suggestedToday}
+    </span>
+  );
+
+  return goal.type === 'PROGRESS' ? (
+    <Trans>Reach {suggested} today to stay on pace</Trans>
+  ) : (
+    <Trans>{suggested}/day finishes on time</Trans>
+  );
 }
 
-export default function GoalCard({
-  title,
-  target,
-  id,
-  startDate,
-  targetDate,
-  initialValue,
-  shortId,
-  currentValue: baseCurrentValue,
-}: Database['goal']) {
+export default function GoalCard({ goal }: { goal: Database['goal'] }) {
   const { t } = useLingui();
-  const [isRevealed, setIsRevealed] = useState(false);
-  const holdTimerRef = useRef<number | null>(null);
-
-  const clearHoldTimer = useCallback(() => {
-    if (holdTimerRef.current !== null) {
-      window.clearTimeout(holdTimerRef.current);
-      holdTimerRef.current = null;
-    }
-  }, []);
-
-  const startHoldReveal = useCallback(
-    (event: ReactPointerEvent) => {
-      if (event.pointerType === 'mouse') return;
-      clearHoldTimer();
-      holdTimerRef.current = window.setTimeout(
-        () => setIsRevealed(true),
-        HOLD_REVEAL_DELAY_MS,
-      );
-    },
-    [clearHoldTimer],
-  );
-
-  const endHoldReveal = useCallback(
-    (event: ReactPointerEvent) => {
-      if (event.pointerType === 'mouse') return;
-      clearHoldTimer();
-      setIsRevealed(false);
-    },
-    [clearHoldTimer],
-  );
-
-  useEffect(() => clearHoldTimer, [clearHoldTimer]);
-
-  const currentValue = baseCurrentValue ?? initialValue;
-  const progressPercent = Math.max(
-    Math.min((currentValue / target) * 100, 100),
-    0,
-  );
   const isMobile = useViewportStore((state) => state.isMobile);
+  const [isLogOpen, setIsLogOpen] = useState(false);
+  const { data: entries = [] } = useQuery(ENTRIES.goalId(goal.id));
 
-  const checkBlockedDateFn = useCallback(
-    (date: Date) => isBefore(startOfDay(date), startOfDay(startDate)),
-    [startDate],
-  );
+  const { metrics, series, todayEntry } = useMemo(() => {
+    const today = new Date();
+    return {
+      metrics: getGoalMetrics(goal, entries, today),
+      series: getSparklineSeries(goal, entries, today),
+      todayEntry: entries.find((entry) => isToday(new Date(entry.date))),
+    };
+  }, [goal, entries]);
 
-  const { icon, message, progressStatus } = getProgressIconAndMessage(
-    getProgressStatus({
-      currentValue,
-      initialValue,
-      target,
-      startDate,
-      targetDate,
-    }),
-    t,
-  );
-
-  const daysRemaining = differenceInCalendarDays(
-    new Date(targetDate),
-    new Date(),
-  );
-  const timeLeftLabel =
-    progressStatus === 'complete'
-      ? null
-      : daysRemaining >= 0
-        ? plural(daysRemaining, {
-            one: '# day left',
-            other: '# days left',
-          })
-        : t`Past due`;
+  const currentValue = Math.round(goal.currentValue ?? goal.initialValue);
+  const unit = goal.unit?.trim();
 
   return (
     <Card
       size="sm"
-      className="w-full max-w-[600px] rounded-2xl pb-6 text-center shadow-xs"
-      data-testid={`goal-card-${id}`}
+      className="ring-border hover:ring-border relative w-full max-w-[600px] rounded-2xl shadow-xs transition-[translate,box-shadow] hover:-translate-y-px hover:shadow-sm"
+      data-testid={`goal-card-${goal.id}`}
     >
       <CardHeader>
-        <CardTitle className="w-full text-center text-xl font-medium sm:text-2xl">
-          <Link
-            to="/goals/$id"
-            params={{ id }}
-            mask={{
-              to: '/goals/$id',
-              params: { id: shortId },
-            }}
-            aria-label={t`Toggle goal details`}
-            className={cn(
-              buttonVariants({
-                variant: 'ghost',
-                size: 'lg',
-              }),
-              'relative flex w-full items-center text-xl font-medium sm:text-2xl',
-            )}
-          >
-            <span className="flex-1 text-center">{title}</span>
-            {isMobile ? (
-              <ChevronUpIcon className="absolute right-2" />
-            ) : (
-              <ChevronRightIcon className="absolute right-2" />
-            )}
-          </Link>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <CalendarHeatmap
-          goalId={id}
-          checkBlockedDateFn={checkBlockedDateFn}
-          blockedDateFeedback={t`Before goal's start date`}
-          className="-mx-2 sm:mx-0"
-        />
-        {/* biome-ignore lint/a11y/noStaticElementInteractions: touch-only hold-to-reveal of decorative labels; values stay exposed via aria-valuetext */}
-        <div
-          className="group/progress flex flex-col gap-1.5 select-none"
-          onPointerDown={startHoldReveal}
-          onPointerUp={endHoldReveal}
-          onPointerCancel={endHoldReveal}
-          onPointerLeave={endHoldReveal}
-          onContextMenu={(event) => {
-            if (isRevealed) event.preventDefault();
-          }}
-        >
-          <div className="flex items-center justify-between gap-2 px-0.5 text-sm">
-            <span className="inline-flex items-center gap-1.5 font-medium">
-              <span aria-hidden className="font-noto-emoji text-lg">
-                {icon}
-              </span>
-              <span
-                className={cn(
-                  'opacity-0 transition-opacity group-hover/progress:opacity-100',
-                  isRevealed && 'opacity-100',
-                )}
-              >
-                {message}
-              </span>
-            </span>
-            {timeLeftLabel && (
-              <span
-                className={cn(
-                  'text-muted-foreground text-xs opacity-0 transition-opacity group-hover/progress:opacity-100',
-                  isRevealed && 'opacity-100',
-                )}
-              >
-                {timeLeftLabel}
-              </span>
-            )}
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-heading min-w-0 truncate text-base font-semibold sm:text-lg">
+            <Link
+              to="/goals/$id"
+              params={{ id: goal.id }}
+              mask={{ to: '/goals/$id', params: { id: goal.shortId } }}
+              aria-label={t`View ${goal.title} details`}
+              className="focus-visible:after:ring-ring/50 after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2"
+            >
+              {goal.title}
+            </Link>
+          </h3>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <PaceChip status={metrics.pace} />
+            <ChevronRightIcon size={16} className="text-muted-foreground" />
           </div>
-          <ProgressBar
-            progressPercent={progressPercent}
-            target={target}
-            currentValue={currentValue}
-            isRevealed={isRevealed}
-          />
+        </div>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <p className="text-2xl leading-none font-semibold tabular-nums">
+          {currentValue.toLocaleString()}{' '}
+          <span className="text-muted-foreground text-sm font-normal">
+            <Trans>
+              of {goal.target.toLocaleString()} {unit}
+            </Trans>{' '}
+            · <Trans>by {formatDay(goal.targetDate, new Date())}</Trans>
+          </span>
+        </p>
+        <GoalSparkline series={series} />
+        <div className="text-muted-foreground flex min-h-8 items-center justify-between gap-2 text-xs">
+          <span>
+            <CardFooterStatus goal={goal} metrics={metrics} />
+          </span>
+          {metrics.pace.kind !== 'completed' && (
+            <ResponsivePopover
+              open={isLogOpen}
+              onOpenChange={setIsLogOpen}
+              trigger={
+                <Button
+                  size="sm"
+                  className="relative z-10 rounded-xl"
+                  aria-label={t`Log progress for ${goal.title}`}
+                >
+                  <PlusIcon data-icon="inline-start" />
+                  <Trans>Log</Trans>
+                </Button>
+              }
+              contentClassName={isMobile ? '' : 'w-fit max-w-72'}
+              overlayClassName={isMobile ? 'bg-black/50' : ''}
+              drawerTitle={
+                <span>
+                  <Trans>
+                    Add entry for{' '}
+                    <span className="text-muted-foreground">{goal.title}</span>
+                  </Trans>
+                </span>
+              }
+            >
+              <CreateEntryForm
+                goalId={goal.id}
+                entryId={todayEntry?.id}
+                value={todayEntry?.value}
+                orderedEntries={entries}
+                goalType={goal.type as GoalType}
+                onSubmitCallback={() => setIsLogOpen(false)}
+              />
+            </ResponsivePopover>
+          )}
         </div>
       </CardContent>
     </Card>

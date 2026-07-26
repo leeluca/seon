@@ -227,6 +227,87 @@ export function getStreak(entries: EntryLike[], today: Date = new Date()) {
   return streak;
 }
 
+export interface SparklineSeries {
+  /** Cumulative value at the end of each of the trailing window's days. */
+  values: number[];
+  /** Endpoints of the linear expectation over the same window, if paced. */
+  ideal: { start: number; end: number } | null;
+}
+
+/**
+ * Daily cumulative series over the trailing `windowDays` local days
+ * (inclusive of today), plus the pace line's endpoints over the same
+ * window — the data a card sparkline draws.
+ */
+export function getSparklineSeries(
+  goal: {
+    type: string;
+    initialValue: number;
+    target: number;
+    startDate: string | Date;
+    targetDate: string | Date;
+  },
+  entries: EntryLike[],
+  today: Date = new Date(),
+  windowDays = 30,
+): SparklineSeries {
+  const day = startOfDay(today);
+  const windowStart = subDays(day, windowDays - 1);
+  const values: number[] = [];
+
+  if (goal.type === 'PROGRESS') {
+    const readings = entries
+      .map((entry) => ({ day: toDayStart(entry.date), value: entry.value }))
+      .filter((reading) => reading.day <= day)
+      .sort((a, b) => a.day.getTime() - b.day.getTime());
+
+    let value = goal.initialValue;
+    let next = 0;
+    for (let i = 0; i < windowDays; i++) {
+      const current = addDays(windowStart, i);
+      while (next < readings.length && readings[next].day <= current) {
+        value = readings[next].value;
+        next++;
+      }
+      values.push(value);
+    }
+  } else {
+    let baseline = goal.initialValue;
+    const sumsByDay = new Map<string, number>();
+    for (const entry of entries) {
+      const entryDay = toDayStart(entry.date);
+      if (entryDay > day) continue;
+      if (entryDay < windowStart) {
+        baseline += entry.value;
+      } else {
+        const key = dayKey(entryDay);
+        sumsByDay.set(key, (sumsByDay.get(key) ?? 0) + entry.value);
+      }
+    }
+
+    let running = baseline;
+    for (let i = 0; i < windowDays; i++) {
+      running += sumsByDay.get(dayKey(addDays(windowStart, i))) ?? 0;
+      values.push(running);
+    }
+  }
+
+  const start = toDayStart(goal.startDate);
+  const end = toDayStart(goal.targetDate);
+  const totalDays = differenceInCalendarDays(end, start) + 1;
+  const perDay = (goal.target - goal.initialValue) / Math.max(totalDays, 1);
+
+  let ideal: SparklineSeries['ideal'] = null;
+  if (perDay > 0) {
+    const idealAt = (date: Date) =>
+      goal.initialValue +
+      perDay * clamp(differenceInCalendarDays(date, start), 0, totalDays);
+    ideal = { start: idealAt(windowStart), end: idealAt(day) };
+  }
+
+  return { values, ideal };
+}
+
 /** Whether any non-zero entry exists on the given local day. */
 export function hasEntryOnDay(
   entries: EntryLike[],
