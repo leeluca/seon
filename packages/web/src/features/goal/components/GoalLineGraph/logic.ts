@@ -19,13 +19,43 @@ export type IntervalMode = 'day' | 'week' | 'month';
 
 export const MODE_ORDER: IntervalMode[] = ['day', 'week', 'month'];
 
-const COLORS = {
-  progressLine: 'rgba(54, 162, 235, 0.9)',
-  progressArea: 'rgba(224, 242, 254, 0.55)',
-  afterTargetLine: 'rgba(255, 205, 86, 0.9)',
-  afterTargetArea: 'rgba(255, 205, 86, 0.18)',
-  baseline: 'rgba(255, 99, 132, 0.9)',
-  achieved: 'rgba(34, 197, 94, 0.8)',
+const FALLBACK_TOKENS = {
+  '--primary': 'oklch(0.53 0.105 163)',
+  '--chart-2': 'oklch(0.77 0.012 165)',
+  '--chart-4': 'oklch(0.74 0.14 163)',
+  '--warning': 'oklch(0.56 0.125 75)',
+  '--border': 'oklch(0.925 0.008 160)',
+  '--muted-foreground': 'oklch(0.5 0.02 170)',
+  '--foreground': 'oklch(0.26 0.015 165)',
+  '--card': 'oklch(1 0 0)',
+} as const;
+
+type TokenName = keyof typeof FALLBACK_TOKENS;
+
+const withAlpha = (color: string, alpha: number) => {
+  if (color.startsWith('oklch(') && !color.includes('/')) {
+    return color.replace(/\)$/, ` / ${alpha})`);
+  }
+  if (color.startsWith('rgb(')) {
+    return color.replace('rgb(', 'rgba(').replace(/\)$/, `, ${alpha})`);
+  }
+  return color;
+};
+
+// ECharts paints to canvas, so CSS var() strings can't be used directly —
+// resolve the theme tokens to concrete colors at build time instead.
+const resolveChartColors = (): Record<TokenName, string> => {
+  const resolved: Record<TokenName, string> = { ...FALLBACK_TOKENS };
+  if (typeof document === 'undefined') return resolved;
+  const probe = document.createElement('span');
+  document.body.appendChild(probe);
+  for (const token of Object.keys(FALLBACK_TOKENS) as TokenName[]) {
+    probe.style.color = `var(${token})`;
+    const value = getComputedStyle(probe).color;
+    if (value) resolved[token] = value;
+  }
+  probe.remove();
+  return resolved;
 };
 
 const MAX_POINTS_WITHOUT_ZOOM = {
@@ -334,6 +364,20 @@ export const buildGoalLineGraphOptions = ({
 
   const today = new Date();
 
+  const tokens = resolveChartColors();
+  const colors = {
+    progressLine: tokens['--primary'],
+    progressArea: withAlpha(tokens['--primary'], 0.1),
+    afterTargetLine: tokens['--warning'],
+    afterTargetArea: withAlpha(tokens['--warning'], 0.12),
+    baseline: tokens['--chart-2'],
+    achieved: tokens['--chart-4'],
+    axisLabel: tokens['--muted-foreground'],
+    splitLine: tokens['--border'],
+    text: tokens['--foreground'],
+    surface: tokens['--card'],
+  };
+
   const optionsByMode = MODE_ORDER.reduce<Record<IntervalMode, ModeGraph>>(
     (acc, mode) => {
       const points = buildAggregatedPoints({
@@ -413,6 +457,7 @@ export const buildGoalLineGraphOptions = ({
           ],
           left: 8,
           top: 0,
+          textStyle: { color: colors.text },
           selected: {
             _allProgress: false,
           },
@@ -427,7 +472,13 @@ export const buildGoalLineGraphOptions = ({
         tooltip: {
           trigger: 'axis',
           confine: true,
-          axisPointer: { type: 'line' },
+          backgroundColor: colors.surface,
+          borderColor: colors.splitLine,
+          textStyle: { color: colors.text },
+          axisPointer: {
+            type: 'line',
+            lineStyle: { color: colors.axisLabel },
+          },
           formatter: (params) => {
             if (!Array.isArray(params) || !params.length) return '';
 
@@ -457,7 +508,7 @@ export const buildGoalLineGraphOptions = ({
             if (isFirstAchievement) {
               const achievedLabel = t`🎉 Goal achieved!`;
               lines.push(
-                `<div style="margin-top: 4px; color: #22c55e; font-weight: 600;">${achievedLabel}</div>`,
+                `<div style="margin-top: 4px; color: ${colors.progressLine}; font-weight: 600;">${achievedLabel}</div>`,
               );
             }
 
@@ -470,12 +521,16 @@ export const buildGoalLineGraphOptions = ({
           type: 'category',
           boundaryGap: false,
           data: labels,
+          axisLine: {
+            lineStyle: { color: colors.splitLine },
+          },
           axisLabel: {
             interval: 'auto',
             fontSize: isMobile ? 11 : 12,
             lineHeight: isMobile ? 14 : 16,
             hideOverlap: true,
             alignMaxLabel: 'right',
+            color: colors.axisLabel,
           },
         },
         yAxis: {
@@ -483,10 +538,11 @@ export const buildGoalLineGraphOptions = ({
           min: 0,
           axisLabel: {
             fontSize: isMobile ? 11 : 12,
+            color: colors.axisLabel,
           },
           splitLine: {
             lineStyle: {
-              color: '#e5e7eb',
+              color: colors.splitLine,
             },
           },
         },
@@ -512,6 +568,23 @@ export const buildGoalLineGraphOptions = ({
                   handleSize: isMobile ? 12 : 10,
                   handleIcon: 'path://M512 64L832 512 512 960 192 512 512 64Z',
                   filterMode: 'none' as const,
+                  borderColor: colors.splitLine,
+                  fillerColor: withAlpha(colors.progressLine, 0.1),
+                  handleStyle: {
+                    color: colors.surface,
+                    borderColor: colors.axisLabel,
+                  },
+                  moveHandleStyle: {
+                    color: withAlpha(colors.progressLine, 0.3),
+                  },
+                  dataBackground: {
+                    lineStyle: { color: colors.baseline },
+                    areaStyle: { color: withAlpha(colors.baseline, 0.3) },
+                  },
+                  selectedDataBackground: {
+                    lineStyle: { color: colors.progressLine },
+                    areaStyle: { color: withAlpha(colors.progressLine, 0.15) },
+                  },
                 },
               ]
             : []),
@@ -543,8 +616,8 @@ export const buildGoalLineGraphOptions = ({
               itemStyle:
                 index === firstAchievementIndex
                   ? {
-                      color: COLORS.achieved,
-                      borderColor: COLORS.achieved,
+                      color: colors.achieved,
+                      borderColor: colors.achieved,
                       borderWidth: 2,
                     }
                   : undefined,
@@ -552,11 +625,11 @@ export const buildGoalLineGraphOptions = ({
             connectNulls: false,
             showSymbol: true,
             symbolSize,
-            lineStyle: { width: 3, color: COLORS.progressLine },
-            areaStyle: { color: COLORS.progressArea },
+            lineStyle: { width: 3, color: colors.progressLine },
+            areaStyle: { color: colors.progressArea },
             itemStyle: {
-              color: COLORS.progressLine,
-              borderColor: COLORS.progressLine,
+              color: colors.progressLine,
+              borderColor: colors.progressLine,
             },
             emphasis: { focus: 'series' },
             z: 3,
@@ -566,14 +639,13 @@ export const buildGoalLineGraphOptions = ({
             type: 'line',
             data: baselineSeries,
             connectNulls: false,
-            showSymbol: points.length <= 120,
-            symbolSize: isMobile ? 9 : 7,
+            showSymbol: false,
             lineStyle: {
               width: 2,
               type: 'dashed',
-              color: COLORS.baseline,
+              color: colors.baseline,
             },
-            itemStyle: { color: COLORS.baseline },
+            itemStyle: { color: colors.baseline },
             emphasis: { focus: 'series' },
             z: 1,
           },
@@ -593,8 +665,8 @@ export const buildGoalLineGraphOptions = ({
                     itemStyle:
                       index === firstAchievementIndex
                         ? {
-                            color: COLORS.achieved,
-                            borderColor: COLORS.achieved,
+                            color: colors.achieved,
+                            borderColor: colors.achieved,
                             borderWidth: 2,
                           }
                         : undefined,
@@ -602,11 +674,11 @@ export const buildGoalLineGraphOptions = ({
                   connectNulls: false,
                   showSymbol: true,
                   symbolSize,
-                  lineStyle: { width: 3, color: COLORS.afterTargetLine },
-                  areaStyle: { color: COLORS.afterTargetArea },
+                  lineStyle: { width: 3, color: colors.afterTargetLine },
+                  areaStyle: { color: colors.afterTargetArea },
                   itemStyle: {
-                    color: COLORS.afterTargetLine,
-                    borderColor: COLORS.afterTargetLine,
+                    color: colors.afterTargetLine,
+                    borderColor: colors.afterTargetLine,
                   },
                   emphasis: { focus: 'series' as const },
                   z: 2,
