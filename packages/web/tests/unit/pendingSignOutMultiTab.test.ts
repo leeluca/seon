@@ -44,9 +44,14 @@ function installExclusiveLock() {
   return request;
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   localStorage.clear();
   authMocks.signOut.mockReset();
+  vi.resetModules();
+  const { clearPendingSignOut } = await import(
+    '../../src/data/workspace/pendingSignOut'
+  );
+  await clearPendingSignOut();
   vi.resetModules();
 });
 
@@ -64,7 +69,7 @@ describe('pending sign out across tabs', () => {
     const tabA = await import('../../src/data/workspace/pendingSignOut');
     vi.resetModules();
     const tabB = await import('../../src/data/workspace/pendingSignOut');
-    tabA.markPendingSignOut('account-a');
+    await tabA.markPendingSignOut('account-a');
 
     let finishSignOut: ((response: unknown) => void) | undefined;
     authMocks.signOut.mockReturnValueOnce(
@@ -83,6 +88,6 @@ describe('pending sign out across tabs', () => {
 
     await expect(Promise.all([first, second])).resolves.toEqual([true, true]);
     expect(authMocks.signOut).toHaveBeenCalledOnce();
-    expect(tabA.hasPendingSignOut()).toBe(false);
+    expect(await tabA.hasPendingSignOut()).toBe(false);
   });
 });

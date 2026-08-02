@@ -19,7 +19,7 @@ export function PendingSignOutProcessor() {
     let retryDelay = 5_000;
 
     const scheduleRetry = (flush: () => Promise<void>) => {
-      if (!active || retryTimer !== undefined || !hasPendingSignOut()) return;
+      if (!active || retryTimer !== undefined) return;
       retryTimer = window.setTimeout(() => {
         retryTimer = undefined;
         void flush();
@@ -28,22 +28,29 @@ export function PendingSignOutProcessor() {
     };
 
     const flush = async () => {
-      if (processing || !onlineManager.isOnline() || !hasPendingSignOut()) {
+      if (processing || !onlineManager.isOnline()) {
         return;
       }
       processing = true;
-      const completed = await flushPendingSignOut();
-      processing = false;
-      if (!active) return;
-      if (!completed) {
-        scheduleRetry(flush);
-        return;
-      }
+      try {
+        if (!(await hasPendingSignOut())) return;
+        const completed = await flushPendingSignOut();
+        if (!active) return;
+        if (!completed) {
+          scheduleRetry(flush);
+          return;
+        }
 
-      queryClient.setQueryData(
-        AUTH_STATUS.all.queryKey,
-        createUnauthenticatedAuthStatus(),
-      );
+        queryClient.setQueryData(
+          AUTH_STATUS.all.queryKey,
+          createUnauthenticatedAuthStatus(),
+        );
+      } catch (error) {
+        console.error('Could not process the pending sign out', error);
+        scheduleRetry(flush);
+      } finally {
+        processing = false;
+      }
     };
 
     void flush();

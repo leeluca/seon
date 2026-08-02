@@ -3,6 +3,9 @@ import type { GoalEditableFields } from '~/features/goal/model';
 import { generateUUIDs } from '~/utils';
 import { updateGoalProgress } from './progress';
 
+/** Leaves room below the sync endpoint's 500-operation transaction limit. */
+const GOAL_DELETE_ENTRY_BATCH_SIZE = 400;
+
 export async function createGoal({
   title,
   target,
@@ -107,5 +110,32 @@ export async function unarchiveGoal(goalId: string) {
 }
 
 export async function deleteGoal(goalId: string) {
-  await db.deleteFrom('goal').where('id', '=', goalId).execute();
+  let deletedGoal = false;
+
+  while (!deletedGoal) {
+    await db.transaction().execute(async (tx) => {
+      const entries = await tx
+        .selectFrom('entry')
+        .select('id')
+        .where('goalId', '=', goalId)
+        .limit(GOAL_DELETE_ENTRY_BATCH_SIZE)
+        .execute();
+
+      if (entries.length > 0) {
+        await tx
+          .deleteFrom('entry')
+          .where(
+            'id',
+            'in',
+            entries.map(({ id }) => id),
+          )
+          .execute();
+      }
+
+      if (entries.length < GOAL_DELETE_ENTRY_BATCH_SIZE) {
+        await tx.deleteFrom('goal').where('id', '=', goalId).execute();
+        deletedGoal = true;
+      }
+    });
+  }
 }

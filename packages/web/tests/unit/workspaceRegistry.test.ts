@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   cleanupRetiredWorkspaces,
+  createBrowserWorkspaceRegistryStorage,
   createWorkspaceDescriptor,
+  IndexedDbWorkspaceRegistryStorage,
   MemoryWorkspaceRegistryStorage,
   WorkspaceRegistry,
   WorkspaceRegistryConflictError,
@@ -14,6 +16,21 @@ function createIdFactory() {
 }
 
 describe('WorkspaceRegistry', () => {
+  it('keeps the registry authoritative in IndexedDB when localStorage is cleared', async () => {
+    const storage = createBrowserWorkspaceRegistryStorage();
+    expect(storage).toBeInstanceOf(IndexedDbWorkspaceRegistryStorage);
+
+    await storage.clear();
+    const state = { version: 1, activeWorkspace: null, retiredWorkspaces: [] };
+    await storage.save(state);
+    localStorage.setItem('seon.workspace-registry.v1', 'stale-fallback');
+
+    localStorage.clear();
+
+    await expect(storage.load()).resolves.toEqual(state);
+    await storage.clear();
+  });
+
   it('persists one workspace with stable workspace and client ids', async () => {
     const storage = new MemoryWorkspaceRegistryStorage();
     const idFactory = createIdFactory();

@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { AUTH_STATUS } from '~/constants/query';
 import { activeWorkspace, powerSyncDb } from '~/data/db/database';
 import {
-  clearPendingSignOut,
   createWorkspaceExport,
   downloadWorkspaceExport,
   flushPendingSignOut,
@@ -72,10 +71,9 @@ function SignOutButton() {
 
   const locallySignOut = async () => {
     if (!accountId) return false;
-    markPendingSignOut(accountId);
+    await markPendingSignOut(accountId);
     await powerSyncDb.disconnect();
     const revoked = await flushPendingSignOut();
-    if (revoked) clearPendingSignOut();
     queryClient.setQueryData(
       AUTH_STATUS.all.queryKey,
       createUnauthenticatedAuthStatus(),
@@ -85,14 +83,20 @@ function SignOutButton() {
 
   const keepWorkspace = async () => {
     setBusy(true);
-    const revoked = await locallySignOut();
-    setOpen(false);
-    resetDialog();
-    toast.success(
-      revoked
-        ? 'Signed out. This workspace remains editable on this device.'
-        : 'Sync is off. Server sign-out will finish when you are online.',
-    );
+    try {
+      const revoked = await locallySignOut();
+      setOpen(false);
+      resetDialog();
+      toast.success(
+        revoked
+          ? 'Signed out. This workspace remains editable on this device.'
+          : 'Sync is off. Server sign-out will finish when you are online.',
+      );
+    } catch (error) {
+      console.error('Could not sign out', error);
+      toast.error('Could not sign out. Sync remains enabled.');
+      setBusy(false);
+    }
   };
 
   const exportWorkspace = async () => {

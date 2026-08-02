@@ -60,7 +60,7 @@ export function createOfflineAuthStatus(
 export async function readAuthStatus(): Promise<AuthSessionStatus> {
   // An offline sign-out immediately disables the local session/sync. The
   // HttpOnly server cookie is revoked by PendingSignOutProcessor when online.
-  if (hasPendingSignOut()) return createUnauthenticatedAuthStatus();
+  if (await hasPendingSignOut()) return createUnauthenticatedAuthStatus();
 
   let response: Awaited<ReturnType<typeof authClient.getSession>>;
 

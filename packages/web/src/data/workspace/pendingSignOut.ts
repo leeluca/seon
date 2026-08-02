@@ -1,5 +1,6 @@
 import { PENDING_SIGN_OUT_KEY } from '~/constants/storage';
 import { authClient, toAuthClientError } from '~/lib/auth-client';
+import { IndexedDbWorkspaceMetadataStorage } from './registryStorage';
 
 export interface PendingSignOut {
   version: 1;
@@ -9,51 +10,64 @@ export interface PendingSignOut {
 
 let activeFlush: Promise<boolean> | null = null;
 const PENDING_SIGN_OUT_LOCK = 'seon.pending-sign-out.flush.v1';
+const PENDING_SIGN_OUT_METADATA_KEY = 'pending-sign-out';
+const pendingSignOutStorage = new IndexedDbWorkspaceMetadataStorage(
+  PENDING_SIGN_OUT_METADATA_KEY,
+);
 
-function storage(): Storage | null {
-  return typeof window === 'undefined' ? null : window.localStorage;
+function notifyPendingSignOut(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(
+      PENDING_SIGN_OUT_KEY,
+      JSON.stringify({
+        changedAt: new Date().toISOString(),
+        nonce: crypto.randomUUID(),
+      }),
+    );
+  } catch {
+    // IndexedDB remains authoritative; this signal is only for other tabs.
+  }
 }
 
-export function getPendingSignOut(): PendingSignOut | null {
-  const serialized = storage()?.getItem(PENDING_SIGN_OUT_KEY);
-  if (!serialized) return null;
-
-  try {
-    const value = JSON.parse(serialized) as Partial<PendingSignOut>;
-    if (
-      value.version === 1 &&
-      typeof value.accountId === 'string' &&
-      typeof value.requestedAt === 'string'
-    ) {
-      return value as PendingSignOut;
-    }
-  } catch {
-    // Invalid state must not indefinitely lock the user out.
+export async function getPendingSignOut(): Promise<PendingSignOut | null> {
+  const value =
+    (await pendingSignOutStorage.load()) as Partial<PendingSignOut> | null;
+  if (
+    value &&
+    value.version === 1 &&
+    typeof value.accountId === 'string' &&
+    typeof value.requestedAt === 'string'
+  ) {
+    return value as PendingSignOut;
   }
-  storage()?.removeItem(PENDING_SIGN_OUT_KEY);
+  if (value !== null) await pendingSignOutStorage.clear();
   return null;
 }
 
-export function hasPendingSignOut(): boolean {
-  return getPendingSignOut() !== null;
+export async function hasPendingSignOut(): Promise<boolean> {
+  return (await getPendingSignOut()) !== null;
 }
 
-export function markPendingSignOut(accountId: string): PendingSignOut {
+export async function markPendingSignOut(
+  accountId: string,
+): Promise<PendingSignOut> {
   const pending: PendingSignOut = {
     version: 1,
     accountId,
     requestedAt: new Date().toISOString(),
   };
-  storage()?.setItem(PENDING_SIGN_OUT_KEY, JSON.stringify(pending));
+  await pendingSignOutStorage.save(pending);
+  notifyPendingSignOut();
   return pending;
 }
 
-export function clearPendingSignOut(): void {
-  storage()?.removeItem(PENDING_SIGN_OUT_KEY);
+export async function clearPendingSignOut(): Promise<void> {
+  await pendingSignOutStorage.clear();
 }
 
 async function performPendingSignOutFlush(): Promise<boolean> {
-  if (!hasPendingSignOut()) return true;
+  if (!(await hasPendingSignOut())) return true;
 
   try {
     const response = await authClient.signOut();
@@ -61,12 +75,12 @@ async function performPendingSignOutFlush(): Promise<boolean> {
       // An already-expired session is equivalent to a completed revocation.
       if (response.error.status !== 401) return false;
     }
-    clearPendingSignOut();
+    await clearPendingSignOut();
     return true;
   } catch (error) {
     const authError = toAuthClientError(error, 'Unable to finish sign out');
     if (authError.status === 401) {
-      clearPendingSignOut();
+      await clearPendingSignOut();
       return true;
     }
     return false;

@@ -39,7 +39,7 @@ const usePostSignUp = ({ onSuccess, onError }: UsePostSignUpProps = {}) => {
   return useMutation<PostSignUpResponse, AuthClientError, SignUpParams>({
     mutationKey: [POST_SIGNUP_KEY],
     mutationFn: async (payload) => {
-      if (hasPendingSignOut() && !(await flushPendingSignOut())) {
+      if ((await hasPendingSignOut()) && !(await flushPendingSignOut())) {
         throw new AuthClientError({
           message: 'Unable to finish the previous sign out',
         });

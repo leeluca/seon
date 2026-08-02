@@ -6,7 +6,6 @@ import { AUTH_STATUS } from '~/constants/query';
 import { activeWorkspace, powerSyncDb } from '~/data/db/database';
 import {
   bindCurrentWorkspaceToAccount,
-  clearPendingSignOut,
   createWorkspaceExport,
   downloadWorkspaceExport,
   flushPendingSignOut,
@@ -155,16 +154,21 @@ export function WorkspaceAccountGate() {
   const cancelAndSignOut = async () => {
     setBusy(true);
     attemptedAccount.current = null;
-    markPendingSignOut(conflict.account.id);
-    await powerSyncDb.disconnect();
-    const revoked = await flushPendingSignOut();
-    if (revoked) clearPendingSignOut();
-    queryClient.setQueryData(
-      AUTH_STATUS.all.queryKey,
-      createUnauthenticatedAuthStatus(),
-    );
-    setConflict(null);
-    setBusy(false);
+    try {
+      await markPendingSignOut(conflict.account.id);
+      await powerSyncDb.disconnect();
+      await flushPendingSignOut();
+      queryClient.setQueryData(
+        AUTH_STATUS.all.queryKey,
+        createUnauthenticatedAuthStatus(),
+      );
+      setConflict(null);
+      setBusy(false);
+    } catch (error) {
+      console.error('Could not sign out', error);
+      toast.error('Could not sign out. The current workspace is unchanged.');
+      setBusy(false);
+    }
   };
 
   const switchingAccount = conflict.kind === 'switch-account';

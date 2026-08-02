@@ -12,17 +12,28 @@ import {
   type WorkspaceDataWriter,
 } from '~/data/workspace';
 
+const exportId = '00000000-0000-4000-8000-000000000001';
+const workspaceId = '00000000-0000-4000-8000-000000000002';
+const goalId = '00000000-0000-4000-8000-000000000003';
+const entryId = '00000000-0000-4000-8000-000000000004';
+
+function firstRecord<T>(records: T[]): T {
+  const record = records[0];
+  if (!record) throw new Error('Workspace fixture is missing a record');
+  return record;
+}
+
 const payload: WorkspaceDataExport = {
   format: 'seon-workspace-export',
   version: 1,
-  exportId: 'export-1',
+  exportId,
   exportedAt: '2026-07-20T00:00:00.000Z',
-  source: { workspaceId: 'workspace-1', kind: 'local' },
+  source: { workspaceId, kind: 'local' },
   data: {
     profile: null,
     goals: [
       {
-        id: 'goal-1',
+        id: goalId,
         shortId: 'g1',
         title: 'Read',
         description: null,
@@ -33,7 +44,7 @@ const payload: WorkspaceDataExport = {
         createdAt: '2026-01-01T00:00:00.000Z',
         updatedAt: '2026-01-01T00:00:00.000Z',
         initialValue: 0,
-        type: 'total',
+        type: 'COUNT',
         currentValue: 1,
         completionDate: null,
         archivedAt: null,
@@ -41,9 +52,9 @@ const payload: WorkspaceDataExport = {
     ],
     entries: [
       {
-        id: 'entry-1',
+        id: entryId,
         shortId: 'e1',
-        goalId: 'goal-1',
+        goalId,
         value: 1,
         date: '2026-07-20',
         createdAt: '2026-07-20T00:00:00.000Z',
@@ -114,9 +125,9 @@ describe('workspace data transfer', () => {
 
     const exported = await exportWorkspaceData(
       database,
-      { id: 'workspace-1', kind: 'local' },
+      { id: workspaceId, kind: 'local' },
       {
-        idFactory: () => 'export-1',
+        idFactory: () => exportId,
         now: () => new Date('2026-07-20T00:00:00.000Z'),
       },
     );
@@ -154,8 +165,8 @@ describe('workspace data transfer', () => {
       alreadyImported: false,
       imported: { profile: 0, goals: 1, entries: 1 },
     });
-    expect(database.ids.goal).toContain('goal-1');
-    expect(database.ids.entry).toContain('entry-1');
+    expect(database.ids.goal).toContain(goalId);
+    expect(database.ids.entry).toContain(entryId);
     expect(database.ids.workspace_meta).toContain(
       'data-import:legacy-seon-goals-v1',
     );
@@ -186,7 +197,9 @@ describe('workspace data transfer', () => {
       { length: IMPORT_TRANSACTION_OPERATION_LIMIT * 2 + 1 },
       (_, index) => ({
         ...baseGoal,
-        id: `goal-${index}`,
+        id: `00000000-0000-4000-8000-${(index + 1000)
+          .toString(16)
+          .padStart(12, '0')}`,
         shortId: `g${index}`,
       }),
     );
@@ -206,6 +219,43 @@ describe('workspace data transfer', () => {
       IMPORT_TRANSACTION_OPERATION_LIMIT,
       1,
     ]);
+  });
+
+  it.each([
+    {
+      name: 'non-UUID record ids',
+      mutate: (invalid: WorkspaceDataExport) => {
+        firstRecord(invalid.data.goals).id = 'goal-1';
+        firstRecord(invalid.data.entries).goalId = 'goal-1';
+      },
+    },
+    {
+      name: 'unsupported goal types',
+      mutate: (invalid: WorkspaceDataExport) => {
+        (firstRecord(invalid.data.goals) as { type: string }).type = 'total';
+      },
+    },
+    {
+      name: 'unsafe numeric values',
+      mutate: (invalid: WorkspaceDataExport) => {
+        firstRecord(invalid.data.goals).target = Number.MAX_SAFE_INTEGER + 1;
+      },
+    },
+    {
+      name: 'invalid dates',
+      mutate: (invalid: WorkspaceDataExport) => {
+        firstRecord(invalid.data.entries).date = 'not-a-date';
+      },
+    },
+  ])('rejects $name before writing locally', async ({ mutate }) => {
+    const database = new FakeWorkspaceDatabase();
+    const invalid = structuredClone(payload);
+    mutate(invalid);
+
+    await expect(importWorkspaceData(database, invalid)).rejects.toThrow(
+      'Invalid Seon workspace export',
+    );
+    expect(database.statements).toHaveLength(0);
   });
 
   it('uses a different legacy import marker for each storage backend', () => {

@@ -1,3 +1,5 @@
+import { validate as validateUuid } from 'uuid';
+
 import type { WorkspaceDescriptor } from './types';
 
 export const WORKSPACE_EXPORT_FORMAT = 'seon-workspace-export' as const;
@@ -5,6 +7,7 @@ export const WORKSPACE_EXPORT_VERSION = 1 as const;
 export const LEGACY_IMPORT_ID = 'legacy-seon-goals-v1';
 /** Leaves headroom below the server's 500-operation request limit. */
 export const IMPORT_TRANSACTION_OPERATION_LIMIT = 400;
+const GOAL_TYPES = new Set(['COUNT', 'PROGRESS', 'BOOLEAN']);
 
 export interface WorkspaceProfileRecord {
   id: string;
@@ -27,7 +30,7 @@ export interface WorkspaceGoalRecord {
   createdAt: string;
   updatedAt: string;
   initialValue: number;
-  type: string;
+  type: 'COUNT' | 'PROGRESS' | 'BOOLEAN';
   currentValue: number;
   completionDate: string | null;
   archivedAt: string | null;
@@ -317,57 +320,122 @@ function isString(value: unknown): value is string {
   return typeof value === 'string';
 }
 
+function isNonEmptyString(value: unknown): value is string {
+  return isString(value) && value.length > 0;
+}
+
+function isUuid(value: unknown): value is string {
+  return isString(value) && validateUuid(value);
+}
+
+function isSyncDate(value: unknown): value is string {
+  return isString(value) && Number.isFinite(Date.parse(value));
+}
+
+function isNullableSyncDate(value: unknown): value is string | null {
+  return value === null || isSyncDate(value);
+}
+
 function isNullableString(value: unknown): value is string | null {
   return value === null || isString(value);
 }
 
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
+function isSafeInteger(value: unknown): value is number {
+  return typeof value === 'number' && Number.isSafeInteger(value);
+}
+
+function isPreferences(value: string | null): boolean {
+  if (value === null) return true;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    return false;
+  }
+  if (!isRecord(parsed)) return false;
+
+  const allowedKeys = new Set([
+    'language',
+    'defaultGoalSort',
+    'defaultGoalFilter',
+  ]);
+  if (Object.keys(parsed).some((key) => !allowedKeys.has(key))) return false;
+  if (
+    parsed.language !== undefined &&
+    !['en', 'ko', 'pt'].includes(String(parsed.language))
+  ) {
+    return false;
+  }
+  if (
+    parsed.defaultGoalSort !== undefined &&
+    ![
+      'createdAt desc',
+      'createdAt asc',
+      'targetDate desc',
+      'targetDate asc',
+      'title asc',
+      'title desc',
+    ].includes(String(parsed.defaultGoalSort))
+  ) {
+    return false;
+  }
+  if (
+    parsed.defaultGoalFilter !== undefined &&
+    !['all', 'ongoing', 'completed', 'archived'].includes(
+      String(parsed.defaultGoalFilter),
+    )
+  ) {
+    return false;
+  }
+  return true;
 }
 
 function isProfile(value: unknown): value is WorkspaceProfileRecord {
   if (!isRecord(value)) return false;
   return (
-    isString(value.id) &&
+    isUuid(value.id) &&
     isString(value.name) &&
     isNullableString(value.email) &&
     isNullableString(value.preferences) &&
-    isString(value.createdAt) &&
-    isString(value.updatedAt)
+    isPreferences(value.preferences) &&
+    isSyncDate(value.createdAt) &&
+    isSyncDate(value.updatedAt)
   );
 }
 
 function isGoal(value: unknown): value is WorkspaceGoalRecord {
   if (!isRecord(value)) return false;
   return (
-    isString(value.id) &&
+    isUuid(value.id) &&
     isString(value.shortId) &&
-    isString(value.title) &&
+    isNonEmptyString(value.title) &&
     isNullableString(value.description) &&
-    isFiniteNumber(value.target) &&
+    isSafeInteger(value.target) &&
     isString(value.unit) &&
-    isString(value.startDate) &&
-    isString(value.targetDate) &&
-    isString(value.createdAt) &&
-    isString(value.updatedAt) &&
-    isFiniteNumber(value.initialValue) &&
+    isSyncDate(value.startDate) &&
+    isSyncDate(value.targetDate) &&
+    isSyncDate(value.createdAt) &&
+    isSyncDate(value.updatedAt) &&
+    isSafeInteger(value.initialValue) &&
     isString(value.type) &&
-    isFiniteNumber(value.currentValue) &&
-    isNullableString(value.completionDate) &&
-    isNullableString(value.archivedAt)
+    GOAL_TYPES.has(value.type) &&
+    isSafeInteger(value.currentValue) &&
+    isNullableSyncDate(value.completionDate) &&
+    isNullableSyncDate(value.archivedAt)
   );
 }
 
 function isEntry(value: unknown): value is WorkspaceEntryRecord {
   if (!isRecord(value)) return false;
   return (
-    isString(value.id) &&
+    isUuid(value.id) &&
     isString(value.shortId) &&
-    isString(value.goalId) &&
-    isFiniteNumber(value.value) &&
-    isString(value.date) &&
-    isString(value.createdAt) &&
-    isString(value.updatedAt)
+    isUuid(value.goalId) &&
+    isSafeInteger(value.value) &&
+    isSyncDate(value.date) &&
+    isSyncDate(value.createdAt) &&
+    isSyncDate(value.updatedAt)
   );
 }
 
@@ -384,9 +452,9 @@ export function assertWorkspaceDataExport(
   if (
     value.format !== WORKSPACE_EXPORT_FORMAT ||
     value.version !== WORKSPACE_EXPORT_VERSION ||
-    !isString(value.exportId) ||
-    !isString(value.exportedAt) ||
-    !isString(value.source.workspaceId) ||
+    !isUuid(value.exportId) ||
+    !isSyncDate(value.exportedAt) ||
+    !isNonEmptyString(value.source.workspaceId) ||
     (value.source.kind !== 'local' && value.source.kind !== 'account') ||
     (profile !== null && !isProfile(profile)) ||
     !Array.isArray(goals) ||
@@ -398,6 +466,10 @@ export function assertWorkspaceDataExport(
   }
 
   const goalIds = new Set(goals.map((goal) => goal.id));
+  const entryIds = new Set(entries.map((entry) => entry.id));
+  if (goalIds.size !== goals.length || entryIds.size !== entries.length) {
+    throw new Error('Workspace export contains duplicate record IDs');
+  }
   if (entries.some((entry) => !goalIds.has(entry.goalId))) {
     throw new Error('Workspace export contains an entry without its goal');
   }
