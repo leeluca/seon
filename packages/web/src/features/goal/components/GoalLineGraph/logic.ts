@@ -111,6 +111,7 @@ interface BuildGraphArgs {
 interface ModeGraph {
   option: EChartsOption;
   totalPoints: number;
+  hasAfterTarget: boolean;
 }
 
 export interface GoalLineGraphBuildResult {
@@ -265,8 +266,10 @@ const buildZoom = (
     return { start: 0, end: 100, needsSlider: false };
   }
 
+  // Bias the window toward the past so logged progress owns the frame
+  // instead of empty future dates.
   const startIndex = clamp(
-    focusIndex - Math.floor(windowSize / 2),
+    focusIndex - Math.floor(windowSize * 0.7),
     0,
     Math.max(totalPoints - windowSize, 0),
   );
@@ -442,32 +445,27 @@ export const buildGoalLineGraphOptions = ({
             : 8;
       };
 
-      const gridBottom = needsSlider ? (isMobile ? 76 : 86) : 50;
+      const gridBottom = needsSlider ? (isMobile ? 76 : 86) : 28;
       const progressLabel = t`Your Progress`;
       const afterTargetLabel = t`After target date`;
       const baselineLabel = t`Goal Benchmark`;
       // const completionLabel = t`Goal reached`;
 
       const option: EChartsOption = {
+        // The visible legend is rendered in HTML next to the interval
+        // switcher; this hidden one only keeps _allProgress deselected.
         legend: {
-          data: [
-            progressLabel,
-            baselineLabel,
-            ...(hasAfterTargetData ? [afterTargetLabel] : []),
-          ],
-          left: 8,
-          top: 0,
-          textStyle: { color: colors.text },
+          show: false,
           selected: {
             _allProgress: false,
           },
         },
         grid: {
-          left: isMobile ? 42 : 52,
-          right: isMobile ? 12 : 16,
-          top: 50,
+          left: 0,
+          right: 0,
+          top: 16,
           bottom: gridBottom,
-          containLabel: false,
+          containLabel: true,
         },
         tooltip: {
           trigger: 'axis',
@@ -488,6 +486,10 @@ export const buildGoalLineGraphOptions = ({
             const lines = [`<strong>${heading}</strong>`];
 
             params.forEach((param) => {
+              if (param.seriesName === '_allProgress') {
+                return;
+              }
+
               // `param.value` is the canonical place ECharts exposes the datum value
               const value = (param as unknown as { value?: number | null })
                 .value as number | null | undefined;
@@ -688,7 +690,11 @@ export const buildGoalLineGraphOptions = ({
         ],
       };
 
-      acc[mode] = { option, totalPoints: points.length };
+      acc[mode] = {
+        option,
+        totalPoints: points.length,
+        hasAfterTarget: hasAfterTargetData,
+      };
       return acc;
     },
     {} as Record<IntervalMode, ModeGraph>,

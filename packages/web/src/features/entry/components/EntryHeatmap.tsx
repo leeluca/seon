@@ -148,87 +148,91 @@ export function EntryHeatmap({
           onMouseLeave={() => setHovered(null)}
           onScroll={() => setHovered(null)}
         >
-          <div className="flex w-max gap-1">
-            {weeks.map((week, weekIndex) => (
-              <div key={week[0].toISOString()} className="flex flex-col gap-1">
-                <span
-                  className="text-muted-foreground h-3 text-[10px] leading-3 whitespace-nowrap"
-                  aria-hidden="true"
+          <div className="w-max">
+            <div className="flex gap-1">
+              {weeks.map((week, weekIndex) => (
+                <div
+                  key={week[0].toISOString()}
+                  className="flex flex-col gap-1"
                 >
-                  {monthLabels[weekIndex]}
-                </span>
-                {week.map((day) => {
-                  const isOutside = day < start || day > today;
-                  if (isOutside) {
+                  <span
+                    className="text-muted-foreground h-3 text-[10px] leading-3 whitespace-nowrap"
+                    aria-hidden="true"
+                  >
+                    {monthLabels[weekIndex]}
+                  </span>
+                  {week.map((day) => {
+                    const isOutside = day < start || day > today;
+                    if (isOutside) {
+                      return (
+                        <span
+                          key={day.toISOString()}
+                          className="size-6"
+                          aria-hidden="true"
+                        />
+                      );
+                    }
+
+                    const entry = entriesByDay.get(day.toDateString());
+                    let level = getHeatmapLevel(
+                      gains.get(toDayKey(day)) ?? 0,
+                      perDay,
+                    );
+                    if (level === 0 && entry && entry.value !== 0) level = 1;
+
                     return (
-                      <span
+                      <button
                         key={day.toISOString()}
-                        className="size-6"
-                        aria-hidden="true"
+                        type="button"
+                        data-heatmap-day
+                        aria-label={t`Add entry for ${format(day, 'MMM d')}`}
+                        className={cn(
+                          'hover:ring-ring/50 size-6 rounded-[5px] transition-shadow hover:ring-2 hover:ring-inset',
+                          LEVEL_CLASSES[level],
+                          checkIsToday(day) &&
+                            'ring-primary/50 ring-2 ring-inset',
+                          selectedDay &&
+                            isSameDay(day, selectedDay) &&
+                            isPopoverOpen &&
+                            'ring-ring ring-2 ring-inset',
+                        )}
+                        onClick={(event) => {
+                          setHovered(null);
+                          setSelectedDay(day);
+                          setAnchor(event.currentTarget);
+                          setIsPopoverOpen(true);
+                        }}
+                        onMouseEnter={(event) => {
+                          if (isMobile) return;
+                          const rect =
+                            event.currentTarget.getBoundingClientRect();
+                          setHovered({
+                            day,
+                            x: rect.left + rect.width / 2,
+                            y: rect.top,
+                          });
+                        }}
                       />
                     );
-                  }
-
-                  const entry = entriesByDay.get(day.toDateString());
-                  let level = getHeatmapLevel(
-                    gains.get(toDayKey(day)) ?? 0,
-                    perDay,
-                  );
-                  if (level === 0 && entry && entry.value !== 0) level = 1;
-
-                  return (
-                    <button
-                      key={day.toISOString()}
-                      type="button"
-                      data-heatmap-day
-                      aria-label={t`Add entry for ${format(day, 'MMM d')}`}
-                      className={cn(
-                        'hover:ring-ring/50 size-6 rounded-[5px] transition-shadow hover:ring-2 hover:ring-inset',
-                        LEVEL_CLASSES[level],
-                        checkIsToday(day) &&
-                          'ring-primary/50 ring-2 ring-inset',
-                        selectedDay &&
-                          isSameDay(day, selectedDay) &&
-                          isPopoverOpen &&
-                          'ring-ring ring-2 ring-inset',
-                      )}
-                      onClick={(event) => {
-                        setHovered(null);
-                        setSelectedDay(day);
-                        setAnchor(event.currentTarget);
-                        setIsPopoverOpen(true);
-                      }}
-                      onMouseEnter={(event) => {
-                        if (isMobile) return;
-                        const rect =
-                          event.currentTarget.getBoundingClientRect();
-                        setHovered({
-                          day,
-                          x: rect.left + rect.width / 2,
-                          y: rect.top,
-                        });
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            ))}
+                  })}
+                </div>
+              ))}
+            </div>
+            <div
+              className="text-muted-foreground mt-2 flex items-center justify-end gap-1 text-[10px]"
+              aria-hidden="true"
+            >
+              <Trans>Less</Trans>
+              {LEVEL_CLASSES.map((levelClass) => (
+                <span
+                  key={levelClass}
+                  className={cn('size-2.5 rounded-[3px]', levelClass)}
+                />
+              ))}
+              <Trans>More</Trans>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div
-        className="text-muted-foreground mt-2 flex items-center justify-end gap-1 text-[10px]"
-        aria-hidden="true"
-      >
-        <Trans>Less</Trans>
-        {LEVEL_CLASSES.map((levelClass) => (
-          <span
-            key={levelClass}
-            className={cn('size-2.5 rounded-[3px]', levelClass)}
-          />
-        ))}
-        <Trans>More</Trans>
       </div>
 
       <ResponsivePopover
