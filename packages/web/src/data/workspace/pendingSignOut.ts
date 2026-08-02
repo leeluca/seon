@@ -8,6 +8,7 @@ export interface PendingSignOut {
 }
 
 let activeFlush: Promise<boolean> | null = null;
+const PENDING_SIGN_OUT_LOCK = 'seon.pending-sign-out.flush.v1';
 
 function storage(): Storage | null {
   return typeof window === 'undefined' ? null : window.localStorage;
@@ -72,10 +73,23 @@ async function performPendingSignOutFlush(): Promise<boolean> {
   }
 }
 
+function withPendingSignOutLock(
+  callback: () => Promise<boolean>,
+): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !navigator.locks) return callback();
+
+  return navigator.locks.request(
+    PENDING_SIGN_OUT_LOCK,
+    { mode: 'exclusive' },
+    callback,
+  );
+}
+
 /**
  * Returns false for connectivity/server failures so an online retry can run.
- * Concurrent callers share one request so a retry cannot race a new sign-in
- * and clear the newly issued session cookie.
+ * Concurrent callers in this tab share one promise. The browser lock extends
+ * that serialization to other tabs, which recheck the shared marker after
+ * acquiring it and cannot clear a newer session with a stale response.
  */
 export async function flushPendingSignOut(): Promise<boolean> {
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -83,7 +97,7 @@ export async function flushPendingSignOut(): Promise<boolean> {
   }
   if (activeFlush) return activeFlush;
 
-  activeFlush = performPendingSignOutFlush();
+  activeFlush = withPendingSignOutLock(performPendingSignOutFlush);
   try {
     return await activeFlush;
   } finally {

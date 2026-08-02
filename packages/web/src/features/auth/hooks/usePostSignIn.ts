@@ -7,7 +7,6 @@ import {
   hasPendingSignOut,
 } from '~/data/workspace/pendingSignOut';
 import {
-  authCallbackUrl,
   authClient,
   AuthClientError,
   type BetterAuthUser,
@@ -52,7 +51,6 @@ const usePostSignIn = ({ onSuccess, onError }: UsePostSignInProps = {}) => {
           email,
           password,
           rememberMe,
-          callbackURL: authCallbackUrl('/verify-email'),
         });
       } catch (error) {
         throw toAuthClientError(error, 'Unable to sign in');

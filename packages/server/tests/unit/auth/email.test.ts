@@ -16,6 +16,7 @@ const message = {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe('EmailSender', () => {
@@ -28,6 +29,17 @@ describe('EmailSender', () => {
 
     sender.clear();
     expect(sender.messages).toEqual([]);
+  });
+
+  it('prints captured messages in development', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const consoleInfo = vi.spyOn(console, 'info').mockImplementation(() => {});
+
+    await new CaptureEmailSender().send(message);
+
+    expect(consoleInfo).toHaveBeenCalledWith(
+      expect.stringContaining('Plain text'),
+    );
   });
 
   it('supports explicitly disabled delivery', async () => {

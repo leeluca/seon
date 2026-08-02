@@ -92,8 +92,13 @@ export async function importLegacyWorkspaceData(
 ): Promise<ImportWorkspaceDataResult> {
   const payload = await exportLegacyWorkspaceData(candidate);
   return importWorkspaceData(targetDatabase, payload, {
-    importId: LEGACY_IMPORT_ID,
+    importId: getLegacyImportId(candidate),
   });
+}
+
+export function getLegacyImportId(candidate: LegacyWorkspaceCandidate): string {
+  assertLegacyCandidate(candidate);
+  return `${LEGACY_IMPORT_ID}:${candidate.storageBackend}:${candidate.databaseFilename}`;
 }
 
 export async function exportLegacyWorkspaceData(

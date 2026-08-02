@@ -3,6 +3,8 @@ import type { WorkspaceDescriptor } from './types';
 export const WORKSPACE_EXPORT_FORMAT = 'seon-workspace-export' as const;
 export const WORKSPACE_EXPORT_VERSION = 1 as const;
 export const LEGACY_IMPORT_ID = 'legacy-seon-goals-v1';
+/** Leaves headroom below the server's 500-operation request limit. */
+export const IMPORT_TRANSACTION_OPERATION_LIMIT = 400;
 
 export interface WorkspaceProfileRecord {
   id: string;
@@ -147,40 +149,39 @@ export async function importWorkspaceData(
   const importId = options.importId ?? `json:${payload.exportId}`;
   const markerId = `data-import:${importId}`;
   const now = options.now ?? (() => new Date());
-
-  return database.writeTransaction(async (transaction) => {
-    const completed = await transaction.getOptional<{ id: string }>(
-      'SELECT id FROM workspace_meta WHERE id = ?',
-      [markerId],
-    );
-    if (completed) {
-      return {
-        importId,
-        alreadyImported: true,
-        imported: { profile: 0, goals: 0, entries: 0 },
-        skipped: {
-          profile: payload.data.profile ? 1 : 0,
-          goals: payload.data.goals.length,
-          entries: payload.data.entries.length,
-        },
-      };
-    }
-
-    const result: ImportWorkspaceDataResult = {
+  const completed = await database.getOptional<{ id: string }>(
+    'SELECT id FROM workspace_meta WHERE id = ?',
+    [markerId],
+  );
+  if (completed) {
+    return {
       importId,
-      alreadyImported: false,
+      alreadyImported: true,
       imported: { profile: 0, goals: 0, entries: 0 },
-      skipped: { profile: 0, goals: 0, entries: 0 },
+      skipped: {
+        profile: payload.data.profile ? 1 : 0,
+        goals: payload.data.goals.length,
+        entries: payload.data.entries.length,
+      },
     };
+  }
 
-    if (payload.data.profile) {
+  const result: ImportWorkspaceDataResult = {
+    importId,
+    alreadyImported: false,
+    imported: { profile: 0, goals: 0, entries: 0 },
+    skipped: { profile: 0, goals: 0, entries: 0 },
+  };
+
+  const profile = payload.data.profile;
+  if (profile) {
+    await database.writeTransaction(async (transaction) => {
       const existingProfile = await transaction.getOptional<{ id: string }>(
         'SELECT id FROM profile LIMIT 1',
       );
       if (existingProfile) {
         result.skipped.profile += 1;
       } else {
-        const profile = payload.data.profile;
         await transaction.execute(
           `INSERT INTO profile
             (id, name, email, preferences, createdAt, updatedAt)
@@ -196,62 +197,78 @@ export async function importWorkspaceData(
         );
         result.imported.profile += 1;
       }
-    }
+    });
+  }
 
-    for (const goal of payload.data.goals) {
-      if (await recordExists(transaction, 'goal', goal.id)) {
-        result.skipped.goals += 1;
-        continue;
+  for (const goals of chunks(
+    payload.data.goals,
+    IMPORT_TRANSACTION_OPERATION_LIMIT,
+  )) {
+    await database.writeTransaction(async (transaction) => {
+      for (const goal of goals) {
+        if (await recordExists(transaction, 'goal', goal.id)) {
+          result.skipped.goals += 1;
+          continue;
+        }
+        await transaction.execute(
+          `INSERT INTO goal
+            (id, shortId, title, description, target, unit, startDate,
+             targetDate, createdAt, updatedAt, initialValue, type, currentValue,
+             completionDate, archivedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            goal.id,
+            goal.shortId,
+            goal.title,
+            goal.description,
+            goal.target,
+            goal.unit,
+            goal.startDate,
+            goal.targetDate,
+            goal.createdAt,
+            goal.updatedAt,
+            goal.initialValue,
+            goal.type,
+            goal.currentValue,
+            goal.completionDate,
+            goal.archivedAt,
+          ],
+        );
+        result.imported.goals += 1;
       }
-      await transaction.execute(
-        `INSERT INTO goal
-          (id, shortId, title, description, target, unit, startDate,
-           targetDate, createdAt, updatedAt, initialValue, type, currentValue,
-           completionDate, archivedAt)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          goal.id,
-          goal.shortId,
-          goal.title,
-          goal.description,
-          goal.target,
-          goal.unit,
-          goal.startDate,
-          goal.targetDate,
-          goal.createdAt,
-          goal.updatedAt,
-          goal.initialValue,
-          goal.type,
-          goal.currentValue,
-          goal.completionDate,
-          goal.archivedAt,
-        ],
-      );
-      result.imported.goals += 1;
-    }
+    });
+  }
 
-    for (const entry of payload.data.entries) {
-      if (await recordExists(transaction, 'entry', entry.id)) {
-        result.skipped.entries += 1;
-        continue;
+  for (const entries of chunks(
+    payload.data.entries,
+    IMPORT_TRANSACTION_OPERATION_LIMIT,
+  )) {
+    await database.writeTransaction(async (transaction) => {
+      for (const entry of entries) {
+        if (await recordExists(transaction, 'entry', entry.id)) {
+          result.skipped.entries += 1;
+          continue;
+        }
+        await transaction.execute(
+          `INSERT INTO entry
+            (id, shortId, goalId, value, date, createdAt, updatedAt)
+            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          [
+            entry.id,
+            entry.shortId,
+            entry.goalId,
+            entry.value,
+            entry.date,
+            entry.createdAt,
+            entry.updatedAt,
+          ],
+        );
+        result.imported.entries += 1;
       }
-      await transaction.execute(
-        `INSERT INTO entry
-          (id, shortId, goalId, value, date, createdAt, updatedAt)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [
-          entry.id,
-          entry.shortId,
-          entry.goalId,
-          entry.value,
-          entry.date,
-          entry.createdAt,
-          entry.updatedAt,
-        ],
-      );
-      result.imported.entries += 1;
-    }
+    });
+  }
 
+  await database.writeTransaction(async (transaction) => {
     const completedAt = now().toISOString();
     await transaction.execute(
       `INSERT INTO workspace_meta (id, value, updatedAt)
@@ -268,9 +285,15 @@ export async function importWorkspaceData(
         completedAt,
       ],
     );
-
-    return result;
   });
+
+  return result;
+}
+
+function* chunks<T>(items: T[], size: number): Generator<T[]> {
+  for (let index = 0; index < items.length; index += size) {
+    yield items.slice(index, index + size);
+  }
 }
 
 async function recordExists(

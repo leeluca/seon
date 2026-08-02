@@ -41,7 +41,18 @@ export class CaptureEmailSender implements EmailSender {
   readonly messages: EmailMessage[] = [];
 
   async send(message: EmailMessage): Promise<void> {
-    this.messages.push(structuredClone(message));
+    const captured = structuredClone(message);
+    this.messages.push(captured);
+    if (process.env.NODE_ENV === 'development') {
+      console.info(
+        [
+          '[Seon captured auth email]',
+          `To: ${captured.to}`,
+          `Subject: ${captured.subject}`,
+          captured.text,
+        ].join('\n'),
+      );
+    }
   }
 
   clear(): void {

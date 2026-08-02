@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   exportWorkspaceData,
+  getLegacyImportId,
+  IMPORT_TRANSACTION_OPERATION_LIMIT,
   importWorkspaceData,
   parseWorkspaceData,
   serializeWorkspaceData,
@@ -61,6 +63,8 @@ class FakeWorkspaceDatabase
     workspace_meta: new Set<string>(),
   };
   readonly statements: Array<{ sql: string; parameters: unknown[] }> = [];
+  readonly transactions: Array<Array<{ sql: string; parameters: unknown[] }>> =
+    [];
 
   async getAll<T>(): Promise<T[]> {
     return [];
@@ -88,7 +92,10 @@ class FakeWorkspaceDatabase
   async writeTransaction<T>(
     callback: (transaction: WorkspaceDataTransaction) => Promise<T>,
   ): Promise<T> {
-    return callback(this);
+    const firstStatement = this.statements.length;
+    const result = await callback(this);
+    this.transactions.push(this.statements.slice(firstStatement));
+    return result;
   }
 }
 
@@ -135,7 +142,7 @@ describe('workspace data transfer', () => {
     );
   });
 
-  it('imports allowlisted domain fields and records an atomic marker', async () => {
+  it('imports allowlisted domain fields and records a completion marker', async () => {
     const database = new FakeWorkspaceDatabase();
 
     const result = await importWorkspaceData(database, payload, {
@@ -167,5 +174,51 @@ describe('workspace data transfer', () => {
     expect(retried.alreadyImported).toBe(true);
     expect(retried.imported).toEqual({ profile: 0, goals: 0, entries: 0 });
     expect(database.statements).toHaveLength(statementCount);
+  });
+
+  it('splits large imports into uploadable PowerSync transactions', async () => {
+    const database = new FakeWorkspaceDatabase();
+    const largePayload = structuredClone(payload);
+    const baseGoal = payload.data.goals[0];
+    if (!baseGoal) throw new Error('Goal fixture is missing');
+    largePayload.data.entries = [];
+    largePayload.data.goals = Array.from(
+      { length: IMPORT_TRANSACTION_OPERATION_LIMIT * 2 + 1 },
+      (_, index) => ({
+        ...baseGoal,
+        id: `goal-${index}`,
+        shortId: `g${index}`,
+      }),
+    );
+
+    await importWorkspaceData(database, largePayload);
+
+    const syncableOperationCounts = database.transactions
+      .map(
+        (statements) =>
+          statements.filter(({ sql }) =>
+            /INSERT INTO\s+(profile|goal|entry)/i.test(sql),
+          ).length,
+      )
+      .filter((count) => count > 0);
+    expect(syncableOperationCounts).toEqual([
+      IMPORT_TRANSACTION_OPERATION_LIMIT,
+      IMPORT_TRANSACTION_OPERATION_LIMIT,
+      1,
+    ]);
+  });
+
+  it('uses a different legacy import marker for each storage backend', () => {
+    const baseCandidate = {
+      databaseFilename: 'seon-goals.db' as const,
+      goalCount: 1,
+      entryCount: 1,
+    };
+
+    expect(
+      getLegacyImportId({ ...baseCandidate, storageBackend: 'opfs' }),
+    ).not.toBe(
+      getLegacyImportId({ ...baseCandidate, storageBackend: 'indexeddb' }),
+    );
   });
 });
