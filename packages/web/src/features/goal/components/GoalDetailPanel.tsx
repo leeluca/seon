@@ -1,19 +1,17 @@
 import {
-  useCallback,
   useEffect,
   useRef,
   type ComponentProps,
   type ReactElement,
 } from 'react';
-import { Trans, useLingui } from '@lingui/react/macro';
+import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
 import { useQuery } from '@tanstack/react-query';
-import { isBefore, startOfDay } from 'date-fns';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
 import { GOALS } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
-import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+import { EntryHeatmap } from '~/features/entry/components/EntryHeatmap';
 import { EntryHistory } from '~/features/entry/components/EntryHistory';
 import type { GoalType } from '~/features/goal/model';
 import {
@@ -73,12 +71,6 @@ interface GoalDetailBodyProps {
 }
 
 function GoalDetailBody({ goal, isMobile, onClose }: GoalDetailBodyProps) {
-  const { t } = useLingui();
-  const checkBlockedDateFn = useCallback(
-    (date: Date) => isBefore(startOfDay(date), startOfDay(goal.startDate)),
-    [goal.startDate],
-  );
-
   return (
     <>
       <GoalDetailStats goal={goal} />
@@ -93,11 +85,7 @@ function GoalDetailBody({ goal, isMobile, onClose }: GoalDetailBodyProps) {
           goalType={goal.type as GoalType}
         />
       </section>
-      <CalendarHeatmap
-        goalId={goal.id}
-        checkBlockedDateFn={checkBlockedDateFn}
-        blockedDateFeedback={t`Before goal's start date`}
-      />
+      <EntryHeatmap goal={goal} />
       <EntryHistory goalId={goal.id} goalType={goal.type} />
       <Collapsible>
         <CollapsibleTrigger className="text-muted-foreground hover:text-foreground flex w-full items-center justify-between gap-2 py-2 text-xs font-semibold tracking-widest uppercase transition-colors">

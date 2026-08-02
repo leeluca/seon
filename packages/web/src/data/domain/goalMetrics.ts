@@ -41,6 +41,9 @@ const DAY_KEY_FORMAT = 'yyyy-MM-dd';
 
 const dayKey = (date: Date) => format(date, DAY_KEY_FORMAT);
 
+/** Stable local-day key, shared with consumers of getDailyGains. */
+export const toDayKey = dayKey;
+
 const toDayStart = (value: string | Date) => startOfDay(new Date(value));
 
 const clamp = (value: number, min: number, max: number) =>
@@ -254,6 +257,56 @@ export function getStreak(entries: EntryLike[], today: Date = new Date()) {
     cursor = subDays(cursor, 1);
   }
   return streak;
+}
+
+/**
+ * Progress gained per local day, keyed by toDayKey. COUNT/BOOLEAN entries
+ * sum per day; PROGRESS readings become deltas against the previous
+ * reading (starting from initialValue), clamped at zero.
+ */
+export function getDailyGains(
+  entries: EntryLike[],
+  goal: { type: string; initialValue: number },
+): Map<string, number> {
+  const gains = new Map<string, number>();
+
+  if (goal.type !== 'PROGRESS') {
+    for (const entry of entries) {
+      const key = dayKey(new Date(entry.date));
+      gains.set(key, (gains.get(key) ?? 0) + entry.value);
+    }
+    return gains;
+  }
+
+  const readings = entries
+    .map((entry) => ({ date: new Date(entry.date), value: entry.value }))
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
+
+  let previous = goal.initialValue;
+  for (const reading of readings) {
+    const key = dayKey(reading.date);
+    const gain = Math.max(reading.value - previous, 0);
+    gains.set(key, (gains.get(key) ?? 0) + gain);
+    previous = reading.value;
+  }
+  return gains;
+}
+
+/**
+ * 0–4 heatmap shading for a day's gain relative to the plan's daily rate.
+ * Shades presence only — a missed day is level 0, never a warning color.
+ */
+export function getHeatmapLevel(
+  gain: number,
+  perDay: number,
+): 0 | 1 | 2 | 3 | 4 {
+  if (gain <= 0) return 0;
+  if (perDay <= 0) return 4;
+  const ratio = gain / perDay;
+  if (ratio < 0.5) return 1;
+  if (ratio < 1) return 2;
+  if (ratio < 1.5) return 3;
+  return 4;
 }
 
 export interface SparklineSeries {

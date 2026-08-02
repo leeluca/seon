@@ -1,2 +1,3 @@
 export { default as CreateEntryForm } from './CreateEntryForm';
-export { default as CalendarHeatmap } from './CalendarHeatmap';
+export { EntryHeatmap } from './EntryHeatmap';
+export { EntryHistory } from './EntryHistory';

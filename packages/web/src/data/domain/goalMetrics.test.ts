@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   getConsistency,
+  getDailyGains,
   getGoalMetrics,
+  getHeatmapLevel,
   getPaceStatus,
   getPercentComplete,
   getProjectedFinish,
@@ -11,6 +13,7 @@ import {
   getStreak,
   getSuggestedToday,
   hasEntryOnDay,
+  toDayKey,
   type EntryLike,
 } from '~/data/domain/goalMetrics';
 
@@ -319,6 +322,49 @@ describe('getSparklineSeries', () => {
       5,
     );
     expect(series.ideal).toBeNull();
+  });
+});
+
+describe('getDailyGains', () => {
+  it('sums COUNT entries per local day', () => {
+    const gains = getDailyGains(
+      [
+        entry(day(2026, 1, 5), 3),
+        entry(day(2026, 1, 5), 4),
+        entry(day(2026, 1, 6), 2),
+      ],
+      { type: 'COUNT', initialValue: 0 },
+    );
+    expect(gains.get(toDayKey(day(2026, 1, 5)))).toBe(7);
+    expect(gains.get(toDayKey(day(2026, 1, 6)))).toBe(2);
+  });
+
+  it('turns PROGRESS readings into clamped deltas from initialValue', () => {
+    const gains = getDailyGains(
+      [
+        entry(day(2026, 1, 5), 60), // +10 over initial 50
+        entry(day(2026, 1, 6), 55), // decrease → clamped to 0
+        entry(day(2026, 1, 7), 70), // +15
+      ],
+      { type: 'PROGRESS', initialValue: 50 },
+    );
+    expect(gains.get(toDayKey(day(2026, 1, 5)))).toBe(10);
+    expect(gains.get(toDayKey(day(2026, 1, 6)))).toBe(0);
+    expect(gains.get(toDayKey(day(2026, 1, 7)))).toBe(15);
+  });
+});
+
+describe('getHeatmapLevel', () => {
+  it('maps gain-to-rate ratio onto the 0–4 scale', () => {
+    expect(getHeatmapLevel(0, 10)).toBe(0);
+    expect(getHeatmapLevel(4, 10)).toBe(1); // < 0.5×
+    expect(getHeatmapLevel(9, 10)).toBe(2); // < 1×
+    expect(getHeatmapLevel(14, 10)).toBe(3); // < 1.5×
+    expect(getHeatmapLevel(15, 10)).toBe(4);
+  });
+
+  it('treats any activity as full intensity when there is no daily rate', () => {
+    expect(getHeatmapLevel(1, 0)).toBe(4);
   });
 });
 
