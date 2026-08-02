@@ -3,6 +3,7 @@ import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import db from '~/data/db/database';
+import { initializeLocalProfile } from '~/data/domain/profileRepo';
 import DemoStart from '~/shared/components/common/DemoStart';
 import { useUserStore } from '~/states/stores/userStore';
 import { generateDemoData } from '~/utils/demo';
@@ -23,11 +24,14 @@ export function IndexRouteComponent() {
   const initializeUser = async () => {
     setIsLoading(true);
     const { id, name, email, preferences, createdAt, updatedAt } = user;
-    await db
-      .insertInto('profile')
-      .values({ id, name, email, preferences, createdAt, updatedAt })
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    await initializeLocalProfile({
+      id,
+      name,
+      email,
+      preferences,
+      createdAt,
+      updatedAt,
+    });
     await fetchUser();
 
     const existingGoals = await db.selectFrom('goal').selectAll().execute();

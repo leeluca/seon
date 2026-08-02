@@ -4,6 +4,23 @@ export type StorageBackend = 'opfs' | 'indexeddb';
 
 const SQLITE_FILE_SUFFIXES = ['', '-journal', '-wal', '-shm'] as const;
 
+/** Ask the browser to protect origin storage from automatic eviction. */
+export async function requestPersistentStorage(): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !navigator.storage?.persist) {
+    return false;
+  }
+
+  try {
+    if (await navigator.storage.persisted?.()) return true;
+    return await navigator.storage.persist();
+  } catch (error) {
+    Sentry.captureException(error, {
+      tags: { storage_error: 'request_persistent_storage' },
+    });
+    return false;
+  }
+}
+
 export async function isOpfsAvailable(): Promise<boolean> {
   try {
     if (!navigator.storage?.getDirectory) return false;
