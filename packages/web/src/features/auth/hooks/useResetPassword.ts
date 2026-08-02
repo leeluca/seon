@@ -5,6 +5,7 @@ import {
   type AuthClientError,
   toAuthClientError,
 } from '~/lib/auth-client';
+import { notifyAuthSessionChanged } from '../authChangeNotification';
 
 export interface ResetPasswordParams {
   token: string;
@@ -37,7 +38,10 @@ export function useResetPassword({
 
       return { reset: true };
     },
-    onSuccess,
+    onSuccess: (data) => {
+      notifyAuthSessionChanged();
+      onSuccess?.(data);
+    },
     onError,
   });
 }

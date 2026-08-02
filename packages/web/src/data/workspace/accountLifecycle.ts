@@ -7,6 +7,7 @@ import {
   workspaceDatabaseFactory,
   workspaceRegistry,
 } from '~/data/db/database';
+import { createWorkspaceOwnerHeaders } from '~/data/sync/workspaceAccount';
 import { generateOfflineProfile } from '~/utils';
 import {
   notifyWorkspaceChanged,
@@ -63,8 +64,12 @@ export async function getLocalWorkspaceSummary(
   };
 }
 
-export function getRemoteWorkspaceSummary(): Promise<RemoteWorkspaceSummary> {
-  return fetcher<RemoteWorkspaceSummary>('/api/sync/workspace');
+export function getRemoteWorkspaceSummary(
+  ownerAccountId: string,
+): Promise<RemoteWorkspaceSummary> {
+  return fetcher<RemoteWorkspaceSummary>('/api/sync/workspace', {
+    headers: createWorkspaceOwnerHeaders(ownerAccountId),
+  });
 }
 
 export async function createWorkspaceExport(

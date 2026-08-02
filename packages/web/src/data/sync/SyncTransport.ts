@@ -1,4 +1,5 @@
 import fetcher from '~/apis/fetcher';
+import { createWorkspaceOwnerHeaders } from './workspaceAccount';
 
 export type SyncEntity = 'goal' | 'entry' | 'profile';
 export type SyncOperationType = 'PUT' | 'PATCH' | 'DELETE';
@@ -55,9 +56,20 @@ interface SyncCredentialResponse {
 }
 
 export class HttpSyncTransport implements SyncTransport {
+  constructor(private readonly ownerAccountId?: string) {}
+
+  private ownerHeaders(options: { json?: boolean } = {}): Headers {
+    if (!this.ownerAccountId) {
+      throw new Error('An account workspace is required for remote sync');
+    }
+    return createWorkspaceOwnerHeaders(this.ownerAccountId, options);
+  }
+
   async getCredentials(): Promise<SyncCredentials> {
     const { endpoint, token, expiresAt } =
-      await fetcher<SyncCredentialResponse>('/api/sync/credentials');
+      await fetcher<SyncCredentialResponse>('/api/sync/credentials', {
+        headers: this.ownerHeaders(),
+      });
 
     return { endpoint, token, expiresAt };
   }
@@ -67,6 +79,7 @@ export class HttpSyncTransport implements SyncTransport {
   ): Promise<SyncTransactionResult> {
     return fetcher<SyncTransactionResult>('/api/sync/transactions', {
       method: 'POST',
+      headers: this.ownerHeaders({ json: true }),
       body: JSON.stringify(transaction),
     });
   }

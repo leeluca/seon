@@ -28,7 +28,13 @@ export class PowerSyncConnector implements PowerSyncBackendConnector {
   private readonly transport: SyncTransport;
 
   constructor(private readonly options: PowerSyncConnectorOptions) {
-    this.transport = options.transport ?? new HttpSyncTransport();
+    this.transport =
+      options.transport ??
+      new HttpSyncTransport(
+        options.workspace.kind === 'account'
+          ? options.workspace.syncBinding.ownerAccountId
+          : undefined,
+      );
   }
 
   markAuthenticated(): void {
@@ -148,7 +154,8 @@ function toSyncOperationType(operation: UpdateType): SyncOperation['op'] {
 
 function requiresAuthentication(error: unknown): boolean {
   return (
-    error instanceof APIError && (error.status === 401 || error.status === 403)
+    error instanceof APIError &&
+    (error.status === 401 || error.status === 403 || error.status === 409)
   );
 }
 

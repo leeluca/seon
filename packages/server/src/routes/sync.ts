@@ -25,6 +25,8 @@ type SyncContext = Context<{
   Variables: AuthSessionVariables;
 }>;
 
+export const WORKSPACE_OWNER_HEADER = 'X-Seon-Workspace-Owner-Id';
+
 sync.use('*', requireAuthSession);
 
 function requireVerifiedAccount(c: SyncContext) {
@@ -37,8 +39,28 @@ function requireVerifiedAccount(c: SyncContext) {
   return authSession;
 }
 
+export function assertWorkspaceOwner(
+  expectedOwnerAccountId: string | undefined,
+  authenticatedAccountId: string,
+): void {
+  if (expectedOwnerAccountId === authenticatedAccountId) return;
+
+  throw new HTTPException(409, {
+    message: 'The authenticated account does not own this browser workspace',
+  });
+}
+
+function requireWorkspaceAccount(c: SyncContext) {
+  const authSession = requireVerifiedAccount(c);
+  assertWorkspaceOwner(
+    c.req.header(WORKSPACE_OWNER_HEADER),
+    authSession.user.id,
+  );
+  return authSession;
+}
+
 sync.get('/credentials', async (c) => {
-  requireVerifiedAccount(c);
+  requireWorkspaceAccount(c);
   const { token } = await getAuth(c).api.getToken({
     headers: c.req.raw.headers,
   });
@@ -54,7 +76,7 @@ sync.get('/credentials', async (c) => {
 });
 
 sync.get('/workspace', async (c) => {
-  const { user } = requireVerifiedAccount(c);
+  const { user } = requireWorkspaceAccount(c);
   const db = getDb(env(c).DB_URL);
   const [[goalResult], [entryResult]] = await Promise.all([
     db.select({ count: count() }).from(goal).where(eq(goal.userId, user.id)),
@@ -76,7 +98,7 @@ sync.post(
   '/transactions',
   tbValidator('json', uploadSyncTransactionSchema),
   async (c) => {
-    const { user } = requireVerifiedAccount(c);
+    const { user } = requireWorkspaceAccount(c);
     const result = await applySyncTransaction({
       db: getDb(env(c).DB_URL),
       user: { id: user.id, name: user.name, email: user.email },

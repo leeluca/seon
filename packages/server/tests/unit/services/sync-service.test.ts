@@ -5,7 +5,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import type { getDb } from '../../../src/db/db.js';
 import * as schema from '../../../src/db/schema.js';
-import { applySyncTransaction } from '../../../src/services/sync.service.js';
+import {
+  applySyncTransaction,
+  RetryableSyncConflictError,
+} from '../../../src/services/sync.service.js';
 import type { UploadSyncTransaction } from '../../../src/types/sync.js';
 
 const userId = '019b2f0e-7c32-7000-8000-000000000001';
@@ -325,5 +328,127 @@ describe('applySyncTransaction', () => {
         and(eq(schema.goal.id, goalId), eq(schema.goal.userId, otherUserId)),
       );
     expect(saved?.title).toBe('Initial title');
+  });
+
+  it('rolls back a goal PATCH when the target disappears after preflight', async () => {
+    await applySyncTransaction({
+      db,
+      user: {
+        id: userId,
+        name: 'Current User',
+        email: 'current@example.com',
+      },
+      transaction: goalPut('transaction-before-goal-race'),
+    });
+    await client.exec(`
+      CREATE FUNCTION skip_goal_update() RETURNS trigger AS $$
+      BEGIN
+        RETURN NULL;
+      END;
+      $$ LANGUAGE plpgsql;
+      CREATE TRIGGER skip_goal_update
+      BEFORE UPDATE ON "goal"
+      FOR EACH ROW EXECUTE FUNCTION skip_goal_update();
+    `);
+
+    try {
+      await expect(
+        applySyncTransaction({
+          db,
+          user: {
+            id: userId,
+            name: 'Current User',
+            email: 'current@example.com',
+          },
+          transaction: {
+            clientId,
+            transactionId: 'transaction-goal-race',
+            operations: [
+              {
+                table: 'goal',
+                op: 'PATCH',
+                id: goalId,
+                data: { title: 'Must remain queued' },
+              },
+            ],
+          },
+        }),
+      ).rejects.toBeInstanceOf(RetryableSyncConflictError);
+    } finally {
+      await client.exec(`
+        DROP TRIGGER skip_goal_update ON "goal";
+        DROP FUNCTION skip_goal_update();
+      `);
+    }
+
+    const [saved] = await pgliteDb
+      .select({ title: schema.goal.title })
+      .from(schema.goal)
+      .where(eq(schema.goal.id, goalId));
+    expect(saved?.title).toBe('Initial title');
+    expect(await pgliteDb.select().from(schema.syncTransaction)).toHaveLength(
+      1,
+    );
+  });
+
+  it('rolls back an entry PATCH when the target disappears after preflight', async () => {
+    await applySyncTransaction({
+      db,
+      user: {
+        id: userId,
+        name: 'Current User',
+        email: 'current@example.com',
+      },
+      transaction: goalPut('transaction-before-entry-race'),
+    });
+    await client.exec(`
+      CREATE FUNCTION skip_entry_update() RETURNS trigger AS $$
+      BEGIN
+        RETURN NULL;
+      END;
+      $$ LANGUAGE plpgsql;
+      CREATE TRIGGER skip_entry_update
+      BEFORE UPDATE ON "entry"
+      FOR EACH ROW EXECUTE FUNCTION skip_entry_update();
+    `);
+
+    try {
+      await expect(
+        applySyncTransaction({
+          db,
+          user: {
+            id: userId,
+            name: 'Current User',
+            email: 'current@example.com',
+          },
+          transaction: {
+            clientId,
+            transactionId: 'transaction-entry-race',
+            operations: [
+              {
+                table: 'entry',
+                op: 'PATCH',
+                id: entryId,
+                data: { value: 2 },
+              },
+            ],
+          },
+        }),
+      ).rejects.toBeInstanceOf(RetryableSyncConflictError);
+    } finally {
+      await client.exec(`
+        DROP TRIGGER skip_entry_update ON "entry";
+        DROP FUNCTION skip_entry_update();
+      `);
+    }
+
+    const [saved] = await pgliteDb
+      .select({ value: schema.entry.value })
+      .from(schema.entry)
+      .where(eq(schema.entry.id, entryId));
+    expect(saved?.value).toBe(1);
+    expect(await pgliteDb.select().from(schema.syncTransaction)).toHaveLength(
+      1,
+    );
   });
 });

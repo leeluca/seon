@@ -6,6 +6,7 @@ import {
   type AuthClientError,
   toAuthClientError,
 } from '~/lib/auth-client';
+import { notifyAuthSessionChanged } from '../authChangeNotification';
 import { createUnauthenticatedAuthStatus } from './useFetchAuthStatus';
 
 export const POST_SIGNOUT_KEY = 'sign-out';
@@ -40,6 +41,7 @@ const usePostSignOut = ({ onSuccess, onError }: UsePostSignOutProps = {}) => {
       return { result: true };
     },
     onSuccess: (data) => {
+      notifyAuthSessionChanged();
       queryClient.setQueryData(
         AUTH_STATUS.all.queryKey,
         createUnauthenticatedAuthStatus(),

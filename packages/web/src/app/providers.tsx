@@ -4,6 +4,7 @@ import { I18nProvider } from '@lingui/react';
 import { domAnimation, LazyMotion } from 'motion/react';
 
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
+import { AuthSessionChangeListener } from '~/features/auth/components/AuthSessionChangeListener';
 import { WorkspaceAccountGate } from '~/features/auth/components/WorkspaceAccountGate';
 import { PendingSignOutProcessor } from '~/features/auth/components/PendingSignOutProcessor';
 import { ViewportHandler } from '~/shared/components/common/ViewportHandler';
@@ -41,6 +42,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
             <OnlineStatusProvider>
               <WorkspaceChangeListener />
               <RetiredWorkspaceCleanup />
+              <AuthSessionChangeListener />
               <PendingSignOutProcessor />
               <WorkspaceAccountGate />
               <LegacyWorkspaceRecovery />

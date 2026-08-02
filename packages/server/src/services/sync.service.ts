@@ -24,6 +24,13 @@ type DatabaseTransaction = Parameters<
 >[0];
 type ProfilePreferences = (typeof profile.$inferInsert)['preferences'];
 
+export class RetryableSyncConflictError extends Error {
+  constructor(entity: 'goal' | 'entry', id: string) {
+    super(`The ${entity} ${id} changed during sync`);
+    this.name = 'RetryableSyncConflictError';
+  }
+}
+
 export interface SyncUser {
   id: string;
   name: string;
@@ -236,10 +243,12 @@ async function applyGoalOperation(
   }
 
   if (operation.op === 'PATCH') {
-    await tx
+    const [updated] = await tx
       .update(goal)
       .set({ ...operation.data, updatedAt: now })
-      .where(and(eq(goal.id, operation.id), eq(goal.userId, userId)));
+      .where(and(eq(goal.id, operation.id), eq(goal.userId, userId)))
+      .returning({ id: goal.id });
+    if (!updated) throw new RetryableSyncConflictError('goal', operation.id);
     return;
   }
 
@@ -291,10 +300,12 @@ async function applyEntryOperation(
   }
 
   if (operation.op === 'PATCH') {
-    await tx
+    const [updated] = await tx
       .update(entry)
       .set({ ...operation.data, updatedAt: now })
-      .where(and(eq(entry.id, operation.id), eq(entry.userId, userId)));
+      .where(and(eq(entry.id, operation.id), eq(entry.userId, userId)))
+      .returning({ id: entry.id });
+    if (!updated) throw new RetryableSyncConflictError('entry', operation.id);
     return;
   }
 

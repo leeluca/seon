@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { Link, useSearch } from '@tanstack/react-router';
 import { BadgeCheckIcon, MailCheckIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { AuthPageShell } from '~/features/auth/components/AuthPageShell';
+import { notifyAuthSessionChanged } from '~/features/auth/authChangeNotification';
 import { useFetchAuthStatus } from '~/features/auth/hooks/useFetchAuthStatus';
 import { useSendVerificationEmail } from '~/features/auth/hooks/useSendVerificationEmail';
 import {
@@ -25,6 +27,10 @@ export function VerifyEmailPage() {
   const verified =
     authStatus.state === 'authenticated' &&
     Boolean(authStatus.user?.emailVerified);
+
+  useEffect(() => {
+    if (verified) notifyAuthSessionChanged();
+  }, [verified]);
 
   return (
     <AuthPageShell

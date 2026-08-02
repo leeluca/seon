@@ -13,6 +13,7 @@ import {
   type BetterAuthUser,
   toAuthClientError,
 } from '~/lib/auth-client';
+import { notifyAuthSessionChanged } from '../authChangeNotification';
 
 export const POST_SIGNIN_KEY = 'sign-in/email';
 
@@ -66,6 +67,7 @@ const usePostSignIn = ({ onSuccess, onError }: UsePostSignInProps = {}) => {
       return { result: true, user: response.data.user };
     },
     onSuccess: async (data) => {
+      notifyAuthSessionChanged();
       await queryClient.invalidateQueries({
         queryKey: AUTH_STATUS.all.queryKey,
       });

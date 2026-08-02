@@ -1,11 +1,13 @@
 import { UpdateType, type AbstractPowerSyncDatabase } from '@powersync/web';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { PowerSyncConnector } from '../../src/data/sync/PowerSyncConnector';
 import type {
   SyncTransactionResult,
   SyncTransport,
 } from '../../src/data/sync/SyncTransport';
+import { HttpSyncTransport } from '../../src/data/sync/SyncTransport';
+import { WORKSPACE_OWNER_HEADER } from '../../src/data/sync/workspaceAccount';
 import type { WorkspaceDescriptor } from '../../src/data/workspace';
 import { APIError } from '../../src/utils/errors';
 
@@ -90,6 +92,56 @@ function createDatabase(options: {
 
 describe('PowerSyncConnector', () => {
   beforeEach(() => vi.clearAllMocks());
+  afterEach(() => vi.restoreAllMocks());
+
+  it('binds every HTTP sync request to the workspace owner', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            result: true,
+            endpoint: 'https://sync.example.com',
+            token: 'token',
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            result: true,
+            transactionId: '91',
+            status: 'applied',
+            rejected: [],
+          }),
+          { status: 200, headers: { 'Content-Type': 'application/json' } },
+        ),
+      );
+    const transport = new HttpSyncTransport(
+      workspace.syncBinding.ownerAccountId,
+    );
+
+    await transport.getCredentials();
+    await transport.uploadTransaction({
+      clientId: workspace.clientId,
+      transactionId: '91',
+      operations: [
+        {
+          table: 'goal',
+          op: 'PATCH',
+          id: '019b2f0e-7c32-7000-8000-000000000004',
+          data: { title: 'Changed' },
+        },
+      ],
+    });
+
+    for (const [, init] of fetchMock.mock.calls) {
+      expect(new Headers(init?.headers).get(WORKSPACE_OWNER_HEADER)).toBe(
+        workspace.syncBinding.ownerAccountId,
+      );
+    }
+  });
 
   it('uses the persisted workspace client id and transaction id', async () => {
     const transport = createTransport();
@@ -150,6 +202,30 @@ describe('PowerSyncConnector', () => {
     await expect(connector.uploadData(database)).rejects.toThrow(
       'Network unavailable',
     );
+    expect(complete).not.toHaveBeenCalled();
+  });
+
+  it('disconnects and keeps uploads queued on an account mismatch', async () => {
+    const transport = createTransport();
+    vi.mocked(transport.uploadTransaction).mockRejectedValue(
+      new APIError({
+        message: 'Workspace account mismatch',
+        status: 409,
+        statusText: 'Conflict',
+      }),
+    );
+    const onAuthenticationRequired = vi.fn();
+    const connector = new PowerSyncConnector({
+      workspace,
+      transport,
+      onAuthenticationRequired,
+    });
+    const { database, complete } = createDatabase({});
+
+    await expect(connector.uploadData(database)).rejects.toThrow(
+      'Workspace account mismatch',
+    );
+    expect(onAuthenticationRequired).toHaveBeenCalledOnce();
     expect(complete).not.toHaveBeenCalled();
   });
 

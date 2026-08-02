@@ -57,6 +57,13 @@ export function WorkspaceAccountGate() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    if (authState !== 'unauthenticated') return;
+    attemptedAccount.current = null;
+    setConflict(null);
+    setBusy(false);
+  }, [authState]);
+
+  useEffect(() => {
     const user = data.user;
     if (
       authState !== 'authenticated' ||
@@ -71,27 +78,32 @@ export function WorkspaceAccountGate() {
       name: user.name,
       email: user.email,
     };
+    let cancelled = false;
 
     const resolveWorkspace = async () => {
       if (activeWorkspace.kind === 'account') {
         if (activeWorkspace.syncBinding.ownerAccountId !== account.id) {
+          const local = await getLocalWorkspaceSummary();
+          if (cancelled) return;
           setConflict({
             kind: 'switch-account',
             account,
-            local: await getLocalWorkspaceSummary(),
+            local,
           });
           return;
         }
 
         await refreshCurrentAccountProfile(account);
+        if (cancelled) return;
         await refreshProfileStore();
         return;
       }
 
       const [local, remote] = await Promise.all([
         getLocalWorkspaceSummary(),
-        getRemoteWorkspaceSummary(),
+        getRemoteWorkspaceSummary(account.id),
       ]);
+      if (cancelled) return;
       if (local.hasData && remote.hasData) {
         setConflict({ kind: 'merge-local', account, local, remote });
         return;
@@ -102,10 +114,14 @@ export function WorkspaceAccountGate() {
     };
 
     void resolveWorkspace().catch((error) => {
+      if (cancelled) return;
       attemptedAccount.current = null;
       console.error('Could not resolve the account workspace', error);
       toast.error('Could not prepare sync. Your local workspace is unchanged.');
     });
+    return () => {
+      cancelled = true;
+    };
   }, [authState, data.user, refreshProfileStore]);
 
   if (!conflict) return null;
@@ -138,6 +154,7 @@ export function WorkspaceAccountGate() {
 
   const cancelAndSignOut = async () => {
     setBusy(true);
+    attemptedAccount.current = null;
     markPendingSignOut(conflict.account.id);
     await powerSyncDb.disconnect();
     const revoked = await flushPendingSignOut();

@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
+import { AUTH_STATUS } from '~/constants/query';
 import { activeWorkspace, powerSyncDb } from '~/data/db/database';
 import { PowerSyncConnector } from '~/data/sync/PowerSyncConnector';
 import { useFetchAuthStatus } from '~/features/auth/hooks/useFetchAuthStatus';
@@ -15,7 +16,9 @@ export function usePowerSyncConnector() {
         workspace: activeWorkspace,
         onAuthenticationRequired: () => {
           void powerSync.disconnect();
-          void queryClient.invalidateQueries({ queryKey: ['auth', 'session'] });
+          void queryClient.invalidateQueries({
+            queryKey: AUTH_STATUS.all.queryKey,
+          });
         },
       }),
     [queryClient],

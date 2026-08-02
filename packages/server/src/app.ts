@@ -21,6 +21,7 @@ export function createApp() {
         'X-Requested-With',
         'User-Agent',
         'Content-Type',
+        'X-Seon-Workspace-Owner-Id',
       ],
       allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
       maxAge: 7200,
