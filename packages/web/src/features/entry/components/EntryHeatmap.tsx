@@ -1,4 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLingui } from '@lingui/react/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
@@ -56,6 +57,11 @@ export function EntryHeatmap({
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [anchor, setAnchor] = useState<Element | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [hovered, setHovered] = useState<{
+    day: Date;
+    x: number;
+    y: number;
+  } | null>(null);
 
   const { weeks, monthLabels, gains, entriesByDay, perDay, today, start } =
     useMemo(() => {
@@ -106,6 +112,17 @@ export function EntryHeatmap({
     ? entriesByDay.get(selectedDay.toDateString())
     : undefined;
 
+  const hoveredGain = hovered ? (gains.get(toDayKey(hovered.day)) ?? 0) : 0;
+  const hoveredEntry = hovered
+    ? entriesByDay.get(hovered.day.toDateString())
+    : undefined;
+  let hoveredValueLabel = t`No entry`;
+  if (goal.type === 'BOOLEAN') {
+    if (hoveredGain > 0) hoveredValueLabel = t`Done`;
+  } else if (hoveredGain > 0 || hoveredEntry) {
+    hoveredValueLabel = `+${hoveredGain} ${goal.unit}`;
+  }
+
   return (
     <section className={className} aria-label={t`Entry calendar`}>
       <div className="flex gap-1.5">
@@ -120,11 +137,17 @@ export function EntryHeatmap({
               className="text-muted-foreground flex size-6 items-center justify-center text-[10px]"
               aria-hidden="true"
             >
-              {index % 2 === 1 ? label : ''}
+              {label}
             </span>
           ))}
         </div>
-        <div ref={scrollRef} className="overflow-x-auto pb-1">
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: handlers only dismiss the decorative hover tooltip */}
+        <div
+          ref={scrollRef}
+          className="overflow-x-auto pb-1"
+          onMouseLeave={() => setHovered(null)}
+          onScroll={() => setHovered(null)}
+        >
           <div className="flex w-max gap-1">
             {weeks.map((week, weekIndex) => (
               <div key={week[0].toISOString()} className="flex flex-col gap-1">
@@ -170,9 +193,20 @@ export function EntryHeatmap({
                           'ring-ring ring-2 ring-inset',
                       )}
                       onClick={(event) => {
+                        setHovered(null);
                         setSelectedDay(day);
                         setAnchor(event.currentTarget);
                         setIsPopoverOpen(true);
+                      }}
+                      onMouseEnter={(event) => {
+                        if (isMobile) return;
+                        const rect =
+                          event.currentTarget.getBoundingClientRect();
+                        setHovered({
+                          day,
+                          x: rect.left + rect.width / 2,
+                          y: rect.top,
+                        });
                       }}
                     />
                   );
@@ -220,8 +254,11 @@ export function EntryHeatmap({
           <span>
             <Trans>
               Add entry for{' '}
-              <span className="text-muted-foreground">{goal.title}</span>
-            </Trans>
+              {selectedDay ? format(selectedDay, 'EEE, MMM d') : ''}
+            </Trans>{' '}
+            <span className="text-muted-foreground block text-sm font-normal">
+              {goal.title}
+            </span>
           </span>
         }
       >
@@ -238,6 +275,22 @@ export function EntryHeatmap({
           />
         )}
       </ResponsivePopover>
+
+      {hovered &&
+        !isMobile &&
+        createPortal(
+          <div
+            className="bg-foreground text-background pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-md px-2 py-1 text-xs whitespace-nowrap"
+            style={{ left: hovered.x, top: hovered.y - 6 }}
+            aria-hidden="true"
+          >
+            <span className="font-medium">
+              {format(hovered.day, 'EEE, MMM d')}
+            </span>
+            <span className="opacity-70"> · {hoveredValueLabel}</span>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }
