@@ -16,6 +16,6 @@
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"],
     "useDefineForClassFields": true
   },
-  "include": ["src", "tests", "*.config.ts"],
+  "include": ["src", "tests", "functions", "*.config.ts"],
   "exclude": ["dist", ".cache"]
 }
