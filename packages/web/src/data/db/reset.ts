@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/react';
 import { DB_NAME, powerSyncDb, storageBackend } from '~/data/db/database';
 import { purgeIndexedDbStorage, purgeOpfsStorage } from '~/data/db/storage';
 
-export async function resetLocalDatabase(): Promise<void> {
+export async function resetLocalDatabase(): Promise<boolean> {
   try {
     await powerSyncDb.disconnect();
   } catch (error) {
@@ -32,5 +32,8 @@ export async function resetLocalDatabase(): Promise<void> {
       tags: { storage_error: 'reset_db_purge_failed' },
       extra: { storageBackend, dbFilename: DB_NAME },
     });
+    return false;
   }
+
+  return true;
 }

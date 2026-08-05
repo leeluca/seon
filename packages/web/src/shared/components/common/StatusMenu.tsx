@@ -22,6 +22,7 @@ import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
 import { APIError } from '~/utils/errors';
+import { LocalDataActions } from './LocalDataActions';
 import SignOutButton from './SignOutButton';
 import UpdatePrompt from './UpdatePrompt';
 import { Button, buttonVariants } from '../ui/button';
@@ -263,32 +264,30 @@ function StatusMenu() {
           {display === 'error' && <SyncErrorContent />}
         </PopoverContent>
       </Popover>
-      {(isSignedIn || Boolean(useSync)) && (
-        <Popover>
-          <PopoverTrigger
-            render={
-              <Button
-                size="icon-responsive"
-                variant="ghost"
-                aria-label={t`User info`}
-              />
-            }
-          >
-            <CircleUserIcon size={18} />
-          </PopoverTrigger>
-          <PopoverContent
-            className="mr-3 w-min max-w-96 sm:mr-8"
-            sideOffset={5}
-          >
-            <div className="space-y-2 pb-4">
-              <h3 className="text-center leading-none font-medium text-pretty">
-                <Trans>Hello, {userName}!</Trans>
-              </h3>
-            </div>
-            <SignOutButton />
-          </PopoverContent>
-        </Popover>
-      )}
+      <Popover>
+        <PopoverTrigger
+          render={
+            <Button
+              size="icon-responsive"
+              variant="ghost"
+              aria-label={t`User info`}
+            />
+          }
+        >
+          <CircleUserIcon size={18} />
+        </PopoverTrigger>
+        <PopoverContent className="mr-3 w-min max-w-96 sm:mr-8" sideOffset={5}>
+          <div className="space-y-2 pb-4">
+            <h3 className="text-center leading-none font-medium text-pretty">
+              <Trans>Hello, {userName}!</Trans>
+            </h3>
+          </div>
+          <div className="flex flex-col gap-2">
+            <LocalDataActions />
+            {(isSignedIn || Boolean(useSync)) && <SignOutButton />}
+          </div>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
