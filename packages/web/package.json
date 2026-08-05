@@ -1,6 +1,8 @@
 {
   "name": "web",
-  "sideEffects": false,
+  "sideEffects": [
+    "./src/shared/components/common/charts/echarts.ts"
+  ],
   "main": "src/main.js",
   "type": "module",
   "scripts": {
