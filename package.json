@@ -13,10 +13,10 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.4",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-    "prettier": "^3.9.5",
-    "prettier-plugin-tailwindcss": "^0.7.4",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
     "typescript": "^6.0.3",
-    "wrangler": "^4.112.0"
+    "wrangler": "^4.118.0"
   },
   "engines": {
     "node": "24.x",

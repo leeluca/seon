@@ -2,6 +2,24 @@ import * as Sentry from '@sentry/react';
 
 export type StorageBackend = 'opfs' | 'indexeddb';
 
+/**
+ * Requests origin-wide persistent storage for local-first application data.
+ * A denied or unsupported request does not prevent the app from using
+ * best-effort browser storage.
+ */
+export async function requestPersistentStorage(): Promise<boolean | undefined> {
+  if (!navigator.storage?.persist) return undefined;
+
+  try {
+    return await navigator.storage.persist();
+  } catch (error) {
+    Sentry.captureException(error, {
+      tags: { storage_error: 'request_persistent_storage' },
+    });
+    return false;
+  }
+}
+
 export async function isOpfsAvailable(): Promise<boolean> {
   try {
     if (!navigator.storage?.getDirectory) return false;
@@ -49,16 +67,31 @@ export async function isLocalDbAvailable(): Promise<boolean> {
 }
 
 export async function purgeOpfsStorage(): Promise<void> {
+  if (!navigator.storage?.getDirectory) return;
+
+  let root: FileSystemDirectoryHandle;
   try {
-    if (!navigator.storage?.getDirectory) return;
+    root = await navigator.storage.getDirectory();
+  } catch (error) {
+    Sentry.captureException(error, {
+      tags: { storage_error: 'purge_opfs_storage_root' },
+    });
+    throw error;
+  }
 
-    const root = await navigator.storage.getDirectory();
-    await new Promise((resolve) => setTimeout(resolve, 1));
+  await new Promise((resolve) => setTimeout(resolve, 1));
 
+  const deletionErrors: Error[] = [];
+  try {
     for await (const [name, entry] of root.entries()) {
       try {
         await root.removeEntry(name, { recursive: entry.kind === 'directory' });
       } catch (error) {
+        deletionErrors.push(
+          new Error(`Failed to delete ${entry.kind}: ${name}`, {
+            cause: error,
+          }),
+        );
         Sentry.captureException(error, {
           extra: { message: `Failed to delete ${entry.kind}: ${name}` },
           tags: { storage_error: 'purge_opfs_storage' },
@@ -69,6 +102,14 @@ export async function purgeOpfsStorage(): Promise<void> {
     Sentry.captureException(error, {
       tags: { storage_error: 'purge_opfs_storage_root' },
     });
+    throw error;
+  }
+
+  if (deletionErrors.length > 0) {
+    throw new AggregateError(
+      deletionErrors,
+      `Failed to delete ${deletionErrors.length} OPFS entries`,
+    );
   }
 }
 

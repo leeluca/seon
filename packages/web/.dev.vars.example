@@ -1,0 +1,2 @@
+# Runtime binding used by the Cloudflare Pages Function.
+API_ORIGIN="http://localhost:3000"

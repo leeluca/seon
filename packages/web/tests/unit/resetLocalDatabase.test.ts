@@ -59,7 +59,7 @@ describe('resetLocalDatabase', () => {
     const mocks = mockResetModule({ storageBackend: 'opfs' });
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
+    await expect(resetLocalDatabase()).resolves.toBe(true);
 
     expect(mocks.disconnect).toHaveBeenCalledTimes(1);
     expect(mocks.close).toHaveBeenCalledTimes(1);
@@ -71,7 +71,7 @@ describe('resetLocalDatabase', () => {
     const mocks = mockResetModule({ storageBackend: 'indexeddb' });
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
+    await expect(resetLocalDatabase()).resolves.toBe(true);
 
     expect(mocks.disconnect).toHaveBeenCalledTimes(1);
     expect(mocks.close).toHaveBeenCalledTimes(1);
@@ -93,7 +93,7 @@ describe('resetLocalDatabase', () => {
 
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
+    await expect(resetLocalDatabase()).resolves.toBe(false);
     expect(mocks.purgeIndexedDbStorage).toHaveBeenCalledTimes(1);
 
     expect(mocks.captureException).toHaveBeenCalled();

@@ -2,7 +2,6 @@ import {
   BaseObserver,
   UpdateType,
   type AbstractPowerSyncDatabase,
-  type CrudEntry,
   type PowerSyncBackendConnector,
 } from '@powersync/web';
 import {
@@ -14,24 +13,13 @@ import {
 
 import { fetchSyncCredentials, getDbAccessToken } from '~/data/sync/credential';
 import type { Preferences } from '~/types/user';
+import { APIError } from '~/utils/errors';
 
 export type SupabaseConfig = {
   supabaseUrl: string;
   supabaseAnonKey: string;
   powersyncUrl?: string;
 };
-
-/// Postgres Response codes that cannot be recovered from by retrying.
-const FATAL_RESPONSE_CODES = [
-  // Class 22 — Data Exception
-  // Ex: Data type mismatch.
-  /^22...$/,
-  // Class 23 — Integrity Constraint Violation.
-  // Ex: NOT NULL, FOREIGN KEY and UNIQUE violations.
-  /^23...$/,
-  // INSUFFICIENT PRIVILEGE
-  /^42501$/,
-];
 
 export type SupabaseConnectorListener = {
   initialized: () => void;
@@ -49,7 +37,12 @@ export class SupabaseConnector
 
   currentSession: Session | null;
 
-  constructor() {
+  private authenticationRequired = false;
+
+  constructor(
+    readonly ownerAccountId: string,
+    private readonly onAuthenticationRequired?: () => void,
+  ) {
     super();
 
     this.config = {
@@ -62,7 +55,7 @@ export class SupabaseConnector
       this.config.supabaseUrl,
       this.config.supabaseAnonKey,
       {
-        accessToken: async () => await getDbAccessToken(),
+        accessToken: async () => await getDbAccessToken(this.ownerAccountId),
       },
     );
     this.currentSession = null;
@@ -77,22 +70,37 @@ export class SupabaseConnector
     this.iterateListeners((cb) => cb.initialized?.());
   }
 
-  // FIXME: keeps calling api even if unauthorized
   async fetchCredentials() {
-    const { result, token, expiresAt, syncUrl } = await fetchSyncCredentials();
+    if (this.authenticationRequired) return null;
 
-    // user not signed in
-    if (!result) {
-      return null;
+    try {
+      const { result, token, expiresAt, syncUrl } = await fetchSyncCredentials(
+        this.ownerAccountId,
+      );
+
+      if (!result) return null;
+
+      return {
+        endpoint: this.config.powersyncUrl || syncUrl,
+        token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN || token,
+        expiresAt: expiresAt ? new Date(expiresAt * 1000) : undefined,
+      };
+    } catch (error) {
+      if (
+        error instanceof APIError &&
+        (error.status === 401 || error.status === 409)
+      ) {
+        this.authenticationRequired = true;
+        this.onAuthenticationRequired?.();
+        return null;
+      }
+
+      throw error;
     }
+  }
 
-    const res = {
-      endpoint: this.config.powersyncUrl || syncUrl,
-      token: import.meta.env.VITE_POWERSYNC_DEV_TOKEN || token,
-      expiresAt: expiresAt ? new Date(expiresAt * 1000) : undefined,
-    };
-
-    return res;
+  markAuthenticated() {
+    this.authenticationRequired = false;
   }
 
   // TODO: implement batching strategy to improve performance
@@ -103,85 +111,52 @@ export class SupabaseConnector
       return;
     }
 
-    let lastOp: CrudEntry | null = null;
-    try {
-      for (const op of transaction.crud) {
-        lastOp = op;
-        const table = this.client.from(op.table);
-        let result: PostgrestSingleResponse<null>;
+    for (const op of transaction.crud) {
+      const table = this.client.from(op.table);
+      let result: PostgrestSingleResponse<null>;
+      const operation =
+        op.table === 'user' && op.op === UpdateType.PUT
+          ? UpdateType.PATCH
+          : op.op;
 
-        // User is saved to the db by the backend when the user signs up
-        // since the local user only contains a subset of the user data, we need to user PATCH instead of PUT so as to not overwrite existing user data
-        if (op.table === 'user' && op.op === UpdateType.PUT) {
-          op.op = UpdateType.PATCH;
+      switch (operation) {
+        case UpdateType.PUT: {
+          const record = { ...op.opData, id: op.id };
+          result = await table.upsert(record);
+          break;
         }
-        switch (op.op) {
-          case UpdateType.PUT: {
-            const record = { ...op.opData, id: op.id };
-            result = await table.upsert(record);
-            break;
-          }
-          case UpdateType.PATCH: {
-            const patchData = { ...op.opData };
-            if (
-              op.table === 'user' &&
-              'preferences' in patchData &&
-              typeof patchData.preferences === 'string'
-            ) {
-              try {
-                // TODO: validate the preferences object
-                patchData.preferences = JSON.parse(
-                  patchData.preferences,
-                ) as Preferences;
-              } catch (err) {
-                console.error('Error parsing JSON for user.preferences', err);
-              }
-              result = await table.update(patchData).eq('id', op.id);
-              break;
+        case UpdateType.PATCH: {
+          const patchData = { ...op.opData };
+          if (
+            op.table === 'user' &&
+            'preferences' in patchData &&
+            typeof patchData.preferences === 'string'
+          ) {
+            try {
+              patchData.preferences = JSON.parse(
+                patchData.preferences,
+              ) as Preferences;
+            } catch (error) {
+              console.error('Error parsing JSON for user.preferences', error);
             }
-            result = await table.update(patchData).eq('id', op.id);
-            break;
           }
-          case UpdateType.DELETE: {
-            result = await table.delete().eq('id', op.id);
-            break;
-          }
+          result = await table.update(patchData).eq('id', op.id);
+          break;
         }
-
-        if (result.error) {
-          console.error(result.error);
-          const error = new Error(
-            `Could not sync database. Received error: ${result.error.message}`,
-          );
-          throw error;
+        case UpdateType.DELETE: {
+          result = await table.delete().eq('id', op.id);
+          break;
         }
       }
 
-      await transaction.complete();
-    } catch (err: unknown) {
-      console.debug(err);
-      if (
-        typeof err === 'object' &&
-        err !== null &&
-        'code' in err &&
-        typeof (err as { code: unknown }).code === 'string' &&
-        FATAL_RESPONSE_CODES.some((regex) =>
-          regex.test((err as { code: string }).code),
-        )
-      ) {
-        /**
-         * Instead of blocking the queue with these errors,
-         * discard the (rest of the) transaction.
-         *
-         * */
-
-        //  TODO: Save the failing records elsewhere instead of discarding, and/or notify the user.
-        console.error('Data upload error - discarding:', lastOp, err);
-        await transaction.complete();
-      } else {
-        // NOTE: Error may be retryable (e.g. network error), the call is retried after a delay when error is thrown.
-        throw err;
+      if (result.error) {
+        console.error(result.error);
+        // Keep the transaction queued. The user can export their local data even
+        // if this legacy server can no longer accept a particular operation.
+        throw result.error;
       }
     }
+
+    await transaction.complete();
   }
 }

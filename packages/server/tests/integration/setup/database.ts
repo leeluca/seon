@@ -5,14 +5,13 @@ import { migrate } from 'drizzle-orm/pglite/migrator';
 import { testClient, testDb } from './mock-db.js';
 
 export async function setupTestDatabase() {
-  // FIXME: use same migrations directory as production
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
   process.env.ORIGINAL_DB_URL = process.env.DB_URL;
   // Override DB_URL to prevent tests from writing to production DB
   process.env.DB_URL = '';
 
-  const migrationsFolder = path.join(__dirname, './migrations');
+  const migrationsFolder = path.join(__dirname, '../../../src/db/migrations');
 
   await migrate(testDb, { migrationsFolder });
 

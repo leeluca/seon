@@ -6,5 +6,5 @@ export const COOKIE_SECURITY_SETTINGS = {
   path: '/',
   secure: true,
   httpOnly: true,
-  sameSite: 'none' as const satisfies CookieOptions['sameSite'],
+  sameSite: 'lax' as const satisfies CookieOptions['sameSite'],
 };

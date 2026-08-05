@@ -5,7 +5,7 @@ import { TestClient } from '../setup/client.js';
 import { setupTestDatabase } from '../setup/database.js';
 import { setupTestServer } from '../setup/server.js';
 
-describe('Token Refresh Flow', async () => {
+describe('Opaque refresh session flow', async () => {
   const { cleanup } = await setupTestDatabase();
   const { getBaseUrl } = setupTestServer();
 
@@ -13,100 +13,59 @@ describe('Token Refresh Flow', async () => {
     await cleanup();
   });
 
-  it('should register a user successfully', async () => {
+  it('requires an explicit refresh and safely handles concurrent tabs', async () => {
     const client = new TestClient(getBaseUrl());
-
     const userId = uuidv7();
-    const userData = {
-      email: `test-${userId}@example.com`,
-      name: `TestUser-${userId}`,
+    const signupResponse = await client.post('/api/auth/signup', {
+      email: `test-refresh-${userId}@example.com`,
+      name: `TestRefreshUser-${userId}`,
       password: 'Password123!',
       uuid: userId,
-    };
-
-    const signupResponse = await client.post('/api/auth/signup', userData);
-
-    const signupData = (await signupResponse.json()) as {
-      result: boolean;
-      expiresAt: number;
-      user: Record<string, unknown>;
-    };
+    });
 
     expect(signupResponse.status).toBe(200);
+    const originalRefreshToken = client.getCookies().refresh_token;
+    expect(originalRefreshToken).toBeTruthy();
 
-    expect(signupData.result).toBe(true);
-  });
+    client.deleteCookie('access_token');
+    const protectedResponse = await client.get('/api/auth/status');
+    expect(protectedResponse.status).toBe(401);
+    await expect(protectedResponse.json()).resolves.toMatchObject({
+      error: { code: 'ACCESS_TOKEN_INVALID' },
+    });
 
-  //   it('should automatically refresh tokens using validateAccess middleware', async () => {
-  //     const client = new TestClient(getBaseUrl());
-
-  //     client.clearCookies();
-
-  //     const userId = uuidv7();
-  //     const userData = {
-  //       email: `test-refresh-${userId}@example.com`,
-  //       name: `TestRefreshUser-${userId}`,
-  //       password: 'Password123!',
-  //       uuid: userId,
-  //     };
-  //     const signupResponse = await client.post('/api/auth/signup', userData);
-
-  //     interface AuthResponse {
-  //       result: boolean;
-  //       expiresAt: number;
-  //       user: Record<string, unknown>;
-  //     }
-  //     const signupData: AuthResponse = await signupResponse.json();
-
-  //     expect(signupResponse.status).toBe(200);
-
-  //     const originalExpiresAt = signupData.expiresAt;
-
-  //     const initialStatusResponse = await client.get('/api/auth/status');
-
-  //     expect(initialStatusResponse.status).toBe(200);
-
-  //     client.deleteCookie('access_token');
-
-  //     await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  //     const refreshedStatusResponse = await client.get('/api/auth/status');
-  //     expect(refreshedStatusResponse.status).toBe(200);
-
-  //     const refreshedStatusData: AuthResponse =
-  //       await refreshedStatusResponse.json();
-
-  //     expect(refreshedStatusData.expiresAt).toBeGreaterThan(originalExpiresAt);
-
-  //     if (refreshedStatusResponse.status === 200) {
-  //       const setCookieHeader = refreshedStatusResponse.headers.get('set-cookie');
-
-  //       expect(setCookieHeader).toBeTruthy();
-  //       if (setCookieHeader) {
-  //         expect(setCookieHeader).toContain('access_token');
-  //       }
-
-  //       const finalStatusResponse = await client.get('/api/auth/status');
-  //       expect(finalStatusResponse.status).toBe(200);
-  //     }
-  //   });
-
-  it('should handle expired refresh tokens properly', async () => {
-    const client = new TestClient(getBaseUrl());
-
-    const userId = uuidv7();
-    const userData = {
-      email: `test-expired-${userId}@example.com`,
-      name: `TestExpiredUser-${userId}`,
-      password: 'Password123!',
-      uuid: userId,
-    };
-
-    await client.post('/api/auth/signup', userData);
-
-    client.clearCookies();
+    const refreshResponses = await Promise.all([
+      client.post('/api/auth/refresh', {}),
+      client.post('/api/auth/refresh', {}),
+    ]);
+    expect(refreshResponses.map((response) => response.status)).toEqual([
+      200, 200,
+    ]);
+    expect(client.getCookies().refresh_token).toBe(originalRefreshToken);
 
     const statusResponse = await client.get('/api/auth/status');
-    expect(statusResponse.status).toBe(401);
+    expect(statusResponse.status).toBe(200);
+    await expect(statusResponse.json()).resolves.toMatchObject({
+      result: true,
+      userId,
+    });
+  });
+
+  it('revokes the stable refresh session on sign-out', async () => {
+    const client = new TestClient(getBaseUrl());
+    const userId = uuidv7();
+    await client.post('/api/auth/signup', {
+      email: `test-signout-${userId}@example.com`,
+      name: `TestSignoutUser-${userId}`,
+      password: 'Password123!',
+      uuid: userId,
+    });
+
+    const signoutResponse = await client.post('/api/auth/signout', {});
+    expect(signoutResponse.status).toBe(200);
+    expect(client.getCookies()).not.toHaveProperty('refresh_token');
+
+    const refreshResponse = await client.post('/api/auth/refresh', {});
+    expect(refreshResponse.status).toBe(401);
   });
 });

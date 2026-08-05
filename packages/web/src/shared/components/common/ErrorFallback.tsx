@@ -2,21 +2,14 @@ import { useState } from 'react';
 import { t } from '@lingui/core/macro';
 import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon, RefreshCcwIcon } from 'lucide-react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 
+import { usePwa } from '~/states/pwa';
 import { cn } from '~/utils';
 import { Button } from '../ui/button';
 
 function UpdateButton({ text }: { text?: React.ReactNode }) {
   const [isUpdating, setIsUpdating] = useState(false);
-  const {
-    needRefresh: [needRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegisterError(error) {
-      console.log('SW registration error', error);
-    },
-  });
+  const { needRefresh, updateServiceWorker } = usePwa();
 
   const handleUpdate = async () => {
     setIsUpdating(true);

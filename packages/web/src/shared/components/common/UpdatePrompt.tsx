@@ -3,22 +3,15 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
 import { BadgePlusIcon, Loader2Icon } from 'lucide-react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 
+import { usePwa } from '~/states/pwa';
 import { Button } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 function ReloadPrompt() {
   const [isUpdating, setIsUpdating] = useState(false);
-  const {
-    needRefresh: [needRefresh, _setNeedRefresh],
-    updateServiceWorker,
-  } = useRegisterSW({
-    onRegisterError(error) {
-      console.log('SW registration error', error);
-    },
-  });
+  const { needRefresh, updateServiceWorker } = usePwa();
 
   const handleUpdate = async () => {
     setIsUpdating(true);

@@ -9,7 +9,7 @@ import {
   signJWT,
   signJWTWithPayload,
   verifyJWT,
-  type JWTTypeConfig,
+  type JWTConfigs,
 } from '../../../src/services/jwt.js';
 import { TEST_USER } from '../../utils/constants.js';
 import {
@@ -50,7 +50,7 @@ function createCookieMockContext(): Context {
 
 describe('JWT Service', () => {
   let jwtTestData: TestJWTData;
-  let jwtConfigs: Record<string, JWTTypeConfig>;
+  let jwtConfigs: JWTConfigs;
 
   beforeAll(async () => {
     jwtTestData = await createJWTTestData();
@@ -63,7 +63,6 @@ describe('JWT Service', () => {
 
       expect(keys).toHaveProperty('jwtPrivateKey');
       expect(keys).toHaveProperty('jwtPublicKey');
-      expect(keys).toHaveProperty('jwtRefreshSecret');
       expect(keys).toHaveProperty('jwtDbPrivateKey');
       expect(keys).toHaveProperty('publicKeyJWK');
       expect(keys).toHaveProperty('publicKeyKid');
@@ -81,20 +80,15 @@ describe('JWT Service', () => {
   describe('createJWTConfigs', () => {
     it('should create JWT configs with correct values', async () => {
       expect(jwtConfigs).toHaveProperty('access');
-      expect(jwtConfigs).toHaveProperty('refresh');
       expect(jwtConfigs).toHaveProperty('db_access');
 
       expect(jwtConfigs.access.algorithm).toBe('RS256');
-      expect(jwtConfigs.refresh.algorithm).toBe('HS256');
       expect(jwtConfigs.db_access.algorithm).toBe('HS256');
 
       // Check that the keys were properly assigned
       expect(jwtConfigs.access.signingKey).toBe(jwtTestData.keys.jwtPrivateKey);
       expect(jwtConfigs.access.verificationKey).toBe(
         jwtTestData.keys.jwtPublicKey,
-      );
-      expect(jwtConfigs.refresh.signingKey).toBe(
-        jwtTestData.keys.jwtRefreshSecret,
       );
       expect(jwtConfigs.db_access.signingKey).toBe(
         jwtTestData.keys.jwtDbPrivateKey,

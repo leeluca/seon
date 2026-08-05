@@ -3,6 +3,10 @@ import { toast } from 'sonner';
 
 import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
+import {
+  clearPendingSignOut,
+  notifyAuthChange,
+} from '~/features/auth/authSession';
 import type { APIError } from '~/utils/errors';
 
 export const POST_SIGNUP_KEY = '/api/auth/signup';
@@ -37,9 +41,12 @@ const usePostSignUp = ({ onSuccess, onError }: usePostSignUpProps = {}) => {
       fetcher<PostSignUpResponse>(POST_SIGNUP_KEY, {
         method: 'POST',
         body: JSON.stringify(payload),
+        skipAuthRefresh: true,
       }),
     onSuccess: async (data) => {
       if (data.result) {
+        clearPendingSignOut();
+        notifyAuthChange('signed-in', data.user.id);
         await queryClient.invalidateQueries({
           queryKey: AUTH_STATUS.all.queryKey,
         });

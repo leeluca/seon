@@ -5,6 +5,7 @@ import { ArrowRightIcon, GoalIcon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import db from '~/data/db/database';
+import { requestPersistentStorage } from '~/data/db/storage';
 import LanguageSelector from '~/shared/components/common/LanguageSelector';
 import { Button, buttonVariants } from '~/shared/components/ui/button';
 import { useUserStore } from '~/states/stores/userStore';
@@ -23,6 +24,7 @@ export function IndexRouteComponent() {
   const [isLoading, setIsLoading] = useState(false);
 
   const initializeUser = async () => {
+    void requestPersistentStorage();
     setIsLoading(true);
     await db
       .insertInto('user')

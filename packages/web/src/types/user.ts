@@ -13,4 +13,5 @@ export type User = Database['user'];
 export interface AuthStatus {
   result: boolean;
   expiresAt: number;
+  userId: string | null;
 }

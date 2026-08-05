@@ -31,30 +31,19 @@ export class TestClient {
   }
 
   private processSetCookieHeaders(response: Response) {
-    const cookieHeaders: string[] = [];
-
-    response.headers.forEach((value, key) => {
-      if (key.toLowerCase() === 'set-cookie') {
-        cookieHeaders.push(value);
-      }
-    });
+    const cookieHeaders = response.headers.getSetCookie();
 
     for (const cookieStr of cookieHeaders) {
       const [cookiePart] = cookieStr.split(';');
-      const [name, value] = cookiePart.split('=');
-      if (name && value) {
-        this.cookies.set(name, value);
-      }
-    }
+      const separator = cookiePart.indexOf('=');
+      const name = cookiePart.slice(0, separator);
+      const value = cookiePart.slice(separator + 1);
+      if (!name || separator < 0) continue;
 
-    if (cookieHeaders.length === 0) {
-      const setCookieHeader = response.headers.get('Set-Cookie');
-      if (setCookieHeader) {
-        const [cookiePart] = setCookieHeader.split(';');
-        const [name, value] = cookiePart.split('=');
-        if (name && value) {
-          this.cookies.set(name, value);
-        }
+      if (value === '' || /Max-Age=0/i.test(cookieStr)) {
+        this.cookies.delete(name);
+      } else {
+        this.cookies.set(name, value);
       }
     }
   }

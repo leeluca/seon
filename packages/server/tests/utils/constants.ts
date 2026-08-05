@@ -12,7 +12,6 @@ export const TEST_USER = {
 export const MOCK_JWT_KEYS = {
   jwtPrivateKey: 'mocked-private-key',
   jwtPublicKey: 'mocked-public-key',
-  jwtRefreshSecret: 'mocked-refresh-secret',
   jwtDbPrivateKey: 'mocked-db-private-key',
   publicKeyJWK: { kid: 'test-kid' },
   publicKeyKid: 'test-kid',
@@ -29,16 +28,6 @@ export const MOCK_JWT_CONFIGS = {
     role: 'authenticated',
     kid: 'test-kid',
     cookieName: 'access_token',
-  },
-  refresh: {
-    expiration: 604800,
-    algorithm: 'HS256',
-    signingKey: 'mocked-refresh-secret',
-    verificationKey: 'mocked-refresh-secret',
-    aud: '',
-    role: '',
-    kid: '',
-    cookieName: 'refresh_token',
   },
   db_access: {
     expiration: 900,
@@ -65,7 +54,6 @@ export const MOCK_JWT_PAYLOAD = {
 export const MOCK_TOKENS = {
   valid: {
     access: 'valid-access-token',
-    refresh: 'valid-refresh-token',
   },
   invalid: 'invalid.token.here',
 };
@@ -74,7 +62,6 @@ export const MOCK_TOKENS = {
 export interface JWTKeys {
   jwtPrivateKey: string | webcrypto.CryptoKey;
   jwtPublicKey: string | webcrypto.CryptoKey;
-  jwtRefreshSecret: string | KeyObject;
   jwtDbPrivateKey: string | KeyObject;
   publicKeyJWK: JWK;
   publicKeyKid: string;

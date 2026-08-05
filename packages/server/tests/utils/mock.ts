@@ -9,10 +9,8 @@ export const mockJwtConfig: JWTConfigEnv = {
   // Use simple strings for testing instead of actual keys
   privateKey: 'test-private-key',
   publicKey: 'test-public-key',
-  refreshSecret: 'test-refresh-secret',
   dbPrivateKey: 'test-db-private-key',
   accessExpiration: '900',
-  refreshExpiration: '604800',
   dbAccessExpiration: '900',
 };
 

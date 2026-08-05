@@ -36,6 +36,23 @@ type AutoPurgeFixture = {
   _autoPurgeOpfsWebKit: unknown;
 };
 
+async function purgeOpfs(page: Page): Promise<void> {
+  // Load a same-origin document that does not initialize the application DB.
+  // WebKit keeps OPFS data for an origin across persistent contexts, so it must
+  // be cleared before the app opens (and locks) the SQLite files.
+  await page.goto('/favicon.svg');
+
+  await page.evaluate(async () => {
+    const root = await navigator.storage.getDirectory();
+
+    for await (const [name, entry] of root.entries()) {
+      await root.removeEntry(name, {
+        recursive: entry.kind === 'directory',
+      });
+    }
+  });
+}
+
 // NOTE: Safari does not support OPFS in non-persistent mode.
 // https://github.com/cypress-io/cypress/issues/30270
 // Therefore it is necessary to extend the base test to provide a persistent context for WebKit AND auto-purge OPFS
@@ -116,68 +133,13 @@ export const test = base.extend<
       { page, browserName }: { page: Page; browserName: string },
       use: () => Promise<void>,
     ) => {
-      await use();
-
-      // Teardown: Purge OPFS only for WebKit after the test has run
+      // Purge before the app loads. Purging during teardown is too late because
+      // the app still has its SQLite files open, particularly in WebKit.
       if (browserName === 'webkit') {
-        console.log(
-          '[Fixture] Running OPFS purge via page.evaluate for WebKit...',
-        );
-        try {
-          await page.evaluate(async () => {
-            try {
-              const root: FileSystemDirectoryHandle =
-                await navigator.storage.getDirectory();
-
-              await new Promise((resolve) => setTimeout(resolve, 50));
-
-              const entries = [];
-              // Check if standard entries() exists, otherwise assume non-standard items() might
-              const iterator = root.entries
-                ? root.entries()
-                : (
-                    root as FileSystemDirectoryHandle & {
-                      items: () => AsyncIterableIterator<
-                        [string, FileSystemHandle]
-                      >;
-                    }
-                  ).items();
-              for await (const [name, handle] of iterator) {
-                entries.push({ name, kind: handle.kind });
-              }
-
-              if (entries.length === 0) {
-                console.log('[Browser] OPFS is empty.');
-                return;
-              }
-
-              for (const entry of entries) {
-                try {
-                  await root.removeEntry(entry.name, {
-                    recursive: entry.kind === 'directory',
-                  });
-                } catch (removeErr) {
-                  console.error(
-                    `[Browser] Failed to remove ${entry.kind}: ${entry.name}`,
-                    removeErr,
-                  );
-                }
-              }
-            } catch (err) {
-              console.error(
-                '[Browser] Error during OPFS purge evaluation:',
-                err,
-              );
-            }
-          });
-          console.log('[Fixture] OPFS purge via page.evaluate completed.');
-        } catch (err) {
-          console.error(
-            '[Fixture] Error calling page.evaluate for OPFS purge:',
-            err,
-          );
-        }
+        await purgeOpfs(page);
       }
+
+      await use();
     },
     { auto: true },
   ],

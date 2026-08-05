@@ -22,3 +22,5 @@ tsconfig.tsbuildinfo
 **/blob-report/
 **/playwright/.cache/
 **/test-results/
+
+.dev.vars
