@@ -25,6 +25,9 @@ export default defineConfig({
   webServer: {
     command:
       './node_modules/.bin/vite build && ./node_modules/.bin/vite preview --host 127.0.0.1 --port 4174',
+    env: {
+      VITE_IS_DEMO: 'false',
+    },
     url: BASE_URL,
     reuseExistingServer: false,
     timeout: 120_000,

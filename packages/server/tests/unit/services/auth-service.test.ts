@@ -129,6 +129,21 @@ describe('Auth Service', () => {
     );
   });
 
+  it('rejects an invalid refresh-session expiration before writing', async () => {
+    const mocks = createDatabase();
+    const authService = await createAuthService(createContext(), {
+      jwtService: createJwtService(),
+      deps: { getDatabase: () => mocks.database as never },
+    });
+
+    await expect(
+      authService.issueRefreshSession(TEST_USER.id, ''),
+    ).rejects.toThrow(
+      'REFRESH_SESSION_EXPIRATION must be a positive integer number of seconds',
+    );
+    expect(mocks.database.insert).not.toHaveBeenCalled();
+  });
+
   it('validates a live refresh session without rotating it', async () => {
     const mocks = createDatabase();
     cookies.set('refresh_token', 'stable-refresh-secret');

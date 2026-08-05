@@ -9,6 +9,7 @@ import type { Env } from '../../../src/types/context.js';
 type ServerType = ReturnType<typeof serve>;
 
 const activeServers: { server: ServerType; port: number }[] = [];
+const TEST_REFRESH_SESSION_EXPIRATION = '2592000';
 
 /**
  * Creates a test app with a fresh Hono instance, mimicking the production app setup
@@ -73,6 +74,10 @@ export function setupTestServer() {
     } catch {
       console.warn('no .env file found');
     }
+
+    // Authentication integration tests use a deterministic session lifetime
+    // instead of depending on repository environment configuration.
+    process.env.REFRESH_SESSION_EXPIRATION ||= TEST_REFRESH_SESSION_EXPIRATION;
 
     testApp = await createTestApp();
 

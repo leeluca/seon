@@ -23,12 +23,31 @@ export type { JWTConfigEnv, JWTTokenPayload };
 
 export const REFRESH_COOKIE_NAME = 'refresh_token';
 
+function getRefreshSessionExpiry(refreshSessionExpiration: string) {
+  const expirationSeconds = Number(refreshSessionExpiration);
+  const expiresAt = new Date(Date.now() + expirationSeconds * 1000);
+
+  if (
+    !Number.isSafeInteger(expirationSeconds) ||
+    expirationSeconds <= 0 ||
+    Number.isNaN(expiresAt.getTime())
+  ) {
+    throw new Error(
+      'REFRESH_SESSION_EXPIRATION must be a positive integer number of seconds',
+    );
+  }
+
+  return { expirationSeconds, expiresAt };
+}
+
 export function getRefreshCookieOptions(refreshSessionExpiration: string) {
-  const maxAge = Number.parseInt(refreshSessionExpiration, 10);
+  const { expirationSeconds, expiresAt } = getRefreshSessionExpiry(
+    refreshSessionExpiration,
+  );
   return {
     ...COOKIE_SECURITY_SETTINGS,
-    maxAge,
-    expires: new Date(Date.now() + maxAge * 1000),
+    maxAge: expirationSeconds,
+    expires: expiresAt,
   };
 }
 
@@ -113,9 +132,7 @@ function createService(
     refreshSessionExpiration: string,
   ): Promise<RefreshSession> => {
     const token = deps.createRefreshToken();
-    const expiresAt = new Date(
-      Date.now() + Number.parseInt(refreshSessionExpiration, 10) * 1000,
-    );
+    const { expiresAt } = getRefreshSessionExpiry(refreshSessionExpiration);
 
     await getDbClient()
       .insert(refreshSessionsTable)

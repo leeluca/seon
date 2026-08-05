@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 
+import { existsSync } from 'node:fs';
 import { lingui, linguiTransformerBabelPreset } from '@lingui/vite-plugin';
 import babel from '@rolldown/plugin-babel';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
@@ -9,10 +10,12 @@ import { defineConfig, type Plugin } from 'vite';
 import { VitePWA, type ManifestOptions } from 'vite-plugin-pwa';
 import wasm from 'vite-plugin-wasm';
 
-try {
-  process.loadEnvFile('.env.local');
-} catch (error) {
-  console.warn('Failed to load .env.local', error);
+if (existsSync('.env.local')) {
+  try {
+    process.loadEnvFile('.env.local');
+  } catch (error) {
+    console.warn('Failed to load .env.local', error);
+  }
 }
 
 const pwaManifest = {
