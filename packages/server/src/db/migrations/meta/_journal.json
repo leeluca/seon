@@ -15,6 +15,13 @@
       "when": 1757212583994,
       "tag": "0001_blushing_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785682697659,
+      "tag": "0002_opaque-refresh-sessions",
+      "breakpoints": true
     }
   ]
 }

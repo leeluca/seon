@@ -1,21 +1,19 @@
 import { tbValidator } from '@hono/typebox-validator';
-import { eq } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { env } from 'hono/adapter';
 import { contextStorage } from 'hono/context-storage';
-import { deleteCookie, getCookie } from 'hono/cookie';
+import { deleteCookie, setCookie } from 'hono/cookie';
 import { HTTPException } from 'hono/http-exception';
 import { createTranslator } from 'short-uuid';
 
 import { getDb } from '../db/db.js';
-import {
-  refreshToken as refreshTokensTable,
-  user as usersTable,
-} from '../db/schema.js';
+import { user as usersTable } from '../db/schema.js';
 import type { Env } from '../env.js';
 import { validateAccess } from '../middlewares/auth.js';
 import {
   createAuthService,
+  getRefreshCookieOptions,
+  REFRESH_COOKIE_NAME,
   type JWTConfigEnv,
 } from '../services/auth.service.js';
 import { createJWTService } from '../services/jwt.service.js';
@@ -32,10 +30,8 @@ auth.use('*', async (c, next) => {
   const jwtConfigEnv: JWTConfigEnv = {
     privateKey: env(c).JWT_PRIVATE_KEY,
     publicKey: env(c).JWT_PUBLIC_KEY,
-    refreshSecret: env(c).JWT_REFRESH_SECRET,
     dbPrivateKey: env(c).JWT_DB_PRIVATE_KEY,
     accessExpiration: env(c).JWT_ACCESS_EXPIRATION,
-    refreshExpiration: env(c).JWT_REFRESH_EXPIRATION,
     dbAccessExpiration: env(c).JWT_DB_ACCESS_EXPIRATION,
   };
 
@@ -45,7 +41,7 @@ auth.use('*', async (c, next) => {
 
 auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
   const { email, password } = c.req.valid('json');
-  const jwtConfigEnv = c.get('jwtConfigEnv');
+  const refreshSessionExpiration = env(c).REFRESH_SESSION_EXPIRATION;
 
   const jwtService = await createJWTService(c);
   const authService = await createAuthService(c, { jwtService });
@@ -62,17 +58,21 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
     });
   }
 
-  const accessToken = await jwtService.signToken(user.id, 'access');
-  const { token: refreshToken, payload: refreshPayload } =
-    await authService.issueRefreshToken(user.id, jwtConfigEnv);
+  await authService.revokeRefreshSession(c);
+  const [accessToken, refreshSession] = await Promise.all([
+    jwtService.signToken(user.id, 'access'),
+    authService.issueRefreshSession(user.id, refreshSessionExpiration),
+  ]);
 
   jwtService.setJWTCookie(c, 'access', accessToken);
-  jwtService.setJWTCookie(c, 'refresh', refreshToken);
+  setCookie(c, REFRESH_COOKIE_NAME, refreshSession.token, {
+    ...getRefreshCookieOptions(refreshSessionExpiration),
+  });
 
   const { password: _password, status: _status, ...returnUser } = user;
   return c.json({
     result: true,
-    expiresAt: refreshPayload.exp,
+    expiresAt: refreshSession.expiresAt,
     user: {
       ...returnUser,
       useSync: true,
@@ -82,7 +82,7 @@ auth.post('/signin', tbValidator('json', signInSchema), async (c) => {
 
 auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
   const { email, name, password, uuid } = c.req.valid('json');
-  const jwtConfigEnv = c.get('jwtConfigEnv');
+  const refreshSessionExpiration = env(c).REFRESH_SESSION_EXPIRATION;
 
   const jwtService = await createJWTService(c);
   const authService = await createAuthService(c, { jwtService });
@@ -124,28 +124,31 @@ auth.post('/signup', tbValidator('json', signUpSchema), async (c) => {
     .values(newUser)
     .returning();
 
-  const [accessToken, { token: refreshToken, payload: refreshPayload }] =
-    await Promise.all([
-      jwtService.signToken(id, 'access'),
-      authService.issueRefreshToken(id, jwtConfigEnv),
-    ]);
+  await authService.revokeRefreshSession(c);
+  const [accessToken, refreshSession] = await Promise.all([
+    jwtService.signToken(id, 'access'),
+    authService.issueRefreshSession(id, refreshSessionExpiration),
+  ]);
 
   jwtService.setJWTCookie(c, 'access', accessToken);
-  jwtService.setJWTCookie(c, 'refresh', refreshToken);
+  setCookie(c, REFRESH_COOKIE_NAME, refreshSession.token, {
+    ...getRefreshCookieOptions(refreshSessionExpiration),
+  });
 
   return c.json({
     result: true,
     user: { name: savedName, email: savedEmail, id, shortId, useSync: true },
-    expiresAt: refreshPayload.exp,
+    expiresAt: refreshSession.expiresAt,
   });
 });
 
 auth.get('/status', validateAccess, (c) => {
-  const payload = c.get('jwtRefreshPayload');
+  const payload = c.get('jwtAccessPayload');
 
   return c.json({
     result: true,
-    expiresAt: payload?.exp || 0,
+    userId: payload.sub,
+    expiresAt: payload.exp,
   });
 });
 
@@ -157,6 +160,7 @@ auth.get('/credentials/sync', validateAccess, (c) => {
   return c.json({
     result: true,
     token: accessToken,
+    userId: payload.sub,
     expiresAt: payload.exp,
     syncUrl,
   });
@@ -173,60 +177,52 @@ auth.get('/credentials/db', validateAccess, async (c) => {
   return c.json({
     result: true,
     token: dbAccessToken,
+    userId,
     expiresAt:
       Math.floor(Date.now() / 1000) + Number.parseInt(dbAccessExpiration, 10),
   });
 });
 
-auth.get('/refresh', async (c) => {
-  const jwtConfigEnv = c.get('jwtConfigEnv');
-
+auth.post('/refresh', async (c) => {
   const jwtService = await createJWTService(c);
   const authService = await createAuthService(c, { jwtService });
 
-  const { refreshToken, refreshPayload } =
-    await authService.validateRefreshToken(c);
+  const refreshSession = await authService.validateRefreshSession(c);
 
-  if (!refreshToken || !refreshPayload) {
-    throw new HTTPException(401, {
-      message: 'Not authenticated',
-    });
+  if (!refreshSession) {
+    return c.json(
+      {
+        error: {
+          code: 'REFRESH_SESSION_INVALID',
+          message: 'The refresh session is missing, expired, or revoked',
+        },
+      },
+      401,
+    );
   }
 
-  const [newRefreshToken, newAccessToken] = await Promise.all([
-    authService.issueRefreshToken(
-      refreshPayload.sub,
-      jwtConfigEnv,
-      refreshToken,
-    ),
-    jwtService.signToken(refreshPayload.sub, 'access'),
-  ]);
-
-  jwtService.setJWTCookie(c, 'refresh', newRefreshToken.token);
+  const newAccessToken = await jwtService.signToken(
+    refreshSession.userId,
+    'access',
+  );
   jwtService.setJWTCookie(c, 'access', newAccessToken);
 
   return c.json({
     result: true,
-    expiresAt: newRefreshToken.payload.exp,
+    userId: refreshSession.userId,
+    expiresAt: refreshSession.expiresAt,
   });
 });
 
 auth.post('/signout', async (c) => {
   const jwtService = await createJWTService(c);
+  const authService = await createAuthService(c, { jwtService });
 
   const { name: accessCookieName } = jwtService.getCookieConfig('access');
-  const { name: refreshCookieName } = jwtService.getCookieConfig('refresh');
+  await authService.revokeRefreshSession(c);
 
-  const refreshToken = getCookie(c, refreshCookieName);
-
-  if (refreshToken) {
-    await getDb(env(c).DB_URL)
-      .delete(refreshTokensTable)
-      .where(eq(refreshTokensTable.token, refreshToken));
-  }
-
-  deleteCookie(c, accessCookieName);
-  deleteCookie(c, refreshCookieName);
+  deleteCookie(c, accessCookieName, { path: '/' });
+  deleteCookie(c, REFRESH_COOKIE_NAME, { path: '/' });
 
   return c.json({
     result: true,

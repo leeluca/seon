@@ -11,36 +11,33 @@ import {
   signJWTWithPayload,
   verifyJWT,
   type JWTConfigEnv,
+  type JWTConfigs,
   type JWTKeys,
   type JWTTokenPayload,
-  type JWTTypeConfig,
+  type JWTType,
 } from './jwt.js';
 import type { Env } from '../env.js';
 
 export interface JWTService {
-  signToken: (userId: string, type: keyof JWTConfigs) => Promise<string>;
+  signToken: (userId: string, type: JWTType) => Promise<string>;
   signTokenWithPayload: (
     userId: string,
-    type: keyof JWTConfigs,
+    type: JWTType,
   ) => Promise<{ token: string; payload: JWTTokenPayload }>;
   verifyToken: (
     token: string,
-    type: keyof JWTConfigs,
+    type: JWTType,
   ) => Promise<JWTTokenPayload | null>;
-  getCookieConfig: (
-    type: keyof JWTConfigs,
-  ) => ReturnType<typeof getCookieConfig>;
-  setJWTCookie: (c: Context, type: keyof JWTConfigs, token: string) => void;
+  getCookieConfig: (type: JWTType) => ReturnType<typeof getCookieConfig>;
+  setJWTCookie: (c: Context, type: JWTType, token: string) => void;
   getJWTConfigs: () => JWTConfigs;
   getJWTKeys: () => JWTKeys;
   getJWKS: () => { keys: Array<Record<string, unknown>> };
   verifyCookieToken: (
     c: Context,
-    type: keyof JWTConfigs,
+    type: JWTType,
   ) => Promise<JWTTokenPayload | null>;
 }
-
-type JWTConfigs = Record<string, JWTTypeConfig>;
 
 let cachedKeys: JWTKeys | null = null;
 let cachedConfigs: JWTConfigs | null = null;
@@ -50,10 +47,8 @@ function getEnvConfig(c: Context): JWTConfigEnv {
   return {
     privateKey: bindings.JWT_PRIVATE_KEY,
     publicKey: bindings.JWT_PUBLIC_KEY,
-    refreshSecret: bindings.JWT_REFRESH_SECRET,
     dbPrivateKey: bindings.JWT_DB_PRIVATE_KEY,
     accessExpiration: bindings.JWT_ACCESS_EXPIRATION,
-    refreshExpiration: bindings.JWT_REFRESH_EXPIRATION,
     dbAccessExpiration: bindings.JWT_DB_ACCESS_EXPIRATION,
   };
 }
@@ -74,23 +69,21 @@ export async function createJWTService(c: Context): Promise<JWTService> {
   const keys = await getOrInitKeys(c);
   const configs = getOrInitConfigs(c, keys);
 
-  const signToken = (userId: string, type: keyof JWTConfigs) =>
+  const signToken = (userId: string, type: JWTType) =>
     signJWT(userId, type, configs);
 
-  const signTokenWithPayloadWrapper = (
-    userId: string,
-    type: keyof JWTConfigs,
-  ) => signJWTWithPayload(userId, type, configs);
+  const signTokenWithPayloadWrapper = (userId: string, type: JWTType) =>
+    signJWTWithPayload(userId, type, configs);
 
-  const verifyToken = (token: string, type: keyof JWTConfigs) =>
+  const verifyToken = (token: string, type: JWTType) =>
     verifyJWT(token, type, configs);
 
-  const getCookieConfigWrapper = (type: keyof JWTConfigs) =>
+  const getCookieConfigWrapper = (type: JWTType) =>
     getCookieConfig(type, configs);
 
   const setJWTCookieWrapper = (
     context: Context,
-    type: keyof JWTConfigs,
+    type: JWTType,
     token: string,
   ) => setJWTCookieUtil(context, type, token, configs);
 
@@ -107,10 +100,7 @@ export async function createJWTService(c: Context): Promise<JWTService> {
     };
   };
 
-  const verifyCookieToken = async (
-    context: Context,
-    type: keyof JWTConfigs,
-  ) => {
+  const verifyCookieToken = async (context: Context, type: JWTType) => {
     const { name } = getCookieConfigWrapper(type);
     const token = getCookie(context, name);
     if (!token) return null;
@@ -135,4 +125,4 @@ export function resetJWTCache() {
   cachedConfigs = null;
 }
 
-export type { JWTConfigEnv, JWTKeys, JWTTokenPayload, JWTTypeConfig };
+export type { JWTConfigEnv, JWTConfigs, JWTKeys, JWTTokenPayload, JWTType };

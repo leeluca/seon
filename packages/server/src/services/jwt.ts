@@ -19,17 +19,14 @@ export interface JWTTokenPayload extends JWTPayload {
 export interface JWTConfigEnv {
   privateKey: string;
   publicKey: string;
-  refreshSecret: string;
   dbPrivateKey: string;
   accessExpiration: string;
-  refreshExpiration: string;
   dbAccessExpiration: string;
 }
 
 export interface JWTKeys {
   jwtPrivateKey: CryptoKey;
   jwtPublicKey: CryptoKey;
-  jwtRefreshSecret: KeyObject;
   jwtDbPrivateKey: KeyObject;
   publicKeyJWK: JWK;
   publicKeyKid: string;
@@ -62,13 +59,11 @@ export async function initJWTKeys(config: JWTConfigEnv): Promise<JWTKeys> {
     const publicKeyJWK = await jose.exportJWK(jwtPublicKey);
     const publicKeyKid = await jose.calculateJwkThumbprintUri(publicKeyJWK);
 
-    const jwtRefreshSecret = createSecretKey(Buffer.from(config.refreshSecret));
     const jwtDbPrivateKey = createSecretKey(Buffer.from(config.dbPrivateKey));
 
     return {
       jwtPrivateKey,
       jwtPublicKey,
-      jwtRefreshSecret,
       jwtDbPrivateKey,
       publicKeyJWK,
       publicKeyKid,
@@ -90,12 +85,14 @@ export interface JWTTypeConfig {
   cookieName: string;
 }
 
+export type JWTType = 'access' | 'db_access';
+export type JWTConfigs = Record<JWTType, JWTTypeConfig>;
+
 export function createJWTConfigs(
   keys: JWTKeys,
   config: JWTConfigEnv,
-): Record<string, JWTTypeConfig> {
+): JWTConfigs {
   const accessExpiration = Number.parseInt(config.accessExpiration, 10);
-  const refreshExpiration = Number.parseInt(config.refreshExpiration, 10);
   const dbAccessExpiration = Number.parseInt(config.dbAccessExpiration, 10);
 
   return {
@@ -108,16 +105,6 @@ export function createJWTConfigs(
       role: 'authenticated',
       kid: keys.publicKeyKid,
       cookieName: 'access_token',
-    },
-    refresh: {
-      expiration: refreshExpiration,
-      algorithm: 'HS256',
-      signingKey: keys.jwtRefreshSecret,
-      verificationKey: keys.jwtRefreshSecret,
-      aud: '',
-      role: '',
-      kid: '',
-      cookieName: 'refresh_token',
     },
     db_access: {
       expiration: dbAccessExpiration,
@@ -161,8 +148,8 @@ async function generateToken(
 
 export async function signJWT(
   userId: string,
-  jwtType: string,
-  configs: Record<string, JWTTypeConfig>,
+  jwtType: JWTType,
+  configs: JWTConfigs,
 ) {
   const config = configs[jwtType];
   const tokenPayload = generateTokenPayload(userId, config);
@@ -171,8 +158,8 @@ export async function signJWT(
 
 export async function signJWTWithPayload(
   userId: string,
-  jwtType: string,
-  configs: Record<string, JWTTypeConfig>,
+  jwtType: JWTType,
+  configs: JWTConfigs,
 ) {
   const config = configs[jwtType];
   const tokenPayload = generateTokenPayload(userId, config);
@@ -182,8 +169,8 @@ export async function signJWTWithPayload(
 
 export async function verifyJWT(
   token: string,
-  jwtType: string,
-  configs: Record<string, JWTTypeConfig>,
+  jwtType: JWTType,
+  configs: JWTConfigs,
 ) {
   try {
     const config = configs[jwtType];
@@ -197,10 +184,7 @@ export async function verifyJWT(
   }
 }
 
-export function getCookieConfig(
-  jwtType: string,
-  configs: Record<string, JWTTypeConfig>,
-) {
+export function getCookieConfig(jwtType: JWTType, configs: JWTConfigs) {
   const config = configs[jwtType];
   return {
     name: config.cookieName,
@@ -214,9 +198,9 @@ export function getCookieConfig(
 
 export const setJWTCookie = (
   c: Context,
-  tokenType: string,
+  tokenType: JWTType,
   token: string,
-  jwtConfigs: Record<string, JWTTypeConfig>,
+  jwtConfigs: JWTConfigs,
 ) => {
   const { name: cookieName, options: cookieOptions } = getCookieConfig(
     tokenType,

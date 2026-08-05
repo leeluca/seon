@@ -191,7 +191,7 @@ export const refreshToken = pgTable(
   'refresh_token',
   {
     id: serial('id').primaryKey().notNull(),
-    token: text('token').notNull(),
+    tokenHash: text('tokenHash').notNull(),
     userId: uuid('userId').notNull(),
     expiresAt: timestamp('expiresAt', {
       precision: 3,
@@ -219,6 +219,6 @@ export const refreshToken = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade'),
-    unique('refresh_token_token_unique').on(table.token),
+    unique('refresh_token_tokenHash_unique').on(table.tokenHash),
   ],
 );

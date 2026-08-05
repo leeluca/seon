@@ -31,11 +31,10 @@ jobs:
         env:
           JWT_PRIVATE_KEY: ${{ vars.JWT_PRIVATE_KEY }}
           JWT_PUBLIC_KEY: ${{ vars.JWT_PUBLIC_KEY }}
-          JWT_REFRESH_SECRET: ${{ vars.JWT_REFRESH_SECRET }}
           JWT_DB_PRIVATE_KEY: ${{ vars.JWT_DB_PRIVATE_KEY }}
           JWT_ACCESS_EXPIRATION: ${{ vars.JWT_ACCESS_EXPIRATION }}
-          JWT_REFRESH_EXPIRATION: ${{ vars.JWT_REFRESH_EXPIRATION }}
           JWT_DB_ACCESS_EXPIRATION: ${{ vars.JWT_DB_ACCESS_EXPIRATION }}
+          REFRESH_SESSION_EXPIRATION: ${{ vars.REFRESH_SESSION_EXPIRATION }}
           SYNC_URL: ${{ vars.SYNC_URL }}
           ORIGIN_URLS: ${{ vars.ORIGIN_URLS }}
           DB_URL: ${{ vars.DB_URL }}

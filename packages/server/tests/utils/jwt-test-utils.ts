@@ -25,13 +25,9 @@ export async function createJWTTestData(): Promise<TestJWTData> {
   const publicKeyEncoded = btoa(publicPem);
 
   // Generate and encode secrets
-  const refreshSecret = randomBytes(32).toString('base64');
   const dbPrivateKey = randomBytes(32).toString('base64');
 
   // Create the secret key objects
-  const jwtRefreshSecret = createSecretKey(
-    Buffer.from(refreshSecret, 'base64'),
-  );
   const jwtDbPrivateKey = createSecretKey(Buffer.from(dbPrivateKey, 'base64'));
 
   // Generate JWK data
@@ -42,7 +38,6 @@ export async function createJWTTestData(): Promise<TestJWTData> {
     keys: {
       jwtPrivateKey: privateKey,
       jwtPublicKey: publicKey,
-      jwtRefreshSecret,
       jwtDbPrivateKey,
       publicKeyJWK,
       publicKeyKid,
@@ -50,10 +45,8 @@ export async function createJWTTestData(): Promise<TestJWTData> {
     config: {
       privateKey: privateKeyEncoded,
       publicKey: publicKeyEncoded,
-      refreshSecret,
       dbPrivateKey,
       accessExpiration: '900',
-      refreshExpiration: '604800',
       dbAccessExpiration: '900',
     },
   };
@@ -63,10 +56,8 @@ export function createInvalidJWTConfig(): JWTConfigEnv {
   return {
     privateKey: 'invalid-key',
     publicKey: 'invalid-key',
-    refreshSecret: 'test-refresh-secret',
     dbPrivateKey: 'test-db-private-key',
     accessExpiration: '900',
-    refreshExpiration: '604800',
     dbAccessExpiration: '900',
   };
 }
