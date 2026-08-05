@@ -3,13 +3,9 @@ import type { QueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
 import { AUTH_STATUS } from '~/constants/query';
-import {
-  DB_TOKEN_EXP_KEY,
-  DB_TOKEN_KEY,
-  SESSION_EXP_KEY,
-} from '~/constants/storage';
 import db, { powerSyncDb } from '~/data/db/database';
 import type { Database } from '~/data/db/AppSchema';
+import { clearCredentialCache } from '~/data/sync/credential';
 
 type PowerSyncExecutor = {
   execute: (sql: string) => Promise<unknown>;
@@ -75,13 +71,11 @@ export const syncLocalUserDataAfterSignIn = async ({
 
 interface SignOutParams {
   resetConnector: () => void;
-  resetLocalUser: () => void;
   queryClient: QueryClient;
 }
 
 export const signOutLocally = async ({
   resetConnector,
-  resetLocalUser,
   queryClient,
 }: SignOutParams) => {
   const signOutToast = toast(t`Signing you out...`, {
@@ -89,20 +83,19 @@ export const signOutLocally = async ({
     duration: Number.POSITIVE_INFINITY,
   });
 
-  sessionStorage.removeItem(DB_TOKEN_KEY);
-  sessionStorage.removeItem(DB_TOKEN_EXP_KEY);
-  localStorage.removeItem(SESSION_EXP_KEY);
-
-  await powerSyncDb.disconnectAndClear();
-  resetConnector();
-
-  resetLocalUser();
-  toast.dismiss(signOutToast);
-  toast.success(t`See you again!`);
-
-  await queryClient.invalidateQueries({
-    queryKey: AUTH_STATUS.all.queryKey,
-  });
-
-  location.reload();
+  clearCredentialCache();
+  try {
+    await powerSyncDb.disconnect();
+  } catch (error) {
+    console.error('Failed to disconnect sync during sign-out:', error);
+  } finally {
+    resetConnector();
+    queryClient.setQueryData(AUTH_STATUS.all.queryKey, {
+      result: false,
+      expiresAt: 0,
+      userId: null,
+    });
+    toast.dismiss(signOutToast);
+    toast.success(t`See you again!`);
+  }
 };
