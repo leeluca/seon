@@ -6,7 +6,7 @@ const { captureException } = vi.hoisted(() => ({
 
 vi.mock('@sentry/react', () => ({ captureException }));
 
-import { requestPersistentStorage } from '~/data/db/storage';
+import { purgeOpfsStorage, requestPersistentStorage } from '~/data/db/storage';
 
 describe('requestPersistentStorage', () => {
   afterEach(() => {
@@ -36,6 +36,47 @@ describe('requestPersistentStorage', () => {
     await expect(requestPersistentStorage()).resolves.toBe(false);
     expect(captureException).toHaveBeenCalledWith(error, {
       tags: { storage_error: 'request_persistent_storage' },
+    });
+  });
+});
+
+describe('purgeOpfsStorage', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('attempts every entry and rejects when any deletion fails', async () => {
+    const deletionError = new DOMException(
+      'File is locked',
+      'NoModificationAllowedError',
+    );
+    const removeEntry = vi
+      .fn()
+      .mockRejectedValueOnce(deletionError)
+      .mockResolvedValueOnce(undefined);
+    const root = {
+      async *entries() {
+        yield ['locked.db', { kind: 'file' }] as const;
+        yield ['cache', { kind: 'directory' }] as const;
+      },
+      removeEntry,
+    };
+    vi.stubGlobal('navigator', {
+      storage: { getDirectory: vi.fn().mockResolvedValue(root) },
+    });
+
+    await expect(purgeOpfsStorage()).rejects.toMatchObject({
+      name: 'AggregateError',
+      errors: [
+        expect.objectContaining({
+          message: 'Failed to delete file: locked.db',
+        }),
+      ],
+    });
+    expect(removeEntry).toHaveBeenCalledTimes(2);
+    expect(captureException).toHaveBeenCalledWith(deletionError, {
+      extra: { message: 'Failed to delete file: locked.db' },
+      tags: { storage_error: 'purge_opfs_storage' },
     });
   });
 });

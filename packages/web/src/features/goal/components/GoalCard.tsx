@@ -8,16 +8,15 @@ import {
 import { msg, plural, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import {
-  differenceInCalendarDays,
-  eachDayOfInterval,
-  isBefore,
-  startOfDay,
-} from 'date-fns';
+import { differenceInCalendarDays, isBefore, startOfDay } from 'date-fns';
 import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 
 import type { Database } from '~/data/db/AppSchema';
 import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+import {
+  getProgressStatus,
+  type ProgressStatus,
+} from '~/features/goal/goalProgress';
 import { buttonVariants } from '~/shared/components/ui/button';
 import {
   Card,
@@ -75,7 +74,6 @@ function ProgressBar({
   );
 }
 
-type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
 function getProgressIconAndMessage(
   status: ProgressStatus,
   t: (descriptor: MacroMessageDescriptor) => string,
@@ -108,51 +106,6 @@ function getProgressIconAndMessage(
     default:
       return { icon: '', message: '', progressStatus: status };
   }
-}
-
-interface getProgressStatusArgs {
-  currentValue: number;
-  initialValue: number;
-  target: number;
-  startDate: string;
-  targetDate: string;
-}
-function getProgressStatus({
-  currentValue,
-  initialValue,
-  target,
-  startDate,
-  targetDate,
-}: getProgressStatusArgs): ProgressStatus {
-  const daysUntilTarget = eachDayOfInterval({
-    start: new Date(startDate),
-    end: new Date(targetDate),
-  });
-
-  const averageItemsPerDay = (target - initialValue) / daysUntilTarget.length;
-
-  const daysSince =
-    differenceInCalendarDays(new Date(), new Date(startDate)) + 1;
-
-  const expectedGoalValueToday = Math.min(
-    daysSince * averageItemsPerDay + initialValue,
-    target,
-  );
-
-  const differenceFromTarget = currentValue - expectedGoalValueToday;
-  const percentageDifference =
-    Math.abs(differenceFromTarget / (target - initialValue || 1)) * 100;
-
-  if (currentValue >= target) {
-    return 'complete';
-  }
-  if (percentageDifference <= 5) {
-    return 'onTrack';
-  }
-  if (differenceFromTarget > 0) {
-    return 'ahead';
-  }
-  return 'behind';
 }
 
 export default function GoalCard({
