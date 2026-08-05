@@ -53,6 +53,17 @@ jobs:
       - name: Run Playwright tests
         run: pnpm --filter seon-web exec playwright test ${{ matrix.playwright_projects }}
 
+      - name: Run production PWA offline test
+        if: matrix.os == 'ubuntu-latest'
+        run: pnpm --filter seon-web test:pwa
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+          VITE_POWERSYNC_URL: ${{ vars.VITE_POWERSYNC_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
+          VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
+
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4
         if: always()

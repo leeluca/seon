@@ -2,6 +2,24 @@ import * as Sentry from '@sentry/react';
 
 export type StorageBackend = 'opfs' | 'indexeddb';
 
+/**
+ * Requests origin-wide persistent storage for local-first application data.
+ * A denied or unsupported request does not prevent the app from using
+ * best-effort browser storage.
+ */
+export async function requestPersistentStorage(): Promise<boolean | undefined> {
+  if (!navigator.storage?.persist) return undefined;
+
+  try {
+    return await navigator.storage.persist();
+  } catch (error) {
+    Sentry.captureException(error, {
+      tags: { storage_error: 'request_persistent_storage' },
+    });
+    return false;
+  }
+}
+
 export async function isOpfsAvailable(): Promise<boolean> {
   try {
     if (!navigator.storage?.getDirectory) return false;

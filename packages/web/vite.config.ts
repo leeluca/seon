@@ -6,7 +6,7 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 import { tanstackRouter } from '@tanstack/router-plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { defineConfig, type Plugin } from 'vite';
-import { VitePWA } from 'vite-plugin-pwa';
+import { VitePWA, type ManifestOptions } from 'vite-plugin-pwa';
 import wasm from 'vite-plugin-wasm';
 
 try {
@@ -16,33 +16,37 @@ try {
 }
 
 const pwaManifest = {
+  id: '/',
   name: 'Seon Goals',
   short_name: 'Seon',
   description:
     'Seon is a local-first web app that helps you track and achieve your goals.',
+  start_url: '/',
+  scope: '/',
+  display: 'standalone',
   theme_color: '#F7F6FE',
   background_color: '#FFFFFF',
   icons: [
     {
-      src: 'pwa-192x192.png', // <== don't add slash, for testing
+      src: '/pwa-192x192.png',
       sizes: '192x192',
       type: 'image/png',
       purpose: 'any',
     },
     {
-      src: '/pwa-512x512.png', // <== don't remove slash, for testing
+      src: '/pwa-512x512.png',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'any',
     },
     {
-      src: 'pwa-512x512.png', // <== don't add slash, for testing
+      src: '/pwa-maskable-512x512.png',
       sizes: '512x512',
       type: 'image/png',
       purpose: 'maskable',
     },
   ],
-};
+} satisfies Partial<ManifestOptions>;
 
 export default defineConfig({
   envDir: '.',
@@ -67,7 +71,6 @@ export default defineConfig({
     }),
     wasm(),
     VitePWA({
-      injectRegister: 'script-defer',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: pwaManifest,
       devOptions: {
@@ -75,6 +78,7 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 4000000, // 4MB
+        navigateFallbackDenylist: [/^\/api(?:\/|$)/],
         sourcemap: false,
       },
     }),
@@ -98,6 +102,11 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     globals: true,
     css: false,
-    exclude: ['**/tests/e2e/**', '**/node_modules/**', '**/dist/**'],
+    exclude: [
+      '**/tests/e2e/**',
+      '**/tests/pwa/**',
+      '**/node_modules/**',
+      '**/dist/**',
+    ],
   },
 });

@@ -11,6 +11,7 @@
     "serve": "vite preview",
     "lint": "biome check --write",
     "typecheck": "tsc",
+    "test:pwa": "playwright test --config=playwright.pwa.config.ts",
     "messages:extract": "lingui extract",
     "test": "vitest run",
     "test:watch": "vitest"

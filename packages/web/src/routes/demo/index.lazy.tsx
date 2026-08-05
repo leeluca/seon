@@ -3,6 +3,7 @@ import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useShallow } from 'zustand/react/shallow';
 
 import db from '~/data/db/database';
+import { requestPersistentStorage } from '~/data/db/storage';
 import DemoStart from '~/shared/components/common/DemoStart';
 import { useUserStore } from '~/states/stores/userStore';
 import { generateDemoData } from '~/utils/demo';
@@ -21,6 +22,7 @@ export function IndexRouteComponent() {
   const [isLoading, setIsLoading] = useState(false);
 
   const initializeUser = async () => {
+    void requestPersistentStorage();
     setIsLoading(true);
     await db
       .insertInto('user')
