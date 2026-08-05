@@ -41,6 +41,12 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
               error?.status === 401 ? t`Invalid credentials` : undefined,
             ]}
           />
+          {error?.code === 'LOCAL_ACCOUNT_CONFLICT' && (
+            <Alert variant="destructive" icon={<CircleAlertIcon size={18} />}>
+              <AlertTitle>Account data conflict</AlertTitle>
+              <AlertDescription>{error.message}</AlertDescription>
+            </Alert>
+          )}
           {!isOnline && (
             <Alert
               variant="warning"
