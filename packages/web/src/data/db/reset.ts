@@ -11,7 +11,7 @@ export async function resetWorkspaceDatabase(
   await databaseFactory.remove(workspace);
 }
 
-export async function resetLocalDatabase(): Promise<void> {
+export async function resetLocalDatabase(): Promise<boolean> {
   try {
     await resetWorkspaceDatabase(activeWorkspace, workspaceDatabaseFactory);
   } catch (error) {
@@ -24,5 +24,8 @@ export async function resetLocalDatabase(): Promise<void> {
         dbFilename: activeWorkspace.databaseFilename,
       },
     });
+    return false;
   }
+
+  return true;
 }

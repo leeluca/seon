@@ -23,13 +23,13 @@ jobs:
     environment: Test - seon-web
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: 'pnpm'
@@ -38,16 +38,23 @@ jobs:
         run: pnpm install
 
       - name: Install Playwright Browsers
-        run: pnpm --filter web exec playwright install --with-deps ${{ matrix.playwright_deps }}
+        run: pnpm --filter web --fail-if-no-match exec playwright install --with-deps ${{ matrix.playwright_deps }}
 
       - name: Build Web App
-        run: pnpm --filter web build
+        run: pnpm --filter web --fail-if-no-match build
         env:
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Run Playwright tests
-        run: pnpm --filter web exec playwright test ${{ matrix.playwright_projects }}
+        run: pnpm --filter web --fail-if-no-match exec playwright test ${{ matrix.playwright_projects }}
+
+      - name: Run production PWA offline test
+        if: matrix.os == 'ubuntu-latest'
+        run: pnpm --filter web --fail-if-no-match test:pwa
+        env:
+          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
+          VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Upload Playwright Test Report
         uses: actions/upload-artifact@v4

@@ -69,7 +69,6 @@ ALTER TABLE "refresh_token" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint
 DROP TABLE "refresh_token" CASCADE;--> statement-breakpoint
 DROP INDEX "user_shortId_key";--> statement-breakpoint
 ALTER TABLE "user" ALTER COLUMN "email" SET NOT NULL;--> statement-breakpoint
-ALTER TABLE "goal" ADD COLUMN "archivedAt" timestamp(3) with time zone;--> statement-breakpoint
 ALTER TABLE "user" ADD COLUMN "emailVerified" boolean DEFAULT false NOT NULL;--> statement-breakpoint
 ALTER TABLE "user" ADD COLUMN "image" text;--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

@@ -19,15 +19,22 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1784557606312,
-      "tag": "0002_auth_sync_reset",
+      "when": 1785682697659,
+      "tag": "0002_opaque-refresh-sessions",
       "breakpoints": true
     },
     {
       "idx": 3,
       "version": "7",
-      "when": 1784557651787,
-      "tag": "0003_auth_sync_schema",
+      "when": 1785934091585,
+      "tag": "0003_auth_sync_reset",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1785934394401,
+      "tag": "0004_auth_sync_schema",
       "breakpoints": true
     }
   ]

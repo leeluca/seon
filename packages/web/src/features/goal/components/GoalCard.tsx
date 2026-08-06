@@ -1,11 +1,22 @@
-import { useCallback } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
+import { msg, plural, type MacroMessageDescriptor } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { Link } from '@tanstack/react-router';
-import { isBefore, startOfDay } from 'date-fns';
+import { differenceInCalendarDays, isBefore, startOfDay } from 'date-fns';
 import { ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 
 import type { Database } from '~/data/db/AppSchema';
 import CalendarHeatmap from '~/features/entry/components/CalendarHeatmap';
+import {
+  getProgressStatus,
+  type ProgressStatus,
+} from '~/features/goal/goalProgress';
 import { buttonVariants } from '~/shared/components/ui/button';
 import {
   Card,
@@ -16,17 +27,23 @@ import {
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 
+const HOLD_REVEAL_DELAY_MS = 100;
+
 interface ProgressBarProps {
   progressPercent: number;
   target: number;
   currentValue: number;
+  isRevealed: boolean;
 }
 
 function ProgressBar({
   progressPercent,
   target,
   currentValue,
+  isRevealed,
 }: ProgressBarProps) {
+  const isLabelInsideFill = progressPercent > 85;
+
   return (
     <div
       role="progressbar"
@@ -36,119 +53,105 @@ function ProgressBar({
       aria-valuetext={`${currentValue.toFixed(0)}/${target}`}
       tabIndex={-1}
       data-interactive
-      className="w-[calc(100% + 48px)] bg-muted group relative -mx-1 flex h-3 cursor-default rounded sm:mx-1"
+      className="bg-muted relative h-5 w-full cursor-default overflow-hidden rounded-md"
     >
-      <p className="absolute right-0.5 bottom-[17px] pb-px text-xs opacity-0 group-hover:opacity-100">
-        {progressPercent <= 100
-          ? `${currentValue.toFixed(0)}/${target}`
-          : target}
-      </p>
       <div
-        className="relative h-3 rounded bg-cyan-500/30 transition-all group-hover:border-cyan-500 group-hover:shadow-[0_0_5px] group-hover:shadow-blue-300"
+        className="relative h-full rounded-md bg-cyan-500/30 transition-all group-hover/progress:bg-cyan-500/50"
         style={{ width: `${Math.max(progressPercent, 2)}%` }}
       >
-        <p
+        <span
           className={cn(
-            'absolute bottom-4 pb-px text-sm opacity-0 transition-opacity group-hover:opacity-100',
-            progressPercent <= 85 ? '-right-5' : 'right-0 -bottom-6',
+            'text-foreground/70 absolute inset-y-0 flex items-center text-xs font-medium whitespace-nowrap tabular-nums',
+            'opacity-0 transition-opacity group-hover/progress:opacity-100',
+            isLabelInsideFill ? 'right-1.5' : 'left-full ml-1.5',
+            isRevealed && 'opacity-100',
           )}
         >
-          {progressPercent.toFixed(0)}%
-        </p>
+          {`${progressPercent.toFixed(0)}%`}
+        </span>
       </div>
     </div>
   );
 }
 
-// type ProgressStatus = 'behind' | 'onTrack' | 'ahead' | 'complete';
-// function getProgressIconAndMessage(
-//   status: ProgressStatus,
-//   t: (descriptor: MacroMessageDescriptor) => string,
-// ) {
-//   switch (status) {
-//     case 'behind':
-//       return {
-//         icon: '😟',
-//         message: t(msg`Behind schedule!`),
-//         progressStatus: status,
-//       };
-//     case 'onTrack':
-//       return {
-//         icon: '🙂',
-//         message: t(msg`Right on track!`),
-//         progressStatus: status,
-//       };
-//     case 'ahead':
-//       return {
-//         icon: '😎',
-//         message: t(msg`Ahead of schedule!`),
-//         progressStatus: status,
-//       };
-//     case 'complete':
-//       return {
-//         icon: '🥳',
-//         message: t(msg`Goal achieved!`),
-//         progressStatus: status,
-//       };
-//     default:
-//       return { icon: '', message: '', progressStatus: status };
-//   }
-// }
+function getProgressIconAndMessage(
+  status: ProgressStatus,
+  t: (descriptor: MacroMessageDescriptor) => string,
+) {
+  switch (status) {
+    case 'behind':
+      return {
+        icon: '😟',
+        message: t(msg`Behind schedule!`),
+        progressStatus: status,
+      };
+    case 'onTrack':
+      return {
+        icon: '🙂',
+        message: t(msg`Right on track!`),
+        progressStatus: status,
+      };
+    case 'ahead':
+      return {
+        icon: '😎',
+        message: t(msg`Ahead of schedule!`),
+        progressStatus: status,
+      };
+    case 'complete':
+      return {
+        icon: '🥳',
+        message: t(msg`Goal achieved!`),
+        progressStatus: status,
+      };
+    default:
+      return { icon: '', message: '', progressStatus: status };
+  }
+}
 
-// interface getProgressStatusArgs {
-//   currentValue: number;
-//   initialValue: number;
-//   target: number;
-//   startDate: string;
-//   targetDate: string;
-// }
-// function getProgressStatus({
-//   currentValue,
-//   initialValue,
-//   target,
-//   startDate,
-//   targetDate,
-// }: getProgressStatusArgs): ProgressStatus {
-//   const daysUntilTarget = eachDayOfInterval({
-//     start: new Date(startDate),
-//     end: new Date(targetDate),
-//   });
-
-//   const averageItemsPerDay = (target - initialValue) / daysUntilTarget.length;
-
-//   const daysSince =
-//     differenceInCalendarDays(new Date(), new Date(startDate)) + 1;
-
-//   const expectedGoalValueToday = Math.min(
-//     daysSince * averageItemsPerDay + initialValue,
-//     target,
-//   );
-
-//   const differenceFromTarget = currentValue - expectedGoalValueToday;
-//   const percentageDifference =
-//     Math.abs(differenceFromTarget / (target - initialValue || 1)) * 100;
-
-//   if (currentValue >= target) {
-//     return 'complete';
-//   }
-//   if (percentageDifference <= 5) {
-//     return 'onTrack';
-//   }
-//   if (differenceFromTarget > 0) {
-//     return 'ahead';
-//   }
-//   return 'behind';
-// }
 export default function GoalCard({
   title,
   target,
   id,
   startDate,
+  targetDate,
   initialValue,
   shortId,
   currentValue: baseCurrentValue,
 }: Database['goal']) {
   const { t } = useLingui();
+  const [isRevealed, setIsRevealed] = useState(false);
+  const holdTimerRef = useRef<number | null>(null);
+
+  const clearHoldTimer = useCallback(() => {
+    if (holdTimerRef.current !== null) {
+      window.clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+  }, []);
+
+  const startHoldReveal = useCallback(
+    (event: ReactPointerEvent) => {
+      if (event.pointerType === 'mouse') return;
+      clearHoldTimer();
+      holdTimerRef.current = window.setTimeout(
+        () => setIsRevealed(true),
+        HOLD_REVEAL_DELAY_MS,
+      );
+    },
+    [clearHoldTimer],
+  );
+
+  const endHoldReveal = useCallback(
+    (event: ReactPointerEvent) => {
+      if (event.pointerType === 'mouse') return;
+      clearHoldTimer();
+      setIsRevealed(false);
+    },
+    [clearHoldTimer],
+  );
+
+  useEffect(() => clearHoldTimer, [clearHoldTimer]);
+
   const currentValue = baseCurrentValue ?? initialValue;
   const progressPercent = Math.max(
     Math.min((currentValue / target) * 100, 100),
@@ -160,6 +163,31 @@ export default function GoalCard({
     (date: Date) => isBefore(startOfDay(date), startOfDay(startDate)),
     [startDate],
   );
+
+  const { icon, message, progressStatus } = getProgressIconAndMessage(
+    getProgressStatus({
+      currentValue,
+      initialValue,
+      target,
+      startDate,
+      targetDate,
+    }),
+    t,
+  );
+
+  const daysRemaining = differenceInCalendarDays(
+    new Date(targetDate),
+    new Date(),
+  );
+  const timeLeftLabel =
+    progressStatus === 'complete'
+      ? null
+      : daysRemaining >= 0
+        ? plural(daysRemaining, {
+            one: '# day left',
+            other: '# days left',
+          })
+        : t`Past due`;
 
   return (
     <Card
@@ -201,11 +229,47 @@ export default function GoalCard({
           blockedDateFeedback={t`Before goal's start date`}
           className="-mx-2 sm:mx-0"
         />
-        <div className="flex flex-col gap-2">
+        {/* biome-ignore lint/a11y/noStaticElementInteractions: touch-only hold-to-reveal of decorative labels; values stay exposed via aria-valuetext */}
+        <div
+          className="group/progress flex flex-col gap-1.5 select-none"
+          onPointerDown={startHoldReveal}
+          onPointerUp={endHoldReveal}
+          onPointerCancel={endHoldReveal}
+          onPointerLeave={endHoldReveal}
+          onContextMenu={(event) => {
+            if (isRevealed) event.preventDefault();
+          }}
+        >
+          <div className="flex items-center justify-between gap-2 px-0.5 text-sm">
+            <span className="inline-flex items-center gap-1.5 font-medium">
+              <span aria-hidden className="font-noto-emoji text-lg">
+                {icon}
+              </span>
+              <span
+                className={cn(
+                  'opacity-0 transition-opacity group-hover/progress:opacity-100',
+                  isRevealed && 'opacity-100',
+                )}
+              >
+                {message}
+              </span>
+            </span>
+            {timeLeftLabel && (
+              <span
+                className={cn(
+                  'text-muted-foreground text-xs opacity-0 transition-opacity group-hover/progress:opacity-100',
+                  isRevealed && 'opacity-100',
+                )}
+              >
+                {timeLeftLabel}
+              </span>
+            )}
+          </div>
           <ProgressBar
             progressPercent={progressPercent}
             target={target}
             currentValue={currentValue}
+            isRevealed={isRevealed}
           />
         </div>
       </CardContent>

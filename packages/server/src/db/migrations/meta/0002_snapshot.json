@@ -1,5 +1,5 @@
 {
-  "id": "2205dfc4-d393-4352-895e-19e7a4695cfa",
+  "id": "f875377a-cc9f-4fa3-af66-6e1cb9b1ec80",
   "prevId": "1a089714-811a-463d-9577-514b7836b181",
   "version": "7",
   "dialect": "postgresql",
@@ -205,6 +205,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "archivedAt": {
+          "name": "archivedAt",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
         "type": {
           "name": "type",
           "type": "GoalType",
@@ -262,8 +268,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "token": {
-          "name": "token",
+        "tokenHash": {
+          "name": "tokenHash",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -312,12 +318,12 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "refresh_token_token_unique": {
-          "name": "refresh_token_token_unique",
+        "refresh_token_tokenHash_unique": {
+          "name": "refresh_token_tokenHash_unique",
+          "nullsNotDistinct": false,
           "columns": [
-            "token"
-          ],
-          "nullsNotDistinct": false
+            "tokenHash"
+          ]
         }
       },
       "policies": {},

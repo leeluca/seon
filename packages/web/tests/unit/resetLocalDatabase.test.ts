@@ -33,7 +33,7 @@ describe('resetLocalDatabase', () => {
     const mocks = mockResetModule();
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
+    await expect(resetLocalDatabase()).resolves.toBe(true);
     expect(mocks.remove).toHaveBeenCalledWith(workspace);
   });
 
@@ -45,7 +45,7 @@ describe('resetLocalDatabase', () => {
     const mocks = mockResetModule(error);
     const { resetLocalDatabase } = await import('~/data/db/reset');
 
-    await expect(resetLocalDatabase()).resolves.toBeUndefined();
+    await expect(resetLocalDatabase()).resolves.toBe(false);
     expect(mocks.captureException).toHaveBeenCalledWith(error, {
       tags: { storage_error: 'reset_db_purge_failed' },
       extra: {

@@ -19,8 +19,9 @@ function ResetDemo() {
 
   const resetDemo = async () => {
     setIsResetting(true);
-    await resetLocalDatabase();
-    location.reload();
+    const removed = await resetLocalDatabase();
+    if (removed) location.reload();
+    else setIsResetting(false);
   };
 
   return (
