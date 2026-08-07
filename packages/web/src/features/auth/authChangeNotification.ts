@@ -1,6 +1,10 @@
 import { AUTH_CHANGE_KEY } from '~/constants/storage';
 
-export function notifyAuthSessionChanged(): void {
+export type AuthSessionChangeReason = 'session-changed' | 'password-reset';
+
+export function notifyAuthSessionChanged(
+  reason: AuthSessionChangeReason = 'session-changed',
+): void {
   if (typeof window === 'undefined') return;
 
   try {
@@ -9,6 +13,7 @@ export function notifyAuthSessionChanged(): void {
       JSON.stringify({
         changedAt: new Date().toISOString(),
         nonce: crypto.randomUUID(),
+        reason,
       }),
     );
   } catch {

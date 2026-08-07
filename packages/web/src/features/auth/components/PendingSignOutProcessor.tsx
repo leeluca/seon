@@ -41,10 +41,9 @@ export function PendingSignOutProcessor() {
           return;
         }
 
-        queryClient.setQueryData(
-          AUTH_STATUS.all.queryKey,
-          createUnauthenticatedAuthStatus(),
-        );
+        await queryClient.invalidateQueries({
+          queryKey: AUTH_STATUS.all.queryKey,
+        });
       } catch (error) {
         console.error('Could not process the pending sign out', error);
         scheduleRetry(flush);

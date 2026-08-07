@@ -67,7 +67,34 @@ export async function clearPendingSignOut(): Promise<void> {
 }
 
 async function performPendingSignOutFlush(): Promise<boolean> {
-  if (!(await hasPendingSignOut())) return true;
+  const pending = await getPendingSignOut();
+  if (!pending) return true;
+
+  try {
+    const session = await authClient.getSession({
+      query: { disableCookieCache: true },
+    });
+    if (session.error) {
+      if (session.error.status !== 401) return false;
+      await clearPendingSignOut();
+      return true;
+    }
+    if (!session.data || session.data.user.id !== pending.accountId) {
+      // A newer login supersedes a stale sign-out request for another account.
+      await clearPendingSignOut();
+      return true;
+    }
+  } catch (error) {
+    const authError = toAuthClientError(
+      error,
+      'Unable to identify the session awaiting sign out',
+    );
+    if (authError.status === 401) {
+      await clearPendingSignOut();
+      return true;
+    }
+    return false;
+  }
 
   try {
     const response = await authClient.signOut();

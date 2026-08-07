@@ -28,6 +28,9 @@ type NormalizedProfileData = {
   preferences?: Record<string, unknown> | null;
 };
 
+const POSTGRES_INTEGER_MIN = -2_147_483_648;
+const POSTGRES_INTEGER_MAX = 2_147_483_647;
+
 export type NormalizedSyncOperation =
   | (Omit<SyncOperation, 'table' | 'data'> & {
       table: 'goal';
@@ -119,6 +122,15 @@ function isIsoDate(value: unknown): value is string {
   return typeof value === 'string' && Number.isFinite(Date.parse(value));
 }
 
+function isPostgresInteger(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isSafeInteger(value) &&
+    value >= POSTGRES_INTEGER_MIN &&
+    value <= POSTGRES_INTEGER_MAX
+  );
+}
+
 function invalidFields(
   data: Record<string, unknown>,
   allowed: Set<string>,
@@ -174,8 +186,8 @@ function normalizeGoal(operation: SyncOperation): SyncOperationValidation {
   for (const field of ['initialValue', 'currentValue', 'target'] as const) {
     const value = data[field];
     if (value !== undefined) {
-      if (typeof value !== 'number' || !Number.isSafeInteger(value)) {
-        return reject('invalid_field', `${field} must be an integer`);
+      if (!isPostgresInteger(value)) {
+        return reject('invalid_field', `${field} must be a PostgreSQL integer`);
       }
       output[field] = value;
     }
@@ -243,8 +255,8 @@ function normalizeEntry(operation: SyncOperation): SyncOperationValidation {
     output.goalId = data.goalId;
   }
   if (data.value !== undefined) {
-    if (typeof data.value !== 'number' || !Number.isSafeInteger(data.value)) {
-      return reject('invalid_field', 'value must be an integer');
+    if (!isPostgresInteger(data.value)) {
+      return reject('invalid_field', 'value must be a PostgreSQL integer');
     }
     output.value = data.value;
   }
@@ -336,7 +348,10 @@ function normalizeProfile(operation: SyncOperation): SyncOperationValidation {
   }
 
   const output: NormalizedProfileData = {};
-  if ('preferences' in data) {
+  // A local account binding creates a full profile PUT before the account's
+  // existing row has downloaded. Only explicit edits to an established local
+  // profile may update account preferences.
+  if (operation.op === 'PATCH' && 'preferences' in data) {
     const preferences = normalizePreferences(data.preferences);
     if (preferences === undefined && data.preferences !== undefined) {
       return reject('invalid_field', 'preferences are invalid');

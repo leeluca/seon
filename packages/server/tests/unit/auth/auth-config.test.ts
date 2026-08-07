@@ -21,6 +21,7 @@ describe('Better Auth configuration', () => {
   it('uses UUID database sessions and a short signed cookie cache', () => {
     const auth = createTestAuth();
 
+    expect(auth.options.disabledPaths).toEqual(['/token']);
     expect(auth.options.session).toMatchObject({
       expiresIn: 60 * 60 * 24 * 90,
       updateAge: 60 * 60 * 24,
@@ -70,5 +71,15 @@ describe('Better Auth configuration', () => {
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toBeNull();
+  });
+
+  it('does not expose the JWT token endpoint through the public auth handler', async () => {
+    const response = await createTestAuth().handler(
+      new Request('https://seon.example/api/auth/token', {
+        headers: { origin: 'https://seon.example' },
+      }),
+    );
+
+    expect(response.status).toBe(404);
   });
 });

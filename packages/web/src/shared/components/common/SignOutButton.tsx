@@ -32,6 +32,26 @@ import { Input } from '../ui/input';
 
 type SignOutStep = 'choose' | 'remove';
 
+function describeUnsyncedChanges(summary: LocalWorkspaceSummary): string {
+  const counts: string[] = [];
+  if (summary.pendingUploadCount > 0) {
+    counts.push(
+      `${summary.pendingUploadCount} pending upload${summary.pendingUploadCount === 1 ? '' : 's'}`,
+    );
+  }
+  if (summary.unresolvedSyncErrorCount > 0) {
+    counts.push(
+      `${summary.unresolvedSyncErrorCount} rejected change${summary.unresolvedSyncErrorCount === 1 ? '' : 's'}`,
+    );
+  }
+
+  const rejectedWarning =
+    summary.unresolvedSyncErrorCount > 0
+      ? ' Rejected changes will not retry automatically.'
+      : '';
+  return `This workspace has ${counts.join(' and ')} that have not reached the server.${rejectedWarning} Export a recovery file, then type REMOVE.`;
+}
+
 function SignOutButton() {
   const { data } = useFetchAuthStatus();
   const queryClient = useQueryClient();
@@ -198,7 +218,7 @@ function SignOutButton() {
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {summary?.hasUnsyncedChanges
-                    ? `${summary.pendingUploadCount} local change(s) have not reached the server. Export a recovery file, then type REMOVE.`
+                    ? describeUnsyncedChanges(summary)
                     : 'This removes the browser copy. Synced account data can be downloaded again after signing in.'}
                 </AlertDialogDescription>
               </AlertDialogHeader>

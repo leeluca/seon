@@ -236,9 +236,9 @@ describe('workspace data transfer', () => {
       },
     },
     {
-      name: 'unsafe numeric values',
+      name: 'out-of-range PostgreSQL integers',
       mutate: (invalid: WorkspaceDataExport) => {
-        firstRecord(invalid.data.goals).target = Number.MAX_SAFE_INTEGER + 1;
+        firstRecord(invalid.data.goals).target = 2_147_483_648;
       },
     },
     {

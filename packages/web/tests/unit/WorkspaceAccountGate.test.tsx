@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => ({
     goalCount: 1,
     entryCount: 0,
     pendingUploadCount: 0,
+    unresolvedSyncErrorCount: 0,
     hasData: true,
     hasUnsyncedChanges: false,
   }),
@@ -113,6 +114,7 @@ describe('WorkspaceAccountGate', () => {
       goalCount: 1,
       entryCount: 0,
       pendingUploadCount: 0,
+      unresolvedSyncErrorCount: 0,
       hasData: true,
       hasUnsyncedChanges: false,
     });

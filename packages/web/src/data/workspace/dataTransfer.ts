@@ -340,8 +340,13 @@ function isNullableString(value: unknown): value is string | null {
   return value === null || isString(value);
 }
 
-function isSafeInteger(value: unknown): value is number {
-  return typeof value === 'number' && Number.isSafeInteger(value);
+function isPostgresInteger(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isSafeInteger(value) &&
+    value >= -2_147_483_648 &&
+    value <= 2_147_483_647
+  );
 }
 
 function isPreferences(value: string | null): boolean {
@@ -411,16 +416,16 @@ function isGoal(value: unknown): value is WorkspaceGoalRecord {
     isString(value.shortId) &&
     isNonEmptyString(value.title) &&
     isNullableString(value.description) &&
-    isSafeInteger(value.target) &&
+    isPostgresInteger(value.target) &&
     isString(value.unit) &&
     isSyncDate(value.startDate) &&
     isSyncDate(value.targetDate) &&
     isSyncDate(value.createdAt) &&
     isSyncDate(value.updatedAt) &&
-    isSafeInteger(value.initialValue) &&
+    isPostgresInteger(value.initialValue) &&
     isString(value.type) &&
     GOAL_TYPES.has(value.type) &&
-    isSafeInteger(value.currentValue) &&
+    isPostgresInteger(value.currentValue) &&
     isNullableSyncDate(value.completionDate) &&
     isNullableSyncDate(value.archivedAt)
   );
@@ -432,7 +437,7 @@ function isEntry(value: unknown): value is WorkspaceEntryRecord {
     isUuid(value.id) &&
     isString(value.shortId) &&
     isUuid(value.goalId) &&
-    isSafeInteger(value.value) &&
+    isPostgresInteger(value.value) &&
     isSyncDate(value.date) &&
     isSyncDate(value.createdAt) &&
     isSyncDate(value.updatedAt)

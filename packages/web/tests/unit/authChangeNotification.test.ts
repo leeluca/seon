@@ -14,7 +14,16 @@ describe('cross-tab auth change notification', () => {
     expect(JSON.parse(marker ?? '{}')).toMatchObject({
       changedAt: expect.any(String),
       nonce: expect.any(String),
+      reason: 'session-changed',
     });
     expect(marker).not.toContain('token');
+  });
+
+  it('identifies password-reset notifications', () => {
+    notifyAuthSessionChanged('password-reset');
+
+    expect(
+      JSON.parse(localStorage.getItem(AUTH_CHANGE_KEY) ?? '{}'),
+    ).toMatchObject({ reason: 'password-reset' });
   });
 });

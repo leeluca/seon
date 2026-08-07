@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const authMocks = vi.hoisted(() => ({
+  getSession: vi.fn(),
   signOut: vi.fn(),
 }));
 
@@ -14,6 +15,7 @@ vi.mock('~/lib/auth-client', async () => {
     ...actual,
     authClient: {
       ...actual.authClient,
+      getSession: authMocks.getSession,
       signOut: authMocks.signOut,
     },
   };
@@ -34,6 +36,13 @@ describe('pending offline sign out', () => {
     localStorage.clear();
     await clearPendingSignOut();
     vi.restoreAllMocks();
+    authMocks.getSession.mockReset().mockResolvedValue({
+      data: {
+        session: { id: 'session-a' },
+        user: { id: accountId },
+      },
+      error: null,
+    });
     authMocks.signOut.mockReset();
   });
 
@@ -76,6 +85,35 @@ describe('pending offline sign out', () => {
     vi.spyOn(navigator, 'onLine', 'get').mockReturnValue(false);
 
     await expect(flushPendingSignOut()).resolves.toBe(false);
+    expect(authMocks.signOut).not.toHaveBeenCalled();
+    expect(await hasPendingSignOut()).toBe(true);
+  });
+
+  it('clears a stale marker without signing out a newer account', async () => {
+    await markPendingSignOut(accountId);
+    authMocks.getSession.mockResolvedValueOnce({
+      data: {
+        session: { id: 'session-b' },
+        user: { id: 'account-b' },
+      },
+      error: null,
+    });
+
+    await expect(flushPendingSignOut()).resolves.toBe(true);
+
+    expect(authMocks.getSession).toHaveBeenCalledWith({
+      query: { disableCookieCache: true },
+    });
+    expect(authMocks.signOut).not.toHaveBeenCalled();
+    expect(await hasPendingSignOut()).toBe(false);
+  });
+
+  it('keeps the marker when the current session cannot be checked', async () => {
+    await markPendingSignOut(accountId);
+    authMocks.getSession.mockRejectedValueOnce(new TypeError('offline'));
+
+    await expect(flushPendingSignOut()).resolves.toBe(false);
+
     expect(authMocks.signOut).not.toHaveBeenCalled();
     expect(await hasPendingSignOut()).toBe(true);
   });

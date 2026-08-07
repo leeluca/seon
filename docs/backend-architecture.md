@@ -47,8 +47,8 @@ upload or auth contracts.
 
 ## Schema changes
 
-`0002_auth_sync_reset.sql` intentionally clears pre-launch custom-auth users,
-goals, entries, and refresh tokens. `0003_auth_sync_schema.sql` installs the
+`0003_auth_sync_reset.sql` intentionally clears pre-launch custom-auth users,
+goals, entries, and refresh tokens. `0004_auth_sync_schema.sql` installs the
 Better Auth/profile/idempotency schema. They are generated artifacts only:
 neither development nor deployment runs them automatically.
 

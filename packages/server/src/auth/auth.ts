@@ -94,6 +94,7 @@ export function createAuth(
     secret: config.secret,
     baseURL: config.baseUrl,
     basePath: '/api/auth',
+    disabledPaths: ['/token'],
     trustedOrigins: config.trustedOrigins,
     database: drizzleAdapter(getDb(config.databaseUrl), {
       provider: 'pg',

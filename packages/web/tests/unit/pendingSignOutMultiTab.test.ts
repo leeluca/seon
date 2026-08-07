@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const authMocks = vi.hoisted(() => ({
+  getSession: vi.fn(),
   signOut: vi.fn(),
 }));
 
@@ -14,6 +15,7 @@ vi.mock('~/lib/auth-client', async () => {
     ...actual,
     authClient: {
       ...actual.authClient,
+      getSession: authMocks.getSession,
       signOut: authMocks.signOut,
     },
   };
@@ -46,6 +48,13 @@ function installExclusiveLock() {
 
 beforeEach(async () => {
   localStorage.clear();
+  authMocks.getSession.mockReset().mockResolvedValue({
+    data: {
+      session: { id: 'session-a' },
+      user: { id: 'account-a' },
+    },
+    error: null,
+  });
   authMocks.signOut.mockReset();
   vi.resetModules();
   const { clearPendingSignOut } = await import(

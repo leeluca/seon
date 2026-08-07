@@ -31,6 +31,7 @@ export interface LocalWorkspaceSummary {
   goalCount: number;
   entryCount: number;
   pendingUploadCount: number;
+  unresolvedSyncErrorCount: number;
   hasData: boolean;
   hasUnsyncedChanges: boolean;
 }
@@ -47,20 +48,27 @@ export async function getLocalWorkspaceSummary(
   database: PowerSyncDatabase = powerSyncDb,
 ): Promise<LocalWorkspaceSummary> {
   await database.init();
-  const [goals, entries, uploadQueue] = await Promise.all([
-    database.get<{ count: number }>('SELECT count(*) AS count FROM goal'),
-    database.get<{ count: number }>('SELECT count(*) AS count FROM entry'),
-    database.getUploadQueueStats(),
-  ]);
+  const [goals, entries, unresolvedSyncErrors, uploadQueue] = await Promise.all(
+    [
+      database.get<{ count: number }>('SELECT count(*) AS count FROM goal'),
+      database.get<{ count: number }>('SELECT count(*) AS count FROM entry'),
+      database.get<{ count: number }>(
+        'SELECT count(*) AS count FROM sync_error WHERE resolvedAt IS NULL',
+      ),
+      database.getUploadQueueStats(),
+    ],
+  );
   const goalCount = Number(goals.count);
   const entryCount = Number(entries.count);
+  const unresolvedSyncErrorCount = Number(unresolvedSyncErrors.count);
 
   return {
     goalCount,
     entryCount,
     pendingUploadCount: uploadQueue.count,
+    unresolvedSyncErrorCount,
     hasData: goalCount > 0 || entryCount > 0,
-    hasUnsyncedChanges: uploadQueue.count > 0,
+    hasUnsyncedChanges: uploadQueue.count > 0 || unresolvedSyncErrorCount > 0,
   };
 }
 
@@ -103,9 +111,8 @@ async function writeAccountProfile(
       id: string;
       name: string;
       email: string | null;
-      preferences: string | null;
       createdAt: string;
-    }>('SELECT id, name, email, preferences, createdAt FROM profile LIMIT 1');
+    }>('SELECT id, name, email, createdAt FROM profile LIMIT 1');
     const now = new Date().toISOString();
 
     if (current?.id === account.id) {
@@ -125,16 +132,9 @@ async function writeAccountProfile(
       await tx.execute('DELETE FROM profile WHERE id = ?', [current.id]);
     await tx.execute(
       `INSERT INTO profile
-        (id, name, email, preferences, createdAt, updatedAt)
-        VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        account.id,
-        account.name,
-        account.email,
-        current?.preferences ?? null,
-        current?.createdAt ?? now,
-        now,
-      ],
+        (id, name, email, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?)`,
+      [account.id, account.name, account.email, current?.createdAt ?? now, now],
     );
   });
 }

@@ -56,8 +56,8 @@ describe('validateSyncOperation', () => {
     expect(result.rejection).toMatchObject({ code: 'unsupported_field' });
   });
 
-  it('accepts the Portuguese preference and ignores auth-owned profile data', () => {
-    const result = validateSyncOperation({
+  it('ignores preferences on a profile PUT and accepts them on a PATCH', () => {
+    const put = validateSyncOperation({
       table: 'profile',
       op: 'PUT',
       id,
@@ -69,11 +69,25 @@ describe('validateSyncOperation', () => {
         preferences: JSON.stringify({ language: 'pt' }),
       },
     });
+    const patch = validateSyncOperation({
+      table: 'profile',
+      op: 'PATCH',
+      id,
+      data: { preferences: JSON.stringify({ language: 'pt' }) },
+    });
 
-    expect(result).toEqual({
+    expect(put).toEqual({
       operation: {
         table: 'profile',
         op: 'PUT',
+        id,
+        data: {},
+      },
+    });
+    expect(patch).toEqual({
+      operation: {
+        table: 'profile',
+        op: 'PATCH',
         id,
         data: { preferences: { language: 'pt' } },
       },
@@ -111,4 +125,48 @@ describe('validateSyncOperation', () => {
       operation: { table: 'profile', op: 'DELETE', id, data: {} },
     });
   });
+
+  it.each([-2_147_483_649, 2_147_483_648])(
+    'rejects the out-of-range PostgreSQL integer %s',
+    (value) => {
+      expect(
+        validateSyncOperation({
+          table: 'goal',
+          op: 'PATCH',
+          id,
+          data: { target: value },
+        }).rejection,
+      ).toMatchObject({ code: 'invalid_field' });
+      expect(
+        validateSyncOperation({
+          table: 'entry',
+          op: 'PATCH',
+          id,
+          data: { value },
+        }).rejection,
+      ).toMatchObject({ code: 'invalid_field' });
+    },
+  );
+
+  it.each([-2_147_483_648, 2_147_483_647])(
+    'accepts the PostgreSQL integer boundary %s',
+    (value) => {
+      expect(
+        validateSyncOperation({
+          table: 'goal',
+          op: 'PATCH',
+          id,
+          data: { target: value },
+        }).operation?.data,
+      ).toEqual({ target: value });
+      expect(
+        validateSyncOperation({
+          table: 'entry',
+          op: 'PATCH',
+          id,
+          data: { value },
+        }).operation?.data,
+      ).toEqual({ value });
+    },
+  );
 });

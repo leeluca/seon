@@ -262,6 +262,102 @@ describe('applySyncTransaction', () => {
     expect(new Date(saved?.targetDate ?? '').toISOString()).toBe(timestamp);
   });
 
+  it('keeps account preferences on profile PUT and changes them on PATCH', async () => {
+    await pgliteDb.insert(schema.profile).values({
+      userId,
+      name: 'Current User',
+      email: 'current@example.com',
+      preferences: {
+        language: 'pt',
+        defaultGoalSort: 'title asc',
+      },
+    });
+
+    const put = await applySyncTransaction({
+      db,
+      user: {
+        id: userId,
+        name: 'Current User',
+        email: 'current@example.com',
+      },
+      transaction: {
+        clientId,
+        transactionId: 'profile-put',
+        operations: [
+          {
+            table: 'profile',
+            op: 'PUT',
+            id: userId,
+            data: { preferences: null },
+          },
+        ],
+      },
+    });
+    const [afterPut] = await pgliteDb
+      .select({ preferences: schema.profile.preferences })
+      .from(schema.profile)
+      .where(eq(schema.profile.userId, userId));
+
+    expect(put.status).toBe('applied');
+    expect(afterPut?.preferences).toEqual({
+      language: 'pt',
+      defaultGoalSort: 'title asc',
+    });
+
+    const patch = await applySyncTransaction({
+      db,
+      user: {
+        id: userId,
+        name: 'Current User',
+        email: 'current@example.com',
+      },
+      transaction: {
+        clientId,
+        transactionId: 'profile-patch',
+        operations: [
+          {
+            table: 'profile',
+            op: 'PATCH',
+            id: userId,
+            data: {
+              preferences: JSON.stringify({ language: 'ko' }),
+            },
+          },
+        ],
+      },
+    });
+    const [afterPatch] = await pgliteDb
+      .select({ preferences: schema.profile.preferences })
+      .from(schema.profile)
+      .where(eq(schema.profile.userId, userId));
+
+    expect(patch.status).toBe('applied');
+    expect(afterPatch?.preferences).toEqual({ language: 'ko' });
+  });
+
+  it('semantically rejects an out-of-range integer before persistence', async () => {
+    const transaction = goalPut('transaction-out-of-range');
+    const goalOperation = transaction.operations[0];
+    if (!goalOperation?.data) throw new Error('Goal fixture is missing');
+    goalOperation.data.target = 2_147_483_648;
+
+    const result = await applySyncTransaction({
+      db,
+      user: {
+        id: userId,
+        name: 'Current User',
+        email: 'current@example.com',
+      },
+      transaction,
+    });
+
+    expect(result).toMatchObject({
+      status: 'rejected',
+      rejected: [{ operationIndex: 0, code: 'invalid_field' }],
+    });
+    expect(await pgliteDb.select().from(schema.goal)).toHaveLength(0);
+  });
+
   it('rejects the entire transaction when one related operation is invalid', async () => {
     const transaction = goalPut('transaction-atomic-rejection');
     const entryOperation = transaction.operations[1];

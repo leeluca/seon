@@ -178,8 +178,11 @@ describe('Better Auth user flow', () => {
     const tokenResponse = await authRequest('/api/auth/token', {
       headers: { cookie: cookies },
     });
-    expect(tokenResponse.status).toBe(200);
-    const { token } = (await tokenResponse.json()) as { token: string };
+    expect(tokenResponse.status).toBe(404);
+
+    const { token } = await auth.api.getToken({
+      headers: new Headers({ cookie: cookies }),
+    });
     const payload = JSON.parse(
       Buffer.from(token.split('.')[1] ?? '', 'base64url').toString(),
     ) as Record<string, unknown>;
