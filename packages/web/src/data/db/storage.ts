@@ -2,15 +2,16 @@ import * as Sentry from '@sentry/react';
 
 export type StorageBackend = 'opfs' | 'indexeddb';
 
-/**
- * Requests origin-wide persistent storage for local-first application data.
- * A denied or unsupported request does not prevent the app from using
- * best-effort browser storage.
- */
-export async function requestPersistentStorage(): Promise<boolean | undefined> {
-  if (!navigator.storage?.persist) return undefined;
+const SQLITE_FILE_SUFFIXES = ['', '-journal', '-wal', '-shm'] as const;
+
+/** Ask the browser to protect origin storage from automatic eviction. */
+export async function requestPersistentStorage(): Promise<boolean> {
+  if (typeof navigator === 'undefined' || !navigator.storage?.persist) {
+    return false;
+  }
 
   try {
+    if (await navigator.storage.persisted?.()) return true;
     return await navigator.storage.persist();
   } catch (error) {
     Sentry.captureException(error, {
@@ -113,6 +114,70 @@ export async function purgeOpfsStorage(): Promise<void> {
   }
 }
 
+export async function opfsDatabaseExists(dbFilename: string): Promise<boolean> {
+  if (!navigator.storage?.getDirectory) return false;
+
+  try {
+    const root = await navigator.storage.getDirectory();
+    await root.getFileHandle(dbFilename);
+    return true;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'NotFoundError') {
+      return false;
+    }
+    throw error;
+  }
+}
+
+/** Delete one SQLite database without touching other workspaces on the origin. */
+export async function purgeOpfsDatabase(dbFilename: string): Promise<void> {
+  if (!navigator.storage?.getDirectory) return;
+
+  const root = await navigator.storage.getDirectory();
+  await new Promise((resolve) => setTimeout(resolve, 1));
+
+  for (const suffix of SQLITE_FILE_SUFFIXES) {
+    try {
+      await root.removeEntry(`${dbFilename}${suffix}`);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'NotFoundError') {
+        continue;
+      }
+      throw error;
+    }
+  }
+}
+
+export async function indexedDbDatabaseExists(
+  dbName: string,
+): Promise<boolean | undefined> {
+  if (typeof indexedDB === 'undefined') return false;
+  if (!indexedDB.databases) return undefined;
+
+  const databases = await indexedDB.databases();
+  return databases.some((database) => database.name === dbName);
+}
+
+export async function workspaceDatabaseStorageExists(
+  storageBackend: StorageBackend,
+  dbFilename: string,
+): Promise<boolean | undefined> {
+  return storageBackend === 'opfs'
+    ? opfsDatabaseExists(dbFilename)
+    : indexedDbDatabaseExists(dbFilename);
+}
+
+export async function purgeWorkspaceDatabaseStorage(
+  storageBackend: StorageBackend,
+  dbFilename: string,
+): Promise<void> {
+  if (storageBackend === 'opfs') {
+    await purgeOpfsDatabase(dbFilename);
+  } else {
+    await removeIndexedDbStorage(dbFilename);
+  }
+}
+
 function wait(ms: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
@@ -153,6 +218,26 @@ async function deleteIndexedDbDatabase(idbName: string): Promise<void> {
     req.onerror = () => reject(req.error);
     req.onblocked = () => reject(new Error('indexedDB deleteDatabase blocked'));
   });
+}
+
+/** Remove a named workspace database, falling back to a content clear on Safari. */
+export async function removeIndexedDbStorage(idbName: string): Promise<void> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await deleteIndexedDbDatabase(idbName);
+      return;
+    } catch (error) {
+      lastError = error;
+      await wait(50 * (attempt + 1));
+    }
+  }
+
+  try {
+    await clearIndexedDbDatabase(idbName);
+  } catch {
+    throw lastError;
+  }
 }
 
 /**

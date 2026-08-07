@@ -1,85 +1,147 @@
-import { useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import {
+  onlineManager,
   queryOptions,
   useQuery,
-  useQueryClient,
   type QueryClient,
 } from '@tanstack/react-query';
 
-import fetcher from '~/apis/fetcher';
 import { AUTH_STATUS } from '~/constants/query';
+import { hasPendingSignOut } from '~/data/workspace/pendingSignOut';
 import {
-  getPendingSignOut,
-  subscribeToAuthChanges,
-} from '~/features/auth/authSession';
-import { useUserStore } from '~/states/stores/userStore';
-import type { AuthStatus, User } from '~/types/user';
-import { APIError } from '~/utils/errors';
+  authClient,
+  AuthClientError,
+  toAuthClientError,
+} from '~/lib/auth-client';
+import type { AuthAccountUser, AuthSessionStatus } from '~/types/user';
 
-const AUTH_STATUS_API = '/api/auth/status';
+const AUTH_STALE_TIME = 5 * 60 * 1000;
 
-export const createUnauthenticatedAuthStatus = (): AuthStatus => ({
-  result: false,
-  expiresAt: 0,
-  userId: null,
-});
+export function createCheckingAuthStatus(
+  browserOnline = true,
+): AuthSessionStatus {
+  return {
+    state: 'checking',
+    result: false,
+    expiresAt: 0,
+    browserOnline,
+    user: null,
+    lastCheckedAt: null,
+  };
+}
 
-export function getAuthStatusQueryOptions(user: User) {
-  const pendingSignOut = getPendingSignOut();
+export function createUnauthenticatedAuthStatus(): AuthSessionStatus {
+  return {
+    state: 'unauthenticated',
+    result: false,
+    expiresAt: 0,
+    browserOnline: true,
+    user: null,
+    lastCheckedAt: Date.now(),
+  };
+}
 
+function toEpochSeconds(value: Date | string) {
+  const timestamp = value instanceof Date ? value.getTime() : Date.parse(value);
+  return Number.isFinite(timestamp) ? Math.floor(timestamp / 1000) : 0;
+}
+
+export function createOfflineAuthStatus(
+  lastKnownStatus: AuthSessionStatus,
+  browserOnline: boolean,
+): AuthSessionStatus {
+  return {
+    ...lastKnownStatus,
+    state: 'offline',
+    browserOnline,
+  };
+}
+
+export async function readAuthStatus(): Promise<AuthSessionStatus> {
+  // An offline sign-out immediately disables the local session/sync. The
+  // HttpOnly server cookie is revoked by PendingSignOutProcessor when online.
+  if (await hasPendingSignOut()) return createUnauthenticatedAuthStatus();
+
+  let response: Awaited<ReturnType<typeof authClient.getSession>>;
+
+  try {
+    response = await authClient.getSession();
+  } catch (error) {
+    throw toAuthClientError(error, 'Unable to reach the authentication server');
+  }
+
+  if (response.error) {
+    if (response.error.status === 401) {
+      return createUnauthenticatedAuthStatus();
+    }
+
+    throw toAuthClientError(
+      response.error,
+      'Unable to check the current session',
+    );
+  }
+
+  if (!response.data) {
+    return createUnauthenticatedAuthStatus();
+  }
+
+  return {
+    state: 'authenticated',
+    result: true,
+    expiresAt: toEpochSeconds(response.data.session.expiresAt),
+    browserOnline: true,
+    user: response.data.user as AuthAccountUser,
+    lastCheckedAt: Date.now(),
+  };
+}
+
+function getAuthStatusQueryOptions() {
   return queryOptions({
     queryKey: AUTH_STATUS.all.queryKey,
-    queryFn: async () => {
-      if (getPendingSignOut()) return createUnauthenticatedAuthStatus();
-
-      const status = await fetcher<AuthStatus>(AUTH_STATUS_API);
-      if (status.userId !== user.id) {
-        throw new APIError({
-          message: 'The signed-in account does not own this local data',
-          status: 409,
-          statusText: 'Conflict',
-          code: 'LOCAL_ACCOUNT_CONFLICT',
-        });
-      }
-      return status;
-    },
-    enabled: Boolean(user.useSync) && !pendingSignOut,
-    initialData: createUnauthenticatedAuthStatus,
+    queryFn: readAuthStatus,
+    initialData: createCheckingAuthStatus(),
+    initialDataUpdatedAt: 0,
+    staleTime: AUTH_STALE_TIME,
     gcTime: Number.POSITIVE_INFINITY,
+    networkMode: 'online',
     retry: (failureCount, error) =>
-      error instanceof APIError &&
-      (error.status === 401 || error.status === 409)
-        ? false
-        : failureCount < 3,
+      error instanceof AuthClientError &&
+      (error.status === 0 || error.status >= 500) &&
+      failureCount < 2,
   });
 }
 
-export function useFetchAuthStatus() {
-  const user = useUserStore((state) => state.user);
-  const queryClient = useQueryClient();
-  const queryResult = useQuery(getAuthStatusQueryOptions(user));
-
-  useEffect(
-    () =>
-      subscribeToAuthChanges((change) => {
-        if (change.state === 'signed-out') {
-          queryClient.setQueryData(
-            AUTH_STATUS.all.queryKey,
-            createUnauthenticatedAuthStatus(),
-          );
-          return;
-        }
-
-        void queryClient.invalidateQueries({
-          queryKey: AUTH_STATUS.all.queryKey,
-        });
-      }),
-    [queryClient],
-  );
-
-  return queryResult;
+function subscribeToOnlineStatus(onStoreChange: () => void) {
+  return onlineManager.subscribe(onStoreChange);
 }
 
-export function fetchAuthStatus(queryClient: QueryClient, user: User) {
-  return queryClient.ensureQueryData(getAuthStatusQueryOptions(user));
+function getOnlineSnapshot() {
+  return onlineManager.isOnline();
+}
+
+export function useFetchAuthStatus() {
+  const browserOnline = useSyncExternalStore(
+    subscribeToOnlineStatus,
+    getOnlineSnapshot,
+    () => true,
+  );
+  const queryResult = useQuery(getAuthStatusQueryOptions());
+  const isAuthUnavailable = !browserOnline || queryResult.error !== null;
+  const data = isAuthUnavailable
+    ? createOfflineAuthStatus(queryResult.data, browserOnline)
+    : queryResult.data;
+
+  return {
+    ...queryResult,
+    data,
+    authState: data.state,
+  };
+}
+
+export function fetchAuthStatus(queryClient: QueryClient) {
+  return queryClient.fetchQuery({
+    queryKey: AUTH_STATUS.all.queryKey,
+    queryFn: readAuthStatus,
+    staleTime: AUTH_STALE_TIME,
+  });
 }

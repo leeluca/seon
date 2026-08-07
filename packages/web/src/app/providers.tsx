@@ -4,7 +4,13 @@ import { I18nProvider } from '@lingui/react';
 import { domAnimation, LazyMotion } from 'motion/react';
 
 import { defaultLocale, dynamicallyImportLocale } from '~/locales/i18n';
+import { AuthSessionChangeListener } from '~/features/auth/components/AuthSessionChangeListener';
+import { WorkspaceAccountGate } from '~/features/auth/components/WorkspaceAccountGate';
+import { PendingSignOutProcessor } from '~/features/auth/components/PendingSignOutProcessor';
 import { ViewportHandler } from '~/shared/components/common/ViewportHandler';
+import { LegacyWorkspaceRecovery } from '~/shared/components/common/LegacyWorkspaceRecovery';
+import { RetiredWorkspaceCleanup } from '~/shared/components/common/RetiredWorkspaceCleanup';
+import { WorkspaceChangeListener } from '~/shared/components/common/WorkspaceChangeListener';
 import { Toaster } from '~/shared/components/ui/sonner';
 import { TooltipProvider } from '~/shared/components/ui/tooltip';
 import { OnlineStatusProvider } from '~/states/OnlineStatusProvider';
@@ -34,6 +40,12 @@ export function AppProviders({ children }: { children: ReactNode }) {
               className="mt-6"
             />
             <OnlineStatusProvider>
+              <WorkspaceChangeListener />
+              <RetiredWorkspaceCleanup />
+              <AuthSessionChangeListener />
+              <PendingSignOutProcessor />
+              <WorkspaceAccountGate />
+              <LegacyWorkspaceRecovery />
               <ViewportHandler />
               {children}
             </OnlineStatusProvider>

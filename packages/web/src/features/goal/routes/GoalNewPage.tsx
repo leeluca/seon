@@ -25,12 +25,10 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from '~/shared/components/ui/drawer';
-import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 
 export function GoalNewPage() {
   const navigate = useNavigate();
-  const userId = useUserStore((state) => state.user.id);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -48,7 +46,6 @@ export function GoalNewPage() {
 
   const form = useGoalForm({
     mode: 'create',
-    userId,
     onSuccess: () => setIsOpen(false),
   });
 

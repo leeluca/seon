@@ -13,9 +13,7 @@ export function useSignInForm(options: UseSignInFormOptions) {
 
   const { mutateAsync: postSignIn, error } = usePostSignIn({
     onSuccess: (data) => {
-      if (data.result) {
-        onSuccess(data.user);
-      }
+      onSuccess(data.user);
     },
   });
 

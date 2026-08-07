@@ -27,7 +27,7 @@ import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 
 async function updateDefaultSort(updatedSort: GoalSort) {
-  const userId = useUserStore.getState().user.id;
+  const profileId = useUserStore.getState().user.id;
   const currentPreferences = useUserStore.getState().userPreferences;
   const updatedPreferences = JSON.stringify({
     ...currentPreferences,
@@ -35,11 +35,11 @@ async function updateDefaultSort(updatedSort: GoalSort) {
   });
 
   await db
-    .updateTable('user')
+    .updateTable('profile')
     .set({
       preferences: updatedPreferences,
     })
-    .where('id', '=', userId)
+    .where('id', '=', profileId)
     .execute();
   useUserStore.getState().setPreferences(updatedPreferences);
 }

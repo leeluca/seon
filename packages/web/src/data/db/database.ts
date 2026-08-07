@@ -1,38 +1,33 @@
-import { wrapPowerSyncWithKysely } from '@powersync/kysely-driver';
-import {
-  PowerSyncDatabase,
-  WASQLiteOpenFactory,
-  WASQLiteVFS,
-} from '@powersync/web';
-
-import { AppSchema, type Database } from '~/data/db/AppSchema';
+import { WorkspaceDatabaseFactory } from '~/data/db/factory';
 import { isOpfsAvailable, type StorageBackend } from './storage';
-
-export const DB_NAME = 'seon-goals.db';
+import {
+  createBrowserWorkspaceRegistryStorage,
+  WorkspaceRegistry,
+} from '~/data/workspace';
 
 const opfsSupported = await isOpfsAvailable();
 
-export const storageBackend: StorageBackend = opfsSupported
+const preferredStorageBackend: StorageBackend = opfsSupported
   ? 'opfs'
   : 'indexeddb';
 
-// NOTE: should be accessed through PowerSyncContext
-export const powerSyncDb = new PowerSyncDatabase({
-  schema: AppSchema,
-  database: new WASQLiteOpenFactory({
-    dbFilename: DB_NAME,
-    vfs: opfsSupported
-      ? WASQLiteVFS.OPFSCoopSyncVFS
-      : WASQLiteVFS.IDBBatchAtomicVFS,
-    flags: {
-      enableMultiTabs: typeof SharedWorker !== 'undefined',
-    },
-  }),
-  flags: {
-    enableMultiTabs: typeof SharedWorker !== 'undefined',
-  },
-});
+export const workspaceRegistry = new WorkspaceRegistry(
+  createBrowserWorkspaceRegistryStorage(),
+);
+export const activeWorkspace =
+  await workspaceRegistry.getOrCreateLocalWorkspace(preferredStorageBackend);
+export const workspaceDatabaseFactory = new WorkspaceDatabaseFactory();
 
-const db = wrapPowerSyncWithKysely<Database>(powerSyncDb);
+const currentWorkspaceDatabase = workspaceDatabaseFactory.open(activeWorkspace);
+
+/** Compatibility exports while consumers move to an injected workspace handle. */
+export const DB_NAME = activeWorkspace.databaseFilename;
+export const storageBackend = activeWorkspace.storageBackend;
+export const powerSyncDb = currentWorkspaceDatabase.powerSyncDb;
+const db = currentWorkspaceDatabase.db;
+
+export function getCurrentWorkspaceDatabase() {
+  return currentWorkspaceDatabase;
+}
 
 export default db;

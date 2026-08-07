@@ -57,6 +57,9 @@ function createUpstreamRequest(
   );
   const headers = new Headers(request.headers);
 
+  // The application server needs the browser-visible origin when it creates
+  // cookies or validates auth requests. Do not trust client-supplied forwarding
+  // headers for these values.
   headers.delete('host');
   headers.set('x-forwarded-host', publicUrl.host);
   headers.set('x-forwarded-proto', publicUrl.protocol.slice(0, -1));
@@ -108,7 +111,8 @@ function createProxyResponse(
         headers.set('location', redirectUrl.toString());
       }
     } catch {
-      // Preserve malformed upstream redirects instead of replacing the response.
+      // Preserve a malformed upstream header rather than replacing the whole
+      // response with a misleading proxy availability error.
     }
   }
 

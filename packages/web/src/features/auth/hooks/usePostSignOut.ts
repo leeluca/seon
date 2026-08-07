@@ -1,42 +1,53 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { signOutLocally } from '~/data/domain/authRepo';
+import { AUTH_STATUS } from '~/constants/query';
 import {
-  flushPendingSignOut,
-  markPendingSignOut,
-  notifyAuthChange,
-} from '~/features/auth/authSession';
-import { useUserStore } from '~/states/stores/userStore';
-import { useSupabase } from '~/states/syncContext';
-import type { APIError } from '~/utils/errors';
+  authClient,
+  type AuthClientError,
+  toAuthClientError,
+} from '~/lib/auth-client';
+import { notifyAuthSessionChanged } from '../authChangeNotification';
+import { createUnauthenticatedAuthStatus } from './useFetchAuthStatus';
 
-export const POST_SIGNOUT_KEY = '/api/auth/signout';
+export const POST_SIGNOUT_KEY = 'sign-out';
 
-interface PostSignOutResponse {
+export interface PostSignOutResponse {
   result: true;
-  revocationPending: boolean;
 }
 
 interface UsePostSignOutProps {
   onSuccess?: (data: PostSignOutResponse) => void;
-  onError?: (error: APIError) => void;
+  onError?: (error: AuthClientError) => void;
 }
 
 const usePostSignOut = ({ onSuccess, onError }: UsePostSignOutProps = {}) => {
-  const userId = useUserStore((state) => state.user.id);
-  const { resetConnector } = useSupabase();
   const queryClient = useQueryClient();
 
-  return useMutation<PostSignOutResponse, APIError, void>({
+  return useMutation<PostSignOutResponse, AuthClientError, void>({
     mutationKey: [POST_SIGNOUT_KEY],
     mutationFn: async () => {
-      markPendingSignOut(userId);
-      notifyAuthChange('signed-out', userId);
-      await signOutLocally({ resetConnector, queryClient });
-      const revoked = await flushPendingSignOut();
-      return { result: true, revocationPending: !revoked };
+      let response: Awaited<ReturnType<typeof authClient.signOut>>;
+
+      try {
+        response = await authClient.signOut();
+      } catch (error) {
+        throw toAuthClientError(error, 'Unable to sign out');
+      }
+
+      if (response.error || !response.data?.success) {
+        throw toAuthClientError(response.error, 'Unable to sign out');
+      }
+
+      return { result: true };
     },
-    onSuccess,
+    onSuccess: (data) => {
+      notifyAuthSessionChanged();
+      queryClient.setQueryData(
+        AUTH_STATUS.all.queryKey,
+        createUnauthenticatedAuthStatus(),
+      );
+      onSuccess?.(data);
+    },
     onError,
   });
 };

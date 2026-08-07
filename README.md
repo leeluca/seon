@@ -24,12 +24,26 @@ The name Seon, Korean for "line" (선), relates to the trajectory shown in the p
 
 ## Architecture
 
-Seon uses a local-first architecture in which all CRUD operations execute against the client SQLite instance - the primary source of truth for the client application. Changes are queued for eventual (optional) replication to the backend PostgreSQL database. The database is secured with RLS (Row-Level Security) with no intermediate server between client and DB.
+Seon uses a local-first architecture: every goal and entry operation executes
+against a workspace-specific SQLite database. The app remains usable without a
+server; signing in only enables optional synchronization.
 
-The backend uses a change stream mechanism to detect modifications and propagate them to relevant client, ensuring that local databases remain current while maintaining their ability to operate independently. Clients' data is partitioned according to developer-defined Sync rules that determine which data subsets should be replicated to each client (intermediated by PowerSync).<br><br>
+Authentication uses revocable Better Auth database sessions in HttpOnly
+cookies, with a 15-minute signed cookie cache to avoid a database read on every
+request. The browser never stores access or refresh tokens. It also never talks
+directly to Postgres: queued uploads go through Seon's authenticated,
+provider-neutral sync API, while PowerSync currently supplies filtered change
+downloads. A browser stores exactly one local or account-bound workspace at a
+time.<br><br>
 
-![Architecture Diagram](https://github.com/user-attachments/assets/fe28996c-3b54-4a91-b28e-b42f16da1fdd)
-<br>
+```mermaid
+flowchart LR
+  UI[Web app] --> SQLite[(Workspace SQLite)]
+  SQLite -->|queued uploads| API[Seon auth + sync API]
+  API --> PG[(Postgres)]
+  PG --> PS[PowerSync stream adapter]
+  PS -->|filtered downloads| SQLite
+```
 
 ## Tech Stack
 
@@ -55,11 +69,12 @@ The backend uses a change stream mechanism to detect modifications and propagate
     • Hono<br>
     • PostgreSQL<br>
     • Drizzle ORM<br>
-    • jose (auth)
+    • Better Auth<br>
+    • Resend-compatible email adapter
   </td>
   <td>
-    • PowerSync<br>
-    • Supabase SDK
+    • Seon sync HTTP API<br>
+    • PowerSync stream adapter
   </td>
 </tr>
 </table>
@@ -68,8 +83,8 @@ The backend uses a change stream mechanism to detect modifications and propagate
 
 ### Prerequisites
 
-- Node.js 20.12.0 or higher
-- pnpm package manager
+- Node.js 24
+- pnpm 11
 
 ### Installation
 
@@ -88,8 +103,11 @@ pnpm install
 3. Run the application:
 
 ```sh
-pnpm -filter seon-web build
-pnpm -filter seon-web serve
+pnpm --filter web build
+pnpm --filter web serve
 ```
 
-→ Server setting instructions coming soon.
+Copy `packages/server/.env.example` and `packages/web/.env.local.example` for
+development. Production also needs the Cloudflare Pages `API_ORIGIN` runtime
+variable and the PowerSync configuration documented in
+`packages/server/powersync/README.md`.

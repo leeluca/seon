@@ -38,7 +38,7 @@ type GoalQueries = {
 
 /* api */
 export const AUTH_STATUS = {
-  all: { queryKey: ['authStatus'] },
+  all: { queryKey: ['auth', 'session'] as const },
 };
 
 /* sqlite */

@@ -9,6 +9,7 @@ Defines the target structure for the web app with a local-first, feature-first l
 - Separation of concerns: data/domain is side-effect free; UI handles toasts/navigation.
 - Explicit public surfaces: barrels only export what is meant to be shared.
 - Sync awareness: data layer models offline/queued/syncing/conflict states.
+- Workspace ownership: one physical SQLite database is active on a browser.
 
 ## Target Directory Layout (packages/web/src)
 
@@ -20,6 +21,7 @@ packages/web/src/
 ├── data/                             # Data infrastructure layer
 │   ├── db/                           # AppSchema, db factory, migrations/versioning
 │   ├── sync/                         # PowerSync connector, auth wiring, sync state
+│   ├── workspace/                    # registry, binding, import/export, recovery
 │   └── domain/                       # Goal/Entry/User domain/data access (pure, typed)
 │
 ├── features/                         # Domain feature modules
@@ -50,9 +52,31 @@ packages/web/src/
 
 ## Data Layer Details
 
-- `db/`: `AppSchema`, indexes, client migrations/version checks, Kysely wrapper.
-- `sync/`: PowerSync connector, token management, retry/backoff, sync-state events.
+- `db/`: `AppSchema`, indexes, per-workspace database factory, Kysely wrapper.
+- `sync/`: PowerSync queue adapter and provider-neutral HTTP transport. JWTs are
+  held only in memory by the SDK.
+- `workspace/`: the one-workspace registry, account binding, exact database
+  removal, versioned JSON transfer, legacy import, and pending offline signout.
 - `domain/`: pure data access + domain logic (e.g., `recordEntry`, `recomputeProgress`); return data/Result, not toasts or navigation; suitable for unit tests and offline-first flows.
+
+## Workspace and account rules
+
+- A descriptor holds a stable workspace UUID, upload client UUID, storage
+  backend, unique SQLite filename, and optional account binding.
+- Goal and entry rows do not repeat `userId`; ownership is the workspace itself.
+- Signing in with one populated local and one populated remote side requires an
+  explicit merge or JSON-export-and-replace choice.
+- An account switch cannot reuse another account's database. The current
+  workspace is exported, replaced, and then removed.
+- Replacement retains the retired descriptor until its database is deleted;
+  startup retries cleanup if another tab temporarily blocks removal.
+- Signing out can keep the account-bound workspace editable or remove it. If
+  uploads are pending, removal requires a recovery export and typing `REMOVE`.
+- Offline signout immediately disconnects sync and stores only a pending
+  revocation marker. The HttpOnly server session is revoked when connectivity
+  returns.
+- `profile`, `goal`, and `entry` sync. `workspace_meta` and `sync_error` are
+  local-only tables.
 
 ## Feature Module Anatomy (example: goal)
 

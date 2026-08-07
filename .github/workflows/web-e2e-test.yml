@@ -43,10 +43,6 @@ jobs:
       - name: Build Web App
         run: pnpm --filter web --fail-if-no-match build
         env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          VITE_POWERSYNC_URL: ${{ vars.VITE_POWERSYNC_URL }}
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
@@ -57,10 +53,6 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: pnpm --filter web --fail-if-no-match test:pwa
         env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
-          VITE_POWERSYNC_URL: ${{ vars.VITE_POWERSYNC_URL }}
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 

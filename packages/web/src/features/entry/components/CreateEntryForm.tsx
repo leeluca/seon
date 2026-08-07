@@ -17,7 +17,6 @@ import { useIds } from '~/hooks/useIds';
 import { FormField } from '~/shared/components/common/form/FormField';
 import { Button } from '~/shared/components/ui/button';
 import { NumberInput } from '~/shared/components/ui/number-input';
-import { useUserStore } from '~/states/stores/userStore';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
 import { useEntryForm } from '../hooks/useEntryForm';
@@ -44,7 +43,6 @@ const CreateEntryForm = ({
   onSubmitCallback: onSubmitCallbackProp,
   className,
 }: CreateEntryFormProps) => {
-  const userId = useUserStore((state) => state.user.id);
   const { t } = useLingui();
   const isMobile = useViewportStore((state) => state.isMobile);
   const isTouchScreen = useViewportStore((state) => state.isTouchScreen);
@@ -72,7 +70,6 @@ const CreateEntryForm = ({
 
   const { save, remove } = useEntryMutations({
     goalId,
-    userId,
     onSuccess: onSubmitCallbackProp,
   });
 

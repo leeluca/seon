@@ -25,7 +25,6 @@ interface UseGoalFormBase {
 
 interface UseGoalFormCreate extends UseGoalFormBase {
   mode: 'create';
-  userId: string;
 }
 
 interface UseGoalFormEdit extends UseGoalFormBase {
@@ -59,7 +58,7 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
 
       if (options.mode === 'create') {
         try {
-          await createGoal({ ...payload, userId: options.userId });
+          await createGoal(payload);
           onSuccess?.();
           toast.success(t`Sucessfully added goal`);
         } catch (error) {

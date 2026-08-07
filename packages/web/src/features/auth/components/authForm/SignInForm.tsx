@@ -39,14 +39,11 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
             passwordAutoComplete="current-password"
             passwordErrors={[
               error?.status === 401 ? t`Invalid credentials` : undefined,
+              error?.status === 403
+                ? t`Verify your email before signing in`
+                : undefined,
             ]}
           />
-          {error?.code === 'LOCAL_ACCOUNT_CONFLICT' && (
-            <Alert variant="destructive" icon={<CircleAlertIcon size={18} />}>
-              <AlertTitle>Account data conflict</AlertTitle>
-              <AlertDescription>{error.message}</AlertDescription>
-            </Alert>
-          )}
           {!isOnline && (
             <Alert
               variant="warning"
@@ -65,6 +62,15 @@ function SignInForm({ onSignInCallback }: SignInFormProps) {
             <form.SubmitButton className="w-64" requireDirty>
               <Trans>Sign In</Trans>
             </form.SubmitButton>
+          </div>
+          <div className="text-center text-sm">
+            <Link
+              to="/forgot-password"
+              className="text-primary hover:underline"
+              preload="intent"
+            >
+              <Trans>Forgot your password?</Trans>
+            </Link>
           </div>
           <div className="mt-2 text-center text-sm">
             <span className="text-muted-foreground">

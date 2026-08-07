@@ -34,8 +34,6 @@ jobs:
       - name: Build Web App for Production
         run: pnpm --filter web build
         env:
-          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL || secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY || secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_CDN_URL: ${{ vars.VITE_CDN_URL || secrets.VITE_CDN_URL }}
           SENTRY_AUTH_TOKEN: ${{ vars.SENTRY_AUTH_TOKEN || secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_DSN: ${{ vars.SENTRY_DSN || secrets.SENTRY_DSN }}

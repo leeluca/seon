@@ -21,12 +21,12 @@ import { useTimeout } from '~/hooks/useTimeout';
 import { useIsOnline } from '~/states/isOnlineContext';
 import { useUserStore } from '~/states/stores/userStore';
 import { isDemo } from '~/utils/demo';
-import { APIError } from '~/utils/errors';
-import { LocalDataActions } from './LocalDataActions';
 import SignOutButton from './SignOutButton';
 import UpdatePrompt from './UpdatePrompt';
+import { WorkspaceDataControls } from './WorkspaceDataControls';
 import { Button, buttonVariants } from '../ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Separator } from '../ui/separator';
 
 const LazyDemoIndicator = lazy(() => import('./DemoIndicator'));
 
@@ -95,14 +95,15 @@ function StatusMenu() {
     connecting,
   } = useStatus();
 
-  const [userName, useSync] = useUserStore(
+  const [localUserName, useSync] = useUserStore(
     useShallow((state) => [state.user.name, state.user.useSync]),
   );
   const [isFirstConnecting, setIsFirstConnecting] = useState(true);
 
-  const { data, isLoading, isError, error } = useFetchAuthStatus();
+  const { data, authState } = useFetchAuthStatus();
 
-  const isSignedIn = !!data?.result;
+  const isSignedIn = authState === 'authenticated';
+  const userName = data.user?.name ?? localUserName;
   const isOnline = useIsOnline();
 
   const isSyncing = downloading || uploading;
@@ -118,9 +119,7 @@ function StatusMenu() {
   });
 
   const display: SyncStatusDisplay = (() => {
-    if (!isOnline) return 'offline';
-    if (isError && (!(error instanceof APIError) || error.status !== 401))
-      return 'error';
+    if (!isOnline || authState === 'offline') return 'offline';
     if (!isSignedIn) return 'notSignedIn';
     if (hasTimedOut) return 'error';
     if (isFirstConnecting || debouncedConnecting) return 'connecting';
@@ -137,7 +136,7 @@ function StatusMenu() {
     return () => window.clearTimeout(timeoutId);
   }, []);
 
-  if (isLoading) {
+  if (authState === 'checking') {
     return (
       <output
         className="ml-auto flex h-9 w-[96px] items-center justify-center gap-2 rounded-xl bg-gray-200/50 px-2 py-1"
@@ -262,32 +261,36 @@ function StatusMenu() {
           )}
 
           {display === 'error' && <SyncErrorContent />}
+          <Separator className="my-3" />
+          <WorkspaceDataControls />
         </PopoverContent>
       </Popover>
-      <Popover>
-        <PopoverTrigger
-          render={
-            <Button
-              size="icon-responsive"
-              variant="ghost"
-              aria-label={t`User info`}
-            />
-          }
-        >
-          <CircleUserIcon size={18} />
-        </PopoverTrigger>
-        <PopoverContent className="mr-3 w-min max-w-96 sm:mr-8" sideOffset={5}>
-          <div className="space-y-2 pb-4">
-            <h3 className="text-center leading-none font-medium text-pretty">
-              <Trans>Hello, {userName}!</Trans>
-            </h3>
-          </div>
-          <div className="flex flex-col gap-2">
-            <LocalDataActions />
-            {(isSignedIn || Boolean(useSync)) && <SignOutButton />}
-          </div>
-        </PopoverContent>
-      </Popover>
+      {(isSignedIn || Boolean(useSync)) && (
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button
+                size="icon-responsive"
+                variant="ghost"
+                aria-label={t`User info`}
+              />
+            }
+          >
+            <CircleUserIcon size={18} />
+          </PopoverTrigger>
+          <PopoverContent
+            className="mr-3 w-min max-w-96 sm:mr-8"
+            sideOffset={5}
+          >
+            <div className="space-y-2 pb-4">
+              <h3 className="text-center leading-none font-medium text-pretty">
+                <Trans>Hello, {userName}!</Trans>
+              </h3>
+            </div>
+            <SignOutButton />
+          </PopoverContent>
+        </Popover>
+      )}
     </div>
   );
 }

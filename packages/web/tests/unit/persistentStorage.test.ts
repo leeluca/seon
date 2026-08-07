@@ -13,10 +13,20 @@ describe('requestPersistentStorage', () => {
     vi.unstubAllGlobals();
   });
 
-  it('returns undefined when persistent storage is unsupported', async () => {
+  it('returns false when persistent storage is unsupported', async () => {
     vi.stubGlobal('navigator', { storage: {} });
 
-    await expect(requestPersistentStorage()).resolves.toBeUndefined();
+    await expect(requestPersistentStorage()).resolves.toBe(false);
+  });
+
+  it('does not request persistence again when it was already granted', async () => {
+    const persisted = vi.fn().mockResolvedValue(true);
+    const persist = vi.fn().mockResolvedValue(true);
+    vi.stubGlobal('navigator', { storage: { persisted, persist } });
+
+    await expect(requestPersistentStorage()).resolves.toBe(true);
+    expect(persisted).toHaveBeenCalledTimes(1);
+    expect(persist).not.toHaveBeenCalled();
   });
 
   it('returns whether persistence was granted', async () => {

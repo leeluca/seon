@@ -4,6 +4,7 @@ import { CircleAlertIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { MAX_USER_NAME_LENGTH } from '~/constants';
+import type { PostSignUpResponse } from '~/features/auth/hooks/usePostSignUp';
 import {
   Alert,
   AlertDescription,
@@ -15,7 +16,7 @@ import { AuthCredentialFields } from './AuthCredentialFields';
 import { useSignUpForm } from './useSignUpForm';
 
 interface SignUpFormProps {
-  onSignUpCallback?: () => void;
+  onSignUpCallback?: (result: PostSignUpResponse) => void;
 }
 
 function SignUpForm({ onSignUpCallback }: SignUpFormProps) {
@@ -23,9 +24,9 @@ function SignUpForm({ onSignUpCallback }: SignUpFormProps) {
   const isOnline = useIsOnline();
 
   const { form } = useSignUpForm({
-    onSuccess: (user) => {
-      toast.success(t`Welcome, ${user.name}!`);
-      onSignUpCallback?.();
+    onSuccess: (result) => {
+      toast.success(t`Check your email to verify your account.`);
+      onSignUpCallback?.(result);
     },
   });
   return (
