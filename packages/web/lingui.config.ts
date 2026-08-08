@@ -4,6 +4,7 @@ import type { LinguiConfig } from '@lingui/conf';
 import { LOCALES } from './src/constants/locales';
 
 const config: LinguiConfig = defineConfig({
+  sourceLocale: 'en',
   locales: Object.keys(LOCALES),
   catalogs: [
     {
