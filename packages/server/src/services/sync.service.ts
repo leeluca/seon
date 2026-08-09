@@ -1,6 +1,6 @@
 import { and, eq, inArray } from 'drizzle-orm';
 
-import type { getDb } from '../db/db.js';
+import type { Database } from '../db/db.js';
 import {
   entry,
   goal,
@@ -18,7 +18,6 @@ import {
   validateSyncOperation,
 } from './sync-validation.js';
 
-type Database = ReturnType<typeof getDb>;
 type DatabaseTransaction = Parameters<
   Parameters<Database['transaction']>[0]
 >[0];

@@ -5,26 +5,19 @@ import * as relations from './relations.js';
 import * as schema from './schema.js';
 
 type Schema = typeof schema & typeof relations;
-type Database = ReturnType<typeof drizzle<Schema>>;
+export type Database = ReturnType<typeof drizzle<Schema>>;
+export type DatabaseClient = ReturnType<typeof postgres>;
+export type DatabaseOptions = NonNullable<Parameters<typeof postgres>[1]>;
 
-let client: ReturnType<typeof postgres> | null = null;
-let db: Database | null = null;
-
-export const getDb = (dbUrl: string) => {
-  if (db) {
-    return db;
-  }
-  if (!dbUrl) {
+export function createDatabase(
+  databaseUrl: string,
+  options: DatabaseOptions = {},
+) {
+  if (!databaseUrl) {
     throw new Error('DB_URL is not set');
   }
 
-  client = postgres(dbUrl, { prepare: false });
-  db = drizzle(client, { schema: { ...schema, ...relations } });
-  return db;
-};
-
-export const getClientAndDb = (dbUrl: string) => {
-  client = postgres(dbUrl, { prepare: false });
-  db = drizzle(client, { schema: { ...schema, ...relations } });
+  const client = postgres(databaseUrl, options);
+  const db = drizzle(client, { schema: { ...schema, ...relations } });
   return { client, db };
-};
+}

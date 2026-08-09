@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "seon-server",
+  "main": "src/entrypoints/worker.ts",
+  "compatibility_date": "2026-08-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "upload_source_maps": true,
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "BETTER_AUTH_URL": "http://localhost:8787",
+    "POWERSYNC_AUDIENCE": "local-powersync",
+    "SYNC_URL": "http://localhost:8080",
+    "ORIGIN_URLS": "http://localhost:5173",
+    "AUTH_EMAIL_DELIVERY": "capture",
+    "AUTH_EMAIL_FROM": "Seon <auth@example.com>"
+  },
+  "secrets": {
+    "required": ["BETTER_AUTH_SECRET", "RESEND_API_KEY"]
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000",
+      "localConnectionString": "postgres://test:test@127.0.0.1:5432/seon_test"
+    }
+  ]
+}

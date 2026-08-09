@@ -1,0 +1,34 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "seon-server",
+  "main": "src/entrypoints/worker.ts",
+  "compatibility_date": "2026-08-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "upload_source_maps": true,
+  "placement": {
+    "mode": "smart"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  // Replace these non-secret placeholders before the first production deploy.
+  "vars": {
+    "BETTER_AUTH_URL": "https://seon.example.invalid",
+    "POWERSYNC_AUDIENCE": "replace-with-powersync-audience",
+    "SYNC_URL": "https://powersync.example.invalid",
+    "ORIGIN_URLS": "https://seon.example.invalid",
+    "AUTH_EMAIL_DELIVERY": "resend",
+    "AUTH_EMAIL_FROM": "Seon <auth@example.invalid>",
+    "NODE_ENV": "production"
+  },
+  "secrets": {
+    "required": ["BETTER_AUTH_SECRET", "RESEND_API_KEY"]
+  },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      "id": "00000000000000000000000000000000"
+    }
+  ]
+}

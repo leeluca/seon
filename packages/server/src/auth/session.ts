@@ -2,11 +2,11 @@ import type { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import { HTTPException } from 'hono/http-exception';
 
-import type { Env } from '../env.js';
+import type { AppRouteTypes } from '../types/context.js';
 import type { AuthSession } from './auth.js';
 import { getCurrentSession, type SessionLookupOptions } from './runtime.js';
 
-type AuthContext = Context;
+type AuthContext = Context<AppRouteTypes>;
 
 export async function requireSession(
   c: AuthContext,
@@ -23,10 +23,9 @@ export interface AuthSessionVariables {
   authSession: AuthSession;
 }
 
-export const requireAuthSession = createMiddleware<{
-  Bindings: Env;
-  Variables: AuthSessionVariables;
-}>(async (c, next) => {
-  c.set('authSession', await requireSession(c));
-  await next();
-});
+export const requireAuthSession = createMiddleware<AppRouteTypes>(
+  async (c, next) => {
+    c.set('authSession', await requireSession(c));
+    await next();
+  },
+);

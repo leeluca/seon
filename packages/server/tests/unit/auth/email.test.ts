@@ -16,7 +16,6 @@ const message = {
 
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
 describe('EmailSender', () => {
@@ -32,10 +31,9 @@ describe('EmailSender', () => {
   });
 
   it('prints captured messages in development', async () => {
-    vi.stubEnv('NODE_ENV', 'development');
     const consoleInfo = vi.spyOn(console, 'info').mockImplementation(() => {});
 
-    await new CaptureEmailSender().send(message);
+    await new CaptureEmailSender(true).send(message);
 
     expect(consoleInfo).toHaveBeenCalledWith(
       expect.stringContaining('Plain text'),

@@ -5,7 +5,9 @@ the browser continues to use same-origin URLs.
 
 Configure `API_ORIGIN` as a Cloudflare Pages runtime variable for both the
 production and preview environments. Its value must be an origin only, for
-example `https://seon-server.fly.dev` (no path, query, or credentials).
+example the `https://seon-server.<account>.workers.dev` Worker origin (no path,
+query, or credentials). Point it back to the Fly origin only during a manual
+Node rollback; the proxy never retries mutations against a second backend.
 
 For local Pages testing, copy `.dev.vars.example` to `.dev.vars`, build the web
 app, and run Wrangler from `packages/web`:

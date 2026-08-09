@@ -1,9 +1,18 @@
-import type { Env } from '../env.js';
 import type { AuthSessionVariables } from '../auth/session.js';
+import type { Auth } from '../auth/auth.js';
+import type { Database } from '../db/db.js';
+import type { AppConfig } from '../env.js';
 
-export interface AuthRouteTypes {
-  Bindings: Env;
-  Variables: AuthSessionVariables;
+export interface RequestServices {
+  auth: Auth;
+  db: Database;
 }
 
-export type { Env };
+export interface AppVariables extends AuthSessionVariables {
+  appConfig: AppConfig;
+  services: RequestServices;
+}
+
+export interface AppRouteTypes {
+  Variables: AppVariables;
+}

@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2024", "WebWorker"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "target": "ES2024",
+    "tsBuildInfoFile": ".cache/tsbuild/tsconfig.worker.tsbuildinfo",
+    "types": []
+  },
+  "include": ["worker-configuration.d.ts", "src"],
+  "exclude": [
+    "dist",
+    ".cache",
+    "tests",
+    "src/db/migrate.ts",
+    "src/entrypoints/node.ts"
+  ]
+}

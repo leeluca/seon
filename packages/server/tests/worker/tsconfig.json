@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.worker.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../.cache/tsbuild/tsconfig.worker-tests.tsbuildinfo",
+    "types": ["@cloudflare/vitest-pool-workers/types"]
+  },
+  "include": ["../../worker-configuration.d.ts", "../../src", "./**/*.ts"],
+  "exclude": [
+    "../../dist",
+    "../../.cache",
+    "../../src/db/migrate.ts",
+    "../../src/entrypoints/node.ts"
+  ]
+}

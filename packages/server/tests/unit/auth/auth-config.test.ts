@@ -1,13 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it, vi } from 'vitest';
 
-import { createAuth } from '../../../src/auth/auth.js';
+import {
+  createAuth,
+  type BackgroundTaskHandler,
+} from '../../../src/auth/auth.js';
 import { NoopEmailSender } from '../../../src/auth/email.js';
+import { createDatabase } from '../../../src/db/db.js';
+
+const database = createDatabase('postgres://test:test@127.0.0.1:1/seon_test', {
+  prepare: false,
+});
+
+afterAll(async () => database.client.end({ timeout: 0 }));
 
 describe('Better Auth configuration', () => {
-  const createTestAuth = () =>
+  const createTestAuth = (backgroundTaskHandler?: BackgroundTaskHandler) =>
     createAuth(
       {
-        databaseUrl: 'postgres://test:test@127.0.0.1:1/seon_test',
         secret: 'test-secret-that-is-at-least-32-characters',
         baseUrl: 'https://seon.example',
         trustedOrigins: ['https://seon.example'],
@@ -15,7 +24,11 @@ describe('Better Auth configuration', () => {
         secureCookies: true,
         emailDelivery: 'noop',
       },
-      { emailSender: new NoopEmailSender() },
+      {
+        db: database.db,
+        emailSender: new NoopEmailSender(),
+        backgroundTaskHandler,
+      },
     );
 
   it('uses UUID database sessions and a short signed cookie cache', () => {
@@ -43,6 +56,10 @@ describe('Better Auth configuration', () => {
       sameSite: 'lax',
       secure: true,
     });
+    expect(auth.options.advanced?.ipAddress).toMatchObject({
+      ipAddressHeaders: ['cf-connecting-ip'],
+    });
+    expect(auth.options.rateLimit).toMatchObject({ enabled: true });
     expect(auth.options.emailAndPassword).toMatchObject({
       enabled: true,
       requireEmailVerification: true,
@@ -60,6 +77,15 @@ describe('Better Auth configuration', () => {
         expirationTime: '15m',
       },
     });
+  });
+
+  it('delegates deferred Better Auth work to the runtime adapter', () => {
+    const backgroundTaskHandler = vi.fn();
+    const auth = createTestAuth(backgroundTaskHandler);
+
+    expect(auth.options.advanced?.backgroundTasks?.handler).toBe(
+      backgroundTaskHandler,
+    );
   });
 
   it('serves the Better Auth session endpoint without requiring a session', async () => {

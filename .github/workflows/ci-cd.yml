@@ -42,6 +42,7 @@ jobs:
               - 'server.Dockerfile'
               - 'fly.toml'
               - '.github/workflows/server-deploy.yml'
+              - '.github/workflows/server-deploy-node.yml'
               - '.github/workflows/ci-cd.yml'
 
   trigger-e2e:

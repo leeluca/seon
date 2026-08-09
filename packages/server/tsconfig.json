@@ -12,5 +12,5 @@
     "types": ["node"]
   },
   "include": ["src", "tests", "*.config.ts"],
-  "exclude": ["dist", ".cache"]
+  "exclude": ["dist", ".cache", "src/entrypoints/worker.ts", "tests/worker"]
 }
