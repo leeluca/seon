@@ -1,16 +1,16 @@
 import type { Auth as BetterAuthInstance } from 'better-auth';
-import { betterAuth } from 'better-auth/minimal';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { betterAuth } from 'better-auth/minimal';
 import { jwt } from 'better-auth/plugins';
 import { v7 as uuidv7 } from 'uuid';
 
-import type { Database } from '../db/db.js';
-import * as schema from '../db/schema.js';
 import {
   createEmailSender,
   type EmailDeliveryMode,
   type EmailSender,
 } from './email.js';
+import type { Database } from '../db/db.js';
+import * as schema from '../db/schema.js';
 
 const DAY = 60 * 60 * 24;
 
@@ -102,9 +102,16 @@ export function createAuth(
       schema,
       transaction: true,
     }),
+    // TODO: distributed storage
+    rateLimit: {
+      enabled: true,
+    },
     advanced: {
       database: {
         generateId: () => uuidv7(),
+      },
+      ipAddress: {
+        ipAddressHeaders: ['cf-connecting-ip'],
       },
       ...(dependencies.backgroundTaskHandler
         ? {

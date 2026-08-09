@@ -31,10 +31,12 @@ pnpm exec wrangler hyperdrive create seon-server-db \
   --caching-disabled
 ```
 
-Save the returned ID as the `HYPERDRIVE_ID` GitHub environment variable. Store
-`BETTER_AUTH_SECRET` and `RESEND_API_KEY` as GitHub environment secrets; the
-deployment workflow uploads them as encrypted Worker secrets. The other values
-used by `prepare:worker-deploy` are non-secret GitHub environment variables.
+Put the returned ID in `wrangler.production.jsonc`, then replace the other
+`.invalid` and `replace-with-...` placeholders in that file. These values are
+non-secret production configuration and are intentionally version-controlled.
+
+Store `BETTER_AUTH_SECRET` and `RESEND_API_KEY` as GitHub environment secrets;
+the deployment workflow uploads them as encrypted Worker secrets.
 
 Provisioning Hyperdrive does not run or generate database migrations. Drizzle
 migrations remain a Node-only administrative command.

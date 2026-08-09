@@ -56,6 +56,10 @@ describe('Better Auth configuration', () => {
       sameSite: 'lax',
       secure: true,
     });
+    expect(auth.options.advanced?.ipAddress).toMatchObject({
+      ipAddressHeaders: ['cf-connecting-ip'],
+    });
+    expect(auth.options.rateLimit).toMatchObject({ enabled: true });
     expect(auth.options.emailAndPassword).toMatchObject({
       enabled: true,
       requireEmailVerification: true,
