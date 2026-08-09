@@ -113,8 +113,8 @@ msgstr "Enviamos uma mensagem de verificação para {email}."
 
 #. placeholder {0}: format(day, 'MMM d')
 #. placeholder {0}: selectedDay ? format(selectedDay, 'EEE, MMM d') : ''
-#: src/features/entry/components/EntryHeatmap.tsx:188
-#: src/features/entry/components/EntryHeatmap.tsx:259
+#: src/features/entry/components/EntryHeatmap.tsx:253
+#: src/features/entry/components/EntryHeatmap.tsx:324
 msgid "Add entry for {0}"
 msgstr "Adicionar entrada para {0}"
 
@@ -379,7 +379,7 @@ msgstr "Não tem uma conta?"
 msgid "done"
 msgstr "concluída"
 
-#: src/features/entry/components/EntryHeatmap.tsx:121
+#: src/features/entry/components/EntryHeatmap.tsx:172
 #: src/features/goal/components/StatChips.tsx:35
 #: src/features/today/components/TodayItem.tsx:56
 msgid "Done"
@@ -430,7 +430,7 @@ msgstr "Informe um valor."
 msgid "Enter your credentials to continue"
 msgstr "Digite suas credenciais para continuar"
 
-#: src/features/entry/components/EntryHeatmap.tsx:127
+#: src/features/entry/components/EntryHeatmap.tsx:178
 msgid "Entry calendar"
 msgstr "Calendário de entradas"
 
@@ -533,6 +533,11 @@ msgstr "Nome da meta"
 msgid "Goal not found"
 msgstr "Meta não encontrada"
 
+#. placeholder {0}: format(start, 'MMM d')
+#: src/features/entry/components/EntryHeatmap.tsx:173
+#~ msgid "Goal started {0}"
+#~ msgstr ""
+
 #: src/app/metadata.tsx:33
 #: src/features/goal/routes/GoalsPage.tsx:31
 #: src/shared/components/common/BottomTabBar.tsx:42
@@ -623,7 +628,7 @@ msgstr "Última:"
 msgid "Learn 1000 French words"
 msgstr "Aprender 1000 palavras em francês"
 
-#: src/features/entry/components/EntryHeatmap.tsx:225
+#: src/features/entry/components/EntryHeatmap.tsx:290
 #: src/features/today/components/TodayItem.tsx:173
 msgid "Less"
 msgstr "Menos"
@@ -660,7 +665,7 @@ msgstr "Campos obrigatórios não preenchidos"
 msgid "Monthly"
 msgstr "Mensal"
 
-#: src/features/entry/components/EntryHeatmap.tsx:232
+#: src/features/entry/components/EntryHeatmap.tsx:297
 #: src/features/today/components/TodayItem.tsx:185
 msgid "More"
 msgstr "Mais"
@@ -715,7 +720,7 @@ msgstr "Nenhuma meta concluída ainda."
 msgid "No entries yet — tap a day in the calendar to log one."
 msgstr "Nenhuma entrada ainda — toque em um dia no calendário para registrar."
 
-#: src/features/entry/components/EntryHeatmap.tsx:119
+#: src/features/entry/components/EntryHeatmap.tsx:170
 msgid "No entry"
 msgstr "Sem entrada"
 

@@ -113,8 +113,8 @@ msgstr "A verification message was sent to {email}."
 
 #. placeholder {0}: format(day, 'MMM d')
 #. placeholder {0}: selectedDay ? format(selectedDay, 'EEE, MMM d') : ''
-#: src/features/entry/components/EntryHeatmap.tsx:188
-#: src/features/entry/components/EntryHeatmap.tsx:259
+#: src/features/entry/components/EntryHeatmap.tsx:253
+#: src/features/entry/components/EntryHeatmap.tsx:324
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
@@ -387,7 +387,7 @@ msgstr "Don't have an account?"
 msgid "done"
 msgstr "done"
 
-#: src/features/entry/components/EntryHeatmap.tsx:121
+#: src/features/entry/components/EntryHeatmap.tsx:172
 #: src/features/goal/components/StatChips.tsx:35
 #: src/features/today/components/TodayItem.tsx:56
 msgid "Done"
@@ -438,7 +438,7 @@ msgstr ""
 msgid "Enter your credentials to continue"
 msgstr "Enter your credentials to continue"
 
-#: src/features/entry/components/EntryHeatmap.tsx:127
+#: src/features/entry/components/EntryHeatmap.tsx:178
 msgid "Entry calendar"
 msgstr "Entry calendar"
 
@@ -545,6 +545,11 @@ msgstr "Goal name"
 msgid "Goal not found"
 msgstr "Goal not found"
 
+#. placeholder {0}: format(start, 'MMM d')
+#: src/features/entry/components/EntryHeatmap.tsx:173
+#~ msgid "Goal started {0}"
+#~ msgstr "Goal started {0}"
+
 #: src/app/metadata.tsx:33
 #: src/features/goal/routes/GoalsPage.tsx:31
 #: src/shared/components/common/BottomTabBar.tsx:42
@@ -643,7 +648,7 @@ msgstr "Learn 1000 French words"
 #~ msgid "Learn 1000 French words"
 #~ msgstr "Learn 1000 French words"
 
-#: src/features/entry/components/EntryHeatmap.tsx:225
+#: src/features/entry/components/EntryHeatmap.tsx:290
 #: src/features/today/components/TodayItem.tsx:173
 msgid "Less"
 msgstr "Less"
@@ -680,7 +685,7 @@ msgstr "Missing required fields"
 msgid "Monthly"
 msgstr "Monthly"
 
-#: src/features/entry/components/EntryHeatmap.tsx:232
+#: src/features/entry/components/EntryHeatmap.tsx:297
 #: src/features/today/components/TodayItem.tsx:185
 msgid "More"
 msgstr "More"
@@ -735,7 +740,7 @@ msgstr "No completed goals yet."
 msgid "No entries yet — tap a day in the calendar to log one."
 msgstr "No entries yet — tap a day in the calendar to log one."
 
-#: src/features/entry/components/EntryHeatmap.tsx:119
+#: src/features/entry/components/EntryHeatmap.tsx:170
 msgid "No entry"
 msgstr "No entry"
 

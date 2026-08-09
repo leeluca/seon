@@ -1,6 +1,9 @@
 import { i18n, type MessageDescriptor } from '@lingui/core';
 import { msg, t } from '@lingui/core/macro';
 import {
+  addDays,
+  addMonths,
+  addWeeks,
   closestTo,
   eachDayOfInterval,
   eachMonthOfInterval,
@@ -23,7 +26,7 @@ const FALLBACK_TOKENS = {
   '--primary': 'oklch(0.53 0.105 163)',
   '--chart-2': 'oklch(0.77 0.012 165)',
   '--chart-4': 'oklch(0.74 0.14 163)',
-  '--warning': 'oklch(0.56 0.125 75)',
+  '--chart-5': 'oklch(0.4 0.08 164)',
   '--border': 'oklch(0.925 0.008 160)',
   '--muted-foreground': 'oklch(0.5 0.02 170)',
   '--foreground': 'oklch(0.26 0.015 165)',
@@ -44,16 +47,33 @@ const withAlpha = (color: string, alpha: number) => {
 
 // ECharts paints to canvas, so CSS var() strings can't be used directly —
 // resolve the theme tokens to concrete colors at build time instead.
+// The result must be rgb(), not oklch(): zrender can't parse oklch, so
+// hover-state style transitions would render the lines invisible.
 const resolveChartColors = (): Record<TokenName, string> => {
   const resolved: Record<TokenName, string> = { ...FALLBACK_TOKENS };
   if (typeof document === 'undefined') return resolved;
+
   const probe = document.createElement('span');
   document.body.appendChild(probe);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1;
+  canvas.height = 1;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
   for (const token of Object.keys(FALLBACK_TOKENS) as TokenName[]) {
     probe.style.color = `var(${token})`;
     const value = getComputedStyle(probe).color;
-    if (value) resolved[token] = value;
+    if (!value) continue;
+    if (ctx) {
+      ctx.fillStyle = value;
+      ctx.fillRect(0, 0, 1, 1);
+      const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+      resolved[token] = `rgb(${r}, ${g}, ${b})`;
+    } else {
+      resolved[token] = value;
+    }
   }
+
   probe.remove();
   return resolved;
 };
@@ -305,7 +325,22 @@ const buildAggregatedPoints = ({
     Math.max(new Date(lastEntryDate).getTime(), targetDateObj.getTime()),
   );
 
-  const dates = buildIntervals({ start, end, mode, targetDate: targetDateObj });
+  // Pad the domain by one interval: ECharts clips symbols at the grid
+  // rect, so a point sitting exactly on the right boundary (e.g. today,
+  // for a goal already past its target date) loses half its dot/diamond.
+  const paddedEnd =
+    mode === 'day'
+      ? addDays(end, 1)
+      : mode === 'week'
+        ? addWeeks(end, 1)
+        : addMonths(end, 1);
+
+  const dates = buildIntervals({
+    start,
+    end: paddedEnd,
+    mode,
+    targetDate: targetDateObj,
+  });
 
   const baselineValue = buildBaselineValues(start, targetDateObj, mode, target);
 
@@ -371,8 +406,8 @@ export const buildGoalLineGraphOptions = ({
   const colors = {
     progressLine: tokens['--primary'],
     progressArea: withAlpha(tokens['--primary'], 0.1),
-    afterTargetLine: tokens['--warning'],
-    afterTargetArea: withAlpha(tokens['--warning'], 0.12),
+    afterTargetLine: tokens['--chart-5'],
+    afterTargetArea: withAlpha(tokens['--chart-5'], 0.12),
     baseline: tokens['--chart-2'],
     achieved: tokens['--chart-4'],
     axisLabel: tokens['--muted-foreground'],

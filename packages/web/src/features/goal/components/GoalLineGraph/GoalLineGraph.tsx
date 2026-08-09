@@ -42,7 +42,7 @@ const ChartLegend = ({ showAfterTarget }: { showAfterTarget: boolean }) => (
     {showAfterTarget && (
       <span className="flex items-center gap-1.5">
         <span
-          className="bg-warning h-0.5 w-4 rounded-full"
+          className="bg-chart-5 h-0.5 w-4 rounded-full"
           aria-hidden="true"
         />
         <Trans>After target date</Trans>

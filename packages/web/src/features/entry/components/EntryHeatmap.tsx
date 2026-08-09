@@ -12,6 +12,7 @@ import {
   isToday as checkIsToday,
   startOfDay,
   startOfWeek,
+  subWeeks,
 } from 'date-fns';
 
 import { ENTRIES } from '~/constants/query';
@@ -36,6 +37,11 @@ const LEVEL_CLASSES = [
 ] as const;
 
 const WEEKDAY_LABELS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+// Cell box (size-6) and column gap (gap-1) in px, for the fit-to-width math.
+const CELL_PX = 24;
+const GAP_PX = 4;
+const FALLBACK_WEEKS = 12;
 
 /**
  * Contribution-style calendar of the goal's lifetime: weeks as columns,
@@ -62,15 +68,40 @@ export function EntryHeatmap({
     x: number;
     y: number;
   } | null>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [fitWeeks, setFitWeeks] = useState(FALLBACK_WEEKS);
+
+  // The grid is a stable frame the history fills in: render at least as many
+  // week columns as fit the container, however young the goal is.
+  useLayoutEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const measure = () => {
+      const width = el.clientWidth;
+      if (width > 0) {
+        setFitWeeks(
+          Math.max(1, Math.floor((width + GAP_PX) / (CELL_PX + GAP_PX))),
+        );
+      }
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const { weeks, monthLabels, gains, entriesByDay, perDay, today, start } =
     useMemo(() => {
       const today = startOfDay(new Date());
       const start = startOfDay(new Date(goal.startDate));
-      const gridStart = startOfWeek(start < today ? start : today, {
+      const gridEnd = endOfWeek(today, { weekStartsOn: 0 });
+      const startWeek = startOfWeek(start < today ? start : today, {
         weekStartsOn: 0,
       });
-      const gridEnd = endOfWeek(today, { weekStartsOn: 0 });
+      const fitStart = startOfWeek(subWeeks(gridEnd, fitWeeks - 1), {
+        weekStartsOn: 0,
+      });
+      const gridStart = startWeek < fitStart ? startWeek : fitStart;
       const days = eachDayOfInterval({ start: gridStart, end: gridEnd });
 
       const weeks: Date[][] = [];
@@ -101,12 +132,32 @@ export function EntryHeatmap({
         today,
         start,
       };
-    }, [entries, goal]);
+    }, [entries, goal, fitWeeks]);
 
+  // Rest scrolled to the present whenever the frame is (re)built.
   useLayoutEffect(() => {
     const el = scrollRef.current;
-    if (el) el.scrollLeft = el.scrollWidth;
-  }, []);
+    if (el && weeks.length > 0) el.scrollLeft = el.scrollWidth;
+  }, [weeks]);
+
+  // Position the tooltip from its measured size: centered above the cell,
+  // clamped to the viewport so it never clips at the panel edges.
+  useLayoutEffect(() => {
+    const el = tooltipRef.current;
+    if (!el || !hovered) return;
+    const margin = 8;
+    const offset = 6;
+    const half = el.offsetWidth / 2;
+    const left = Math.min(
+      Math.max(hovered.x - half, margin),
+      window.innerWidth - el.offsetWidth - margin,
+    );
+    const flipBelow = hovered.y - el.offsetHeight - offset < margin;
+    el.style.left = `${left}px`;
+    el.style.top = flipBelow
+      ? `${hovered.y + CELL_PX + offset}px`
+      : `${hovered.y - el.offsetHeight - offset}px`;
+  }, [hovered]);
 
   const selectedEntry = selectedDay
     ? entriesByDay.get(selectedDay.toDateString())
@@ -144,7 +195,7 @@ export function EntryHeatmap({
         {/* biome-ignore lint/a11y/noStaticElementInteractions: handlers only dismiss the decorative hover tooltip */}
         <div
           ref={scrollRef}
-          className="overflow-x-auto pb-1"
+          className="min-w-0 grow overflow-x-auto pb-1"
           onMouseLeave={() => setHovered(null)}
           onScroll={() => setHovered(null)}
         >
@@ -162,14 +213,28 @@ export function EntryHeatmap({
                     {monthLabels[weekIndex]}
                   </span>
                   {week.map((day) => {
-                    const isOutside = day < start || day > today;
-                    if (isOutside) {
+                    if (day > today) {
                       return (
                         <span
                           key={day.toISOString()}
                           className="size-6"
                           aria-hidden="true"
                         />
+                      );
+                    }
+
+                    // Days before the goal existed: part of the frame, but
+                    // not loggable — a bare dot, so nothing box-shaped
+                    // invites a tap the way the filled cells do.
+                    if (day < start) {
+                      return (
+                        <span
+                          key={day.toISOString()}
+                          className="flex size-6 items-center justify-center"
+                          aria-hidden="true"
+                        >
+                          <span className="bg-border size-1.5 rounded-full" />
+                        </span>
                       );
                     }
 
@@ -284,8 +349,9 @@ export function EntryHeatmap({
         !isMobile &&
         createPortal(
           <div
-            className="bg-foreground text-background pointer-events-none fixed z-50 -translate-x-1/2 -translate-y-full rounded-md px-2 py-1 text-xs whitespace-nowrap"
-            style={{ left: hovered.x, top: hovered.y - 6 }}
+            ref={tooltipRef}
+            className="bg-foreground text-background pointer-events-none fixed z-50 rounded-md px-2 py-1 text-xs whitespace-nowrap"
+            style={{ left: -9999, top: -9999 }}
             aria-hidden="true"
           >
             <span className="font-medium">

@@ -113,8 +113,8 @@ msgstr "{email}(으)로 인증 메일을 보냈습니다."
 
 #. placeholder {0}: format(day, 'MMM d')
 #. placeholder {0}: selectedDay ? format(selectedDay, 'EEE, MMM d') : ''
-#: src/features/entry/components/EntryHeatmap.tsx:188
-#: src/features/entry/components/EntryHeatmap.tsx:259
+#: src/features/entry/components/EntryHeatmap.tsx:253
+#: src/features/entry/components/EntryHeatmap.tsx:324
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
@@ -387,7 +387,7 @@ msgstr "계정이 없으신가요?"
 msgid "done"
 msgstr "완료"
 
-#: src/features/entry/components/EntryHeatmap.tsx:121
+#: src/features/entry/components/EntryHeatmap.tsx:172
 #: src/features/goal/components/StatChips.tsx:35
 #: src/features/today/components/TodayItem.tsx:56
 msgid "Done"
@@ -438,7 +438,7 @@ msgstr "값을 입력해 주세요."
 msgid "Enter your credentials to continue"
 msgstr "계속하려면 로그인 정보를 입력해 주세요"
 
-#: src/features/entry/components/EntryHeatmap.tsx:127
+#: src/features/entry/components/EntryHeatmap.tsx:178
 msgid "Entry calendar"
 msgstr "기록 캘린더"
 
@@ -545,6 +545,11 @@ msgstr "목표 이름"
 msgid "Goal not found"
 msgstr "목표를 찾을 수 없습니다"
 
+#. placeholder {0}: format(start, 'MMM d')
+#: src/features/entry/components/EntryHeatmap.tsx:173
+#~ msgid "Goal started {0}"
+#~ msgstr ""
+
 #: src/app/metadata.tsx:33
 #: src/features/goal/routes/GoalsPage.tsx:31
 #: src/shared/components/common/BottomTabBar.tsx:42
@@ -643,7 +648,7 @@ msgstr "프랑스어 단어 1000개 익히기"
 #~ msgid "Learn 1000 French words"
 #~ msgstr "프랑스어 단어 1000개 익히기"
 
-#: src/features/entry/components/EntryHeatmap.tsx:225
+#: src/features/entry/components/EntryHeatmap.tsx:290
 #: src/features/today/components/TodayItem.tsx:173
 msgid "Less"
 msgstr "적게"
@@ -680,7 +685,7 @@ msgstr "필수 항목을 입력해 주세요"
 msgid "Monthly"
 msgstr "월별"
 
-#: src/features/entry/components/EntryHeatmap.tsx:232
+#: src/features/entry/components/EntryHeatmap.tsx:297
 #: src/features/today/components/TodayItem.tsx:185
 msgid "More"
 msgstr "많게"
@@ -735,7 +740,7 @@ msgstr "아직 완료된 목표가 없습니다."
 msgid "No entries yet — tap a day in the calendar to log one."
 msgstr "아직 기록이 없어요 — 캘린더에서 날짜를 눌러 기록해 보세요."
 
-#: src/features/entry/components/EntryHeatmap.tsx:119
+#: src/features/entry/components/EntryHeatmap.tsx:170
 msgid "No entry"
 msgstr "기록 없음"
 
