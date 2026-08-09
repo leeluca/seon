@@ -6,6 +6,8 @@ on:
     paths:
       - 'packages/server/**'
       - 'package.json'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/server-test.yml'
 jobs:
   test:
     name: Run Server Tests
@@ -38,7 +40,7 @@ jobs:
           DB_URL: ${{ vars.DB_URL }}
         id: test
         run: |
-          pnpm --filter server test | tee test-output.txt
+          pnpm --filter server validate:runtimes | tee test-output.txt
           status=${PIPESTATUS[0]}
           {
             echo "test_output<<EOF"

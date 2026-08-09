@@ -18,8 +18,9 @@ COPY packages/server/src ./packages/server/src
 COPY packages/server/tsconfig.json packages/server/tsconfig.build.json ./packages/server/
 COPY tsconfig.json .
 
-# Build the application
-RUN cd packages/server && pnpm build
+# Build only the Node fallback artifact; Worker validation/deployment is handled
+# by the Cloudflare workflow.
+RUN cd packages/server && pnpm build:node
 
 # Create a clean production deployment using pnpm deploy
 RUN pnpm deploy --legacy --filter=server --prod /prod/server
@@ -36,4 +37,4 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["node", "dist/entrypoints/node.js"]

@@ -40,10 +40,12 @@ export class ResendEmailSender implements EmailSender {
 export class CaptureEmailSender implements EmailSender {
   readonly messages: EmailMessage[] = [];
 
+  constructor(private readonly logMessages = false) {}
+
   async send(message: EmailMessage): Promise<void> {
     const captured = structuredClone(message);
     this.messages.push(captured);
-    if (process.env.NODE_ENV === 'development') {
+    if (this.logMessages) {
       console.info(
         [
           '[Seon captured auth email]',
@@ -64,14 +66,13 @@ export class NoopEmailSender implements EmailSender {
   async send(_message: EmailMessage): Promise<void> {}
 }
 
-export const capturedEmails = new CaptureEmailSender();
-
 export type EmailDeliveryMode = 'resend' | 'capture' | 'noop';
 
 export interface EmailSenderConfig {
   mode: EmailDeliveryMode;
   resendApiKey?: string;
   from?: string;
+  logCapturedEmails?: boolean;
 }
 
 export function createEmailSender(config: EmailSenderConfig): EmailSender {
@@ -85,7 +86,7 @@ export function createEmailSender(config: EmailSenderConfig): EmailSender {
       return new ResendEmailSender(config.resendApiKey, config.from);
     }
     case 'capture':
-      return capturedEmails;
+      return new CaptureEmailSender(config.logCapturedEmails);
     case 'noop':
       return new NoopEmailSender();
   }

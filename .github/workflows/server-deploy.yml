@@ -1,4 +1,4 @@
-name: Server Deploy
+name: Deploy Server Worker
 
 on:
   workflow_call:
@@ -6,11 +6,46 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Server
+    name: Deploy Server to Cloudflare Workers
     runs-on: ubuntu-latest
+    environment: Production – seon-server
     steps:
       - uses: actions/checkout@v7
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Validate both server runtimes
+        run: pnpm --filter server validate:runtimes
+
+      - name: Prepare production Worker configuration
+        run: pnpm --filter server prepare:worker-deploy
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+          BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
+          POWERSYNC_AUDIENCE: ${{ vars.POWERSYNC_AUDIENCE }}
+          SYNC_URL: ${{ vars.SYNC_URL }}
+          ORIGIN_URLS: ${{ vars.ORIGIN_URLS }}
+          AUTH_EMAIL_DELIVERY: ${{ vars.AUTH_EMAIL_DELIVERY }}
+          AUTH_EMAIL_FROM: ${{ vars.AUTH_EMAIL_FROM }}
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: packages/server
+          command: deploy --config .cache/wrangler.production.jsonc
+          packageManager: pnpm
+          secrets: |
+            BETTER_AUTH_SECRET
+            RESEND_API_KEY
+        env:
+          BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

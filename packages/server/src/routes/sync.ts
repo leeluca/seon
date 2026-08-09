@@ -1,29 +1,17 @@
 import { tbValidator } from '@hono/typebox-validator';
 import { count, eq } from 'drizzle-orm';
 import { Hono, type Context } from 'hono';
-import { env } from 'hono/adapter';
 import { HTTPException } from 'hono/http-exception';
 
-import { getAuth } from '../auth/runtime.js';
-import {
-  requireAuthSession,
-  type AuthSessionVariables,
-} from '../auth/session.js';
-import { getDb } from '../db/db.js';
+import { requireAuthSession } from '../auth/session.js';
 import { entry, goal } from '../db/schema.js';
-import type { Env } from '../env.js';
 import { applySyncTransaction } from '../services/sync.service.js';
+import type { AppRouteTypes } from '../types/context.js';
 import { uploadSyncTransactionSchema } from '../types/sync.js';
 
-const sync = new Hono<{
-  Bindings: Env;
-  Variables: AuthSessionVariables;
-}>();
+const sync = new Hono<AppRouteTypes>();
 
-type SyncContext = Context<{
-  Bindings: Env;
-  Variables: AuthSessionVariables;
-}>;
+type SyncContext = Context<AppRouteTypes>;
 
 export const WORKSPACE_OWNER_HEADER = 'X-Seon-Workspace-Owner-Id';
 
@@ -61,13 +49,13 @@ function requireWorkspaceAccount(c: SyncContext) {
 
 sync.get('/credentials', async (c) => {
   requireWorkspaceAccount(c);
-  const { token } = await getAuth(c).api.getToken({
+  const { token } = await c.get('services').auth.api.getToken({
     headers: c.req.raw.headers,
   });
 
   return c.json({
     result: true as const,
-    endpoint: env(c).SYNC_URL,
+    endpoint: c.get('appConfig').syncUrl,
     token,
     // Matches the JWT plugin's configured lifetime. Supplying this lets the
     // sync SDK refresh proactively without persisting the JWT in the browser.
@@ -77,7 +65,7 @@ sync.get('/credentials', async (c) => {
 
 sync.get('/workspace', async (c) => {
   const { user } = requireWorkspaceAccount(c);
-  const db = getDb(env(c).DB_URL);
+  const db = c.get('services').db;
   const [[goalResult], [entryResult]] = await Promise.all([
     db.select({ count: count() }).from(goal).where(eq(goal.userId, user.id)),
     db.select({ count: count() }).from(entry).where(eq(entry.userId, user.id)),
@@ -100,7 +88,7 @@ sync.post(
   async (c) => {
     const { user } = requireWorkspaceAccount(c);
     const result = await applySyncTransaction({
-      db: getDb(env(c).DB_URL),
+      db: c.get('services').db,
       user: { id: user.id, name: user.name, email: user.email },
       transaction: c.req.valid('json'),
     });

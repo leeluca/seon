@@ -1,10 +1,11 @@
 import { Hono } from 'hono';
 
-import { getAuth } from '../auth/runtime.js';
-import type { Env } from '../env.js';
+import type { AppRouteTypes } from '../types/context.js';
 
-const auth = new Hono<{ Bindings: Env }>();
+const auth = new Hono<AppRouteTypes>();
 
-auth.on(['GET', 'POST'], '/*', (c) => getAuth(c).handler(c.req.raw));
+auth.on(['GET', 'POST'], '/*', (c) =>
+  c.get('services').auth.handler(c.req.raw),
+);
 
 export default auth;

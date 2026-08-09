@@ -1,21 +1,29 @@
-import { Hono } from 'hono';
-import { env } from 'hono/adapter';
+import { Hono, type Context } from 'hono';
 import { cors } from 'hono/cors';
 
-import type { Env } from './env.js';
+import type { AppConfig } from './env.js';
 import auth from './routes/auth.js';
 import sync from './routes/sync.js';
+import type { AppRouteTypes, RequestServices } from './types/context.js';
 
-export function createApp() {
-  const app = new Hono<{ Bindings: Env }>();
+type AppContext = Context<AppRouteTypes>;
+
+export interface AppDependencies {
+  getConfig(context: AppContext): AppConfig;
+  getRequestServices(
+    context: AppContext,
+  ): RequestServices | Promise<RequestServices>;
+}
+
+export function createApp({ getConfig, getRequestServices }: AppDependencies) {
+  const app = new Hono<AppRouteTypes>();
 
   app.use('/api/*', async (c, next) => {
-    const allowedOrigins = (env(c).ORIGIN_URLS ?? '')
-      .split(',')
-      .map((origin) => origin.trim())
-      .filter(Boolean);
-    const corsMiddleware = cors({
-      origin: allowedOrigins,
+    const appConfig = getConfig(c);
+    c.set('appConfig', appConfig);
+
+    return cors({
+      origin: appConfig.allowedOrigins,
       allowHeaders: [
         'Origin',
         'X-Requested-With',
@@ -26,9 +34,12 @@ export function createApp() {
       allowMethods: ['OPTIONS', 'HEAD', 'GET', 'POST'],
       maxAge: 7200,
       credentials: true,
-    });
+    })(c, next);
+  });
 
-    return corsMiddleware(c, next);
+  app.use('/api/*', async (c, next) => {
+    c.set('services', await getRequestServices(c));
+    await next();
   });
 
   app.get('/ping', (c) => c.text('pong'));

@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { AppRouteTypes } from '../../../src/types/context.js';
 
 vi.mock('../../../src/auth/runtime.js', () => ({
   getCurrentSession: vi.fn(),
@@ -10,7 +11,7 @@ const { getCurrentSession } = await import('../../../src/auth/runtime.js');
 const { requireSession } = await import('../../../src/auth/session.js');
 
 const getCurrentSessionMock = vi.mocked(getCurrentSession);
-const context = {} as Context;
+const context = {} as Context<AppRouteTypes>;
 
 beforeEach(() => {
   getCurrentSessionMock.mockReset();

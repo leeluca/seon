@@ -1,39 +1,19 @@
 import { Hono } from 'hono';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { getSessionMock } = vi.hoisted(() => ({
-  getSessionMock: vi.fn(),
-}));
+import type { Auth } from '../../../src/auth/auth.js';
+import { getCurrentSession } from '../../../src/auth/runtime.js';
+import type { Database } from '../../../src/db/db.js';
+import type { AppRouteTypes } from '../../../src/types/context.js';
 
-vi.mock('../../../src/auth/auth.js', () => ({
-  createAuth: () => ({ api: { getSession: getSessionMock } }),
-}));
-
-const { getCurrentSession, resetAuthCache } = await import(
-  '../../../src/auth/runtime.js'
-);
+const getSessionMock = vi.fn();
 
 beforeEach(() => {
-  vi.stubEnv('DB_URL', 'postgres://test:test@127.0.0.1:1/seon_test');
-  vi.stubEnv(
-    'BETTER_AUTH_SECRET',
-    'test-secret-that-is-at-least-32-characters',
-  );
-  vi.stubEnv('BETTER_AUTH_URL', 'https://seon.example');
-  vi.stubEnv('POWERSYNC_AUDIENCE', 'powersync-test');
-  vi.stubEnv('SYNC_URL', 'https://powersync.example');
-  vi.stubEnv('ORIGIN_URLS', 'https://seon.example');
-  vi.stubEnv('AUTH_EMAIL_DELIVERY', 'noop');
   getSessionMock.mockReset();
 });
 
-afterEach(() => {
-  resetAuthCache();
-  vi.unstubAllEnvs();
-});
-
 describe('getCurrentSession', () => {
-  it('forwards refreshed session cookies to the protected route response', async () => {
+  it('uses the request services and forwards refreshed session cookies', async () => {
     getSessionMock.mockResolvedValue({
       headers: new Headers({
         'set-cookie': 'seon.session_data=refreshed; Path=/; HttpOnly',
@@ -44,7 +24,16 @@ describe('getCurrentSession', () => {
       },
     });
 
-    const app = new Hono();
+    const app = new Hono<AppRouteTypes>();
+    app.use('*', async (c, next) => {
+      c.set('services', {
+        auth: {
+          api: { getSession: getSessionMock },
+        } as unknown as Auth,
+        db: {} as Database,
+      });
+      await next();
+    });
     app.get('/', async (c) => {
       const current = await getCurrentSession(c, { fresh: true });
       return c.json({ userId: current?.user.id });

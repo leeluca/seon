@@ -1,34 +1,39 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { resetAuthCache } from '../../../src/auth/runtime.js';
 import { createApp } from '../../../src/app.js';
+import type { Auth } from '../../../src/auth/auth.js';
+import type { Database } from '../../../src/db/db.js';
+import type { AppConfig } from '../../../src/env.js';
 
-beforeEach(() => {
-  vi.stubEnv('DB_URL', 'postgres://test:test@127.0.0.1:1/seon_test');
-  vi.stubEnv(
-    'BETTER_AUTH_SECRET',
-    'test-secret-that-is-at-least-32-characters',
-  );
-  vi.stubEnv('BETTER_AUTH_URL', 'https://seon.example');
-  vi.stubEnv('POWERSYNC_AUDIENCE', 'powersync-test');
-  vi.stubEnv('SYNC_URL', 'https://powersync.example');
-  vi.stubEnv('ORIGIN_URLS', 'https://seon.example');
-  vi.stubEnv('AUTH_EMAIL_DELIVERY', 'noop');
-});
-
-afterEach(() => {
-  resetAuthCache();
-  vi.unstubAllEnvs();
-});
+const appConfig: AppConfig = {
+  authSecret: 'test-secret-that-is-at-least-32-characters',
+  authBaseUrl: 'https://seon.example',
+  allowedOrigins: ['https://seon.example'],
+  trustedOrigins: ['https://seon.example'],
+  powerSyncAudience: 'powersync-test',
+  syncUrl: 'https://powersync.example',
+  secureCookies: true,
+  emailDelivery: 'noop',
+};
 
 describe('Better Auth Hono routes', () => {
-  it('mounts the Better Auth handler below /api/auth', async () => {
-    const response = await createApp().request(
+  it('mounts the injected Better Auth handler below /api/auth', async () => {
+    const handler = vi.fn(() => Response.json(null));
+    const app = createApp({
+      getConfig: () => appConfig,
+      getRequestServices: () => ({
+        auth: { handler } as unknown as Auth,
+        db: {} as Database,
+      }),
+    });
+
+    const response = await app.request(
       'https://seon.example/api/auth/get-session',
       { headers: { origin: 'https://seon.example' } },
     );
 
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toBeNull();
+    expect(handler).toHaveBeenCalledOnce();
   });
 });

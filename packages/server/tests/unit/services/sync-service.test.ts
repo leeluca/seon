@@ -3,7 +3,7 @@ import { and, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/pglite';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import type { getDb } from '../../../src/db/db.js';
+import type { Database } from '../../../src/db/db.js';
 import * as schema from '../../../src/db/schema.js';
 import {
   applySyncTransaction,
@@ -20,7 +20,7 @@ const timestamp = '2026-07-20T00:00:00.000Z';
 
 const client = new PGlite();
 const pgliteDb = drizzle(client, { schema });
-const db = pgliteDb as unknown as ReturnType<typeof getDb>;
+const db = pgliteDb as unknown as Database;
 
 function goalPut(transactionId: string): UploadSyncTransaction {
   return {

@@ -1,16 +1,11 @@
 import { PGlite } from '@electric-sql/pglite';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/pglite';
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
-
-const dbMocks = vi.hoisted(() => ({
-  getDb: vi.fn(),
-}));
-
-vi.mock('../../../src/db/db.js', () => dbMocks);
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 import { createAuth, type Auth } from '../../../src/auth/auth.js';
 import { CaptureEmailSender } from '../../../src/auth/email.js';
+import type { Database } from '../../../src/db/db.js';
 import * as relations from '../../../src/db/relations.js';
 import * as schema from '../../../src/db/schema.js';
 
@@ -97,10 +92,8 @@ beforeAll(async () => {
     );
   `);
 
-  dbMocks.getDb.mockReturnValue(testDb);
   auth = createAuth(
     {
-      databaseUrl: 'pglite://auth-flow',
       secret: 'test-secret-that-is-at-least-32-characters',
       baseUrl: origin,
       trustedOrigins: [origin],
@@ -108,7 +101,7 @@ beforeAll(async () => {
       secureCookies: true,
       emailDelivery: 'capture',
     },
-    { emailSender },
+    { db: testDb as unknown as Database, emailSender },
   );
 });
 
@@ -158,7 +151,7 @@ describe('Better Auth user flow', () => {
       },
     });
 
-    // In production the Pages proxy calls the Fly origin while Better Auth's
+    // The Pages proxy calls a runtime-specific origin while Better Auth's
     // public base URL remains the browser-visible web origin.
     const proxiedSession = await auth.handler(
       new Request('https://seon-server.fly.dev/api/auth/get-session', {

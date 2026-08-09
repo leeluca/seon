@@ -1,9 +1,10 @@
-import { betterAuth, type Auth as BetterAuthInstance } from 'better-auth';
+import type { Auth as BetterAuthInstance } from 'better-auth';
+import { betterAuth } from 'better-auth/minimal';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { jwt } from 'better-auth/plugins';
 import { v7 as uuidv7 } from 'uuid';
 
-import { getDb } from '../db/db.js';
+import type { Database } from '../db/db.js';
 import * as schema from '../db/schema.js';
 import {
   createEmailSender,
@@ -14,7 +15,6 @@ import {
 const DAY = 60 * 60 * 24;
 
 export interface AuthConfig {
-  databaseUrl: string;
   secret: string;
   baseUrl: string;
   trustedOrigins: string[];
@@ -26,8 +26,12 @@ export interface AuthConfig {
 }
 
 export interface AuthDependencies {
+  db: Database;
   emailSender?: EmailSender;
+  backgroundTaskHandler?: BackgroundTaskHandler;
 }
+
+export type BackgroundTaskHandler = (promise: Promise<unknown>) => void;
 
 interface JwtApi {
   getToken(input: { headers: Headers }): Promise<{ token: string }>;
@@ -44,21 +48,18 @@ function emailHtml(title: string, body: string, url: string): string {
 function deliverAuthEmail(
   emailSender: EmailSender,
   message: Parameters<EmailSender['send']>[0],
-): void {
-  // Do not make auth response timing/status depend on whether an address has a
-  // mailbox or whether the provider is temporarily unavailable. On Fly.io the
-  // outstanding fetch continues on the long-lived Node process.
-  void emailSender.send(message).catch(() => {
+): Promise<void> {
+  return emailSender.send(message).catch(() => {
     console.error('Failed to deliver an authentication email');
   });
 }
 
 async function syncProfile(
-  databaseUrl: string,
+  db: Database,
   authUser: { id: string; name: string; email: string },
 ): Promise<void> {
   try {
-    await getDb(databaseUrl)
+    await db
       .insert(schema.profile)
       .values({
         userId: authUser.id,
@@ -79,7 +80,7 @@ async function syncProfile(
 
 export function createAuth(
   config: AuthConfig,
-  dependencies: AuthDependencies = {},
+  dependencies: AuthDependencies,
 ): Auth {
   const emailSender =
     dependencies.emailSender ??
@@ -96,7 +97,7 @@ export function createAuth(
     basePath: '/api/auth',
     disabledPaths: ['/token'],
     trustedOrigins: config.trustedOrigins,
-    database: drizzleAdapter(getDb(config.databaseUrl), {
+    database: drizzleAdapter(dependencies.db, {
       provider: 'pg',
       schema,
       transaction: true,
@@ -105,6 +106,13 @@ export function createAuth(
       database: {
         generateId: () => uuidv7(),
       },
+      ...(dependencies.backgroundTaskHandler
+        ? {
+            backgroundTasks: {
+              handler: dependencies.backgroundTaskHandler,
+            },
+          }
+        : {}),
       cookiePrefix: 'seon',
       defaultCookieAttributes: {
         httpOnly: true,
@@ -129,7 +137,7 @@ export function createAuth(
       revokeSessionsOnPasswordReset: true,
       resetPasswordTokenExpiresIn: 60 * 60,
       sendResetPassword: async ({ user, url }) => {
-        deliverAuthEmail(emailSender, {
+        return deliverAuthEmail(emailSender, {
           to: user.email,
           subject: 'Reset your Seon password',
           text: `Reset your Seon password: ${url}`,
@@ -146,7 +154,7 @@ export function createAuth(
       sendOnSignIn: true,
       sendOnSignUp: true,
       sendVerificationEmail: async ({ user, url }) => {
-        deliverAuthEmail(emailSender, {
+        return deliverAuthEmail(emailSender, {
           to: user.email,
           subject: 'Verify your Seon email',
           text: `Verify your email for Seon: ${url}`,
@@ -162,12 +170,12 @@ export function createAuth(
       user: {
         create: {
           after: async (createdUser) => {
-            await syncProfile(config.databaseUrl, createdUser);
+            await syncProfile(dependencies.db, createdUser);
           },
         },
         update: {
           after: async (updatedUser) => {
-            await syncProfile(config.databaseUrl, updatedUser);
+            await syncProfile(dependencies.db, updatedUser);
           },
         },
       },

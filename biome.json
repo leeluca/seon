@@ -15,7 +15,8 @@
       "!**/messages.ts",
       "!**/migrations/**/*",
       "!**/public/favicon.svg",
-      "!**/tailwind.css"
+      "!**/tailwind.css",
+      "!**/worker-configuration.d.ts"
     ]
   },
   "formatter": {
