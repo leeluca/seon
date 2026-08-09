@@ -22,6 +22,7 @@ import { Route as VerifyEmailIndexRouteImport } from './routes/verify-email/inde
 import { Route as MainGoalsNewRouteImport } from './routes/_main/goals.new'
 
 const MainGoalsLazyRouteImport = createFileRoute('/_main/goals')()
+const MainTodayLazyRouteImport = createFileRoute('/_main/today')()
 const MainGoalsIdLazyRouteImport = createFileRoute('/_main/goals/$id')()
 
 const IndexRoute = IndexRouteImport.update({
@@ -38,6 +39,11 @@ const MainGoalsLazyRoute = MainGoalsLazyRouteImport.update({
   path: '/goals',
   getParentRoute: () => MainRouteRoute,
 } as any).lazy(() => import('./routes/_main/goals.lazy').then((d) => d.Route))
+const MainTodayLazyRoute = MainTodayLazyRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => MainRouteRoute,
+} as any).lazy(() => import('./routes/_main/today.lazy').then((d) => d.Route))
 const DemoIndexRoute = DemoIndexRouteImport.update({
   id: '/demo/',
   path: '/demo/',
@@ -90,6 +96,7 @@ const MainGoalsNewRoute = MainGoalsNewRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/today': typeof MainTodayLazyRoute
   '/demo/': typeof DemoIndexRoute
   '/forgot-password/': typeof ForgotPasswordIndexRoute
   '/reset-password/': typeof ResetPasswordIndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/goals': typeof MainGoalsLazyRouteWithChildren
+  '/today': typeof MainTodayLazyRoute
   '/demo': typeof DemoIndexRoute
   '/forgot-password': typeof ForgotPasswordIndexRoute
   '/reset-password': typeof ResetPasswordIndexRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_main': typeof MainRouteRouteWithChildren
   '/_main/goals': typeof MainGoalsLazyRouteWithChildren
+  '/_main/today': typeof MainTodayLazyRoute
   '/demo/': typeof DemoIndexRoute
   '/forgot-password/': typeof ForgotPasswordIndexRoute
   '/reset-password/': typeof ResetPasswordIndexRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/goals'
+    | '/today'
     | '/demo/'
     | '/forgot-password/'
     | '/reset-password/'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/goals'
+    | '/today'
     | '/demo'
     | '/forgot-password'
     | '/reset-password'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_main'
     | '/_main/goals'
+    | '/_main/today'
     | '/demo/'
     | '/forgot-password/'
     | '/reset-password/'
@@ -197,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/goals'
       fullPath: '/goals'
       preLoaderRoute: typeof MainGoalsLazyRouteImport
+      parentRoute: typeof MainRouteRoute
+    }
+    '/_main/today': {
+      id: '/_main/today'
+      path: '/today'
+      fullPath: '/today'
+      preLoaderRoute: typeof MainTodayLazyRouteImport
       parentRoute: typeof MainRouteRoute
     }
     '/demo/': {
@@ -274,10 +293,12 @@ const MainGoalsLazyRouteWithChildren = MainGoalsLazyRoute._addFileChildren(
 
 interface MainRouteRouteChildren {
   MainGoalsLazyRoute: typeof MainGoalsLazyRouteWithChildren
+  MainTodayLazyRoute: typeof MainTodayLazyRoute
 }
 
 const MainRouteRouteChildren: MainRouteRouteChildren = {
   MainGoalsLazyRoute: MainGoalsLazyRouteWithChildren,
+  MainTodayLazyRoute: MainTodayLazyRoute,
 }
 
 const MainRouteRouteWithChildren = MainRouteRoute._addFileChildren(

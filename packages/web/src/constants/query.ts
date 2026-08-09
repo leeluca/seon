@@ -116,8 +116,29 @@ export const GOALS: GoalQueries = {
   },
 };
 
+type EntryTodayQuery = {
+  queryKey: readonly ['entry', 'today'];
+  query: CompilableQuery<Database['entry']>;
+};
+
 export const ENTRIES = {
   all: { queryKey: ['entry'] },
+  /** Watched (live) query of all entries recorded today, across goals. */
+  todayWatched: (): EntryTodayQuery => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    return {
+      queryKey: ['entry', 'today'] as const,
+      query: db
+        .selectFrom('entry')
+        .selectAll()
+        .where('date', '>=', start.toISOString())
+        .where('date', '<=', end.toISOString()),
+    };
+  },
   goalId: (goalId: string) => ({
     queryKey: ['entry', { goalId }],
     queryFn: () =>

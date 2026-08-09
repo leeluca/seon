@@ -13,6 +13,44 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#. placeholder {0}: status.days
+#: src/features/goal/components/StatChips.tsx:47
+#: src/features/goal/model/paceStatusInfo.ts:16
+msgid "{0, plural, one {# day ahead} other {# days ahead}}"
+msgstr "{0, plural, one {#일 앞섬} other {#일 앞섬}}"
+
+#. placeholder {0}: status.days
+#: src/features/goal/components/StatChips.tsx:53
+#: src/features/goal/model/paceStatusInfo.ts:24
+msgid "{0, plural, one {# day behind} other {# days behind}}"
+msgstr "{0, plural, one {#일 뒤처짐} other {#일 뒤처짐}}"
+
+#. placeholder {0}: metrics.streak
+#: src/features/goal/components/GoalDetailStats.tsx:82
+#: src/features/today/components/TodayItem.tsx:68
+msgid "{0, plural, one {#-day streak} other {#-day streak}}"
+msgstr "{0, plural, one {#일 연속} other {#일 연속}}"
+
+#. placeholder {0}: todayEntry?.value ?? 0
+#: src/features/today/components/TodayItem.tsx:134
+msgid "{0} logged"
+msgstr "{0} 기록함"
+
+#. placeholder {0}: consistency.done
+#. placeholder {0}: metrics.consistency.done
+#. placeholder {1}: consistency.windowDays
+#. placeholder {1}: metrics.consistency.windowDays
+#: src/features/goal/components/GoalDetailStats.tsx:73
+#: src/features/goal/components/HabitRow.tsx:99
+msgid "{0} of last {1}"
+msgstr "최근 {1}일 중 {0}일"
+
+#. placeholder {0}: metrics.consistency.done
+#. placeholder {1}: metrics.consistency.windowDays
+#: src/features/today/components/TodayItem.tsx:61
+msgid "{0} of last {1} days"
+msgstr "최근 {1}일 중 {0}일"
+
 #. placeholder {0}: averageNeededPerDay.toFixed(1)
 #. placeholder {0}: averagePerDay.toFixed(1)
 #: src/features/goal/components/GoalStatusSummary.tsx:160
@@ -20,13 +58,27 @@ msgstr ""
 msgid "{0}/day"
 msgstr "{0}개/일"
 
+#: src/features/goal/components/HabitRow.tsx:71
+msgid "{allTime, plural, one {# day all-time} other {# days all-time}}"
+msgstr "{allTime, plural, one {누적 #일} other {누적 #일}}"
+
+#. placeholder {0}: goal.target
+#: src/features/today/components/TodayItem.tsx:137
+msgid "{currentValue} of {0}"
+msgstr "{currentValue} / {0}"
+
 #: src/features/goal/components/GoalCard.tsx:180
-msgid "{daysRemaining, plural, one {# day left} other {# days left}}"
-msgstr ""
+#~ msgid "{daysRemaining, plural, one {# day left} other {# days left}}"
+#~ msgstr ""
 
 #: src/features/goal/components/GoalStatusSummary.tsx:152
 msgid "{daysRemaining, plural, one {# day} other {# days}}"
 msgstr "{daysRemaining, plural, one {#일} other {#일}}"
+
+#. placeholder {0}: goals.length
+#: src/features/today/routes/TodayPage.tsx:52
+msgid "{doneCount} of {0}"
+msgstr "{doneCount} / {0}"
 
 #. placeholder {0}: goal.target
 #: src/features/goal/components/GoalStatusSummary.tsx:142
@@ -37,55 +89,85 @@ msgstr "{entriesSum} / {0}개"
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName}는 {max}자를 초과할 수 없습니다."
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:458
+#: src/features/goal/components/GoalCard.tsx:52
+msgid "{suggested}/day finishes on time"
+msgstr "하루 {suggested}씩이면 제때 끝나요"
+
+#. placeholder {0}: metrics.suggestedToday
+#: src/features/today/components/TodayItem.tsx:150
+msgid "<0>{0}</0> to stay on pace"
+msgstr "<0>{0}</0>이면 페이스 유지"
+
+#. placeholder {0}: metrics.suggestedToday
+#: src/features/goal/components/GoalDetailStats.tsx:133
+msgid "<0>{0}</0>/day finishes on time"
+msgstr "하루 <0>{0}</0>씩이면 제때 끝나요"
+
+#: src/features/goal/components/GoalLineGraph/logic.ts:511
 msgid "🎉 Goal achieved!"
 msgstr "🎉 목표 달성!"
 
-#. placeholder {0}: format(day, 'do')
-#: src/features/entry/components/CalendarHeatmap.tsx:473
-#: src/features/entry/components/CalendarHeatmap.tsx:503
+#: src/features/auth/routes/VerifyEmailPage.tsx:80
+msgid "A verification message was sent to {email}."
+msgstr "{email}(으)로 인증 메일을 보냈습니다."
+
+#. placeholder {0}: format(day, 'MMM d')
+#. placeholder {0}: selectedDay ? format(selectedDay, 'EEE, MMM d') : ''
+#: src/features/entry/components/EntryHeatmap.tsx:253
+#: src/features/entry/components/EntryHeatmap.tsx:324
 msgid "Add entry for {0}"
 msgstr "{0}에 기록 추가"
 
-#. placeholder {0}: goal?.title
-#: src/features/entry/components/CalendarHeatmap.tsx:565
+#. placeholder {0}: goal.title
+#: src/features/goal/components/GoalCard.tsx:132
 msgid "Add entry for <0>{0}</0>"
 msgstr "<0>{0}</0>에 기록 추가"
 
-#: src/features/goal/routes/GoalNewPage.tsx:68
-#: src/features/goal/routes/GoalNewPage.tsx:108
-#: src/features/goal/routes/GoalsPage.tsx:63
-#: src/features/goal/routes/GoalsPage.tsx:70
+#: src/features/goal/routes/GoalNewPage.tsx:65
+#: src/features/goal/routes/GoalNewPage.tsx:105
 msgid "Add new goal"
 msgstr "새로운 목표 추가"
 
-#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:124
+#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:149
 msgid "Add your first entry to start"
 msgstr "아직 목표를 진행하지 않았습니다."
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:403
+#: src/features/today/components/TodayItem.tsx:209
+msgid "Adjust"
+msgstr "조정"
+
+#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:48
+#: src/features/goal/components/GoalLineGraph/logic.ts:450
 msgid "After target date"
 msgstr "목표일 이후"
 
 #: src/features/goal/components/GoalCard.tsx:79
-msgid "Ahead of schedule!"
-msgstr ""
+#~ msgid "Ahead of schedule!"
+#~ msgstr ""
+
+#: src/features/today/routes/TodayPage.tsx:60
+msgid "All goals"
+msgstr "모든 목표"
 
 #: src/features/goal/components/GoalFilter.tsx:54
 msgid "All Goals"
 msgstr "모든 목표"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:88
+#: src/features/auth/components/authForm/SignUpForm.tsx:89
 msgid "Already have an account?"
 msgstr "이미 계정이 있으신가요?"
 
-#: src/features/entry/components/CreateEntryForm.tsx:66
+#: src/features/entry/components/CreateEntryForm.tsx:64
 msgid "Amount"
 msgstr "개수"
 
-#: src/shared/components/common/ErrorFallback.tsx:116
+#: src/shared/components/common/ErrorFallback.tsx:109
 msgid "An unexpected error occurred."
 msgstr "예상치 못한 오류가 발생했습니다."
+
+#: src/features/entry/components/EntryHistory.tsx:69
+msgid "and {remaining} earlier"
+msgstr "그 외 {remaining}개"
 
 #: src/features/goal/components/GoalControls.tsx:96
 msgid "Archive goal"
@@ -111,33 +193,52 @@ msgstr "정말로 <0>{title}</0>를 삭제하시겠어요?"
 msgid "Average Pace"
 msgstr "평균 진행 속도"
 
+#: src/features/auth/components/AuthPageShell.tsx:33
 #: src/features/auth/routes/SignInPage.tsx:23
 #: src/features/auth/routes/SignUpPage.tsx:22
 msgid "Back"
 msgstr "뒤로"
 
 #: src/features/goal/components/GoalCard.tsx:223
-msgid "Before goal's start date"
-msgstr "목표 시작 날짜 전"
+#~ msgid "Before goal's start date"
+#~ msgstr "목표 시작 날짜 전"
 
 #: src/features/goal/components/GoalCard.tsx:67
-msgid "Behind schedule!"
-msgstr ""
+#~ msgid "Behind schedule!"
+#~ msgstr ""
 
-#: src/features/goal/components/goalForm/EditGoalForm.tsx:109
-#: src/features/goal/routes/GoalNewPage.tsx:89
+#. placeholder {0}: formatDay(goal.targetDate, new Date())
+#: src/features/goal/components/GoalCard.tsx:106
+#: src/features/goal/components/GoalDetailStats.tsx:113
+msgid "by {0}"
+msgstr "{0}까지"
+
+#: src/features/goal/components/goalForm/EditGoalForm.tsx:64
+#: src/features/goal/routes/GoalNewPage.tsx:86
 msgid "Cancel"
 msgstr "취소"
 
 #: src/features/goal/components/goalForm/EditGoalForm.tsx:99
-msgid "Cancel editing"
-msgstr "수정 취소"
+#~ msgid "Cancel editing"
+#~ msgstr "수정 취소"
 
-#: src/shared/components/common/StatusMenu.tsx:189
+#: src/shared/components/common/StatusMenu.tsx:188
 msgid "Check sync status"
 msgstr "동기화 상태 확인"
 
-#: src/shared/components/common/StatusMenu.tsx:236
+#: src/features/auth/components/authForm/SignUpForm.tsx:28
+msgid "Check your email to verify your account."
+msgstr "계정 인증을 위해 이메일을 확인해 주세요."
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:51
+msgid "Check your inbox"
+msgstr "받은편지함을 확인해 주세요"
+
+#: src/features/auth/routes/ForgotPasswordPage.tsx:49
+msgid "Check your inbox. For privacy, the same confirmation is shown for every email address."
+msgstr "받은편지함을 확인해 주세요. 개인정보 보호를 위해 모든 이메일 주소에 동일한 안내가 표시됩니다."
+
+#: src/shared/components/common/StatusMenu.tsx:235
 msgid "Check your internet connection and try again."
 msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 
@@ -145,9 +246,13 @@ msgstr "인터넷 연결을 확인하고 다시 시도해 주세요."
 msgid "Choose a name for your goal."
 msgstr "목표의 이름을 정해주세요."
 
-#: src/features/entry/components/CreateEntryForm.tsx:149
+#: src/features/auth/routes/ResetPasswordPage.tsx:59
+msgid "Choose a new password"
+msgstr "새 비밀번호를 설정하세요"
+
+#: src/features/entry/components/CreateEntryForm.tsx:146
 msgid "Choose yes or no."
-msgstr ""
+msgstr "예 또는 아니요를 선택해 주세요."
 
 #: src/features/goal/components/GoalFilter.tsx:58
 msgid "Completed"
@@ -157,17 +262,37 @@ msgstr "완료됨"
 msgid "Completed!"
 msgstr "목표 달성!"
 
-#: src/shared/components/common/StatusMenu.tsx:244
+#: src/features/auth/routes/ResetPasswordPage.tsx:92
+msgid "Confirm password"
+msgstr "비밀번호 확인"
+
+#: src/shared/components/common/StatusMenu.tsx:243
 msgid "Connecting to sync…"
 msgstr "동기화 연결 중…"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:74
+msgid "Continue to Seon"
+msgstr "Seon 시작하기"
 
 #: src/shared/components/common/StatusMenu.tsx:75
 msgid "Could not connect with the sync service. Try again later."
 msgstr "동기화 서비스에 연결할 수 없습니다. 나중에 다시 시도해주세요."
 
+#: src/features/auth/routes/ForgotPasswordPage.tsx:89
+msgid "Couldn't request a reset link"
+msgstr "재설정 링크를 요청하지 못했습니다"
+
+#: src/features/auth/routes/ResetPasswordPage.tsx:109
+msgid "Couldn't reset your password"
+msgstr "비밀번호를 재설정하지 못했습니다"
+
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:21
 msgid "Count"
 msgstr "횟수"
+
+#: src/features/today/routes/TodayPage.tsx:100
+msgid "Create a goal"
+msgstr "목표 만들기"
 
 #: src/features/goal/components/NoGoalsPlaceholder.tsx:20
 msgid "Create a new goal or change the filter!"
@@ -181,8 +306,8 @@ msgstr "새 목표를 만들거나 필터를 변경해 보세요!"
 msgid "Create and track personal goals"
 msgstr "개인 목표 생성 및 추적"
 
-#: src/features/goal/routes/GoalNewPage.tsx:86
-#: src/features/goal/routes/GoalNewPage.tsx:127
+#: src/features/goal/routes/GoalNewPage.tsx:83
+#: src/features/goal/routes/GoalNewPage.tsx:124
 msgid "Create goal"
 msgstr "목표 만들기"
 
@@ -194,11 +319,16 @@ msgstr "계정 만들기"
 msgid "Create your first goal!"
 msgstr "첫 번째 목표를 만들어 보세요!"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:42
+#: src/features/goal/components/GoalLineGraph/logic.ts:72
 msgid "Daily"
 msgstr "일별"
 
-#: src/features/entry/components/CreateEntryForm.tsx:134
+#: src/features/goal/components/GoalsContent.tsx:113
+#: src/features/goal/components/GoalsContent.tsx:115
+msgid "Daily practices"
+msgstr "매일의 습관"
+
+#: src/features/entry/components/CreateEntryForm.tsx:131
 msgid "Date"
 msgstr "날짜"
 
@@ -211,6 +341,10 @@ msgstr "일"
 #~ msgid "days"
 #~ msgstr "일"
 
+#: src/features/goal/components/GoalDetailStats.tsx:69
+msgid "days all-time"
+msgstr "일 누적"
+
 #: src/shared/components/ui/number-input.tsx:276
 msgid "Decrease"
 msgstr "값 내리기"
@@ -219,8 +353,8 @@ msgstr "값 내리기"
 msgid "Delete"
 msgstr "삭제"
 
-#: src/features/entry/components/CreateEntryForm.tsx:210
-#: src/features/entry/components/CreateEntryForm.tsx:281
+#: src/features/entry/components/CreateEntryForm.tsx:207
+#: src/features/entry/components/CreateEntryForm.tsx:278
 msgid "Delete entry"
 msgstr "기록 삭제"
 
@@ -241,13 +375,27 @@ msgstr "삭제된 목표: {title}"
 msgid "Demo Mode"
 msgstr "데모 모드"
 
-#: src/features/entry/components/CreateEntryForm.tsx:68
+#: src/features/entry/components/CreateEntryForm.tsx:66
 msgid "Did you achieve it?"
 msgstr "달성하셨나요?"
 
-#: src/features/auth/components/authForm/SignInForm.tsx:71
+#: src/features/auth/components/authForm/SignInForm.tsx:77
 msgid "Don't have an account?"
 msgstr "계정이 없으신가요?"
+
+#: src/features/goal/model/paceStatusInfo.ts:11
+msgid "done"
+msgstr "완료"
+
+#: src/features/entry/components/EntryHeatmap.tsx:172
+#: src/features/goal/components/StatChips.tsx:35
+#: src/features/today/components/TodayItem.tsx:56
+msgid "Done"
+msgstr "완료"
+
+#: src/features/goal/components/GoalDetailStats.tsx:91
+msgid "done today"
+msgstr "오늘 완료"
 
 #: src/features/goal/components/GoalSorting.tsx:76
 msgid "Due later"
@@ -261,7 +409,7 @@ msgstr "목표일 가까운 순"
 msgid "e.g. words"
 msgstr "예: 단어"
 
-#: src/features/goal/components/goalForm/EditGoalForm.tsx:68
+#: src/features/goal/components/GoalDetailPanel.tsx:92
 msgid "Edit goal"
 msgstr "목표 수정"
 
@@ -270,6 +418,7 @@ msgid "eg. 'Learn 1000 French words'"
 msgstr "예: '프랑스어 단어 1000개 익히기'"
 
 #: src/features/auth/components/authForm/AuthCredentialFields.tsx:43
+#: src/features/auth/routes/ForgotPasswordPage.tsx:62
 msgid "Email"
 msgstr "이메일"
 
@@ -277,15 +426,23 @@ msgstr "이메일"
 msgid "Email is required"
 msgstr "이메일을 입력해 주세요"
 
-#: src/features/entry/components/CreateEntryForm.tsx:224
+#: src/features/auth/routes/VerifyEmailPage.tsx:44
+msgid "Email verification"
+msgstr "이메일 인증"
+
+#: src/features/entry/components/CreateEntryForm.tsx:221
 msgid "Enter a value."
-msgstr ""
+msgstr "값을 입력해 주세요."
 
 #: src/features/auth/routes/SignInPage.tsx:41
 msgid "Enter your credentials to continue"
 msgstr "계속하려면 로그인 정보를 입력해 주세요"
 
-#: src/shared/components/common/StatusMenu.tsx:247
+#: src/features/entry/components/EntryHeatmap.tsx:178
+msgid "Entry calendar"
+msgstr "기록 캘린더"
+
+#: src/shared/components/common/StatusMenu.tsx:246
 msgid "Establishing a connection. This may take a moment."
 msgstr "연결을 설정하고 있습니다. 잠시만 기다려 주세요."
 
@@ -297,11 +454,11 @@ msgstr "예상 완료일"
 msgid "Experience Seon Goals without creating an account"
 msgstr "계정 생성 없이 Seon 목표 관리 체험하기"
 
-#: src/features/entry/hooks/useEntryMutations.ts:42
+#: src/features/entry/hooks/useEntryMutations.ts:37
 msgid "Failed to add entry"
 msgstr "기록 추가 실패"
 
-#: src/features/goal/hooks/useGoalForm.ts:67
+#: src/features/goal/hooks/useGoalForm.ts:66
 msgid "Failed to add goal"
 msgstr "목표 추가 실패"
 
@@ -313,15 +470,19 @@ msgstr "{title} 보관에 실패했습니다"
 msgid "Failed to delete {title}"
 msgstr "{title} 삭제에 실패했습니다"
 
-#: src/features/entry/hooks/useEntryMutations.ts:51
+#: src/features/entry/hooks/useEntryMutations.ts:46
 msgid "Failed to delete entry"
 msgstr "기록 삭제 실패"
+
+#: src/features/goal/components/GoalDetailStats.tsx:57
+msgid "Failed to move the target date"
+msgstr "목표일 변경에 실패했습니다"
 
 #: src/features/goal/components/GoalControls.tsx:58
 msgid "Failed to unarchive {title}"
 msgstr "{title} 보관 해제에 실패했습니다"
 
-#: src/features/goal/hooks/useGoalForm.ts:83
+#: src/features/goal/hooks/useGoalForm.ts:82
 msgid "Failed to update goal"
 msgstr "목표 업데이트 실패"
 
@@ -338,28 +499,39 @@ msgstr "288페이지 책 완독하기"
 #~ msgid "Finish reading the 288-page book"
 #~ msgstr "288페이지 책 완독하기"
 
+#: src/features/auth/components/authForm/SignInForm.tsx:72
+msgid "Forgot your password?"
+msgstr "비밀번호를 잊으셨나요?"
+
 #: src/features/auth/routes/SignUpPage.tsx:34
 msgid "Get started"
 msgstr "시작하기"
 
-#: src/routes/index.lazy.tsx:80
+#: src/routes/index.lazy.tsx:85
 msgid "Get Started"
 msgstr "시작하기"
 
+#: src/features/auth/components/AuthPageShell.tsx:30
 #: src/features/auth/routes/SignInPage.tsx:20
 #: src/features/auth/routes/SignUpPage.tsx:19
 msgid "Go back"
 msgstr "뒤로 가기"
 
-#: src/features/goal/components/GoalCard.tsx:85
-msgid "Goal achieved!"
-msgstr ""
+#: src/features/goal/components/GoalCard.tsx:37
+#: src/features/goal/components/GoalDetailStats.tsx:121
+msgid "Goal achieved"
+msgstr "목표 달성"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:404
+#: src/features/goal/components/GoalCard.tsx:85
+#~ msgid "Goal achieved!"
+#~ msgstr ""
+
+#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:40
+#: src/features/goal/components/GoalLineGraph/logic.ts:451
 msgid "Goal Benchmark"
 msgstr "목표 기준선"
 
-#: src/features/goal/routes/GoalsPage.tsx:37
+#: src/features/goal/routes/GoalsPage.tsx:36
 msgid "Goal management controls"
 msgstr "목표 관리"
 
@@ -368,27 +540,37 @@ msgstr "목표 관리"
 msgid "Goal name"
 msgstr "목표 이름"
 
-#: src/features/goal/components/GoalDetailPanel.tsx:86
-#: src/features/goal/components/GoalDetailPanel.tsx:106
+#: src/features/goal/components/GoalDetailPanel.tsx:138
+#: src/features/goal/components/GoalDetailPanel.tsx:158
 msgid "Goal not found"
 msgstr "목표를 찾을 수 없습니다"
 
+#. placeholder {0}: format(start, 'MMM d')
+#: src/features/entry/components/EntryHeatmap.tsx:173
+#~ msgid "Goal started {0}"
+#~ msgstr ""
+
 #: src/app/metadata.tsx:33
-#: src/features/goal/routes/GoalsPage.tsx:32
+#: src/features/goal/routes/GoalsPage.tsx:31
+#: src/shared/components/common/BottomTabBar.tsx:42
 msgid "Goals"
 msgstr "목표"
 
-#: src/features/goal/components/GoalsContent.tsx:91
+#: src/features/goal/components/GoalsContent.tsx:96
 msgid "Goals list"
 msgstr "목표 목록"
 
-#: src/shared/components/common/StatusMenu.tsx:282
+#: src/shared/components/common/StatusMenu.tsx:287
 msgid "Hello, {userName}!"
 msgstr "안녕하세요, {userName}님!"
 
 #: src/features/goal/components/goalForm/GoalOptionalFields.tsx:66
 msgid "Hide extra options"
 msgstr "추가 옵션 숨기기"
+
+#: src/features/entry/components/EntryHistory.tsx:41
+msgid "History"
+msgstr "지난 기록"
 
 #: src/shared/components/common/SignOutButton.tsx:59
 #~ msgid "If you sign out now, this data will be permanently lost!"
@@ -432,11 +614,11 @@ msgstr "잘못된 로그인 정보입니다"
 msgid "Invalid email address"
 msgstr "유효하지 않은 이메일 주소입니다"
 
-#: src/features/auth/components/authForm/SignInForm.tsx:57
+#: src/features/auth/components/authForm/SignInForm.tsx:54
 msgid "It looks like you are offline!"
 msgstr "오프라인 상태인 것 같습니다!"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:74
+#: src/features/auth/components/authForm/SignUpForm.tsx:75
 msgid "It seems like you are not connected!"
 msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 
@@ -444,16 +626,16 @@ msgstr "인터넷에 연결되어 있지 않은 것 같습니다!"
 msgid "Keep working on your goals!<0/>Change the filter to see all goals."
 msgstr "목표를 위해 계속 노력하세요!<0/>필터를 변경하여 모든 목표를 확인할 수 있습니다."
 
-#: src/shared/components/common/StatusMenu.tsx:219
+#: src/shared/components/common/StatusMenu.tsx:218
 msgid "Last synced:"
 msgstr "마지막 동기화:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
-#: src/features/goal/components/goalForm/EditGoalForm.tsx:71
+#: src/features/goal/components/goalForm/EditGoalForm.tsx:39
 msgid "Last update: {0}"
 msgstr "마지막 업데이트: {0}"
 
-#: src/features/entry/components/CreateEntryForm.tsx:246
+#: src/features/entry/components/CreateEntryForm.tsx:243
 msgid "Last:"
 msgstr "이전:"
 
@@ -466,24 +648,50 @@ msgstr "프랑스어 단어 1000개 익히기"
 #~ msgid "Learn 1000 French words"
 #~ msgstr "프랑스어 단어 1000개 익히기"
 
-#: src/shared/components/common/StatusMenu.tsx:144
+#: src/features/entry/components/EntryHeatmap.tsx:290
+#: src/features/today/components/TodayItem.tsx:173
+msgid "Less"
+msgstr "적게"
+
+#: src/shared/components/common/StatusMenu.tsx:143
 msgid "Loading user status"
 msgstr "사용자 상태 로딩 중"
 
-#: src/routes/index.lazy.tsx:61
+#: src/features/goal/components/GoalCard.tsx:125
+#: src/features/today/components/TodayItem.tsx:196
+msgid "Log"
+msgstr "기록"
+
+#. placeholder {0}: goal.title
+#: src/features/goal/components/GoalCard.tsx:122
+msgid "Log progress for {0}"
+msgstr "{0} 진행 기록하기"
+
+#: src/routes/index.lazy.tsx:66
 msgid "Make progress."
 msgstr "진행하세요."
 
-#: src/features/goal/hooks/useGoalForm.ts:51
+#. placeholder {0}: goal.title
+#: src/features/goal/components/HabitRow.tsx:125
+#: src/features/today/components/TodayItem.tsx:91
+msgid "Mark {0} done today"
+msgstr "{0} 오늘 완료로 표시"
+
+#: src/features/goal/hooks/useGoalForm.ts:50
 msgid "Missing required fields"
 msgstr "필수 항목을 입력해 주세요"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:44
+#: src/features/goal/components/GoalLineGraph/logic.ts:74
 msgid "Monthly"
 msgstr "월별"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:48
-#: src/features/auth/components/authForm/SignUpForm.tsx:56
+#: src/features/entry/components/EntryHeatmap.tsx:297
+#: src/features/today/components/TodayItem.tsx:185
+msgid "More"
+msgstr "많게"
+
+#: src/features/auth/components/authForm/SignUpForm.tsx:49
+#: src/features/auth/components/authForm/SignUpForm.tsx:57
 msgid "Name"
 msgstr "이름"
 
@@ -495,20 +703,28 @@ msgstr "이름 (가나다순)"
 msgid "Name (Z to A)"
 msgstr "이름 (역순)"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:44
+#: src/features/auth/components/authForm/SignUpForm.tsx:45
 msgid "Name is required"
 msgstr "이름을 입력해주세요"
 
+#: src/shared/components/common/BottomTabBar.tsx:29
+msgid "New goal"
+msgstr "새 목표"
+
 #: src/app/metadata.tsx:36
-#: src/features/goal/routes/GoalsPage.tsx:48
+#: src/features/goal/routes/GoalsPage.tsx:47
 msgid "New Goal"
 msgstr "새로운 목표"
+
+#: src/features/auth/routes/ResetPasswordPage.tsx:77
+msgid "New password"
+msgstr "새 비밀번호"
 
 #: src/features/goal/components/GoalSorting.tsx:61
 msgid "Newest goals"
 msgstr "최근 추가순"
 
-#: src/features/entry/components/CreateEntryForm.tsx:200
+#: src/features/entry/components/CreateEntryForm.tsx:197
 msgid "No"
 msgstr "아니요"
 
@@ -520,25 +736,72 @@ msgstr "보관된 목표가 없습니다."
 msgid "No completed goals yet."
 msgstr "아직 완료된 목표가 없습니다."
 
+#: src/features/entry/components/EntryHistory.tsx:45
+msgid "No entries yet — tap a day in the calendar to log one."
+msgstr "아직 기록이 없어요 — 캘린더에서 날짜를 눌러 기록해 보세요."
+
+#: src/features/entry/components/EntryHeatmap.tsx:170
+msgid "No entry"
+msgstr "기록 없음"
+
 #: src/features/goal/components/NoGoalsPlaceholder.tsx:19
 msgid "No goals in progress."
 msgstr "진행 중인 목표가 없습니다."
+
+#: src/features/goal/model/paceStatusInfo.ts:13
+msgid "not started"
+msgstr "시작 전"
+
+#: src/features/goal/components/StatChips.tsx:41
+msgid "Not started"
+msgstr "시작 전"
+
+#: src/features/goal/components/GoalDetailStats.tsx:93
+msgid "not yet today"
+msgstr "오늘은 아직"
 
 #: src/shared/components/common/DemoStart.tsx:66
 msgid "Note: Seon Goals is still in early development.<0/>Many additional features are planned for future updates."
 msgstr "참고: Seon 목표 관리는 아직 초기 개발 단계입니다.<0/>향후 업데이트에서 많은 추가 기능이 계획되어 있습니다."
 
+#: src/features/today/routes/TodayPage.tsx:91
+msgid "Nothing to work on yet."
+msgstr "아직 진행할 목표가 없어요."
+
 #: src/features/goal/components/goalForm/GoalOptionalFields.tsx:107
 msgid "Numbers only"
 msgstr "숫자만 입력 가능"
+
+#. placeholder {0}: goal.target.toLocaleString()
+#: src/features/goal/components/GoalCard.tsx:103
+#: src/features/goal/components/GoalDetailStats.tsx:110
+msgid "of {0} {unit}"
+msgstr "/ {0} {unit}"
 
 #: src/features/goal/components/GoalSorting.tsx:66
 msgid "Oldest goals"
 msgstr "오래된 순"
 
+#: src/features/goal/model/paceStatusInfo.ts:31
+msgid "on pace"
+msgstr "페이스 유지"
+
+#: src/features/goal/components/StatChips.tsx:63
+msgid "On pace"
+msgstr "페이스 유지"
+
 #: src/features/goal/components/GoalFilter.tsx:62
 msgid "Ongoing"
 msgstr "진행 중"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:58
+msgid "Open the verification link to finish setting up sync."
+msgstr "인증 링크를 열어 동기화 설정을 완료하세요."
+
+#. placeholder {0}: formatDay(replanDate, new Date())
+#: src/features/goal/components/GoalDetailStats.tsx:149
+msgid "or move the date → {0}"
+msgstr "또는 목표일 옮기기 → {0}"
 
 #: src/shared/components/common/NotFound.tsx:21
 msgid "Page Not Found"
@@ -561,23 +824,54 @@ msgstr "비밀번호"
 msgid "Password is required"
 msgstr "비밀번호를 입력해주세요"
 
+#: src/features/auth/routes/ForgotPasswordPage.tsx:37
+#: src/features/auth/routes/ResetPasswordPage.tsx:56
+msgid "Password recovery"
+msgstr "비밀번호 찾기"
+
+#: src/features/auth/routes/ResetPasswordPage.tsx:41
+msgid "Passwords do not match"
+msgstr "비밀번호가 일치하지 않습니다"
+
 #: src/features/goal/components/GoalCard.tsx:184
-msgid "Past due"
-msgstr ""
+#~ msgid "Past due"
+#~ msgstr ""
 
 #: src/shared/components/common/DatePicker.tsx:150
 msgid "Pick a date"
 msgstr "날짜 선택"
 
-#: src/features/goal/components/GoalDetailPanel.tsx:42
+#: src/features/goal/components/GoalDetailPanel.tsx:51
 msgid "Please try again later."
-msgstr ""
+msgstr "잠시 후 다시 시도해 주세요."
 
-#: src/features/entry/components/CreateEntryForm.tsx:67
+#: src/shared/components/common/BottomTabBar.tsx:13
+msgid "Primary"
+msgstr "주요 메뉴"
+
+#: src/features/entry/components/CreateEntryForm.tsx:65
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:32
 #: src/features/goal/components/GoalStatusSummary.tsx:141
 msgid "Progress"
 msgstr "진행도"
+
+#: src/features/today/routes/TodayPage.tsx:50
+msgid "Progress for today:"
+msgstr "오늘의 진행 상황:"
+
+#: src/features/goal/components/GoalCard.tsx:50
+msgid "Reach {suggested} today to stay on pace"
+msgstr "오늘 {suggested}까지 하면 페이스 유지"
+
+#. placeholder {0}: metrics.suggestedToday
+#: src/features/today/components/TodayItem.tsx:142
+msgid "Reach <0>{0}</0> today"
+msgstr "오늘 <0>{0}</0>까지"
+
+#. placeholder {0}: metrics.suggestedToday
+#: src/features/goal/components/GoalDetailStats.tsx:125
+msgid "Reach <0>{0}</0> today to stay on pace"
+msgstr "오늘 <0>{0}</0>까지 하면 페이스 유지"
 
 #. js-lingui-explicit-id
 #: src/constants/setup.ts:6
@@ -588,25 +882,37 @@ msgstr "멋진 신세계 책 읽기"
 #~ msgid "Read \"Brave New World\""
 #~ msgstr "멋진 신세계 책 읽기"
 
-#: src/shared/components/common/UpdatePrompt.tsx:75
+#: src/shared/components/common/UpdatePrompt.tsx:68
 msgid "Ready to update"
 msgstr "업데이트 준비 완료"
+
+#: src/features/auth/routes/ForgotPasswordPage.tsx:81
+msgid "Reconnect before requesting a reset link."
+msgstr "재설정 링크를 요청하려면 다시 연결해 주세요."
 
 #: src/shared/components/common/DemoStart.tsx:51
 msgid "Record daily progress"
 msgstr "일일 진행 상황 기록"
 
-#: src/shared/components/common/ErrorFallback.tsx:114
+#: src/shared/components/common/ErrorFallback.tsx:107
 msgid "Refresh page"
 msgstr "페이지 새로고침"
 
-#: src/shared/components/common/UpdatePrompt.tsx:78
+#: src/shared/components/common/UpdatePrompt.tsx:71
 msgid "Refresh to get the latest improvements."
 msgstr "업데이트하여 개선 사항을 확인해 보세요."
+
+#: src/features/auth/routes/ResetPasswordPage.tsx:69
+msgid "Request a new reset link"
+msgstr "새 재설정 링크 요청하기"
 
 #: src/features/goal/components/GoalStatusSummary.tsx:164
 msgid "Required Pace"
 msgstr "권장 진행 속도"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:94
+msgid "Resend verification email"
+msgstr "인증 메일 다시 보내기"
 
 #: src/shared/components/common/DemoIndicator.tsx:44
 msgid "Reset"
@@ -616,27 +922,47 @@ msgstr "초기화"
 msgid "Reset Demo"
 msgstr "데모 초기화"
 
+#: src/features/auth/routes/ResetPasswordPage.tsx:122
+msgid "Reset password"
+msgstr "비밀번호 재설정"
+
+#: src/features/auth/routes/ForgotPasswordPage.tsx:40
+msgid "Reset your password"
+msgstr "비밀번호를 재설정하세요"
+
 #: src/shared/components/common/NotFound.tsx:32
 msgid "Return to Home"
 msgstr "홈으로 돌아가기"
 
+#: src/features/auth/routes/ForgotPasswordPage.tsx:55
+#: src/features/auth/routes/VerifyEmailPage.tsx:109
+msgid "Return to sign in"
+msgstr "로그인으로 돌아가기"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:82
+msgid "Return to sign in after verifying your email."
+msgstr "이메일 인증 후 로그인으로 돌아와 주세요."
+
 #: src/features/goal/components/GoalCard.tsx:73
-msgid "Right on track!"
-msgstr ""
+#~ msgid "Right on track!"
+#~ msgstr ""
 
 #: src/shared/components/common/DemoIndicator.tsx:85
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "앱의 기능을 탐색할 수 있도록 샘플 데이터가 생성되었습니다."
 
-#: src/features/entry/components/CreateEntryForm.tsx:287
-#: src/features/goal/components/goalForm/EditGoalForm.tsx:121
-#: src/features/goal/components/goalForm/EditGoalForm.tsx:132
+#: src/features/entry/components/CreateEntryForm.tsx:284
+#: src/features/goal/components/goalForm/EditGoalForm.tsx:72
 msgid "Save"
 msgstr "저장"
 
+#: src/features/auth/routes/ResetPasswordPage.tsx:122
+msgid "Saving…"
+msgstr "저장 중…"
+
 #: src/data/domain/authRepo.ts:99
-msgid "See you again!"
-msgstr "다음에 또 뵈어요!"
+#~ msgid "See you again!"
+#~ msgstr "다음에 또 뵈어요!"
 
 #: src/shared/components/common/DatePicker.tsx:173
 msgid "Select"
@@ -646,29 +972,41 @@ msgstr "선택"
 msgid "Select sort..."
 msgstr "정렬 기준 선택..."
 
+#: src/features/auth/routes/ForgotPasswordPage.tsx:102
+msgid "Send reset link"
+msgstr "재설정 링크 보내기"
+
+#: src/features/auth/routes/ForgotPasswordPage.tsx:101
+msgid "Sending reset link…"
+msgstr "재설정 링크 보내는 중…"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:93
+msgid "Sending…"
+msgstr "보내는 중…"
+
 #: src/app/metadata.tsx:23
 #: src/shared/components/common/DemoStart.tsx:29
 msgid "Seon Demo Mode"
 msgstr "데모 모드"
 
-#: src/routes/index.lazy.tsx:66
+#: src/routes/index.lazy.tsx:71
 msgid "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 msgstr "가장 중요한 일에 집중하고 동기를 잃지 않도록 돕는 목표 관리 앱, Seon."
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:105
 msgid "Set a target date for your goal."
-msgstr ""
+msgstr "목표일을 설정해 주세요."
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:86
 msgid "Set a target value for your goal."
 msgstr "목표 달성 값을 설정해 주세요."
 
-#: src/routes/index.lazy.tsx:58
+#: src/routes/index.lazy.tsx:63
 msgid "Set goals."
 msgstr "목표를 설정하고"
 
-#: src/features/goal/routes/GoalNewPage.tsx:71
-#: src/features/goal/routes/GoalNewPage.tsx:111
+#: src/features/goal/routes/GoalNewPage.tsx:68
+#: src/features/goal/routes/GoalNewPage.tsx:108
 msgid "Set up your new goal. You can always edit it later."
 msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 있습니다."
 
@@ -676,13 +1014,13 @@ msgstr "새로운 목표를 설정하세요. 나중에 언제든 수정할 수 �
 msgid "Show extra options"
 msgstr "추가 옵션 보기"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:95
+#: src/features/auth/components/authForm/SignUpForm.tsx:96
 msgid "Sign in"
 msgstr "로그인"
 
 #: src/app/metadata.tsx:26
-#: src/features/auth/components/authForm/SignInForm.tsx:66
-#: src/routes/index.lazy.tsx:88
+#: src/features/auth/components/authForm/SignInForm.tsx:63
+#: src/routes/index.lazy.tsx:93
 msgid "Sign In"
 msgstr "로그인"
 
@@ -698,33 +1036,33 @@ msgstr "데이터 동기화를 위해 로그인해 주세요."
 msgid "Sign in to your account"
 msgstr "계정에 로그인하세요"
 
-#: src/features/auth/components/authForm/SignInForm.tsx:60
+#: src/features/auth/components/authForm/SignInForm.tsx:57
 msgid "Sign in will not work."
 msgstr "로그인을 할 수 없습니다."
 
-#: src/shared/components/common/SignOutButton.tsx:11
+#: src/shared/components/common/SignOutButton.tsx:179
 msgid "Sign out"
 msgstr "로그아웃"
 
-#: src/features/auth/components/authForm/SignInForm.tsx:78
+#: src/features/auth/components/authForm/SignInForm.tsx:84
 msgid "Sign up"
 msgstr "회원 가입"
 
 #: src/app/metadata.tsx:29
-#: src/features/auth/components/authForm/SignUpForm.tsx:83
+#: src/features/auth/components/authForm/SignUpForm.tsx:84
 msgid "Sign Up"
 msgstr "회원 가입"
 
-#: src/features/auth/components/authForm/SignUpForm.tsx:77
+#: src/features/auth/components/authForm/SignUpForm.tsx:78
 msgid "Sign up will not work."
 msgstr "회원 가입을 할 수 없습니다."
 
 #: src/data/domain/authRepo.ts:81
-msgid "Signing you out..."
-msgstr "로그아웃 중..."
+#~ msgid "Signing you out..."
+#~ msgstr "로그아웃 중..."
 
-#: src/features/goal/components/GoalDetailPanel.tsx:39
-#: src/shared/components/common/ErrorFallback.tsx:113
+#: src/features/goal/components/GoalDetailPanel.tsx:48
+#: src/shared/components/common/ErrorFallback.tsx:106
 msgid "Something went wrong"
 msgstr "문제가 발생했습니다"
 
@@ -744,15 +1082,21 @@ msgstr "다시 시작"
 msgid "Start tracking your goals today"
 msgstr "오늘부터 목표를 추적하세요"
 
-#: src/features/goal/hooks/useGoalForm.ts:64
+#. placeholder {0}: formatDay(goal.startDate, new Date())
+#: src/features/goal/components/GoalCard.tsx:40
+#: src/features/goal/components/GoalDetailStats.tsx:123
+msgid "Starts {0}"
+msgstr "{0} 시작"
+
+#: src/features/goal/hooks/useGoalForm.ts:63
 msgid "Sucessfully added goal"
 msgstr "목표가 추가되었습니다"
 
-#: src/features/goal/hooks/useGoalForm.ts:80
+#: src/features/goal/hooks/useGoalForm.ts:79
 msgid "Sucessfully updated goal"
 msgstr "목표가 업데이트되었습니다"
 
-#: src/features/entry/components/CreateEntryForm.tsx:254
+#: src/features/entry/components/CreateEntryForm.tsx:251
 msgid "Suggested amount"
 msgstr "제안된 양"
 
@@ -761,7 +1105,7 @@ msgstr "제안된 양"
 msgid "Sync is off"
 msgstr "동기화가 꺼져 있습니다"
 
-#: src/shared/components/common/StatusMenu.tsx:175
+#: src/shared/components/common/StatusMenu.tsx:174
 msgid "Syncing"
 msgstr "동기화 중"
 
@@ -769,13 +1113,22 @@ msgstr "동기화 중"
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "동기화 기능이 비활성화되었습니다.<0/>모든 데이터는 로컬에 저장됩니다."
 
-#: src/features/goal/components/GoalsContent.tsx:34
+#: src/features/goal/components/GoalsContent.tsx:35
 msgid "Syncing your goals..."
 msgstr "목표 동기화 중..."
+
+#: src/features/entry/components/EntryHistory.tsx:73
+msgid "Tap a day in the calendar to add or correct an entry."
+msgstr "캘린더에서 날짜를 눌러 기록을 추가하거나 수정하세요."
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:117
 msgid "Target date"
 msgstr "목표일"
+
+#. placeholder {0}: formatDay(newTargetDate, new Date())
+#: src/features/goal/components/GoalDetailStats.tsx:52
+msgid "Target date moved to {0}"
+msgstr "목표일이 {0}(으)로 변경되었습니다"
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:109
 msgid "Target date must be after start date"
@@ -785,9 +1138,21 @@ msgstr "목표일은 시작일 이후여야 합니다"
 msgid "Target value"
 msgstr "목표값"
 
+#: src/features/today/routes/TodayPage.tsx:108
+msgid "That's everything for today."
+msgstr "오늘 할 일을 모두 마쳤어요."
+
+#: src/features/today/routes/TodayPage.tsx:111
+msgid "The lines grew a little. See you tomorrow."
+msgstr "선이 조금 더 자랐어요. 내일 또 만나요."
+
 #: src/shared/components/common/NotFound.tsx:24
 msgid "The page you're looking for doesn't exist or has been moved."
 msgstr "찾으시는 페이지가 존재하지 않거나 이동되었습니다."
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:66
+msgid "The verification link could not be used"
+msgstr "인증 링크를 사용할 수 없습니다"
 
 #: src/features/goal/components/NoGoalsPlaceholder.tsx:14
 msgid "There are no goals."
@@ -797,6 +1162,10 @@ msgstr "아직 목표가 없습니다."
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
 msgstr "이 데모는 회원가입 없이 모든 기능을 사용해 볼 수 있습니다. 데이터는 사용자의 기기에 로컬로 저장됩니다."
 
+#: src/features/auth/routes/ResetPasswordPage.tsx:65
+msgid "This reset link is invalid or expired"
+msgstr "유효하지 않거나 만료된 재설정 링크입니다"
+
 #: src/shared/components/common/DemoIndicator.tsx:37
 msgid "This will delete all your data and reset the demo."
 msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
@@ -805,14 +1174,17 @@ msgstr "모든 데이터가 삭제되고 데모가 초기화됩니다."
 msgid "Time Left"
 msgstr "남은 기간"
 
-#: src/features/entry/components/CalendarHeatmap.tsx:357
+#: src/features/entry/components/EntryHistory.tsx:11
+#: src/features/goal/routes/GoalsPage.tsx:59
+#: src/features/today/routes/TodayPage.tsx:36
+#: src/shared/components/common/BottomTabBar.tsx:24
 #: src/shared/components/common/DatePicker.tsx:32
 msgid "Today"
 msgstr "오늘"
 
 #: src/features/goal/components/GoalCard.tsx:201
-msgid "Toggle goal details"
-msgstr "목표 상세 정보 토글"
+#~ msgid "Toggle goal details"
+#~ msgstr "목표 상세 정보 토글"
 
 #: src/shared/components/common/DatePicker.tsx:33
 msgid "Tomorrow"
@@ -830,7 +1202,7 @@ msgstr "매일 완료한 횟수를 기록하세요.<0/>예: '30분 운동하기'
 msgid "Track your overall progress towards a target.<0/>E.g. reading a book (current page) or saving money (total amount saved)."
 msgstr "목표를 향한 전체 진행 상황을 기록하세요.<0/>예: 책 읽기(현재 페이지) 또는 저축(총 저축액)"
 
-#: src/routes/index.lazy.tsx:54
+#: src/routes/index.lazy.tsx:59
 msgid "Track your progress, achieve your goals"
 msgstr "진행 상황을 추적하고 목표를 달성하세요"
 
@@ -845,37 +1217,61 @@ msgstr "목표 보관 해제"
 
 #: src/features/goal/components/GoalControls.tsx:51
 msgid "Unarchived goal: {title}"
-msgstr "{title} 보관 해제에 실패했습니다"
+msgstr "목표 보관 해제됨: {title}"
 
 #: src/features/goal/components/goalForm/GoalOptionalFields.tsx:89
 #: src/features/goal/components/goalForm/GoalOptionalFields.tsx:96
 msgid "Unit"
 msgstr "단위"
 
+#. placeholder {0}: goal.title
+#: src/features/goal/components/HabitRow.tsx:124
+#: src/features/today/components/TodayItem.tsx:90
+msgid "Unmark {0} for today"
+msgstr "{0} 오늘 완료 표시 해제"
+
 #: src/shared/components/common/SignOutButton.tsx:49
 #~ msgid "Unsynced data will be lost"
 #~ msgstr "동기화되지 않은 데이터는 손실됩니다"
 
-#: src/shared/components/common/ErrorFallback.tsx:115
+#: src/shared/components/common/ErrorFallback.tsx:108
 msgid "Update app"
 msgstr "앱 업데이트"
 
-#: src/shared/components/common/UpdatePrompt.tsx:56
-#: src/shared/components/common/UpdatePrompt.tsx:66
+#: src/shared/components/common/UpdatePrompt.tsx:49
+#: src/shared/components/common/UpdatePrompt.tsx:59
 msgid "Update available"
 msgstr "업데이트 있음"
 
-#: src/shared/components/common/UpdatePrompt.tsx:82
+#: src/shared/components/common/UpdatePrompt.tsx:75
 msgid "Update now"
 msgstr "지금 업데이트"
 
-#: src/shared/components/common/StatusMenu.tsx:273
+#: src/features/auth/routes/ResetPasswordPage.tsx:60
+msgid "Use at least eight characters."
+msgstr "8자 이상 입력해 주세요."
+
+#: src/shared/components/common/StatusMenu.tsx:275
 msgid "User info"
 msgstr "사용자 정보"
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:94
 msgid "Value for goal completion (number)"
 msgstr "목표 달성 값 (숫자)"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:25
+msgid "Verification email sent."
+msgstr "인증 메일을 보냈습니다."
+
+#: src/features/auth/components/authForm/SignInForm.tsx:43
+msgid "Verify your email before signing in"
+msgstr "로그인 전에 이메일을 인증해 주세요"
+
+#. placeholder {0}: goal.title
+#: src/features/goal/components/GoalCard.tsx:87
+#: src/features/goal/components/HabitRow.tsx:64
+msgid "View {0} details"
+msgstr "{0} 상세 보기"
 
 #: src/shared/components/common/DemoStart.tsx:54
 msgid "View statistics and visualizations"
@@ -899,7 +1295,11 @@ msgstr "매일 일찍 일어나기"
 #~ msgid "Wake up early every day"
 #~ msgstr "매일 일찍 일어나기"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:43
+#: src/features/auth/routes/ForgotPasswordPage.tsx:42
+msgid "We'll send a secure reset link if the account exists."
+msgstr "계정이 존재하면 안전한 재설정 링크를 보내드립니다."
+
+#: src/features/goal/components/GoalLineGraph/logic.ts:73
 msgid "Weekly"
 msgstr "주별"
 
@@ -912,14 +1312,14 @@ msgstr "다시 오신 것을 환영합니다"
 msgid "Welcome back, {0}!"
 msgstr "다시 오신 것을 환영합니다, {0}님!"
 
-#: src/shared/components/common/StatusMenu.tsx:259
+#: src/shared/components/common/StatusMenu.tsx:258
 msgid "Welcome back, {userName}!"
 msgstr "다시 오신 것을 환영합니다, {userName}님!"
 
 #. placeholder {0}: user.name
 #: src/features/auth/components/authForm/SignUpForm.tsx:27
-msgid "Welcome, {0}!"
-msgstr "환영합니다, {0}님!"
+#~ msgid "Welcome, {0}!"
+#~ msgstr "환영합니다, {0}님!"
 
 #: src/shared/components/common/DemoStart.tsx:44
 msgid "What you can do in demo mode:"
@@ -934,7 +1334,7 @@ msgstr "단어"
 #~ msgid "words"
 #~ msgstr "단어"
 
-#: src/features/entry/components/CreateEntryForm.tsx:184
+#: src/features/entry/components/CreateEntryForm.tsx:181
 msgid "Yes"
 msgstr "예"
 
@@ -942,23 +1342,44 @@ msgstr "예"
 msgid "Yes or no"
 msgstr "예/아니오"
 
-#: src/shared/components/common/StatusMenu.tsx:233
+#: src/features/entry/components/EntryHistory.tsx:12
+msgid "Yesterday"
+msgstr "어제"
+
+#: src/features/auth/routes/ForgotPasswordPage.tsx:78
+msgid "You are offline"
+msgstr "오프라인 상태입니다"
+
+#: src/shared/components/common/StatusMenu.tsx:232
 msgid "You're offline"
 msgstr "오프라인 상태입니다"
 
-#: src/shared/components/common/StatusMenu.tsx:214
+#: src/features/auth/routes/VerifyEmailPage.tsx:56
+msgid "Your account can now connect to sync."
+msgstr "이제 계정을 동기화에 연결할 수 있습니다."
+
+#: src/shared/components/common/StatusMenu.tsx:213
 msgid "Your data is synced!"
 msgstr "데이터가 동기화되었습니다!"
+
+#: src/features/auth/routes/VerifyEmailPage.tsx:49
+msgid "Your email is verified"
+msgstr "이메일 인증이 완료되었습니다"
 
 #: src/shared/components/common/SignOutButton.tsx:53
 #~ msgid "Your most recent changes have not been synced yet."
 #~ msgstr "최근 변경사항이 아직 동기화되지 않았습니다."
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:402
+#: src/features/auth/routes/ResetPasswordPage.tsx:31
+msgid "Your password has been reset."
+msgstr "비밀번호가 재설정되었습니다."
+
+#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:33
+#: src/features/goal/components/GoalLineGraph/logic.ts:449
 msgid "Your Progress"
 msgstr "진행 상황"
 
-#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:120
+#: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:145
 msgid "Your progress graph will be shown here"
 msgstr "여기에 진행 상황 그래프가 표시됩니다"
 

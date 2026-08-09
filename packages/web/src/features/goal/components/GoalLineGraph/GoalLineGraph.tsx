@@ -26,6 +26,31 @@ interface GoalLineGraphProps {
   isMobile?: boolean;
 }
 
+const ChartLegend = ({ showAfterTarget }: { showAfterTarget: boolean }) => (
+  <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+    <span className="flex items-center gap-1.5">
+      <span className="bg-primary h-0.5 w-4 rounded-full" aria-hidden="true" />
+      <Trans>Your Progress</Trans>
+    </span>
+    <span className="flex items-center gap-1.5">
+      <span
+        className="border-chart-2 w-4 border-t-2 border-dashed"
+        aria-hidden="true"
+      />
+      <Trans>Goal Benchmark</Trans>
+    </span>
+    {showAfterTarget && (
+      <span className="flex items-center gap-1.5">
+        <span
+          className="bg-chart-5 h-0.5 w-4 rounded-full"
+          aria-hidden="true"
+        />
+        <Trans>After target date</Trans>
+      </span>
+    )}
+  </div>
+);
+
 const IntervalSwitcher = ({
   active,
   onChange,
@@ -127,16 +152,18 @@ function GoalLineGraph({
     );
   }
 
-  const option =
-    graphConfig.optionsByMode[mode]?.option ??
-    graphConfig.optionsByMode[graphConfig.defaultMode]?.option;
+  const activeGraph =
+    graphConfig.optionsByMode[mode] ??
+    graphConfig.optionsByMode[graphConfig.defaultMode];
+  const option = activeGraph?.option;
 
   // TODO: use constant for heights (graph height + slider)
   const graphHeight = resolvedMobile ? 320 : 340;
 
   return (
     <div className="flex w-full flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-end gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <ChartLegend showAfterTarget={activeGraph?.hasAfterTarget ?? false} />
         <IntervalSwitcher active={mode} onChange={setMode} />
       </div>
       <LineGraph key={mode} option={option} height={graphHeight} />

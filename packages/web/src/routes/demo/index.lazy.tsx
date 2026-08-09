@@ -7,6 +7,7 @@ import { initializeLocalProfile } from '~/data/domain/profileRepo';
 import DemoStart from '~/shared/components/common/DemoStart';
 import { useUserStore } from '~/states/stores/userStore';
 import { generateDemoData } from '~/utils/demo';
+import { getHomeRoute } from '~/utils/homeRoute';
 
 export const Route = createLazyFileRoute('/demo/')({
   component: IndexRouteComponent,
@@ -43,7 +44,7 @@ export function IndexRouteComponent() {
 
   useEffect(() => {
     if (isUserInitialized) {
-      void navigate({ to: '/goals' });
+      void navigate({ to: getHomeRoute() });
     }
   }, [isUserInitialized, navigate]);
 

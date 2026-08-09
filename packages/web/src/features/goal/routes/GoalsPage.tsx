@@ -3,11 +3,10 @@ import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import * as Sentry from '@sentry/react';
 import { Link } from '@tanstack/react-router';
-import { PlusIcon } from 'lucide-react';
+import { PlusIcon, SunIcon } from 'lucide-react';
 
 import ErrorFallback from '~/shared/components/common/ErrorFallback';
 import { buttonVariants } from '~/shared/components/ui/button';
-import { ResponsiveTooltip } from '~/shared/components/ui/responsive-tooltip';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils';
 import { GoalFilter } from '../components/GoalFilter';
@@ -49,6 +48,16 @@ export function GoalsPage() {
             </div>
           </Link>
           <div className="flex items-center gap-4">
+            <Link
+              to="/today"
+              className={cn(
+                buttonVariants({ variant: 'outline' }),
+                'hidden sm:flex',
+              )}
+            >
+              <SunIcon size={16} />
+              <Trans>Today</Trans>
+            </Link>
             <GoalFilter filter={filter} setFilter={setFilter} />
             <GoalSorting sort={sort} setSort={setSort} />
           </div>
@@ -56,22 +65,6 @@ export function GoalsPage() {
         <Sentry.ErrorBoundary fallback={<ErrorFallback />}>
           <GoalsContent sort={sort} filter={filter} />
         </Sentry.ErrorBoundary>
-      </div>
-
-      {/* Floating button for small screens */}
-      <div className="fixed right-4 bottom-14 z-20 sm:hidden">
-        <ResponsiveTooltip content={<Trans>Add new goal</Trans>} side="top">
-          <Link
-            to="/goals/new"
-            className={cn(
-              buttonVariants({ variant: 'default', size: 'lg' }),
-              'flex h-16 w-16 rounded-full p-0 shadow-xl [&_svg]:size-7!',
-            )}
-            aria-label={t`Add new goal`}
-          >
-            <PlusIcon />
-          </Link>
-        </ResponsiveTooltip>
       </div>
     </>
   );
