@@ -61,7 +61,6 @@
   --font-noto-emoji: 'Noto Emoji', Apple Color Emoji;
 
   --animate-fade-in: fade-in 0.25s ease-in-out;
-  --animate-delayed-fade-in: fade-in 0.25s ease-in-out 0.4s forwards;
 
   @keyframes fade-in {
     from {

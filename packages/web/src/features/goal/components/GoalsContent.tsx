@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { t } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { useQuery, useStatus } from '@powersync/react';
@@ -11,23 +11,7 @@ import type { GoalFilter, GoalSort } from '~/features/goal/model';
 import { useUserStore } from '~/states/stores/userStore';
 import GoalCard from './GoalCard';
 import { HabitRow } from './HabitRow';
-import type { NoGoalsPlaceholderProps } from './NoGoalsPlaceholder';
-
-const LazyNoGoalsPlaceholder = lazy(() => import('./NoGoalsPlaceholder'));
-
-const NoGoalsPlaceholder = ({
-  onClick,
-  className,
-  filter,
-}: NoGoalsPlaceholderProps) => (
-  <Suspense fallback={null}>
-    <LazyNoGoalsPlaceholder
-      onClick={onClick}
-      className={className}
-      filter={filter}
-    />
-  </Suspense>
-);
+import NoGoalsPlaceholder from './NoGoalsPlaceholder';
 
 const SyncingPlaceholder = () => (
   <div className="mx-auto flex flex-col items-center">

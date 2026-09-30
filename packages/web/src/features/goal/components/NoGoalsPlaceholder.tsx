@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { type ReactNode, useState } from 'react';
 import { Trans } from '@lingui/react/macro';
 
-import { CDN_URL } from '~/constants';
+import frontBabyChick from '~/assets/front_baby_chick.webp';
+import hatchingChick from '~/assets/hatching_chick.webp';
+import sideBabyChick from '~/assets/side_baby_chick.webp';
 import type { GoalFilter } from '~/features/goal/model';
 import { cn } from '~/utils';
 
@@ -10,17 +12,17 @@ const content: Record<
   { image: string; title: ReactNode; description: ReactNode }
 > = {
   all: {
-    image: 'hatching_chick.webp',
+    image: hatchingChick,
     title: <Trans>There are no goals.</Trans>,
     description: <Trans>Create your first goal!</Trans>,
   },
   ongoing: {
-    image: 'side_baby_chick.webp',
+    image: sideBabyChick,
     title: <Trans>No goals in progress.</Trans>,
     description: <Trans>Create a new goal or change the filter!</Trans>,
   },
   completed: {
-    image: 'front_baby_chick.webp',
+    image: frontBabyChick,
     title: <Trans>No completed goals yet.</Trans>,
     description: (
       <Trans>
@@ -31,7 +33,7 @@ const content: Record<
     ),
   },
   archived: {
-    image: 'side_baby_chick.webp',
+    image: sideBabyChick,
     title: <Trans>No archived goals.</Trans>,
     description: (
       <Trans>
@@ -53,13 +55,18 @@ function NoGoalsPlaceholder({
   className,
   filter,
 }: NoGoalsPlaceholderProps) {
-  const { image, title, description } = content[filter];
+  const { image: src, title, description } = content[filter];
+  // Stay hidden until the image settles so the text and image appear together.
+  // Tracked per src so switching filters waits for the new image too.
+  const [settledSrc, setSettledSrc] = useState<string>();
+  const reveal = () => setSettledSrc(src);
 
   return (
     <button
       type="button"
       className={cn(
-        'animate-delayed-fade-in mx-auto flex flex-col items-center opacity-0',
+        'mx-auto flex flex-col items-center',
+        settledSrc === src ? 'animate-fade-in' : 'opacity-0',
         className,
         (filter === 'completed' || filter === 'archived') &&
           'pointer-events-none',
@@ -72,11 +79,13 @@ function NoGoalsPlaceholder({
       }}
     >
       <img
-        src={`${CDN_URL}/${image}`}
-        alt="Hatching Chick"
+        src={src}
+        alt=""
         width="200"
         height="200"
         fetchPriority="high"
+        onLoad={reveal}
+        onError={reveal}
       />
       <h4 className="mb-2 text-3xl">{title}</h4>
       <p className="text-muted-foreground text-center">{description}</p>

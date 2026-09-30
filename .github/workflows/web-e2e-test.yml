@@ -43,7 +43,6 @@ jobs:
       - name: Build Web App
         run: pnpm --filter web --fail-if-no-match build
         env:
-          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Run Playwright tests
@@ -53,7 +52,6 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: pnpm --filter web --fail-if-no-match test:pwa
         env:
-          VITE_CDN_URL: ${{ vars.VITE_CDN_URL }}
           VITE_IS_DEMO: ${{ vars.VITE_IS_DEMO }}
 
       - name: Upload Playwright Test Report
