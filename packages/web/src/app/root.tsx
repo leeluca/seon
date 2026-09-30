@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import * as Sentry from '@sentry/react';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Outlet } from '@tanstack/react-router';
@@ -5,10 +6,15 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 import BottomTabBar from '~/shared/components/common/BottomTabBar';
 import ErrorFallback from '~/shared/components/common/ErrorFallback';
-import LanguageSelector from '~/shared/components/common/LanguageSelector';
-import AppStatusMenu from '~/shared/components/common/StatusMenu';
+import { SettingsButton } from '~/shared/components/common/SettingsButton';
+import UpdatePrompt from '~/shared/components/common/UpdatePrompt';
 import type { AuthStatus } from '~/types/user';
+import { isDemo } from '~/utils/demo';
 import { AppTitle } from './metadata';
+
+const LazyDemoIndicator = lazy(
+  () => import('~/shared/components/common/DemoIndicator'),
+);
 
 export interface RouterContext {
   authStatus: AuthStatus;
@@ -28,10 +34,16 @@ export function RootLayout() {
 
 export function MainLayout() {
   return (
-    <div className="relative min-h-dvh min-w-[375px]">
+    <div className="relative min-h-dvh">
       <header className="px-3 py-2 sm:px-8 sm:py-4">
-        <div className="mx-auto flex max-w-(--breakpoint-2xl) content-center justify-between">
-          <AppStatusMenu />
+        <div className="mx-auto flex max-w-(--breakpoint-2xl) items-center justify-end gap-2">
+          <UpdatePrompt />
+          {isDemo && (
+            <Suspense fallback={null}>
+              <LazyDemoIndicator />
+            </Suspense>
+          )}
+          <SettingsButton showSyncState={!isDemo} />
         </div>
       </header>
 
@@ -42,10 +54,6 @@ export function MainLayout() {
           </Sentry.ErrorBoundary>
         </div>
       </main>
-      {/* TODO: add common footer to all pages at __root.tsx? */}
-      <div className="absolute bottom-14 mb-1 px-4 py-2 sm:bottom-0 sm:px-6 sm:py-4 xl:p-8">
-        <LanguageSelector />
-      </div>
       <BottomTabBar />
     </div>
   );

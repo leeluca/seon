@@ -14,40 +14,51 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. placeholder {0}: status.days
-#: src/features/goal/components/StatChips.tsx:47
-#: src/features/goal/model/paceStatusInfo.ts:16
+#: src/features/goal/components/StatChips.tsx:49
+#: src/features/goal/model/paceStatusInfo.ts:18
 msgid "{0, plural, one {# day ahead} other {# days ahead}}"
 msgstr "{0, plural, one {# day ahead} other {# days ahead}}"
 
 #. placeholder {0}: status.days
-#: src/features/goal/components/StatChips.tsx:53
-#: src/features/goal/model/paceStatusInfo.ts:24
+#: src/features/goal/components/StatChips.tsx:55
+#: src/features/goal/model/paceStatusInfo.ts:26
 msgid "{0, plural, one {# day behind} other {# days behind}}"
 msgstr "{0, plural, one {# day behind} other {# days behind}}"
 
 #. placeholder {0}: metrics.streak
 #: src/features/goal/components/GoalDetailStats.tsx:82
-#: src/features/today/components/TodayItem.tsx:68
+#: src/features/today/components/TodayItem.tsx:124
 msgid "{0, plural, one {#-day streak} other {#-day streak}}"
 msgstr "{0, plural, one {#-day streak} other {#-day streak}}"
 
+#. placeholder {0}: todayEntry?.value.toLocaleString()
+#: src/features/today/components/TodayItem.tsx:57
+msgid "{0} {unit} today"
+msgstr "{0} {unit} today"
+
 #. placeholder {0}: todayEntry?.value ?? 0
 #: src/features/today/components/TodayItem.tsx:134
-msgid "{0} logged"
-msgstr "{0} logged"
+#~ msgid "{0} logged"
+#~ msgstr "{0} logged"
+
+#. placeholder {0}: Math.round( goal.currentValue ?? goal.initialValue, ).toLocaleString()
+#. placeholder {1}: goal.target.toLocaleString()
+#: src/features/today/components/TodayItem.tsx:65
+msgid "{0} of {1}"
+msgstr "{0} of {1}"
 
 #. placeholder {0}: consistency.done
 #. placeholder {0}: metrics.consistency.done
 #. placeholder {1}: consistency.windowDays
 #. placeholder {1}: metrics.consistency.windowDays
 #: src/features/goal/components/GoalDetailStats.tsx:73
-#: src/features/goal/components/HabitRow.tsx:99
+#: src/features/goal/components/HabitRow.tsx:94
 msgid "{0} of last {1}"
 msgstr "{0} of last {1}"
 
 #. placeholder {0}: metrics.consistency.done
 #. placeholder {1}: metrics.consistency.windowDays
-#: src/features/today/components/TodayItem.tsx:61
+#: src/features/today/components/TodayItem.tsx:118
 msgid "{0} of last {1} days"
 msgstr "{0} of last {1} days"
 
@@ -55,25 +66,25 @@ msgstr "{0} of last {1} days"
 #. placeholder {0}: averagePerDay.toFixed(1)
 #: src/features/goal/components/GoalStatusSummary.tsx:160
 #: src/features/goal/components/GoalStatusSummary.tsx:167
-msgid "{0}/day"
-msgstr "{0}/day"
+#~ msgid "{0}/day"
+#~ msgstr "{0}/day"
 
-#: src/features/goal/components/HabitRow.tsx:71
+#: src/features/goal/components/HabitRow.tsx:66
 msgid "{allTime, plural, one {# day all-time} other {# days all-time}}"
 msgstr "{allTime, plural, one {# day all-time} other {# days all-time}}"
 
 #. placeholder {0}: goal.target
 #: src/features/today/components/TodayItem.tsx:137
-msgid "{currentValue} of {0}"
-msgstr "{currentValue} of {0}"
+#~ msgid "{currentValue} of {0}"
+#~ msgstr "{currentValue} of {0}"
 
 #: src/features/goal/components/GoalCard.tsx:180
 #~ msgid "{daysRemaining, plural, one {# day left} other {# days left}}"
 #~ msgstr ""
 
 #: src/features/goal/components/GoalStatusSummary.tsx:152
-msgid "{daysRemaining, plural, one {# day} other {# days}}"
-msgstr "{daysRemaining, plural, one {# day} other {# days}}"
+#~ msgid "{daysRemaining, plural, one {# day} other {# days}}"
+#~ msgstr "{daysRemaining, plural, one {# day} other {# days}}"
 
 #. placeholder {0}: goals.length
 #: src/features/today/routes/TodayPage.tsx:52
@@ -82,28 +93,37 @@ msgstr "{doneCount} of {0}"
 
 #. placeholder {0}: goal.target
 #: src/features/goal/components/GoalStatusSummary.tsx:142
-msgid "{entriesSum} / {0}"
-msgstr "{entriesSum} / {0}"
+#~ msgid "{entriesSum} / {0}"
+#~ msgstr "{entriesSum} / {0}"
 
 #: src/utils/validation.ts:70
 msgid "{fieldName} should be no longer than {max} characters."
 msgstr "{fieldName} should be no longer than {max} characters."
 
+#: src/features/goal/components/GoalCard.tsx:49
+msgid "{suggested} a day finishes on time"
+msgstr "{suggested} a day finishes on time"
+
 #: src/features/goal/components/GoalCard.tsx:52
-msgid "{suggested}/day finishes on time"
-msgstr "{suggested}/day finishes on time"
+#~ msgid "{suggested}/day finishes on time"
+#~ msgstr "{suggested}/day finishes on time"
+
+#. placeholder {0}: metrics.suggestedToday.toLocaleString()
+#: src/features/today/components/TodayItem.tsx:83
+msgid "<0>{0} {unit}</0> to stay on pace"
+msgstr "<0>{0} {unit}</0> to stay on pace"
 
 #. placeholder {0}: metrics.suggestedToday
 #: src/features/today/components/TodayItem.tsx:150
-msgid "<0>{0}</0> to stay on pace"
-msgstr "<0>{0}</0> to stay on pace"
+#~ msgid "<0>{0}</0> to stay on pace"
+#~ msgstr "<0>{0}</0> to stay on pace"
 
 #. placeholder {0}: metrics.suggestedToday
-#: src/features/goal/components/GoalDetailStats.tsx:133
+#: src/features/goal/components/GoalDetailStats.tsx:152
 msgid "<0>{0}</0>/day finishes on time"
 msgstr "<0>{0}</0>/day finishes on time"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:511
+#: src/features/goal/components/GoalLineGraph/logic.ts:546
 msgid "🎉 Goal achieved!"
 msgstr "🎉 Goal achieved!"
 
@@ -111,17 +131,23 @@ msgstr "🎉 Goal achieved!"
 msgid "A verification message was sent to {email}."
 msgstr "A verification message was sent to {email}."
 
+#: src/features/settings/routes/SettingsPage.tsx:243
+msgid "Account"
+msgstr "Account"
+
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:93
+msgid "Add a target"
+msgstr "Add a target"
+
 #. placeholder {0}: format(day, 'MMM d')
-#. placeholder {0}: selectedDay ? format(selectedDay, 'EEE, MMM d') : ''
-#: src/features/entry/components/EntryHeatmap.tsx:253
-#: src/features/entry/components/EntryHeatmap.tsx:324
+#: src/features/entry/components/EntryHeatmap.tsx:261
 msgid "Add entry for {0}"
 msgstr "Add entry for {0}"
 
 #. placeholder {0}: goal.title
 #: src/features/goal/components/GoalCard.tsx:132
-msgid "Add entry for <0>{0}</0>"
-msgstr "Add entry for <0>{0}</0>"
+#~ msgid "Add entry for <0>{0}</0>"
+#~ msgstr "Add entry for <0>{0}</0>"
 
 #: src/features/goal/routes/GoalNewPage.tsx:65
 #: src/features/goal/routes/GoalNewPage.tsx:105
@@ -133,17 +159,22 @@ msgid "Add your first entry to start"
 msgstr "Add your first entry to start"
 
 #: src/features/today/components/TodayItem.tsx:209
-msgid "Adjust"
-msgstr "Adjust"
+#~ msgid "Adjust"
+#~ msgstr "Adjust"
 
 #: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:48
-#: src/features/goal/components/GoalLineGraph/logic.ts:450
+#: src/features/goal/components/GoalLineGraph/logic.ts:485
 msgid "After target date"
 msgstr "After target date"
 
 #: src/features/goal/components/GoalCard.tsx:79
 #~ msgid "Ahead of schedule!"
 #~ msgstr ""
+
+#. placeholder {0}: goal.target.toLocaleString()
+#: src/features/goal/components/GoalDetailStats.tsx:98
+msgid "aiming for {0} days"
+msgstr "aiming for {0} days"
 
 #: src/features/today/routes/TodayPage.tsx:60
 msgid "All goals"
@@ -157,9 +188,19 @@ msgstr "All Goals"
 msgid "Already have an account?"
 msgstr "Already have an account?"
 
-#: src/features/entry/components/CreateEntryForm.tsx:64
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:125
 msgid "Amount"
 msgstr "Amount"
+
+#. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:154
+msgid "Amount for {0}"
+msgstr "Amount for {0}"
+
+#. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:153
+msgid "Amount for {0} in {unit}"
+msgstr "Amount for {0} in {unit}"
 
 #: src/shared/components/common/ErrorFallback.tsx:109
 msgid "An unexpected error occurred."
@@ -181,7 +222,7 @@ msgstr "Archived"
 msgid "Archived goal: {title}"
 msgstr "Archived goal: {title}"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:37
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:39
 msgid "Archived goals will appear here.<0/>Switch filters to view active goals."
 msgstr "Archived goals will appear here.<0/>Switch filters to view active goals."
 
@@ -189,15 +230,24 @@ msgstr "Archived goals will appear here.<0/>Switch filters to view active goals.
 msgid "Are you sure you want to delete <0>{title}</0>?"
 msgstr "Are you sure you want to delete <0>{title}</0>?"
 
+#. placeholder {0}: todayEntry?.value.toLocaleString()
+#: src/features/today/components/TodayItem.tsx:53
+msgid "At {0} {unit}"
+msgstr "At {0} {unit}"
+
 #: src/features/goal/components/GoalStatusSummary.tsx:159
-msgid "Average Pace"
-msgstr "Average Pace"
+#~ msgid "Average Pace"
+#~ msgstr "Average Pace"
 
 #: src/features/auth/components/AuthPageShell.tsx:33
 #: src/features/auth/routes/SignInPage.tsx:23
 #: src/features/auth/routes/SignUpPage.tsx:22
 msgid "Back"
 msgstr "Back"
+
+#: src/features/settings/routes/SettingsPage.tsx:256
+msgid "Backup"
+msgstr "Backup"
 
 #: src/features/goal/components/GoalCard.tsx:223
 #~ msgid "Before goal's start date"
@@ -208,10 +258,15 @@ msgstr "Back"
 #~ msgstr ""
 
 #. placeholder {0}: formatDay(goal.targetDate, new Date())
-#: src/features/goal/components/GoalCard.tsx:106
-#: src/features/goal/components/GoalDetailStats.tsx:113
+#: src/features/goal/components/GoalCard.tsx:105
+#: src/features/goal/components/GoalDetailStats.tsx:102
+#: src/features/goal/components/GoalDetailStats.tsx:130
 msgid "by {0}"
 msgstr "by {0}"
+
+#: src/features/settings/routes/SettingsPage.tsx:142
+msgid "Can't reach the sync server"
+msgstr "Can't reach the sync server"
 
 #: src/features/goal/components/goalForm/EditGoalForm.tsx:64
 #: src/features/goal/routes/GoalNewPage.tsx:86
@@ -222,9 +277,17 @@ msgstr "Cancel"
 #~ msgid "Cancel editing"
 #~ msgstr "Cancel editing"
 
+#: src/features/settings/routes/SettingsPage.tsx:164
+msgid "Changes are saved on this device only."
+msgstr "Changes are saved on this device only."
+
+#: src/features/settings/routes/SettingsPage.tsx:158
+msgid "Changes stay saved on this device and sync when the connection is back."
+msgstr "Changes stay saved on this device and sync when the connection is back."
+
 #: src/shared/components/common/StatusMenu.tsx:188
-msgid "Check sync status"
-msgstr "Check sync status"
+#~ msgid "Check sync status"
+#~ msgstr "Check sync status"
 
 #: src/features/auth/components/authForm/SignUpForm.tsx:28
 msgid "Check your email to verify your account."
@@ -239,10 +302,14 @@ msgid "Check your inbox. For privacy, the same confirmation is shown for every e
 msgstr "Check your inbox. For privacy, the same confirmation is shown for every email address."
 
 #: src/shared/components/common/StatusMenu.tsx:235
-msgid "Check your internet connection and try again."
-msgstr "Check your internet connection and try again."
+#~ msgid "Check your internet connection and try again."
+#~ msgstr "Check your internet connection and try again."
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:60
+#: src/features/settings/routes/SettingsPage.tsx:139
+msgid "Checking your account…"
+msgstr "Checking your account…"
+
+#: src/features/goal/components/goalForm/CreateGoalForm.tsx:59
 msgid "Choose a name for your goal."
 msgstr "Choose a name for your goal."
 
@@ -250,33 +317,50 @@ msgstr "Choose a name for your goal."
 msgid "Choose a new password"
 msgstr "Choose a new password"
 
+#: src/shared/components/common/WorkspaceDataControls.tsx:76
+msgid "Choose a Seon backup file"
+msgstr "Choose a Seon backup file"
+
 #: src/features/entry/components/CreateEntryForm.tsx:146
-msgid "Choose yes or no."
-msgstr ""
+#~ msgid "Choose yes or no."
+#~ msgstr ""
+
+#. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:178
+msgid "Clear {0} for this day"
+msgstr "Clear {0} for this day"
 
 #: src/features/goal/components/GoalFilter.tsx:58
 msgid "Completed"
 msgstr "Completed"
 
 #: src/features/goal/components/GoalStatusSummary.tsx:121
-msgid "Completed!"
-msgstr "Completed!"
+#~ msgid "Completed!"
+#~ msgstr "Completed!"
 
 #: src/features/auth/routes/ResetPasswordPage.tsx:92
 msgid "Confirm password"
 msgstr "Confirm password"
 
 #: src/shared/components/common/StatusMenu.tsx:243
-msgid "Connecting to sync…"
-msgstr "Connecting to sync…"
+#~ msgid "Connecting to sync…"
+#~ msgstr "Connecting to sync…"
+
+#: src/features/settings/routes/SettingsPage.tsx:138
+msgid "Connecting…"
+msgstr "Connecting…"
 
 #: src/features/auth/routes/VerifyEmailPage.tsx:74
 msgid "Continue to Seon"
 msgstr "Continue to Seon"
 
 #: src/shared/components/common/StatusMenu.tsx:75
-msgid "Could not connect with the sync service. Try again later."
-msgstr "Could not connect with the sync service. Try again later."
+#~ msgid "Could not connect with the sync service. Try again later."
+#~ msgstr "Could not connect with the sync service. Try again later."
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:26
+msgid "Could not save a backup. Your data is unchanged."
+msgstr "Could not save a backup. Your data is unchanged."
 
 #: src/features/auth/routes/ForgotPasswordPage.tsx:89
 msgid "Couldn't request a reset link"
@@ -294,13 +378,13 @@ msgstr "Count"
 msgid "Create a goal"
 msgstr "Create a goal"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:20
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:22
 msgid "Create a new goal or change the filter!"
 msgstr "Create a new goal or change the filter!"
 
-#: src/components/authForm/components/SignInForm.tsx:180
-#~ msgid "Create account"
-#~ msgstr "Create account"
+#: src/features/settings/routes/SettingsPage.tsx:93
+msgid "Create account"
+msgstr "Create account"
 
 #: src/shared/components/common/DemoStart.tsx:48
 msgid "Create and track personal goals"
@@ -315,22 +399,22 @@ msgstr "Create goal"
 msgid "Create your account"
 msgstr "Create your account"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:15
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:17
 msgid "Create your first goal!"
 msgstr "Create your first goal!"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:72
+#: src/features/goal/components/GoalLineGraph/logic.ts:92
 msgid "Daily"
 msgstr "Daily"
 
-#: src/features/goal/components/GoalsContent.tsx:113
-#: src/features/goal/components/GoalsContent.tsx:115
-msgid "Daily practices"
-msgstr "Daily practices"
+#: src/features/goal/components/GoalsContent.tsx:97
+#: src/features/goal/components/GoalsContent.tsx:99
+#~ msgid "Daily practices"
+#~ msgstr "Daily practices"
 
 #: src/features/entry/components/CreateEntryForm.tsx:131
-msgid "Date"
-msgstr "Date"
+#~ msgid "Date"
+#~ msgstr "Date"
 
 #. js-lingui-explicit-id
 #: src/constants/setup.ts:40
@@ -345,6 +429,10 @@ msgstr "days"
 msgid "days all-time"
 msgstr "days all-time"
 
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:105
+msgid "Days to reach"
+msgstr "Days to reach"
+
 #: src/shared/components/ui/number-input.tsx:276
 msgid "Decrease"
 msgstr "Decrease"
@@ -355,8 +443,8 @@ msgstr "Delete"
 
 #: src/features/entry/components/CreateEntryForm.tsx:207
 #: src/features/entry/components/CreateEntryForm.tsx:278
-msgid "Delete entry"
-msgstr "Delete entry"
+#~ msgid "Delete entry"
+#~ msgstr "Delete entry"
 
 #: src/features/goal/components/GoalControls.tsx:106
 #: src/features/goal/components/GoalControls.tsx:110
@@ -369,6 +457,10 @@ msgstr "Delete goal"
 msgid "Deleted goal: {title}"
 msgstr "Deleted goal: {title}"
 
+#: src/features/settings/routes/SettingsPage.tsx:234
+msgid "Demo"
+msgstr "Demo"
+
 #: src/shared/components/common/DemoIndicator.tsx:59
 #: src/shared/components/common/DemoIndicator.tsx:66
 #: src/shared/components/common/DemoIndicator.tsx:75
@@ -376,8 +468,8 @@ msgid "Demo Mode"
 msgstr "Demo Mode"
 
 #: src/features/entry/components/CreateEntryForm.tsx:66
-msgid "Did you achieve it?"
-msgstr "Did you achieve it?"
+#~ msgid "Did you achieve it?"
+#~ msgstr "Did you achieve it?"
 
 #: src/features/auth/components/authForm/SignInForm.tsx:77
 msgid "Don't have an account?"
@@ -387,9 +479,9 @@ msgstr "Don't have an account?"
 msgid "done"
 msgstr "done"
 
-#: src/features/entry/components/EntryHeatmap.tsx:172
+#: src/features/entry/components/EntryHeatmap.tsx:180
 #: src/features/goal/components/StatChips.tsx:35
-#: src/features/today/components/TodayItem.tsx:56
+#: src/features/today/components/TodayItem.tsx:113
 msgid "Done"
 msgstr "Done"
 
@@ -405,17 +497,25 @@ msgstr "Due later"
 msgid "Due soon"
 msgstr "Due soon"
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:97
-msgid "e.g. words"
-msgstr "e.g. words"
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:145
+msgid "e.g. books"
+msgstr "e.g. books"
 
-#: src/features/goal/components/GoalDetailPanel.tsx:92
+#: src/features/goal/components/goalForm/CreateGoalForm.tsx:75
+msgid "e.g. Learn 1,000 French words"
+msgstr "e.g. Learn 1,000 French words"
+
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:97
+#~ msgid "e.g. words"
+#~ msgstr "e.g. words"
+
+#: src/features/goal/components/GoalDetailPanel.tsx:95
 msgid "Edit goal"
 msgstr "Edit goal"
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:76
-msgid "eg. 'Learn 1000 French words'"
-msgstr "eg. 'Learn 1000 French words'"
+#~ msgid "eg. 'Learn 1000 French words'"
+#~ msgstr "eg. 'Learn 1000 French words'"
 
 #: src/features/auth/components/authForm/AuthCredentialFields.tsx:43
 #: src/features/auth/routes/ForgotPasswordPage.tsx:62
@@ -431,24 +531,24 @@ msgid "Email verification"
 msgstr "Email verification"
 
 #: src/features/entry/components/CreateEntryForm.tsx:221
-msgid "Enter a value."
-msgstr ""
+#~ msgid "Enter a value."
+#~ msgstr ""
 
 #: src/features/auth/routes/SignInPage.tsx:41
 msgid "Enter your credentials to continue"
 msgstr "Enter your credentials to continue"
 
-#: src/features/entry/components/EntryHeatmap.tsx:178
+#: src/features/entry/components/EntryHeatmap.tsx:186
 msgid "Entry calendar"
 msgstr "Entry calendar"
 
 #: src/shared/components/common/StatusMenu.tsx:246
-msgid "Establishing a connection. This may take a moment."
-msgstr "Establishing a connection. This may take a moment."
+#~ msgid "Establishing a connection. This may take a moment."
+#~ msgstr "Establishing a connection. This may take a moment."
 
 #: src/features/goal/components/GoalStatusSummary.tsx:172
-msgid "Estimated Date"
-msgstr "Estimated Date"
+#~ msgid "Estimated Date"
+#~ msgstr "Estimated Date"
 
 #: src/shared/components/common/DemoStart.tsx:32
 msgid "Experience Seon Goals without creating an account"
@@ -458,7 +558,7 @@ msgstr "Experience Seon Goals without creating an account"
 msgid "Failed to add entry"
 msgstr "Failed to add entry"
 
-#: src/features/goal/hooks/useGoalForm.ts:66
+#: src/features/goal/hooks/useGoalForm.ts:71
 msgid "Failed to add goal"
 msgstr "Failed to add goal"
 
@@ -482,7 +582,7 @@ msgstr "Failed to move the target date"
 msgid "Failed to unarchive {title}"
 msgstr "Failed to unarchive {title}"
 
-#: src/features/goal/hooks/useGoalForm.ts:82
+#: src/features/goal/hooks/useGoalForm.ts:87
 msgid "Failed to update goal"
 msgstr "Failed to update goal"
 
@@ -517,8 +617,8 @@ msgstr "Get Started"
 msgid "Go back"
 msgstr "Go back"
 
-#: src/features/goal/components/GoalCard.tsx:37
-#: src/features/goal/components/GoalDetailStats.tsx:121
+#: src/features/goal/components/GoalCard.tsx:33
+#: src/features/goal/components/GoalDetailStats.tsx:140
 msgid "Goal achieved"
 msgstr "Goal achieved"
 
@@ -526,8 +626,12 @@ msgstr "Goal achieved"
 #~ msgid "Goal achieved!"
 #~ msgstr ""
 
+#: src/features/goal/hooks/useGoalForm.ts:68
+msgid "Goal added"
+msgstr "Goal added"
+
 #: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:40
-#: src/features/goal/components/GoalLineGraph/logic.ts:451
+#: src/features/goal/components/GoalLineGraph/logic.ts:486
 msgid "Goal Benchmark"
 msgstr "Goal Benchmark"
 
@@ -535,13 +639,13 @@ msgstr "Goal Benchmark"
 msgid "Goal management controls"
 msgstr "Goal management controls"
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:65
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:74
+#: src/features/goal/components/goalForm/CreateGoalForm.tsx:64
+#: src/features/goal/components/goalForm/CreateGoalForm.tsx:73
 msgid "Goal name"
 msgstr "Goal name"
 
-#: src/features/goal/components/GoalDetailPanel.tsx:138
-#: src/features/goal/components/GoalDetailPanel.tsx:158
+#: src/features/goal/components/GoalDetailPanel.tsx:141
+#: src/features/goal/components/GoalDetailPanel.tsx:161
 msgid "Goal not found"
 msgstr "Goal not found"
 
@@ -550,21 +654,34 @@ msgstr "Goal not found"
 #~ msgid "Goal started {0}"
 #~ msgstr "Goal started {0}"
 
+#: src/features/goal/hooks/useGoalForm.ts:84
+msgid "Goal updated"
+msgstr "Goal updated"
+
 #: src/app/metadata.tsx:33
 #: src/features/goal/routes/GoalsPage.tsx:31
 #: src/shared/components/common/BottomTabBar.tsx:42
 msgid "Goals"
 msgstr "Goals"
 
-#: src/features/goal/components/GoalsContent.tsx:96
+#: src/features/goal/components/GoalsContent.tsx:80
 msgid "Goals list"
 msgstr "Goals list"
 
-#: src/shared/components/common/StatusMenu.tsx:287
-msgid "Hello, {userName}!"
-msgstr "Hello, {userName}!"
+#: src/features/goal/components/goalForm/GoalTypeField.tsx:43
+msgid "Habit"
+msgstr "Habit"
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:66
+#: src/features/goal/components/GoalsContent.tsx:97
+#: src/features/goal/components/GoalsContent.tsx:99
+msgid "Habits"
+msgstr "Habits"
+
+#: src/shared/components/common/StatusMenu.tsx:287
+#~ msgid "Hello, {userName}!"
+#~ msgstr "Hello, {userName}!"
+
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:63
 msgid "Hide extra options"
 msgstr "Hide extra options"
 
@@ -598,7 +715,7 @@ msgstr "In a week"
 msgid "Increase"
 msgstr "Increase"
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:106
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:86
 msgid "Initial value"
 msgstr "Initial value"
 
@@ -622,13 +739,22 @@ msgstr "It looks like you are offline!"
 msgid "It seems like you are not connected!"
 msgstr "It seems like you are not connected!"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:26
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:28
 msgid "Keep working on your goals!<0/>Change the filter to see all goals."
 msgstr "Keep working on your goals!<0/>Change the filter to see all goals."
 
+#: src/features/settings/routes/SettingsPage.tsx:194
+#: src/features/settings/routes/SettingsPage.tsx:252
+msgid "Language"
+msgstr "Language"
+
+#: src/features/settings/routes/SettingsPage.tsx:150
+msgid "Last synced {lastSynced}"
+msgstr "Last synced {lastSynced}"
+
 #: src/shared/components/common/StatusMenu.tsx:218
-msgid "Last synced:"
-msgstr "Last synced:"
+#~ msgid "Last synced:"
+#~ msgstr "Last synced:"
 
 #. placeholder {0}: format(updatedAt, 'PPp')
 #: src/features/goal/components/goalForm/EditGoalForm.tsx:39
@@ -636,8 +762,8 @@ msgid "Last update: {0}"
 msgstr "Last update: {0}"
 
 #: src/features/entry/components/CreateEntryForm.tsx:243
-msgid "Last:"
-msgstr "Last:"
+#~ msgid "Last:"
+#~ msgstr "Last:"
 
 #. js-lingui-explicit-id
 #: src/constants/setup.ts:19
@@ -648,45 +774,51 @@ msgstr "Learn 1000 French words"
 #~ msgid "Learn 1000 French words"
 #~ msgstr "Learn 1000 French words"
 
-#: src/features/entry/components/EntryHeatmap.tsx:290
-#: src/features/today/components/TodayItem.tsx:173
+#: src/features/entry/components/EntryHeatmap.tsx:298
+#: src/features/entry/components/EntryLogger.tsx:121
 msgid "Less"
 msgstr "Less"
 
 #: src/shared/components/common/StatusMenu.tsx:143
-msgid "Loading user status"
-msgstr "Loading user status"
+#~ msgid "Loading user status"
+#~ msgstr "Loading user status"
 
 #: src/features/goal/components/GoalCard.tsx:125
 #: src/features/today/components/TodayItem.tsx:196
-msgid "Log"
-msgstr "Log"
+#~ msgid "Log"
+#~ msgstr "Log"
 
 #. placeholder {0}: goal.title
 #: src/features/goal/components/GoalCard.tsx:122
-msgid "Log progress for {0}"
-msgstr "Log progress for {0}"
+#~ msgid "Log progress for {0}"
+#~ msgstr "Log progress for {0}"
 
 #: src/routes/index.lazy.tsx:66
 msgid "Make progress."
 msgstr "Make progress."
 
 #. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:89
+msgid "Mark {0} done"
+msgstr "Mark {0} done"
+
+#. placeholder {0}: goal.title
 #: src/features/goal/components/HabitRow.tsx:125
 #: src/features/today/components/TodayItem.tsx:91
-msgid "Mark {0} done today"
-msgstr "Mark {0} done today"
+#~ msgid "Mark {0} done today"
+#~ msgstr "Mark {0} done today"
 
 #: src/features/goal/hooks/useGoalForm.ts:50
+#: src/features/goal/hooks/useGoalForm.ts:55
 msgid "Missing required fields"
 msgstr "Missing required fields"
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:74
+#: src/features/goal/components/GoalLineGraph/logic.ts:94
 msgid "Monthly"
 msgstr "Monthly"
 
-#: src/features/entry/components/EntryHeatmap.tsx:297
-#: src/features/today/components/TodayItem.tsx:185
+#: src/features/entry/components/EntryHeatmap.tsx:305
+#: src/features/entry/components/EntryLogger.tsx:163
 msgid "More"
 msgstr "More"
 
@@ -725,14 +857,14 @@ msgid "Newest goals"
 msgstr "Newest first"
 
 #: src/features/entry/components/CreateEntryForm.tsx:197
-msgid "No"
-msgstr "No"
+#~ msgid "No"
+#~ msgstr "No"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:35
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:37
 msgid "No archived goals."
 msgstr "No archived goals."
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:24
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:26
 msgid "No completed goals yet."
 msgstr "No completed goals yet."
 
@@ -740,13 +872,17 @@ msgstr "No completed goals yet."
 msgid "No entries yet — tap a day in the calendar to log one."
 msgstr "No entries yet — tap a day in the calendar to log one."
 
-#: src/features/entry/components/EntryHeatmap.tsx:170
+#: src/features/entry/components/EntryHeatmap.tsx:178
 msgid "No entry"
 msgstr "No entry"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:19
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:21
 msgid "No goals in progress."
 msgstr "No goals in progress."
+
+#: src/features/goal/model/paceStatusInfo.ts:15
+msgid "no target"
+msgstr "no target"
 
 #: src/features/goal/model/paceStatusInfo.ts:13
 msgid "not started"
@@ -768,13 +904,13 @@ msgstr "Note: Seon Goals is still in early development.<0/>Many additional featu
 msgid "Nothing to work on yet."
 msgstr "Nothing to work on yet."
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:107
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:87
 msgid "Numbers only"
 msgstr "Numbers only"
 
 #. placeholder {0}: goal.target.toLocaleString()
-#: src/features/goal/components/GoalCard.tsx:103
-#: src/features/goal/components/GoalDetailStats.tsx:110
+#: src/features/goal/components/GoalCard.tsx:98
+#: src/features/goal/components/GoalDetailStats.tsx:123
 msgid "of {0} {unit}"
 msgstr "of {0} {unit}"
 
@@ -782,11 +918,11 @@ msgstr "of {0} {unit}"
 msgid "Oldest goals"
 msgstr "Oldest first"
 
-#: src/features/goal/model/paceStatusInfo.ts:31
+#: src/features/goal/model/paceStatusInfo.ts:33
 msgid "on pace"
 msgstr "on pace"
 
-#: src/features/goal/components/StatChips.tsx:63
+#: src/features/goal/components/StatChips.tsx:65
 msgid "On pace"
 msgstr "On pace"
 
@@ -798,8 +934,12 @@ msgstr "Ongoing"
 msgid "Open the verification link to finish setting up sync."
 msgstr "Open the verification link to finish setting up sync."
 
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:96
+msgid "Optional. Without one, Seon tracks how often you show up."
+msgstr "Optional. Without one, Seon tracks how often you show up."
+
 #. placeholder {0}: formatDay(replanDate, new Date())
-#: src/features/goal/components/GoalDetailStats.tsx:149
+#: src/features/goal/components/GoalDetailStats.tsx:168
 msgid "or move the date → {0}"
 msgstr "or move the date → {0}"
 
@@ -849,9 +989,7 @@ msgstr ""
 msgid "Primary"
 msgstr "Primary"
 
-#: src/features/entry/components/CreateEntryForm.tsx:65
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:32
-#: src/features/goal/components/GoalStatusSummary.tsx:141
 msgid "Progress"
 msgstr "Progress"
 
@@ -859,17 +997,22 @@ msgstr "Progress"
 msgid "Progress for today:"
 msgstr "Progress for today:"
 
-#: src/features/goal/components/GoalCard.tsx:50
+#: src/features/goal/components/GoalCard.tsx:47
 msgid "Reach {suggested} today to stay on pace"
 msgstr "Reach {suggested} today to stay on pace"
 
-#. placeholder {0}: metrics.suggestedToday
-#: src/features/today/components/TodayItem.tsx:142
-msgid "Reach <0>{0}</0> today"
-msgstr "Reach <0>{0}</0> today"
+#. placeholder {0}: metrics.suggestedToday.toLocaleString()
+#: src/features/today/components/TodayItem.tsx:75
+msgid "Reach <0>{0} {unit}</0> today"
+msgstr "Reach <0>{0} {unit}</0> today"
 
 #. placeholder {0}: metrics.suggestedToday
-#: src/features/goal/components/GoalDetailStats.tsx:125
+#: src/features/today/components/TodayItem.tsx:142
+#~ msgid "Reach <0>{0}</0> today"
+#~ msgstr "Reach <0>{0}</0> today"
+
+#. placeholder {0}: metrics.suggestedToday
+#: src/features/goal/components/GoalDetailStats.tsx:144
 msgid "Reach <0>{0}</0> today to stay on pace"
 msgstr "Reach <0>{0}</0> today to stay on pace"
 
@@ -902,13 +1045,17 @@ msgstr "Refresh page"
 msgid "Refresh to get the latest improvements."
 msgstr "A new version is ready to install with improvements and fixes."
 
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:188
+msgid "Remove target"
+msgstr "Remove target"
+
 #: src/features/auth/routes/ResetPasswordPage.tsx:69
 msgid "Request a new reset link"
 msgstr "Request a new reset link"
 
 #: src/features/goal/components/GoalStatusSummary.tsx:164
-msgid "Required Pace"
-msgstr "Required Pace"
+#~ msgid "Required Pace"
+#~ msgstr "Required Pace"
 
 #: src/features/auth/routes/VerifyEmailPage.tsx:94
 msgid "Resend verification email"
@@ -929,6 +1076,14 @@ msgstr "Reset password"
 #: src/features/auth/routes/ForgotPasswordPage.tsx:40
 msgid "Reset your password"
 msgstr "Reset your password"
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:69
+msgid "Restore backup"
+msgstr "Restore backup"
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:41
+msgid "Restored {goals} goals and {entries} entries."
+msgstr "Restored {goals} goals and {entries} entries."
 
 #: src/shared/components/common/NotFound.tsx:32
 msgid "Return to Home"
@@ -951,10 +1106,22 @@ msgstr "Return to sign in after verifying your email."
 msgid "Sample data has been created for you to explore the app's functionality."
 msgstr "Sample data has been created for you to explore the app's functionality."
 
-#: src/features/entry/components/CreateEntryForm.tsx:284
 #: src/features/goal/components/goalForm/EditGoalForm.tsx:72
 msgid "Save"
 msgstr "Save"
+
+#. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:177
+msgid "Save {value} for {0}"
+msgstr "Save {value} for {0}"
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:61
+msgid "Save backup"
+msgstr "Save backup"
+
+#: src/features/settings/routes/SettingsPage.tsx:259
+msgid "Save your goals and entries as a file, or restore them from one."
+msgstr "Save your goals and entries as a file, or restore them from one."
 
 #: src/features/auth/routes/ResetPasswordPage.tsx:122
 msgid "Saving…"
@@ -993,11 +1160,11 @@ msgstr "Seon Demo Mode"
 msgid "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 msgstr "Seon is a goal tracker that helps you stay focused and motivated on what matters most."
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:105
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:160
 msgid "Set a target date for your goal."
 msgstr ""
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:86
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:118
 msgid "Set a target value for your goal."
 msgstr "Set a target value for your goal."
 
@@ -1005,16 +1172,27 @@ msgstr "Set a target value for your goal."
 msgid "Set goals."
 msgstr "Set goals."
 
+#: src/features/entry/components/EntryHeatmap.tsx:359
+msgid "Set the amount, then tap the check to save."
+msgstr "Set the amount, then tap the check to save."
+
 #: src/features/goal/routes/GoalNewPage.tsx:68
 #: src/features/goal/routes/GoalNewPage.tsx:108
 msgid "Set up your new goal. You can always edit it later."
 msgstr "Set up your new goal. You can always edit it later."
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:68
+#: src/app/metadata.tsx:39
+#: src/features/settings/routes/SettingsPage.tsx:230
+#: src/shared/components/common/SettingsButton.tsx:43
+msgid "Settings"
+msgstr "Settings"
+
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:65
 msgid "Show extra options"
 msgstr "Show extra options"
 
 #: src/features/auth/components/authForm/SignUpForm.tsx:96
+#: src/features/settings/routes/SettingsPage.tsx:89
 msgid "Sign in"
 msgstr "Sign in"
 
@@ -1025,12 +1203,12 @@ msgid "Sign In"
 msgstr "Sign In"
 
 #: src/shared/components/common/StatusMenu.tsx:53
-msgid "Sign in again to sync your data."
-msgstr "Sign in again to sync your data."
+#~ msgid "Sign in again to sync your data."
+#~ msgstr "Sign in again to sync your data."
 
 #: src/shared/components/common/StatusMenu.tsx:58
-msgid "Sign in to sync your data."
-msgstr "Sign in to sync your data."
+#~ msgid "Sign in to sync your data."
+#~ msgstr "Sign in to sync your data."
 
 #: src/features/auth/routes/SignInPage.tsx:38
 msgid "Sign in to your account"
@@ -1066,7 +1244,11 @@ msgstr "Sign up will not work."
 msgid "Something went wrong"
 msgstr "Something went wrong"
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:80
+#: src/features/goal/components/goalForm/GoalTypeField.tsx:45
+msgid "Something you do regularly. Check it off each day you do it.<0/>E.g. meditating or taking vitamins."
+msgstr "Something you do regularly. Check it off each day you do it.<0/>E.g. meditating or taking vitamins."
+
+#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:77
 msgid "Start date"
 msgstr "Start date"
 
@@ -1083,37 +1265,48 @@ msgid "Start tracking your goals today"
 msgstr "Start tracking your goals today"
 
 #. placeholder {0}: formatDay(goal.startDate, new Date())
-#: src/features/goal/components/GoalCard.tsx:40
-#: src/features/goal/components/GoalDetailStats.tsx:123
+#: src/features/goal/components/GoalCard.tsx:36
+#: src/features/goal/components/GoalDetailStats.tsx:142
 msgid "Starts {0}"
 msgstr "Starts {0}"
 
 #: src/features/goal/hooks/useGoalForm.ts:63
-msgid "Sucessfully added goal"
-msgstr "Sucessfully added goal"
+#~ msgid "Sucessfully added goal"
+#~ msgstr "Sucessfully added goal"
 
 #: src/features/goal/hooks/useGoalForm.ts:79
-msgid "Sucessfully updated goal"
-msgstr "Sucessfully updated goal"
+#~ msgid "Sucessfully updated goal"
+#~ msgstr "Sucessfully updated goal"
 
 #: src/features/entry/components/CreateEntryForm.tsx:251
-msgid "Suggested amount"
-msgstr "Suggested amount"
+#~ msgid "Suggested amount"
+#~ msgstr "Suggested amount"
 
-#: src/shared/components/common/StatusMenu.tsx:45
-#: src/shared/components/common/StatusMenu.tsx:72
+#: src/features/settings/routes/SettingsPage.tsx:246
+msgid "Sync"
+msgstr "Sync"
+
+#: src/features/settings/routes/SettingsPage.tsx:145
 msgid "Sync is off"
 msgstr "Sync is off"
 
+#: src/features/settings/routes/SettingsPage.tsx:236
+msgid "Sync is turned off in the demo. Everything stays on this device."
+msgstr "Sync is turned off in the demo. Everything stays on this device."
+
+#: src/features/settings/routes/SettingsPage.tsx:144
+msgid "Sync isn't working right now"
+msgstr "Sync isn't working right now"
+
 #: src/shared/components/common/StatusMenu.tsx:174
-msgid "Syncing"
-msgstr "Syncing"
+#~ msgid "Syncing"
+#~ msgstr "Syncing"
 
 #: src/shared/components/common/DemoIndicator.tsx:78
 msgid "Syncing features are disabled.<0/>All data is stored locally."
 msgstr "Syncing features are disabled.<0/>All data is stored locally."
 
-#: src/features/goal/components/GoalsContent.tsx:35
+#: src/features/goal/components/GoalsContent.tsx:19
 msgid "Syncing your goals..."
 msgstr "Syncing your goals..."
 
@@ -1121,7 +1314,19 @@ msgstr "Syncing your goals..."
 msgid "Tap a day in the calendar to add or correct an entry."
 msgstr "Tap a day in the calendar to add or correct an entry."
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:117
+#: src/features/entry/components/EntryHeatmap.tsx:357
+msgid "Tap the check to mark this day done."
+msgstr "Tap the check to mark this day done."
+
+#: src/features/entry/components/EntryHeatmap.tsx:355
+msgid "Tap the filled check to clear this day."
+msgstr "Tap the filled check to clear this day."
+
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:105
+msgid "Target"
+msgstr "Target"
+
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:172
 msgid "Target date"
 msgstr "Target date"
 
@@ -1130,13 +1335,17 @@ msgstr "Target date"
 msgid "Target date moved to {0}"
 msgstr "Target date moved to {0}"
 
-#: src/features/goal/components/goalForm/CreateGoalForm.tsx:109
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:164
 msgid "Target date must be after start date"
 msgstr "Target date must be after start date"
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:92
-msgid "Target value"
-msgstr "Target value"
+#~ msgid "Target value"
+#~ msgstr "Target value"
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:46
+msgid "That file isn't a Seon backup."
+msgstr "That file isn't a Seon backup."
 
 #: src/features/today/routes/TodayPage.tsx:108
 msgid "That's everything for today."
@@ -1154,9 +1363,17 @@ msgstr "The page you're looking for doesn't exist or has been moved."
 msgid "The verification link could not be used"
 msgstr "The verification link could not be used"
 
-#: src/features/goal/components/NoGoalsPlaceholder.tsx:14
+#: src/features/goal/components/NoGoalsPlaceholder.tsx:16
 msgid "There are no goals."
 msgstr "There are no goals."
+
+#: src/shared/components/common/WorkspaceDataControls.tsx:40
+msgid "This backup was already restored."
+msgstr "This backup was already restored."
+
+#: src/features/settings/routes/SettingsPage.tsx:154
+msgid "This can take a moment."
+msgstr "This can take a moment."
 
 #: src/shared/components/common/DemoStart.tsx:37
 msgid "This demo allows you to try all features without signing up. Your data will be stored locally on your device."
@@ -1171,8 +1388,8 @@ msgid "This will delete all your data and reset the demo."
 msgstr "This will delete all your data and reset the demo."
 
 #: src/features/goal/components/GoalStatusSummary.tsx:151
-msgid "Time Left"
-msgstr "Time Left"
+#~ msgid "Time Left"
+#~ msgstr "Time Left"
 
 #: src/features/entry/components/EntryHistory.tsx:11
 #: src/features/goal/routes/GoalsPage.tsx:59
@@ -1191,8 +1408,8 @@ msgid "Tomorrow"
 msgstr "Tomorrow"
 
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:45
-msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
-msgstr "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
+#~ msgid "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
+#~ msgstr "Track daily completion with a simple yes or no.<0/>E.g. habits like meditation or taking vitamins."
 
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:23
 msgid "Track how many times you complete something each day.<0/>E.g. '30 minutes of exercise' or 'drink 8 glasses of water'."
@@ -1219,20 +1436,29 @@ msgstr "Unarchive goal"
 msgid "Unarchived goal: {title}"
 msgstr "Unarchived goal: {title}"
 
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:89
-#: src/features/goal/components/goalForm/GoalOptionalFields.tsx:96
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:137
+#: src/features/goal/components/goalForm/GoalTargetFields.tsx:146
 msgid "Unit"
 msgstr "Unit"
 
 #. placeholder {0}: goal.title
+#: src/features/entry/components/EntryLogger.tsx:89
+msgid "Unmark {0}"
+msgstr "Unmark {0}"
+
+#. placeholder {0}: goal.title
 #: src/features/goal/components/HabitRow.tsx:124
 #: src/features/today/components/TodayItem.tsx:90
-msgid "Unmark {0} for today"
-msgstr "Unmark {0} for today"
+#~ msgid "Unmark {0} for today"
+#~ msgstr "Unmark {0} for today"
 
 #: src/shared/components/common/SignOutButton.tsx:49
 #~ msgid "Unsynced data will be lost"
 #~ msgstr "Unsynced data will be lost"
+
+#: src/features/settings/routes/SettingsPage.tsx:137
+msgid "Up to date"
+msgstr "Up to date"
 
 #: src/shared/components/common/ErrorFallback.tsx:108
 msgid "Update app"
@@ -1252,12 +1478,12 @@ msgid "Use at least eight characters."
 msgstr "Use at least eight characters."
 
 #: src/shared/components/common/StatusMenu.tsx:275
-msgid "User info"
-msgstr "User info"
+#~ msgid "User info"
+#~ msgstr "User info"
 
 #: src/features/goal/components/goalForm/CreateGoalForm.tsx:94
-msgid "Value for goal completion (number)"
-msgstr "Value for goal completion (number)"
+#~ msgid "Value for goal completion (number)"
+#~ msgstr "Value for goal completion (number)"
 
 #: src/features/auth/routes/VerifyEmailPage.tsx:25
 msgid "Verification email sent."
@@ -1268,8 +1494,8 @@ msgid "Verify your email before signing in"
 msgstr "Verify your email before signing in"
 
 #. placeholder {0}: goal.title
-#: src/features/goal/components/GoalCard.tsx:87
-#: src/features/goal/components/HabitRow.tsx:64
+#: src/features/goal/components/GoalCard.tsx:81
+#: src/features/goal/components/HabitRow.tsx:59
 msgid "View {0} details"
 msgstr "View {0} details"
 
@@ -1299,7 +1525,7 @@ msgstr "Wake up early every day"
 msgid "We'll send a secure reset link if the account exists."
 msgstr "We'll send a secure reset link if the account exists."
 
-#: src/features/goal/components/GoalLineGraph/logic.ts:73
+#: src/features/goal/components/GoalLineGraph/logic.ts:93
 msgid "Weekly"
 msgstr "Weekly"
 
@@ -1313,8 +1539,8 @@ msgid "Welcome back, {0}!"
 msgstr "Welcome back, {0}!"
 
 #: src/shared/components/common/StatusMenu.tsx:258
-msgid "Welcome back, {userName}!"
-msgstr "Welcome back, {userName}!"
+#~ msgid "Welcome back, {userName}!"
+#~ msgstr "Welcome back, {userName}!"
 
 #. placeholder {0}: user.name
 #: src/features/auth/components/authForm/SignUpForm.tsx:27
@@ -1335,12 +1561,12 @@ msgstr "words"
 #~ msgstr "words"
 
 #: src/features/entry/components/CreateEntryForm.tsx:181
-msgid "Yes"
-msgstr "Yes"
+#~ msgid "Yes"
+#~ msgstr "Yes"
 
 #: src/features/goal/components/goalForm/GoalTypeField.tsx:43
-msgid "Yes or no"
-msgstr "Yes or no"
+#~ msgid "Yes or no"
+#~ msgstr "Yes or no"
 
 #: src/features/entry/components/EntryHistory.tsx:12
 msgid "Yesterday"
@@ -1350,7 +1576,11 @@ msgstr "Yesterday"
 msgid "You are offline"
 msgstr "You are offline"
 
-#: src/shared/components/common/StatusMenu.tsx:232
+#: src/features/settings/routes/SettingsPage.tsx:77
+msgid "You were signed out on this device. Sign in again to keep syncing."
+msgstr "You were signed out on this device. Sign in again to keep syncing."
+
+#: src/features/settings/routes/SettingsPage.tsx:140
 msgid "You're offline"
 msgstr "You're offline"
 
@@ -1358,13 +1588,21 @@ msgstr "You're offline"
 msgid "Your account can now connect to sync."
 msgstr "Your account can now connect to sync."
 
+#: src/features/settings/routes/SettingsPage.tsx:152
+msgid "Your changes are backed up to your account."
+msgstr "Your changes are backed up to your account."
+
 #: src/shared/components/common/StatusMenu.tsx:213
-msgid "Your data is synced!"
-msgstr "Your data is synced!"
+#~ msgid "Your data is synced!"
+#~ msgstr "Your data is synced!"
 
 #: src/features/auth/routes/VerifyEmailPage.tsx:49
 msgid "Your email is verified"
 msgstr "Your email is verified"
+
+#: src/features/settings/routes/SettingsPage.tsx:81
+msgid "Your goals are saved on this device. Sign in to back them up and use them on other devices."
+msgstr "Your goals are saved on this device. Sign in to back them up and use them on other devices."
 
 #: src/shared/components/common/SignOutButton.tsx:53
 #~ msgid "Your most recent changes have not been synced yet."
@@ -1375,7 +1613,7 @@ msgid "Your password has been reset."
 msgstr "Your password has been reset."
 
 #: src/features/goal/components/GoalLineGraph/GoalLineGraph.tsx:33
-#: src/features/goal/components/GoalLineGraph/logic.ts:449
+#: src/features/goal/components/GoalLineGraph/logic.ts:484
 msgid "Your Progress"
 msgstr "Your Progress"
 
@@ -1384,5 +1622,5 @@ msgid "Your progress graph will be shown here"
 msgstr "Your progress graph will be shown here"
 
 #: src/shared/components/common/StatusMenu.tsx:50
-msgid "Your session has expired."
-msgstr "Your session has expired."
+#~ msgid "Your session has expired."
+#~ msgstr "Your session has expired."

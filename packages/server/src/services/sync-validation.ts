@@ -6,10 +6,10 @@ type NormalizedGoalData = Partial<{
   description: string | null;
   initialValue: number;
   currentValue: number;
-  target: number;
+  target: number | null;
   unit: string;
   startDate: string;
-  targetDate: string;
+  targetDate: string | null;
   createdAt: string;
   completionDate: string | null;
   archivedAt: string | null;
@@ -183,7 +183,7 @@ function normalizeGoal(operation: SyncOperation): SyncOperationValidation {
       output[field] = value;
     }
   }
-  for (const field of ['initialValue', 'currentValue', 'target'] as const) {
+  for (const field of ['initialValue', 'currentValue'] as const) {
     const value = data[field];
     if (value !== undefined) {
       if (!isPostgresInteger(value)) {
@@ -192,7 +192,16 @@ function normalizeGoal(operation: SyncOperation): SyncOperationValidation {
       output[field] = value;
     }
   }
-  for (const field of ['startDate', 'targetDate', 'createdAt'] as const) {
+  if (data.target !== undefined) {
+    if (data.target !== null && !isPostgresInteger(data.target)) {
+      return reject(
+        'invalid_field',
+        'target must be a PostgreSQL integer or null',
+      );
+    }
+    output.target = data.target;
+  }
+  for (const field of ['startDate', 'createdAt'] as const) {
     const value = data[field];
     if (value !== undefined) {
       if (!isIsoDate(value)) {
@@ -201,7 +210,7 @@ function normalizeGoal(operation: SyncOperation): SyncOperationValidation {
       output[field] = new Date(value).toISOString();
     }
   }
-  for (const field of ['completionDate', 'archivedAt'] as const) {
+  for (const field of ['targetDate', 'completionDate', 'archivedAt'] as const) {
     const value = data[field];
     if (value !== undefined) {
       if (value !== null && !isIsoDate(value)) {
@@ -215,6 +224,17 @@ function normalizeGoal(operation: SyncOperation): SyncOperationValidation {
       return reject('invalid_field', 'type is not a supported goal type');
     }
     output.type = data.type as NormalizedGoalData['type'];
+  }
+  // Only habits (BOOLEAN goals) may leave the target open; the other types are paced.
+  if (
+    operation.op === 'PUT' &&
+    output.type !== 'BOOLEAN' &&
+    (output.target === null || output.targetDate === null)
+  ) {
+    return reject(
+      'invalid_field',
+      'target and targetDate are required unless the goal type is BOOLEAN',
+    );
   }
 
   return {

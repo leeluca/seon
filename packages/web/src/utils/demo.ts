@@ -138,7 +138,7 @@ const createSampleEntries = (
       }
     });
   } else if (goalType === 'BOOLEAN') {
-    // For boolean goals, add some yes/no entries
+    // For boolean goals, add some done/not-done entries
     const daysAgo = [...Array(5)].map((_, i) => subDays(today, i + 1));
 
     daysAgo.forEach((date, index) => {

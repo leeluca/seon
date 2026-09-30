@@ -41,6 +41,8 @@ export function PaceChip({ status }: { status: PaceStatus }) {
           <Trans>Not started</Trans>
         </Chip>
       );
+    case 'open':
+      return null;
     case 'ahead':
       return (
         <Chip className="bg-primary/10 text-primary">

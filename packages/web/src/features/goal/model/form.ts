@@ -45,28 +45,45 @@ export function createGoalFormValues(): GoalFormValues {
 export function goalToFormValues(goal: Database['goal']): GoalFormValues {
   return {
     title: goal.title,
-    targetValue: goal.target,
+    targetValue: goal.target ?? undefined,
     unit: goal.unit,
     startDate: new Date(goal.startDate),
-    targetDate: new Date(goal.targetDate),
+    targetDate: goal.targetDate ? new Date(goal.targetDate) : undefined,
     initialValue: goal.initialValue ?? 0,
     type: goal.type as GoalType,
   };
 }
 
+/**
+ * Whether the values describe a habit with no target. Those are
+ * open-ended: they store no target and no target date.
+ */
+export function isOpenEndedGoal(
+  values: Pick<GoalFormValues, 'type' | 'targetValue'>,
+) {
+  return values.type === 'BOOLEAN' && !values.targetValue;
+}
+
 export function goalFormValuesToPayload(values: GoalFormValues) {
   const { targetValue, targetDate } = values;
+  const base = {
+    ...values,
+    title: values.title.trim(),
+    unit: values.unit.trim(),
+    startDate: values.startDate.toISOString(),
+  };
 
-  if (targetValue === undefined || targetDate === undefined) {
+  if (isOpenEndedGoal(values)) {
+    return { ...base, target: null, targetDate: null };
+  }
+
+  if (!targetValue || targetDate === undefined) {
     return;
   }
 
   return {
-    ...values,
-    title: values.title.trim(),
-    unit: values.unit.trim(),
+    ...base,
     target: targetValue,
-    startDate: values.startDate.toISOString(),
     targetDate: targetDate.toISOString(),
   };
 }

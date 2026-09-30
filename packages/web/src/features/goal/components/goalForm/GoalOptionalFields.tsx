@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { Trans, useLingui } from '@lingui/react/macro';
 import { ChevronRightIcon } from 'lucide-react';
 
-import { MAX_INPUT_NUMBER, MAX_UNIT_LENGTH } from '~/constants';
+import { MAX_INPUT_NUMBER } from '~/constants';
 import { goalFormOptions } from '~/features/goal/model/form';
 import { Button } from '~/shared/components/ui/button';
 import {
@@ -10,7 +10,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/shared/components/ui/collapsible';
-import { maxLengthValidator } from '~/utils/validation';
 import { withForm } from '../../hooks/useGoalForm';
 
 export const GoalOptionalFields = withForm({
@@ -18,7 +17,6 @@ export const GoalOptionalFields = withForm({
   props: {
     collapsed: false,
     startDateId: '',
-    unitId: '',
     initialValueId: '',
     toggleId: '',
   },
@@ -26,7 +24,6 @@ export const GoalOptionalFields = withForm({
     form,
     collapsed,
     startDateId,
-    unitId,
     initialValueId,
     toggleId,
   }) {
@@ -79,23 +76,6 @@ export const GoalOptionalFields = withForm({
                   id={startDateId || undefined}
                   label={t`Start date`}
                   showPresetDates
-                />
-              )}
-            </form.AppField>
-            <form.AppField
-              name="unit"
-              validators={{
-                onChange: ({ value }) =>
-                  maxLengthValidator(value, MAX_UNIT_LENGTH, t`Unit`) ||
-                  undefined,
-              }}
-            >
-              {(field) => (
-                <field.TextField
-                  id={unitId || undefined}
-                  label={t`Unit`}
-                  placeholder={t`e.g. words`}
-                  maxLength={MAX_UNIT_LENGTH}
                 />
               )}
             </form.AppField>

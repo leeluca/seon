@@ -36,6 +36,13 @@
       "when": 1785934394401,
       "tag": "0004_auth_sync_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790694215731,
+      "tag": "0005_goal_optional_target",
+      "breakpoints": true
     }
   ]
 }

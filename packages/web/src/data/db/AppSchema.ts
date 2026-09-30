@@ -55,10 +55,11 @@ const goal = new Table(
     shortId: column.text,
     title: column.text,
     description: column.optionalText,
-    target: column.integer,
+    // Null for habits that track consistency without a target.
+    target: column.optionalInteger,
     unit: column.text,
     startDate: column.timestamp,
-    targetDate: column.timestamp,
+    targetDate: column.optionalTimestamp,
     createdAt: column.timestamp,
     updatedAt: column.timestamp,
     initialValue: column.integer,

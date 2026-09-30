@@ -38,6 +38,60 @@ describe('validateSyncOperation', () => {
     });
   });
 
+  it('lets a habit leave its target and target date open', () => {
+    const result = validateSyncOperation({
+      table: 'goal',
+      op: 'PUT',
+      id,
+      data: {
+        shortId: 'goal-2',
+        title: 'Meditate',
+        description: null,
+        initialValue: 0,
+        currentValue: 0,
+        target: null,
+        unit: '',
+        startDate: timestamp,
+        targetDate: null,
+        createdAt: timestamp,
+        completionDate: null,
+        archivedAt: null,
+        type: 'BOOLEAN',
+      },
+    });
+
+    expect(result.rejection).toBeUndefined();
+    expect(result.operation?.data).toMatchObject({
+      target: null,
+      targetDate: null,
+    });
+  });
+
+  it.each(['COUNT', 'PROGRESS'])(
+    'requires a target and target date for %s goals',
+    (type) => {
+      const result = validateSyncOperation({
+        table: 'goal',
+        op: 'PUT',
+        id,
+        data: {
+          shortId: 'goal-3',
+          title: 'Read more',
+          initialValue: 0,
+          currentValue: 0,
+          target: null,
+          unit: 'pages',
+          startDate: timestamp,
+          targetDate: timestamp,
+          createdAt: timestamp,
+          type,
+        },
+      });
+
+      expect(result.rejection).toMatchObject({ code: 'invalid_field' });
+    },
+  );
+
   it('rejects ownership fields instead of accepting a client user id', () => {
     const result = validateSyncOperation({
       table: 'entry',

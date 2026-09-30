@@ -18,12 +18,15 @@ import type { Database } from '~/data/db/AppSchema';
  * - PROGRESS goals track an absolute value (latest entry wins);
  *   COUNT/BOOLEAN goals accumulate entry values on top of initialValue.
  * - Values are assumed to grow toward the target.
+ * - Habits (BOOLEAN) may have no target or target date; they are open-ended and
+ *   have no pace to measure.
  */
 
 export type EntryLike = Pick<Database['entry'], 'date' | 'value'>;
 
 export type PaceStatus =
   | { kind: 'completed' }
+  | { kind: 'open' }
   | { kind: 'notStarted' }
   | { kind: 'onPace' }
   | { kind: 'ahead'; days: number }
@@ -31,9 +34,9 @@ export type PaceStatus =
 
 export interface PaceGoalInput {
   initialValue: number;
-  target: number;
+  target: number | null;
   startDate: string | Date;
-  targetDate: string | Date;
+  targetDate: string | Date | null;
   currentValue: number;
 }
 
@@ -70,12 +73,14 @@ export function getPaceStatus(
   goal: PaceGoalInput,
   today: Date = new Date(),
 ): PaceStatus {
-  const { initialValue, target, currentValue } = goal;
+  const { initialValue, target, targetDate, currentValue } = goal;
 
+  if (target === null) return { kind: 'open' };
   if (currentValue >= target) return { kind: 'completed' };
+  if (targetDate === null) return { kind: 'open' };
 
   const start = toDayStart(goal.startDate);
-  const end = toDayStart(goal.targetDate);
+  const end = toDayStart(targetDate);
   const day = startOfDay(today);
 
   if (day < start) return { kind: 'notStarted' };
@@ -108,12 +113,14 @@ export function getReplanDate(
   goal: PaceGoalInput,
   today: Date = new Date(),
 ): Date | null {
+  const { target, targetDate } = goal;
+  if (target === null || targetDate === null) return null;
   if (getPaceStatus(goal, today).kind !== 'behind') return null;
 
   const progress = goal.currentValue - goal.initialValue;
   if (progress <= 0) return null;
 
-  const span = goal.target - goal.initialValue;
+  const span = target - goal.initialValue;
   const start = toDayStart(goal.startDate);
   const elapsed = Math.max(
     differenceInCalendarDays(startOfDay(today), start),
@@ -124,7 +131,7 @@ export function getReplanDate(
   const minTotalDays = Math.floor((span * (elapsed - 0.5)) / progress) + 1;
   const newEnd = addDays(start, minTotalDays - 1);
 
-  return newEnd > toDayStart(goal.targetDate) ? newEnd : null;
+  return newEnd > toDayStart(targetDate) ? newEnd : null;
 }
 
 /**
@@ -140,13 +147,15 @@ export function getSuggestedToday(
   goal: PaceGoalInput & { type: string },
   today: Date = new Date(),
 ): number {
-  const { target, currentValue } = goal;
+  const { target, targetDate, currentValue } = goal;
+  if (target === null || targetDate === null) return 0;
+
   const remaining = target - currentValue;
 
   if (remaining <= 0) return 0;
 
   const start = toDayStart(goal.startDate);
-  const end = toDayStart(goal.targetDate);
+  const end = toDayStart(targetDate);
   const day = startOfDay(today);
   const effectiveFrom = day > start ? day : start;
   const daysLeft = Math.max(
@@ -205,12 +214,13 @@ function gainedInWindow(
  * goal is already met. Suits dateless goals; works for any goal.
  */
 export function getProjectedFinish(
-  goal: { type: string; initialValue: number; target: number },
+  goal: { type: string; initialValue: number; target: number | null },
   entries: EntryLike[],
   currentValue: number,
   today: Date = new Date(),
   windowDays = 30,
 ): Date | null {
+  if (goal.target === null) return null;
   const remaining = goal.target - currentValue;
   if (remaining <= 0) return null;
 
@@ -325,9 +335,9 @@ export function getSparklineSeries(
   goal: {
     type: string;
     initialValue: number;
-    target: number;
+    target: number | null;
     startDate: string | Date;
-    targetDate: string | Date;
+    targetDate: string | Date | null;
   },
   entries: EntryLike[],
   today: Date = new Date(),
@@ -374,10 +384,13 @@ export function getSparklineSeries(
     }
   }
 
+  const { target, targetDate } = goal;
+  if (target === null || targetDate === null) return { values, ideal: null };
+
   const start = toDayStart(goal.startDate);
-  const end = toDayStart(goal.targetDate);
+  const end = toDayStart(targetDate);
   const totalDays = differenceInCalendarDays(end, start) + 1;
-  const perDay = (goal.target - goal.initialValue) / Math.max(totalDays, 1);
+  const perDay = (target - goal.initialValue) / Math.max(totalDays, 1);
 
   let ideal: SparklineSeries['ideal'] = null;
   if (perDay > 0) {
@@ -399,8 +412,11 @@ export function hasEntryOnDay(
 }
 
 /** Percent of target reached, clamped to 0–100 (existing card convention). */
-export function getPercentComplete(currentValue: number, target: number) {
-  if (target <= 0) return 0;
+export function getPercentComplete(
+  currentValue: number,
+  target: number | null,
+) {
+  if (target === null || target <= 0) return 0;
   return clamp((currentValue / target) * 100, 0, 100);
 }
 
@@ -430,7 +446,7 @@ export function getGoalMetrics(
   const paceInput = { ...goal, currentValue };
   const loggedToday = hasEntryOnDay(entries, today);
   const isBoolean = goal.type === 'BOOLEAN';
-  const completed = currentValue >= goal.target;
+  const completed = goal.target !== null && currentValue >= goal.target;
 
   return {
     percentComplete: getPercentComplete(currentValue, goal.target),

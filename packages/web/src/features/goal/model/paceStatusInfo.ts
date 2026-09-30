@@ -11,6 +11,8 @@ export function paceStatusInfo(status: PaceStatus): {
       return { label: t`done`, className: 'text-primary' };
     case 'notStarted':
       return { label: t`not started`, className: 'text-muted-foreground' };
+    case 'open':
+      return { label: t`no target`, className: 'text-muted-foreground' };
     case 'ahead':
       return {
         label: plural(status.days, {

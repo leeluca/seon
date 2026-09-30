@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { Plural, Trans, useLingui } from '@lingui/react/macro';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import { isToday, subDays } from 'date-fns';
-import { CheckIcon, ChevronRightIcon, FlameIcon } from 'lucide-react';
+import { subDays } from 'date-fns';
+import { ChevronRightIcon, FlameIcon } from 'lucide-react';
 
 import { ENTRIES } from '~/constants/query';
 import type { Database } from '~/data/db/AppSchema';
@@ -12,8 +12,7 @@ import {
   getStreak,
   hasEntryOnDay,
 } from '~/data/domain/goalMetrics';
-import { useEntryMutations } from '~/features/entry/hooks/useEntryMutations';
-import { Button } from '~/shared/components/ui/button';
+import { EntryLogger } from '~/features/entry/components/EntryLogger';
 import { Card } from '~/shared/components/ui/card';
 import { cn } from '~/utils';
 import { Chip } from './StatChips';
@@ -21,33 +20,29 @@ import { Chip } from './StatChips';
 const DOT_DAYS = 7;
 
 /**
- * Compact row for a daily practice (BOOLEAN goal): last-7-days dots,
+ * Compact row for a habit (BOOLEAN goal): last-7-days dots,
  * rolling consistency, celebration-only streak, one-tap done.
  * No streak resets, no "missed" states — numbers only go up.
  */
 export function HabitRow({ goal }: { goal: Database['goal'] }) {
   const { t } = useLingui();
   const { data: entries = [] } = useQuery(ENTRIES.goalId(goal.id));
-  const { save, remove } = useEntryMutations({ goalId: goal.id });
 
-  const { dots, consistency, streak, doneToday, todayEntry, allTime } =
-    useMemo(() => {
-      const today = new Date();
-      const days = Array.from({ length: DOT_DAYS }, (_, i) =>
-        subDays(today, DOT_DAYS - 1 - i),
-      );
-      return {
-        dots: days.map((day) => ({
-          key: day.toDateString(),
-          done: hasEntryOnDay(entries, day),
-        })),
-        consistency: getConsistency(entries, today),
-        streak: getStreak(entries, today),
-        doneToday: hasEntryOnDay(entries, today),
-        todayEntry: entries.find((entry) => isToday(new Date(entry.date))),
-        allTime: Math.round(goal.currentValue ?? goal.initialValue),
-      };
-    }, [entries, goal.currentValue, goal.initialValue]);
+  const { dots, consistency, streak, allTime } = useMemo(() => {
+    const today = new Date();
+    const days = Array.from({ length: DOT_DAYS }, (_, i) =>
+      subDays(today, DOT_DAYS - 1 - i),
+    );
+    return {
+      dots: days.map((day) => ({
+        key: day.toDateString(),
+        done: hasEntryOnDay(entries, day),
+      })),
+      consistency: getConsistency(entries, today),
+      streak: getStreak(entries, today),
+      allTime: Math.round(goal.currentValue ?? goal.initialValue),
+    };
+  }, [entries, goal.currentValue, goal.initialValue]);
 
   return (
     <Card
@@ -108,25 +103,7 @@ export function HabitRow({ goal }: { goal: Database['goal'] }) {
         </Chip>
       )}
 
-      <Button
-        variant={doneToday ? 'default' : 'outline'}
-        size="icon-sm"
-        className="relative z-10 rounded-full"
-        disabled={save.isPending || remove.isPending}
-        aria-pressed={doneToday}
-        onClick={() =>
-          doneToday && todayEntry
-            ? remove.mutate(todayEntry.id)
-            : save.mutate({ value: 1, date: new Date() })
-        }
-        aria-label={
-          doneToday
-            ? t`Unmark ${goal.title} for today`
-            : t`Mark ${goal.title} done today`
-        }
-      >
-        <CheckIcon />
-      </Button>
+      <EntryLogger goal={goal} entries={entries} className="relative z-10" />
 
       <ChevronRightIcon size={16} className="text-muted-foreground shrink-0" />
     </Card>

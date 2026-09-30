@@ -58,9 +58,16 @@ export const GOALS: GoalQueries = {
           .where((eb) => eb('currentValue', '>=', eb.ref('target')))
           .where('target', '>', 0);
       } else if (filter === 'ongoing') {
-        query = query
-          .where((eb) => eb('currentValue', '<', eb.ref('target')))
-          .where('target', '>', 0);
+        // A goal without a target (an open-ended habit) never finishes.
+        query = query.where((eb) =>
+          eb.or([
+            eb('target', 'is', null),
+            eb.and([
+              eb('currentValue', '<', eb.ref('target')),
+              eb('target', '>', 0),
+            ]),
+          ]),
+        );
       }
     }
 
@@ -74,6 +81,11 @@ export const GOALS: GoalQueries = {
         sql`${sql.ref(sortField)} COLLATE NOCASE`,
         sortDirection,
       );
+    } else if (sortField === 'targetDate') {
+      // Goals without a date sort after dated ones in either direction.
+      query = query
+        .orderBy(sql`${sql.ref(sortField)} IS NULL`)
+        .orderBy(sortField, sortDirection);
     } else {
       query = query.orderBy(sortField, sortDirection);
     }

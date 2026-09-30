@@ -74,17 +74,20 @@ function GoalDetailBody({ goal, isMobile, onClose }: GoalDetailBodyProps) {
   return (
     <>
       <GoalDetailStats goal={goal} />
-      <section className="relative flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
-        <GoalLineGraphWithErrorBoundary
-          goalId={goal.id}
-          targetDate={goal.targetDate}
-          target={goal.target}
-          startDate={goal.startDate}
-          initialValue={goal.initialValue}
-          isMobile={isMobile}
-          goalType={goal.type as GoalType}
-        />
-      </section>
+      {/* An open-ended goal has no target line to chart against. */}
+      {goal.target !== null && goal.targetDate !== null && (
+        <section className="relative flex min-h-[365px] shrink-0 items-center justify-center overflow-x-hidden">
+          <GoalLineGraphWithErrorBoundary
+            goalId={goal.id}
+            targetDate={goal.targetDate}
+            target={goal.target}
+            startDate={goal.startDate}
+            initialValue={goal.initialValue}
+            isMobile={isMobile}
+            goalType={goal.type as GoalType}
+          />
+        </section>
+      )}
       <EntryHeatmap goal={goal} />
       <EntryHistory goalId={goal.id} goalType={goal.type} />
       <Collapsible>

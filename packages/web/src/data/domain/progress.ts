@@ -40,7 +40,7 @@ export async function updateGoalProgress(
     currentValue = (Number(sumResult?.totalValue) || 0) + goal.initialValue;
   }
 
-  const isCompleted = currentValue >= goal.target;
+  const isCompleted = goal.target !== null && currentValue >= goal.target;
 
   let newCompletionDate: string | null = goal.completionDate;
   if (isCompleted && !goal.completionDate) {

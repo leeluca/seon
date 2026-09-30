@@ -220,7 +220,8 @@ export const goal = pgTable(
     description: text('description'),
     initialValue: integer('initialValue').default(0).notNull(),
     currentValue: integer('currentValue').default(0).notNull(),
-    target: integer('target').notNull(),
+    // Null for habits (BOOLEAN goals) that track consistency without a target.
+    target: integer('target'),
     unit: text('unit').default('').notNull(),
     userId: uuid('userId').notNull(),
     startDate: timestamp('startDate', {
@@ -234,9 +235,7 @@ export const goal = pgTable(
       precision: 3,
       withTimezone: true,
       mode: 'string',
-    })
-      .defaultNow()
-      .notNull(),
+    }),
     createdAt: timestamp('createdAt', {
       precision: 3,
       withTimezone: true,

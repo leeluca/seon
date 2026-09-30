@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { Trans, useLingui } from '@lingui/react/macro';
 import { DownloadIcon, UploadIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -12,6 +13,7 @@ import {
 import { Button } from '../ui/button';
 
 export function WorkspaceDataControls() {
+  const { t } = useLingui();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
 
@@ -21,7 +23,7 @@ export function WorkspaceDataControls() {
       downloadWorkspaceExport(await createWorkspaceExport());
     } catch (error) {
       console.error('Could not export workspace data', error);
-      toast.error('Could not export the workspace.');
+      toast.error(t`Could not save a backup. Your data is unchanged.`);
     } finally {
       setBusy(false);
     }
@@ -32,15 +34,16 @@ export function WorkspaceDataControls() {
     try {
       const payload = parseWorkspaceData(await file.text());
       const result = await importWorkspaceData(powerSyncDb, payload);
+      const { goals, entries } = result.imported;
       toast.success(
         result.alreadyImported
-          ? 'This recovery file was already imported.'
-          : `Imported ${result.imported.goals} goal(s) and ${result.imported.entries} entry/entries.`,
+          ? t`This backup was already restored.`
+          : t`Restored ${goals} goals and ${entries} entries.`,
       );
       if (!result.alreadyImported) window.location.reload();
     } catch (error) {
       console.error('Could not import workspace data', error);
-      toast.error('That file is not a valid Seon workspace export.');
+      toast.error(t`That file isn't a Seon backup.`);
     } finally {
       setBusy(false);
       if (input.current) input.current.value = '';
@@ -50,29 +53,27 @@ export function WorkspaceDataControls() {
   return (
     <div className="flex flex-wrap gap-2">
       <Button
-        size="sm"
         variant="outline"
         disabled={busy}
         onClick={() => void exportData()}
       >
-        <DownloadIcon />
-        Export JSON
+        <DownloadIcon data-icon="inline-start" />
+        <Trans>Save backup</Trans>
       </Button>
       <Button
-        size="sm"
         variant="outline"
         disabled={busy}
         onClick={() => input.current?.click()}
       >
-        <UploadIcon />
-        Import JSON
+        <UploadIcon data-icon="inline-start" />
+        <Trans>Restore backup</Trans>
       </Button>
       <input
         ref={input}
         className="sr-only"
         type="file"
         accept="application/json,.json"
-        aria-label="Import Seon workspace JSON"
+        aria-label={t`Choose a Seon backup file`}
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) void importData(file);

@@ -23,10 +23,10 @@ export interface WorkspaceGoalRecord {
   shortId: string;
   title: string;
   description: string | null;
-  target: number;
+  target: number | null;
   unit: string;
   startDate: string;
-  targetDate: string;
+  targetDate: string | null;
   createdAt: string;
   updatedAt: string;
   initialValue: number;
@@ -416,10 +416,10 @@ function isGoal(value: unknown): value is WorkspaceGoalRecord {
     isString(value.shortId) &&
     isNonEmptyString(value.title) &&
     isNullableString(value.description) &&
-    isPostgresInteger(value.target) &&
+    (value.target === null || isPostgresInteger(value.target)) &&
     isString(value.unit) &&
     isSyncDate(value.startDate) &&
-    isSyncDate(value.targetDate) &&
+    isNullableSyncDate(value.targetDate) &&
     isSyncDate(value.createdAt) &&
     isSyncDate(value.updatedAt) &&
     isPostgresInteger(value.initialValue) &&

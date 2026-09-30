@@ -22,11 +22,10 @@ import {
   getHeatmapLevel,
   toDayKey,
 } from '~/data/domain/goalMetrics';
-import type { GoalType } from '~/features/goal/model';
 import { ResponsivePopover } from '~/shared/components/ui/responsive-popover';
 import { useViewportStore } from '~/states/stores/viewportStore';
 import { cn } from '~/utils';
-import CreateEntryForm from './CreateEntryForm';
+import { EntryLogger } from './EntryLogger';
 
 const LEVEL_CLASSES = [
   'bg-muted',
@@ -115,11 +114,17 @@ export function EntryHeatmap({
         return !previous || format(previous[0], 'MMM') !== label ? label : '';
       });
 
-      const totalDays = Math.max(
-        differenceInCalendarDays(startOfDay(new Date(goal.targetDate)), start) +
-          1,
-        1,
-      );
+      // Open-ended goals have no daily rate; any activity shades fully.
+      const totalDays =
+        goal.targetDate === null
+          ? 0
+          : Math.max(
+              differenceInCalendarDays(
+                startOfDay(new Date(goal.targetDate)),
+                start,
+              ) + 1,
+              1,
+            );
 
       return {
         weeks,
@@ -128,7 +133,10 @@ export function EntryHeatmap({
         entriesByDay: new Map(
           entries.map((entry) => [new Date(entry.date).toDateString(), entry]),
         ),
-        perDay: (goal.target - goal.initialValue) / totalDays,
+        perDay:
+          goal.target === null || totalDays === 0
+            ? 0
+            : (goal.target - goal.initialValue) / totalDays,
         today,
         start,
       };
@@ -321,10 +329,7 @@ export function EntryHeatmap({
         overlayClassName={isMobile ? 'bg-black/50' : ''}
         drawerTitle={
           <span>
-            <Trans>
-              Add entry for{' '}
-              {selectedDay ? format(selectedDay, 'EEE, MMM d') : ''}
-            </Trans>{' '}
+            {selectedDay ? format(selectedDay, 'EEE, MMM d') : ''}
             <span className="text-muted-foreground block text-sm font-normal">
               {goal.title}
             </span>
@@ -332,16 +337,29 @@ export function EntryHeatmap({
         }
       >
         {selectedDay && (
-          <CreateEntryForm
-            key={selectedDay.getTime()}
-            goalId={goal.id}
-            entryId={selectedEntry?.id}
-            date={selectedDay}
-            value={selectedEntry?.value}
-            orderedEntries={entries}
-            goalType={goal.type as GoalType}
-            onSubmitCallback={() => setIsPopoverOpen(false)}
-          />
+          <div className="flex flex-col items-center gap-3 pb-2 sm:items-start sm:pb-0">
+            {!isMobile && (
+              <p className="text-sm font-medium">
+                {format(selectedDay, 'EEE, MMM d')}
+              </p>
+            )}
+            <EntryLogger
+              key={selectedDay.getTime()}
+              goal={goal}
+              entries={entries}
+              date={selectedDay}
+              onSaved={() => setIsPopoverOpen(false)}
+            />
+            <p className="text-muted-foreground text-xs">
+              {selectedEntry && selectedEntry.value !== 0 ? (
+                <Trans>Tap the filled check to clear this day.</Trans>
+              ) : goal.type === 'BOOLEAN' ? (
+                <Trans>Tap the check to mark this day done.</Trans>
+              ) : (
+                <Trans>Set the amount, then tap the check to save.</Trans>
+              )}
+            </p>
+          </div>
         )}
       </ResponsivePopover>
 

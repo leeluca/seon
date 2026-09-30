@@ -35,6 +35,9 @@ export function AppTitle() {
     case '/_main/goals/new':
       pageTitle = t`New Goal`;
       break;
+    case '/_main/settings':
+      pageTitle = t`Settings`;
+      break;
   }
 
   const title = pageTitle ? `${pageTitle} | Seon` : 'Seon Goals';

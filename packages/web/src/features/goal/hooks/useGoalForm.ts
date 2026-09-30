@@ -9,6 +9,7 @@ import {
   createGoalFormValues,
   goalFormValuesToPayload,
   goalToFormValues,
+  isOpenEndedGoal,
   type GoalFormValues,
 } from '~/features/goal/model/form';
 import { useAppForm, withForm } from '~/shared/components/common/form/appForm';
@@ -46,7 +47,11 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
     defaultValues,
     validators: {
       onChange: ({ value }) => {
-        if (!value.title.trim() || !value.targetValue || !value.targetDate) {
+        if (!value.title.trim()) return t`Missing required fields`;
+        if (
+          !isOpenEndedGoal(value) &&
+          (!value.targetValue || !value.targetDate)
+        ) {
           return t`Missing required fields`;
         }
       },
@@ -54,13 +59,13 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
     async onSubmit({ value, formApi }) {
       const { targetValue, initialValue, title } = value;
       const payload = goalFormValuesToPayload(value);
-      if (!payload || !targetValue) return;
+      if (!payload) return;
 
       if (options.mode === 'create') {
         try {
           await createGoal(payload);
           onSuccess?.();
-          toast.success(t`Sucessfully added goal`);
+          toast.success(t`Goal added`);
         } catch (error) {
           console.error(error);
           toast.error(t`Failed to add goal`);
@@ -76,7 +81,7 @@ export function useGoalForm({ onSuccess, ...options }: UseGoalFormOptions) {
         await updateGoal(options.goal.id, payload, {
           completionCriteriaChanged,
         });
-        toast.success(t`Sucessfully updated goal`);
+        toast.success(t`Goal updated`);
       } catch (error) {
         console.error(error);
         toast.error(t`Failed to update goal`);

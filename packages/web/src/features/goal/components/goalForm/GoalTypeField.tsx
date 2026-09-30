@@ -40,12 +40,12 @@ const goalTypeOptions: Array<{
   },
   {
     value: 'BOOLEAN',
-    label: <Trans>Yes or no</Trans>,
+    label: <Trans>Habit</Trans>,
     description: (
       <Trans>
-        Track daily completion with a simple yes or no.
+        Something you do regularly. Check it off each day you do it.
         <br />
-        E.g. habits like meditation or taking vitamins.
+        E.g. meditating or taking vitamins.
       </Trans>
     ),
   },

@@ -1,7 +1,5 @@
 import { useLingui } from '@lingui/react/macro';
-import { isSameDay } from 'date-fns';
-
-import { MAX_GOAL_NAME_LENGTH, MAX_INPUT_NUMBER } from '~/constants';
+import { MAX_GOAL_NAME_LENGTH } from '~/constants';
 import { GOAL_FIELD_SUFFIX, goalFormOptions } from '~/features/goal/model';
 import { useIds } from '~/hooks/useIds';
 import { cn } from '~/utils';
@@ -9,6 +7,7 @@ import { maxLengthValidator } from '~/utils/validation';
 import { withForm } from '../../hooks/useGoalForm';
 import { GOAL_FORM_ID } from '../../model';
 import { GoalOptionalFields } from './GoalOptionalFields';
+import { GoalTargetFields } from './GoalTargetFields';
 import { GoalTypeField } from './GoalTypeField';
 
 interface GoalFormProps {
@@ -73,50 +72,9 @@ const CreateGoalForm = withForm({
                 id={ids.title}
                 label={t`Goal name`}
                 required
-                placeholder={t`eg. 'Learn 1000 French words'`}
+                placeholder={t`e.g. Learn 1,000 French words`}
                 autoFocus={autoFocus}
                 maxLength={MAX_GOAL_NAME_LENGTH}
-              />
-            )}
-          </form.AppField>
-          <form.AppField
-            name="targetValue"
-            validators={{
-              onChange: ({ value }) =>
-                !value ? t`Set a target value for your goal.` : undefined,
-            }}
-          >
-            {(field) => (
-              <field.NumberField
-                id={ids.targetValue}
-                label={t`Target value`}
-                required
-                placeholder={t`Value for goal completion (number)`}
-                min={0}
-                max={MAX_INPUT_NUMBER}
-              />
-            )}
-          </form.AppField>
-          <form.AppField
-            name="targetDate"
-            validators={{
-              onChangeListenTo: ['startDate'],
-              onChange: ({ value }) => {
-                if (!value) return t`Set a target date for your goal.`;
-
-                const startDate = form.getFieldValue('startDate');
-                if (!isSameDay(value, startDate) && value < startDate) {
-                  return t`Target date must be after start date`;
-                }
-              },
-            }}
-          >
-            {(field) => (
-              <field.DateField
-                id={ids.targetDate}
-                label={t`Target date`}
-                required
-                showPresetDates
               />
             )}
           </form.AppField>
@@ -126,11 +84,17 @@ const CreateGoalForm = withForm({
             progressId={ids.typeProgress}
             booleanId={ids.typeBoolean}
           />
+          <GoalTargetFields
+            form={form}
+            targetValueId={ids.targetValue}
+            unitId={ids.unit}
+            targetDateId={ids.targetDate}
+            rowClassName={formItemClassName}
+          />
           <GoalOptionalFields
             form={form}
             collapsed={collapseOptionalFields}
             startDateId={ids.startDate}
-            unitId={ids.unit}
             initialValueId={ids.initialValue}
             toggleId={ids.toggleExtra}
           />

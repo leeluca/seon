@@ -4,7 +4,6 @@ import { CheckIcon, GlobeIcon } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 
 import { LOCALES } from '~/constants/locales';
-import db from '~/data/db/database';
 import { Button } from '~/shared/components/ui/button';
 import {
   Command,
@@ -19,31 +18,7 @@ import {
 } from '~/shared/components/ui/popover';
 import { useUserStore } from '~/states/stores/userStore';
 import { cn } from '~/utils/';
-
-interface UpdateProfileLanguageArgs {
-  profileId: string;
-  updatedLanguage: keyof typeof LOCALES;
-}
-
-async function updateProfileLanguage({
-  profileId,
-  updatedLanguage,
-}: UpdateProfileLanguageArgs) {
-  const updatedPreferences = JSON.stringify({
-    ...useUserStore.getState().userPreferences,
-    language: updatedLanguage,
-  });
-
-  await db
-    .updateTable('profile')
-    .set({
-      preferences: updatedPreferences,
-    })
-    .where('id', '=', profileId)
-    .execute();
-
-  useUserStore.getState().setPreferences(updatedPreferences);
-}
+import { updateProfileLanguage } from './languagePreference';
 
 export default function LanguageSelector() {
   const {

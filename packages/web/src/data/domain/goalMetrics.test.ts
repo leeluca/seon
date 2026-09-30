@@ -421,6 +421,25 @@ describe('getGoalMetrics', () => {
     );
   });
 
+  it('treats a habit without a target as open-ended', () => {
+    const today = day(2026, 1, 4);
+    const habit = {
+      ...goal,
+      type: 'BOOLEAN',
+      target: null,
+      targetDate: null,
+      currentValue: 3,
+    };
+    const metrics = getGoalMetrics(habit, [entry(today, 1)], today);
+
+    expect(metrics.pace).toEqual({ kind: 'open' });
+    expect(metrics.percentComplete).toBe(0);
+    expect(metrics.projectedFinishDate).toBeNull();
+    expect(getGoalMetrics(habit, [], today).suggestedToday).toBe(1);
+    expect(getReplanDate(habit, today)).toBeNull();
+    expect(getSparklineSeries(habit, [], today).ideal).toBeNull();
+  });
+
   it('flags loggedToday from any non-zero entry today', () => {
     const today = day(2026, 1, 4);
     expect(hasEntryOnDay([entry(today, 5)], today)).toBe(true);

@@ -56,7 +56,7 @@ test.describe('Goal Entry Management', () => {
     expect(Number(newValue)).toBeGreaterThan(Number(currentValue));
   });
 
-  test('should add a new entry for yes or no goal', async ({ page }) => {
+  test('should add a new entry for a habit', async ({ page }) => {
     const goalCard = page
       .getByTestId(/goal-card/i)
       .filter({ hasText: DEMO_GOALS[2].title });

@@ -17,7 +17,7 @@ interface DemoStartProps {
 
 const DemoStart = ({ onStart, isLoading }: DemoStartProps) => {
   return (
-    <main className="relative flex min-h-[max(100dvh,700px)] min-w-[375px] flex-col items-center justify-center p-2 sm:p-4">
+    <main className="relative flex min-h-[max(100dvh,700px)] flex-col items-center justify-center p-2 sm:p-4">
       <Card className="mx-auto max-w-md">
         <CardHeader>
           <div className="mb-2 flex items-center justify-center">

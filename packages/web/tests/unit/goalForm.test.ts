@@ -47,7 +47,7 @@ describe('goal form values', () => {
       targetValue: 12,
       unit: 'books',
       startDate: new Date(goal.startDate),
-      targetDate: new Date(goal.targetDate),
+      targetDate: new Date('2026-12-31T00:00:00.000Z'),
       initialValue: 2,
       type: 'PROGRESS',
     });
@@ -71,6 +71,56 @@ describe('goal form values', () => {
       startDate: '2026-07-01T00:00:00.000Z',
       targetDate: '2026-12-31T00:00:00.000Z',
     });
+  });
+
+  it('maps an open-ended habit to empty target fields', () => {
+    const goal: Database['goal'] = {
+      id: 'goal-id',
+      shortId: 'goal',
+      title: 'Meditate',
+      description: null,
+      target: null,
+      unit: '',
+      startDate: '2026-07-01T00:00:00.000Z',
+      targetDate: null,
+      createdAt: '2026-07-01T00:00:00.000Z',
+      updatedAt: '2026-07-01T00:00:00.000Z',
+      initialValue: 0,
+      type: 'BOOLEAN',
+      currentValue: 0,
+      completionDate: null,
+      archivedAt: null,
+    };
+
+    expect(goalToFormValues(goal)).toMatchObject({
+      targetValue: undefined,
+      targetDate: undefined,
+    });
+  });
+
+  it('stores no target or date for a habit without a target', () => {
+    const values = createGoalFormValues();
+
+    expect(
+      goalFormValuesToPayload({
+        ...values,
+        title: 'Meditate',
+        type: 'BOOLEAN',
+        targetValue: undefined,
+      }),
+    ).toMatchObject({ title: 'Meditate', target: null, targetDate: null });
+  });
+
+  it('keeps the target and date when a habit sets one', () => {
+    const values = createGoalFormValues();
+    const payload = goalFormValuesToPayload({
+      ...values,
+      type: 'BOOLEAN',
+      targetValue: 30,
+    });
+
+    expect(payload?.target).toBe(30);
+    expect(payload?.targetDate).toBe(values.targetDate?.toISOString());
   });
 
   it('does not create a payload when required values are absent', () => {

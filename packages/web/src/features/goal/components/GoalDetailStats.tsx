@@ -92,6 +92,18 @@ export function GoalDetailStats({ goal }: { goal: Database['goal'] }) {
           ) : (
             <Trans>not yet today</Trans>
           )}
+          {goal.target !== null && (
+            <>
+              {' · '}
+              <Trans>aiming for {goal.target.toLocaleString()} days</Trans>
+              {goal.targetDate !== null && (
+                <>
+                  {' '}
+                  <Trans>by {formatDay(goal.targetDate, new Date())}</Trans>
+                </>
+              )}
+            </>
+          )}
         </p>
       </section>
     );
@@ -107,10 +119,17 @@ export function GoalDetailStats({ goal }: { goal: Database['goal'] }) {
         <p className="text-2xl leading-none font-semibold tabular-nums">
           {currentValue.toLocaleString()}{' '}
           <span className="text-muted-foreground text-sm font-normal">
-            <Trans>
-              of {goal.target.toLocaleString()} {unit}
-            </Trans>{' '}
-            · <Trans>by {formatDay(goal.targetDate, new Date())}</Trans>
+            {goal.target !== null && (
+              <Trans>
+                of {goal.target.toLocaleString()} {unit}
+              </Trans>
+            )}
+            {goal.targetDate !== null && (
+              <>
+                {' '}
+                · <Trans>by {formatDay(goal.targetDate, new Date())}</Trans>
+              </>
+            )}
           </span>
         </p>
         <PaceChip status={metrics.pace} />

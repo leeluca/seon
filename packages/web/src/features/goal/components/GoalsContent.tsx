@@ -94,9 +94,9 @@ export function GoalsContent({ sort, filter }: GoalsContentProps) {
         ))}
       </section>
       {habits.length > 0 && (
-        <section className="mt-10" aria-label={t`Daily practices`}>
+        <section className="mt-10" aria-label={t`Habits`}>
           <h2 className="text-muted-foreground mb-3 text-xs font-semibold tracking-widest uppercase">
-            <Trans>Daily practices</Trans>
+            <Trans>Habits</Trans>
           </h2>
           <div className="grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(300px,auto))] justify-items-center gap-3 sm:grid-cols-[repeat(auto-fit,minmax(400px,auto))] sm:gap-x-6 sm:gap-y-4">
             {habits.map((goal) => (
