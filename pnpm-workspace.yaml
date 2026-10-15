@@ -2,7 +2,7 @@ packages:
   - packages/*
 catalog:
   short-uuid: ^6.0.3
-  uuid: ^14.0.1
+  uuid: ^14.0.3
 allowBuilds:
   '@journeyapps/wa-sqlite': true
   '@sentry/cli': false

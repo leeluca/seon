@@ -12,14 +12,9 @@
     "enabled": true,
     "head_sampling_rate": 1
   },
-  // Replace these non-secret placeholders before the first production deploy.
+  // Preserve runtime configuration managed in the Cloudflare dashboard.
+  "keep_vars": true,
   "vars": {
-    "BETTER_AUTH_URL": "https://seon.example.invalid",
-    "POWERSYNC_AUDIENCE": "replace-with-powersync-audience",
-    "SYNC_URL": "https://powersync.example.invalid",
-    "ORIGIN_URLS": "https://seon.example.invalid",
-    "AUTH_EMAIL_DELIVERY": "resend",
-    "AUTH_EMAIL_FROM": "Seon <auth@example.invalid>",
     "NODE_ENV": "production"
   },
   "secrets": {
@@ -28,7 +23,8 @@
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE",
-      "id": "00000000000000000000000000000000"
+      // NOTE: Resource ID only, not a database credential. Forks must replace it.
+      "id": "a9a2259ec38a495095661be8fa24acf1"
     }
   ]
 }

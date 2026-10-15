@@ -81,12 +81,12 @@ function ErrorLayout({
 
 interface ErrorFallbackProps {
   isRoot?: boolean;
-  error?: Error;
+  error?: unknown;
 }
 
 function ErrorFallback({ isRoot = false, error }: ErrorFallbackProps) {
   const defaultErrorMsg = 'An unexpected error occurred.';
-  const errorMessage = error?.message || defaultErrorMsg;
+  const errorMessage = error instanceof Error ? error.message : undefined;
 
   // NOTE: Locale provider is not available in the root
   if (isRoot) {
@@ -94,7 +94,7 @@ function ErrorFallback({ isRoot = false, error }: ErrorFallbackProps) {
       <ErrorLayout
         title="Something went wrong"
         refreshText="Refresh page"
-        errorMessage={errorMessage}
+        errorMessage={errorMessage || defaultErrorMsg}
         className="min-h-dvh"
       />
     );
@@ -106,7 +106,7 @@ function ErrorFallback({ isRoot = false, error }: ErrorFallbackProps) {
       title={t`Something went wrong`}
       refreshText={t`Refresh page`}
       updateText={t`Update app`}
-      errorMessage={error?.message || t`An unexpected error occurred.`}
+      errorMessage={errorMessage || t`An unexpected error occurred.`}
       className="min-h-[50vh]"
     />
   );

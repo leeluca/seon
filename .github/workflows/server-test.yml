@@ -30,14 +30,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests
-        env:
-          BETTER_AUTH_SECRET: ${{ vars.BETTER_AUTH_SECRET }}
-          BETTER_AUTH_URL: ${{ vars.BETTER_AUTH_URL }}
-          POWERSYNC_AUDIENCE: ${{ vars.POWERSYNC_AUDIENCE }}
-          AUTH_EMAIL_DELIVERY: noop
-          SYNC_URL: ${{ vars.SYNC_URL }}
-          ORIGIN_URLS: ${{ vars.ORIGIN_URLS }}
-          DB_URL: ${{ vars.DB_URL }}
         id: test
         run: |
           pnpm --filter server validate:runtimes | tee test-output.txt
