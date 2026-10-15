@@ -29,7 +29,6 @@ jobs:
 
   typecheck:
     name: 'TypeScript typecheck'
-    needs: biome
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
