@@ -24,3 +24,5 @@ tsconfig.tsbuildinfo
 **/blob-report/
 **/playwright/.cache/
 **/test-results/
+
+.wrangler

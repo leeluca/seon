@@ -31,9 +31,23 @@ pnpm exec wrangler hyperdrive create seon-server-db \
   --caching-disabled
 ```
 
-Put the returned ID in `wrangler.production.jsonc`, then replace the other
-`.invalid` and `replace-with-...` placeholders in that file. These values are
-non-secret production configuration and are intentionally version-controlled.
+Put the returned ID in `wrangler.production.jsonc`. The ID identifies a
+Cloudflare resource but is not a database credential, so it is intentionally
+version-controlled. Forks must replace it with an ID from their own account.
+
+Configure these non-secret runtime variables in the Cloudflare dashboard for
+the `seon-server` Worker:
+
+- `BETTER_AUTH_URL`
+- `POWERSYNC_AUDIENCE`
+- `SYNC_URL`
+- `ORIGIN_URLS`
+- `AUTH_EMAIL_DELIVERY`
+- `AUTH_EMAIL_FROM`
+
+The production Wrangler configuration uses `keep_vars: true`, so deployments
+preserve dashboard-managed variables that are not declared in the file.
+`NODE_ENV=production` remains explicit in the version-controlled configuration.
 
 Store `BETTER_AUTH_SECRET` and `RESEND_API_KEY` as GitHub environment secrets;
 the deployment workflow uploads them as encrypted Worker secrets.
